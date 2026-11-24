@@ -42,7 +42,7 @@ Only nginx publishes a port. The backend and proxy sit on internal networks. `/a
 docker compose run --rm -T -v "$PWD/<set>:/set:ro" backend python3 gate.py /set     # must print GATE PASS
 python3 tools/pack.py <set> ~/Downloads/<name>.zip
 ```
-Re-grade an export: `docker compose run --rm -T -v <dir>:/c:ro backend python3 grade.py /c/submission /c/<hidden tests> -k test_l1_ --names`.
+Re-grade an export (unzipped into `<export>`, with the set folder `<set>` that holds the hidden tests; `final/` is the code at the close, `submission/` the latest code, older exports have only `submission/`): `docker compose run --rm -T -v <export>:/c:ro -v <set>:/s:ro backend python3 grade.py /c/final /s/<hidden tests file> -k test_l1_ --names`.
 
 ## Tests
 `tests/run_all.sh [--clean]`: gates every set in `tests/sets/`, then runs `tests/api_test.py` (all 7 languages,
