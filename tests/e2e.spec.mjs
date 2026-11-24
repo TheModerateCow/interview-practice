@@ -6,6 +6,8 @@ import { execSync } from 'child_process';
 const BASE = 'http://127.0.0.1:8765';
 const NAME = process.env.E2E_NAME;
 const ZIP = process.env.E2E_ZIP;
+const NAME_1M = process.env.E2E_NAME_1M;
+const ZIP_1M = process.env.E2E_ZIP_1M;
 const OUT = '/work/tests/out';
 const REF = '/work/tests/sets/rate-limiter-py/reference';
 const H = { 'X-ILab': '1' };
@@ -100,6 +102,7 @@ test('full interview flow', async ({ page, request }) => {
   await expect(page.locator('#final')).toBeVisible({ timeout: 120000 });
   await expect(page.locator('#final')).toContainText(/\d+\s*\/\s*\d+/);
   await shot('6-final');
+  await expect(page.locator('#final .late')).toHaveCount(0);  // an on-time End has no "after time" rows
 
   // Export
   const [dl] = await Promise.all([page.waitForEvent('download'), page.click((await page.locator('#final-export').isVisible()) ? '#final-export' : '#export-btn')]);
@@ -107,5 +110,44 @@ test('full interview flow', async ({ page, request }) => {
   await dl.saveAs(zp);
   await expect(page.locator('#flash')).toBeVisible();
   await expect(page.locator('#flash')).toContainText('export.zip');
+  // Close the card: the closed bar stays
+  await page.click('#final-close');
+  await expect(page.locator('#closed-bar')).toBeVisible();
   // zip contents are checked on the host by e2e.sh (no unzip in this image)
+});
+
+test('time up closes the round', async ({ page, request }) => {
+  test.setTimeout(240000);
+  const api = async p => (await request.get(BASE + p, { headers: H })).json();
+  await page.goto(BASE);
+  const bytes = Array.from(fs.readFileSync(ZIP_1M));
+  const dt = await page.evaluateHandle(b => {
+    const d = new DataTransfer();
+    d.items.add(new File([new Uint8Array(b)], 'set.zip', { type: 'application/zip' }));
+    return d;
+  }, bytes);
+  for (const t of ['dragenter', 'dragover', 'drop']) await page.dispatchEvent('body', t, { dataTransfer: dt });
+  await expect.poll(async () => (await api('/api/sets')).sets.some(s => s.name === NAME_1M), { timeout: 30000 }).toBe(true);
+  await page.locator('#set-picker').selectOption(NAME_1M);
+  await page.click('#start-btn');
+  await expect(page.locator('#round')).toBeVisible();
+
+  // nothing pressed: 00:00 closes and grades the round
+  await expect(page.locator('#final')).toBeVisible({ timeout: 90000 });
+  await expect(page.locator('#final')).toContainText("Time's up");
+  await expect(page.locator('#final')).toContainText(/\d+\s*\/\s*\d+/);
+  await expect(page.locator('#final .late')).toHaveCount(0);
+  await page.click('#final-close');
+  await expect(page.locator('#closed-bar')).toBeVisible();
+
+  // practice after the close is marked after time
+  await page.click('#submit-btn');
+  await expect(page.locator('#results .late')).toBeVisible({ timeout: 180000 });
+
+  const s = await api(`/api/sets/${NAME_1M}/state`);
+  expect(s.ended).toBe(true);
+  for (const g of Object.values(s.final)) expect(g.after_time).toBe(false);
+  const ev = s.events.map(e => e[1]).join(' | ');
+  expect(ev).toContain('time up');
+  expect(ev).not.toContain('end (after time)');
 });

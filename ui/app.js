@@ -24,7 +24,7 @@ let cur = null;        // current set name
 let st = null;         // current state
 let ed = null, monacoP = null, models = {}, curFile = null;
 let deadline = 0, pollT = null, tickT = null, saveT = null, dirty = false, busy = false;
-let timeUpShown = {}, partsSeen = 0;
+let partsSeen = 0;
 
 /* ---------- theme: Auto (system) / Light / Dark, shared with Monaco ---------- */
 const darkMQ = matchMedia('(prefers-color-scheme: dark)');
@@ -143,7 +143,7 @@ async function loadSets(select) {
 async function openSet(name) {
   await save();
   cur = name; LS.set('ilab-last', name); $('set-picker').value = name;
-  show('final', false);
+  show('final', false); show('closed-bar', false);
   Object.values(models).forEach(m => m.dispose()); models = {}; curFile = null; st = null;
   ['problem', 'results', 'file-tree'].forEach(id => { $(id).textContent = ''; }); // no stale content from the previous set
   try {
@@ -190,7 +190,9 @@ function setState(s, force) {
   st = s;
   deadline = Date.now() + s.left_s * 1000;   // server "now" cancels out: left_s is relative to it
   if (force || newParts !== partsSeen) { partsSeen = newParts; renderProblem(); }
-  show('mytests-btn', s.has_mytests); show('submit-btn', s.has_submit); show('next-btn', s.has_next && !s.ended);
+  show('mytests-btn', s.has_mytests); show('submit-btn', s.has_submit); show('next-btn', s.has_next);
+  $('next-bar-text').textContent = 'Show the next part now? This is logged as asked to move on.' + (s.ended ? ' It is marked after time.' : '');
+  syncBar();
   if (cur) { const o = [...$('set-picker').options].find(o => o.value === cur); if (o) o.textContent = s.title + ' · ' + s.status; }
   if (s.files && $('file-tree').childElementCount !== s.files.length) renderTree();
   renderParts();
@@ -218,13 +220,36 @@ async function poll() {
 }
 function tick() {
   if (!st) return;
-  const left = st.ended ? 0 : Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+  const left = st.ended ? Math.ceil(st.left_s) : Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
   const t = $('timer');
   t.textContent = String(Math.floor(left / 60)).padStart(2, '0') + ':' + String(left % 60).padStart(2, '0');
-  t.classList.toggle('low', left > 0 && left <= 300);
-  t.classList.toggle('over', left === 0);
-  if (left === 0 && !timeUpShown[cur] && !st.ended) { timeUpShown[cur] = true; poll().then(showFinal); }
+  t.classList.toggle('low', !st.ended && left > 0 && left <= 300);
+  t.classList.toggle('over', !!st.expired || (!st.ended && left === 0));
+  $('timer-label').textContent = st.ended ? 'closed' : 'left';
+  if (left === 0 && !st.ended) autoClose();
 }
+
+// 00:00 closes the round: save, then the same call as End. Retries on the next poll period if it fails.
+let closing = false, closeTry = 0, closeErr = false;
+async function autoClose() {
+  if (closing || busy || Date.now() - closeTry < 5000) return;
+  closing = true; closeTry = Date.now(); const name = cur;
+  try {
+    await save();
+    const s = await api('/sets/' + name + '/end', { method: 'POST' });
+    if (name !== cur) return;
+    closeErr = false; setState(s); showFinal();
+  } catch (e) { if (name === cur && !closeErr) { closeErr = true; $('results').innerHTML = '<p class="err">Time is up but the round could not be closed: ' + esc(e.message) + ' Retrying.</p>'; } }
+  finally { closing = false; }
+}
+const mmss = sec => String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(Math.floor(sec % 60)).padStart(2, '0');
+const closedAt = () => mmss(Math.max(0, st.minutes * 60 - st.left_s));
+function syncBar() {
+  const on = !!(st && st.ended) && $('final').classList.contains('hidden');
+  if (on) $('closed-text').textContent = 'Round closed at ' + closedAt() + '. Anything you run, test or submit now is marked after time.';
+  show('closed-bar', on);
+}
+function closeFinal() { show('final', false); syncBar(); }
 
 /* ---------- actions ---------- */
 function flash(msg, bad) {
@@ -253,7 +278,7 @@ function doRun() {
   guarded('Running', async () => {
     const r = await api('/sets/' + cur + '/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ file: curFile, stdin: $('stdin').value }) });
     const c0 = r.stdin_case || (r.testcases || [])[0];
-    let h = '<div class="res-head">' + badge(r.verdict) +
+    let h = '<div class="res-head">' + badge(r.verdict) + lateWord(st.ended) +
       (c0 ? '<span class="meta">' + c0.ms + ' ms' + (r.memory_kb != null ? ' · ' + (r.memory_kb / 1024).toFixed(1) + ' MB' : '') +
         (r.stdin_case && r.stdin_case.exit != null ? ' · exit ' + r.stdin_case.exit : '') + '</span>' : '') + '</div>';
     if (r.compile && !r.compile.ok) h += '<pre class="out bad">' + esc(r.compile.log) + '</pre>';
@@ -266,6 +291,7 @@ function doRun() {
     $('results').innerHTML = h;
   });
 }
+const lateWord = on => on ? '<span class="late">after time</span>' : '';
 function gradeRow(tag, g, names) {
   let s = '<div class="grade"><span class="tag">' + esc(tag) + '</span>';
   if (g.status === 'graded') {
@@ -274,23 +300,25 @@ function gradeRow(tag, g, names) {
   } else s += '<span class="count warn">—</span><span class="status">' + esc(g.status) + (g.limit_s ? ' in ' + esc(g.limit_s) + ' s' : '') + '</span>';
   const last = g.last_error || g.last_line;
   if (last && (g.status !== 'graded' || g.passed < g.total)) s += '<span class="why">' + esc(last) + '</span>';
+  s += lateWord(g.after_time);
   if (names && g.failed && g.failed.length) s += '<span class="names">' + esc(g.failed.join('\n')) + '</span>';
   return s + '</div>';
 }
 function showGrades(title, results, names) {
   const keys = Object.keys(results);
-  $('results').innerHTML = '<div class="label">' + esc(title) + '</div><div class="grades">' +
+  $('results').innerHTML = '<div class="label">' + esc(title) + '</div>' + '<div class="grades">' +
     (keys.map(k => gradeRow(k, results[k], names)).join('') || '<p class="muted">No results.</p>') + '</div>';
 }
 function doMyTests() { guarded('Running your tests', async () => { const g = await api('/sets/' + cur + '/mytests', { method: 'POST' }); showGrades('My tests', { 'my tests': g }, true); }); }
 function doSubmit() {
   if (!st || !st.has_submit) return;
   guarded('Submitting', async () => {
+    const was = st.ended;
     const r = await api('/sets/' + cur + '/submit', { method: 'POST' });
     showGrades('Hidden tests', r.results, false);
     setState(r.state, (r.revealed || []).length > 0);
     if ((r.revealed || []).length) flash('New part unlocked. The problem pane has it.');
-    if (r.state.ended) showFinal();
+    if (r.state.ended && !was) showFinal();
   });
 }
 async function doExport() {
@@ -303,17 +331,19 @@ async function doExport() {
 }
 function showFinal() {
   if (!st) return;
-  const g = st.final || st.results || {};
+  const g = st.final || {};
   const keys = Object.keys(g);
-  let h = '<div class="final-card"><div><div class="label">' + esc(st.title) + '</div><h2>' + (st.ended ? 'Interview ended' : "Time's up") + '</h2></div>' +
-    '<div class="grades">' + (keys.map(k => gradeRow(k, g[k], true)).join('') || '<p class="muted">No results. Nothing was submitted.</p>') + '</div>' +
+  const empty = !st.has_submit ? 'This set has no hidden tests (Run only).' : 'No final grade: ' + esc(st.final_error || 'press End to retry') + '.';
+  let h = '<div class="final-card"><div><div class="label">' + esc(st.title) + '</div><h2>' + (st.expired ? "Time's up" : 'Interview ended') + '</h2></div>' +
+    '<div class="grades">' + (keys.map(k => gradeRow(k, g[k], true)).join('') || '<p class="muted">' + empty + '</p>') + '</div>' +
+    '<p class="muted">Closed at ' + closedAt() + ' of ' + esc(st.minutes) + ' min. Export, then send export.zip to Claude for the debrief.</p>' +
     '<div><div class="label">Where the time went</div><div class="events">' +
     (st.events || []).map(e => '<div><span>' + esc(e[0]) + '</span><span>' + esc(e[1]).replace('(after time)', '<em>(after time)</em>') + '</span></div>').join('') + '</div></div>' +
     '<div class="actions"><button id="final-export" class="btn btn-solid" type="button" aria-label="Export">Export</button>' +
     '<button id="final-close" class="btn btn-ghost" type="button">Close</button></div></div>';
-  const f = $('final'); f.innerHTML = h; show('final', true);
+  const f = $('final'); f.innerHTML = h; show('final', true); syncBar();
   $('final-export').onclick = () => doExport().catch(e => flash(e.message, true));
-  $('final-close').onclick = () => show('final', false);
+  $('final-close').onclick = closeFinal;
 }
 
 /* ---------- wiring ---------- */
@@ -323,6 +353,7 @@ $('submit-btn').onclick = doSubmit;
 $('export-btn').onclick = () => guarded('Exporting', doExport);
 $('next-btn').onclick = () => { show('next-btn', false); show('next-bar', true); $('next-no').focus(); };
 $('next-no').onclick = () => { show('next-bar', false); show('next-btn', true); };
+$('closed-results').onclick = showFinal;
 $('next-yes').onclick = () => { show('next-bar', false); show('next-btn', true);
   guarded('Revealing', async () => { const before = (st.parts || []).length; setState(await api('/sets/' + cur + '/next', { method: 'POST' }), true); if (st.parts.length > before) flash('New part unlocked. The problem pane has it.'); }); };
 $('end-btn').onclick = () => { show('end-btn', false); show('end-bar', true); $('end-no').focus(); };
@@ -342,7 +373,7 @@ $('newfile-form').onsubmit = async e => {
 $('set-picker').onchange = e => openSet(e.target.value);
 document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => setTheme(b.dataset.t)));
 window.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && !$('final').classList.contains('hidden')) { show('final', false); return; }
+  if (e.key === 'Escape' && !$('final').classList.contains('hidden')) { closeFinal(); return; }
   if (!(e.ctrlKey || e.metaKey) || !st || $('round').classList.contains('hidden')) return;
   if (e.key === "'") { e.preventDefault(); doRun(); }
   else if (e.key === 'Enter') { e.preventDefault(); doSubmit(); }
