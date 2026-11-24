@@ -228,7 +228,8 @@ function tick() {
 
 /* ---------- actions ---------- */
 function flash(msg, bad) {
-  const f = $('flash'); f.textContent = msg; f.classList.toggle('bad', !!bad); show('flash', true);
+  const f = $('flash'); show('flash', false); void f.offsetWidth; // hide + reflow so a repeat visibly re-shows
+  f.textContent = msg; f.classList.toggle('bad', !!bad); show('flash', true);
   clearTimeout(flash.t); flash.t = setTimeout(() => show('flash', false), 5000);
 }
 async function guarded(label, fn) {
@@ -298,6 +299,7 @@ async function doExport() {
   const u = URL.createObjectURL(await r.blob());
   const a = document.createElement('a'); a.href = u; a.download = 'export.zip'; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(u), 10000);
+  flash('Downloaded export.zip. Send it to Claude for the debrief. A copy is in data/exports/.');
 }
 function showFinal() {
   if (!st) return;
