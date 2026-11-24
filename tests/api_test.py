@@ -351,6 +351,27 @@ def _():
     check("E: edit after deadline -> final after_time", fin.get("final") and all(g["after_time"] for g in fin["final"].values()), fin.get("final"))
 
 
+@sec("final snapshot")
+def _():
+    n = clock_set("t-snap", 30)
+    req("PUT", f"/api/sets/{n}/files/main.py", "print('at end')\n")
+    jreq("POST", f"/api/sets/{n}/end")
+    req("PUT", f"/api/sets/{n}/files/main.py", "print('after end')\n")
+    z = zipfile.ZipFile(io.BytesIO(req("GET", f"/api/sets/{n}/export")[1]))
+    check("export: final/ has the code at End, submission/ the latest", z.read("final/main.py") == b"print('at end')\n" and z.read("submission/main.py") == b"print('after end')\n", z.namelist())
+    check("export: top-level files kept", all(x in z.namelist() for x in ("session.json", "results.json", "manifest.json")), z.namelist())
+    m = clock_set("t-snap-open", 30)
+    check("export of a never-closed set has no final/", not any(x.startswith("final/") for x in zipfile.ZipFile(io.BytesIO(req("GET", f"/api/sets/{m}/export")[1])).namelist()))
+    lv = uniq("t-snap-lvl"); ht = ".hidden/test_hidden.py"
+    zz = {"manifest.json": json.dumps(manifest(lv, "python", round="levelled", tags=["test_l1_", "test_l2_"], hidden_tests=ht,
+          reveal=[{"file": ".hidden/l2.md", "after_tag": "test_l1_", "or_minutes_left": None, "unlocks": "test_l2_"}])),
+          "problem.md": "L1", ".hidden/l2.md": "L2", "starter/main.py": "x=1\n", ht: "def test_l1_a():\n    assert True\n"}
+    imp(mkzip(zz)); jreq("POST", f"/api/sets/{lv}/start"); jreq("POST", f"/api/sets/{lv}/end")
+    check("levelled: has_next true after End", jreq("GET", f"/api/sets/{lv}/state")[1]["has_next"] is True)
+    st = jreq("POST", f"/api/sets/{lv}/next")[1]
+    check("levelled: Next after End reveals, marked after time", any("l2.md" in e[1] and "(after time)" in e[1] for e in st["events"]), st["events"][-2:])
+
+
 # ------------------------------------------------------------------ import validation
 @sec("import validation")
 def _():

@@ -326,8 +326,10 @@ def next_part(n):
 
 
 def last_edit(n):
-    """Newest mtime under work/ (0 if empty)."""
-    return max((os.path.getmtime(os.path.join(r, f)) for r, _, fs in os.walk(os.path.join(sdir(n), "work")) for f in fs), default=0)
+    """Newest mtime under final/ (the code at the close) if it exists, else work/ (0 if empty)."""
+    d = os.path.join(sdir(n), "final")
+    if not os.path.isdir(d): d = os.path.join(sdir(n), "work")
+    return max((os.path.getmtime(os.path.join(r, f)) for r, _, fs in os.walk(d) for f in fs), default=0)
 
 
 def end(n):
@@ -337,11 +339,13 @@ def end(n):
     if not lk.acquire(timeout=m.get("grade_timeout_s", 45) + 30): raise HTTPError(409, "a Run/Submit is still running")
     try:
         def close(s, _):
-            if s.get("ended"): return
+            if s.get("ended"): return False
             now = time.time()
             if now > deadline(s): s["ended"] = deadline(s); log(s, "time up", s["ended"])
             else: s["ended"] = now; log(s, "end", now)
-        mutate(n, close)
+            return True
+        if mutate(n, close):   # this call closed the round: snapshot the code once (copytree keeps mtimes)
+            shutil.copytree(os.path.join(sdir(n), "work"), os.path.join(sdir(n), "final"), dirs_exist_ok=True)
         s = session(n)
         rp = os.path.join(sdir(n), "results.json")
         if m.get("hidden_tests") and "final" not in jload(rp, {}):
@@ -363,6 +367,8 @@ def export(n):
         for f in ("session.json", "results.json", "manifest.json"):
             p = os.path.join(d, f)
             z.writestr(f, open(p, "rb").read() if os.path.isfile(p) else b"{}")
+        fd = os.path.join(d, "final")   # the code at the close; absent for rounds closed before this existed
+        for rel, data in sorted(grade.read_tree(fd).items() if os.path.isdir(fd) else []): z.writestr("final/" + rel, data)
     data = b.getvalue()
     os.makedirs(EXPORTS, exist_ok=True)
     with open(os.path.join(EXPORTS, f"{n}-{time.strftime('%Y%m%d-%H%M%S')}.zip"), "wb") as f: f.write(data)
