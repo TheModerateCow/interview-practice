@@ -267,3 +267,32 @@ human typist).
 | Copy and polish pass (F17) | S | no | Each A 10-15 item verified fixed on the running app |
 
 ## What shipped
+
+### Round 1: Honest round close (2026-11-25)
+
+**Theme and why.** The app's one job is to tell the truth about a round, and at the close it didn't: every final grade was stamped "after time" (End set `ended` before `stamp()` checked it), 00:00 neither closed nor graded the round, two racing Ends could log "end (after time)", an End during a Run never wrote `final`, Submits were stamped when grading finished, and the export's code included practice after the close. Chosen over "every action answers" (friction, not wrong results) and the "debrief kit" (needs correct flags first).
+
+| PR | What it does |
+|---|---|
+| #1 | Product doc (this file) and the round's SPEC/HLD |
+| #4 | Actions are stamped when they start; End is one idempotent close that waits for an in-flight Run/Submit; a close after the deadline logs "time up" with `ended` = deadline; the clock freezes at the close; the final grade's `after_time` = code edited after the deadline (+5 s) |
+| #6 | The code at the close is snapshotted to `final/` and exported beside `submission/`; Next part stays available after the close (marked after time) |
+| #2 | Export answers with a toast, re-shown visibly on every click |
+| #5 | 00:00 closes and grades the round; the end card shows the final grade ("Time's up" / "Interview ended", "Closed at mm:ss of N min"); a "Round closed" bar stays; later results say "after time"; the timer freezes with the label "closed" |
+| #3 | SKILL.md and README: time from `tools/status.py`, results from `final`, debrief re-grades `final/` against the kept set; the README re-grade command runs as written |
+
+**How it was verified** (on the running stack, each PR built from its branch, then `main` after merging):
+- `tests/api_test.py`: 183 PASS, 0 FAIL, including the new "honest clock" (on-time End, parallel Ends → one close, End during Submit, "time up" at 1.0, edit after deadline → final after time) and "final snapshot" sections.
+- `tests/e2e.sh`: `2 passed` (main flow + new "time up closes the round"), export contains `final/`; rerun from `main` after release.
+- In a real browser at 1440 px and 400 px, light and dark: 1-minute round closes itself with a real final grade; early End freezes the clock at 29:57 labelled "closed"; the closed bar stays; a Submit after the close shows "after time" while final rows don't; Next part says "It is marked after time"; no horizontal scroll.
+- Export toast: a repeat click animates opacity 0 → 1 (it first failed with no visible change and went back to the builder).
+- `tools/status.py` on a round closed by "time up" prints `used_min 1.0`; the README re-grade command graded an export's `final/` against the set folder.
+
+**Decisions defaulted for the owner:** 00:00 closes and grades automatically (End is not required); `submission/` keeps its meaning and `final/` is added; 5 s grace for the final grade's after-time flag; End waits for an in-flight Run/Submit.
+
+**Still open:**
+- Every action answers (F5, F9): repeated My tests clicks with no test files still look identical (the owner's round logged 10); imports have no success confirmation; the picker shows titles, not set names.
+- Debrief kit (F7): the export has no hidden tests, so a debrief needs the kept set folder.
+- Found during verification: dropping a zip within ~1 s of page load can be overridden by the app's own first load of the last-used set; `tests/api_test.py` leaves `t-*` sets started and unended in the user's picker.
+- 400 px layout: the editor is very short (pre-existing).
+- The synced copy of the skill under `~/.claude/skills/synced/` needs refreshing by the owner.
