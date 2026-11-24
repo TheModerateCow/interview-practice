@@ -24,7 +24,7 @@ There is **one style: a real interview**, a two-way conversation. The user asks 
 
 ## Standing rules (every mode, every turn)
 
-1. **Never estimate time or test results.** Time comes from `clock.py` (talking rounds) or the Interview Lab app (coding rounds); results come from `grade.py` / `gate.py` or the app's Submit. "How long is left?" means: in talking rounds, run `status` and read out the number; in coding rounds, ask the user to read the app, or compute it from the set's `session.json` (see Coding rounds in Interview Lab). Never guess.
+1. **Never estimate time or test results.** Time comes from `clock.py` (talking rounds) or the Interview Lab app (coding rounds); results come from `grade.py` / `gate.py` or the app's Submit. "How long is left?" means: in talking rounds, run `status` and read out the number; in coding rounds, ask the user to read the app, or run `tools/status.py` on the set's folder (see Coding rounds in Interview Lab). Never guess.
 2. **Never write or fix the candidate's code while the clock runs.** If their code errors, report only the last line of the error.
 3. **Hidden tests, reference code, planted bugs and mutants stay hidden** until the round ends. Don't show them, describe them, or hint at what they check. Never name the file a bug is in.
 4. **Time limits are real.** When time is up, say so and report what passed within time. They can keep going afterwards for learning, but say which results came after time.
@@ -345,9 +345,9 @@ Every coding round (Codebase, Levelled, AI-assisted, TDD, DSA) is delivered thro
 
 **Delivery:** after `GATE PASS`, write `$W/set/manifest.json`, pack it with `pack.py`, and send `<name>.zip`. Tell the user: drag it into http://127.0.0.1:8765, read the ready screen, press Start. There is no other way to deliver a coding round. Grade only in the cloud workspace, never in their folder.
 
-**Clock:** the app keeps time and Claude doesn't start `clock.py`. If Claude can reach the user's files, read `~/interview-lab/data/sets/<name>/session.json` with a script: left = `minutes - (now - start)/60`; if `ended` is set, time is over. Otherwise ask the user to read the app. Never guess.
+**Clock:** the app keeps time and Claude doesn't start `clock.py`. If Claude can reach the user's files, run `python3 ~/interview-lab/tools/status.py ~/interview-lab/data/sets/<name>`. It prints `left_min`, `used_min`, `ended` and `expired`. `ended` true means the round was closed early and the clock is frozen (say "ended with N min left", not "time is over"); `expired` true means time ran out. Without the script, left = `minutes - ((ended or now) - start)/60`. Otherwise ask the user to read the app. Never guess.
 
-**Results during the round** come from the app's Submit: the user reports "N/M passed" plus the failing line, or Claude reads `results.json` next to `session.json`. Hints stay in chat under the hint rules, logged in `$W/hints.log`.
+**Results during the round** come from the app's Submit: the user reports "N/M passed" plus the failing line, or Claude reads `results.json` next to `session.json`. It carries `failed` names for the interviewer: never relay them before the round closes. Hints stay in chat under the hint rules, logged in `$W/hints.log`.
 
 **Manifest** (`manifest.json` at the set root):
 
@@ -399,7 +399,7 @@ Example (Codebase, Python):
 }
 ```
 
-**Debrief:** the user sends `export.zip` (`submission/`, `session.json`, `results.json`, `manifest.json`). Unzip it into an empty folder and re-grade `submission/` with `grade.py --names`, one phase or level per call. Go and Java compile the whole hidden tests file, so for a Levelled round that stopped early, grade each level against a copy of the tests file with the other levels' test functions deleted; otherwise every level reads "could not be graded".
+**Debrief:** the user sends `export.zip` (`final/`, `submission/`, `session.json`, `results.json`, `manifest.json`). `final/` is the code at the close; `submission/` is the latest code. Keep `$W/set/` until the debrief: the hidden tests are not in the export. The official result is `results.json` `final` (graded at the close, test names included). Unzip into an empty folder and re-grade `final/` (`submission/` for older exports) against the hidden tests in `$W/set/` with `grade.py --names`, one phase or level per call. Go and Java compile the whole hidden tests file, so for a Levelled round that stopped early, grade each level against a copy of the tests file with the other levels' test functions deleted; otherwise every level reads "could not be graded". Say "after time" only for actions the app flags or the event log marks "(after time)". An export without `final/` predates the fix: its `final.*.after_time` is unreliable, so use the event log.
 
 ## Round types
 
