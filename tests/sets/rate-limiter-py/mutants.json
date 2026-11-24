@@ -1,0 +1,4 @@
+[
+ {"file":"limiter.py","old":"q[0] <= ts - self.window","new":"q[0] < ts - self.window","label":"window boundary off by one","k":"test_p1_"},
+ {"file":"limiter.py","old":"self._hits.pop(key, None)","new":"self._hits.clear()","label":"reset clears every key","k":"test_p2_"}
+]

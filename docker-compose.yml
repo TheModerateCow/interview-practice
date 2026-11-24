@@ -1,0 +1,41 @@
+name: interview-lab
+services:
+  nginx:
+    build: {context: ., dockerfile: nginx/Dockerfile}
+    image: ilab-nginx
+    ports: ["127.0.0.1:8765:80"]
+    networks: [front, web]
+    depends_on: [backend]
+    restart: unless-stopped
+  backend:
+    build: {context: ., dockerfile: backend/Dockerfile}
+    image: ilab-backend
+    user: "${ILAB_UID:-1000}:${ILAB_GID:-1000}"
+    environment:
+      DOCKER_HOST: tcp://docker-proxy:2375
+      ILAB_DATA: /data
+    volumes: ["./data:/data"]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    networks: [web, dockerapi]
+    depends_on: [docker-proxy]
+    restart: unless-stopped
+  docker-proxy:
+    image: tecnativa/docker-socket-proxy@sha256:be1ac64f33bd82043beb504822a17ba6b71668ea1ad7cf51a9a01d27bb7ab047
+    environment: {CONTAINERS: 1, IMAGES: 1, POST: 1}
+    volumes: ["/var/run/docker.sock:/var/run/docker.sock:ro"]
+    networks: [dockerapi]
+    restart: unless-stopped
+  # Build-only: `up --build` builds the pytest runner image, then this exits.
+  ilab-python:
+    build: images/python
+    image: ilab-python:3.15.2-pytest9.2.0
+    entrypoint: ["true"]
+    network_mode: none
+    restart: "no"
+networks:
+  front: {}
+  web: {internal: true}
+  dockerapi: {internal: true}

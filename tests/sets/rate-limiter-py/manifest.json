@@ -1,0 +1,37 @@
+{
+ "format": "interview-set/1",
+ "name": "rate-limiter-py",
+ "title": "Rate limiter",
+ "company": "Acme",
+ "role": "Backend engineer",
+ "round": "codebase",
+ "language": "python",
+ "difficulty": "medium",
+ "minutes": 30,
+ "rules": "- Edit `limiter.py`; `main.py` is complete.\n- Part 2 appears after part 1 passes.\n- Standard library only.",
+ "tags": [
+  "test_p1_",
+  "test_p2_"
+ ],
+ "hidden_tests": ".hidden/tests_hidden.py",
+ "reveal": [
+  {
+   "file": ".hidden/p2.md",
+   "after_tag": "test_p1_",
+   "or_minutes_left": null,
+   "unlocks": "test_p2_"
+  }
+ ],
+ "your_tests": "test_*.py",
+ "run_entry": "main.py",
+ "testcases": [
+  {
+   "stdin": "a 0\na 1\na 2\nb 3\na 10\na 11\n",
+   "expected": "True\nTrue\nFalse\nTrue\nTrue\nTrue\n"
+  },
+  {
+   "stdin": "x 0\nx 0\nx 9\nx 10\nx 10\n",
+   "expected": "True\nTrue\nFalse\nTrue\nTrue\n"
+  }
+ ]
+}

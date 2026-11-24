@@ -1,0 +1,7 @@
+# user data and hidden reference solutions: never commit
+data/
+.private/
+# test output and caches
+tests/out/
+__pycache__/
+*.pyc

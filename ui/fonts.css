@@ -1,0 +1,6 @@
+/* Self-hosted (CSP font-src 'self'). Inter Tight + Geist Mono, OFL-1.1, latin subset, from @fontsource 5.2.5. */
+@font-face { font-family: "Inter Tight"; font-style: normal; font-weight: 400; font-display: swap; src: url(vendor/fonts/inter-tight-latin-400-normal.woff2) format("woff2"); }
+@font-face { font-family: "Inter Tight"; font-style: normal; font-weight: 500; font-display: swap; src: url(vendor/fonts/inter-tight-latin-500-normal.woff2) format("woff2"); }
+@font-face { font-family: "Inter Tight"; font-style: normal; font-weight: 600; font-display: swap; src: url(vendor/fonts/inter-tight-latin-600-normal.woff2) format("woff2"); }
+@font-face { font-family: "Geist Mono"; font-style: normal; font-weight: 400; font-display: swap; src: url(vendor/fonts/geist-mono-latin-400-normal.woff2) format("woff2"); }
+@font-face { font-family: "Geist Mono"; font-style: normal; font-weight: 500; font-display: swap; src: url(vendor/fonts/geist-mono-latin-500-normal.woff2) format("woff2"); }

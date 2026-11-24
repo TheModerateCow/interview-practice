@@ -1,0 +1,133 @@
+/* Interview Lab design tokens.
+   Palette: #080708 black · #3772ff blue · #df2935 red · #fdca40 yellow · #e6e8e6 grey.
+   Shape and type follow Intercom's site style (regular-weight tight headings, small radii, hairlines over
+   shadows), without its name, logo or licensed fonts. Inter Tight and Geist Mono are OFL and self-hostable.
+   Layout concept: flat neutral panes split by hairlines; blue appears once per screen (Submit),
+   yellow only as the 5-minute clock warning and TLE/MLE. */
+
+:root {
+  /* neutrals */
+  --bg: #f3f4f3;            /* page, editor */
+  --surface: #e6e8e6;       /* panels: file tree, results */
+  --surface-2: #d9dcd9;     /* hover, selected row */
+  --line: #0807081a;        /* hairline */
+  --line-strong: #08070870; /* control borders */
+  --fg: #080708;
+  --fg-2: #080708b8;        /* secondary text */
+  --fg-3: #08070894;        /* captions, placeholders */
+  --inverse-bg: #080708;    /* toasts, solid buttons */
+  --inverse-fg: #e6e8e6;
+
+  /* accent: one per screen */
+  --accent: #3772ff;
+  --accent-hover: #2a63f0;
+  --on-accent: #f3f4f3;     /* the page background, cut out of the blue: 3.8:1 at rest, 4.6:1 on hover (owner's choice over black) */
+  --focus: #3772ff;
+  --link: #1f4fd1;
+
+  /* verdicts (semantic, separate from the accent). No green in the palette: pass uses one tuned to it.
+     Small red text uses #c8202c (darker than #df2935) so it passes AA on the light page. */
+  --pass: #1a7040;  --pass-bg: #1a704017;
+  --fail: #c8202c;  --fail-bg: #df293514;
+  --warn: #7a5900;  --warn-bg: #fdca4059;   /* TLE / MLE / did not finish */
+  --idle: #08070866;
+  --timer-low-fg: #080708; --timer-low-bg: #fdca40;   /* clock at 5 min left: yellow highlight */
+
+  /* code (the Monaco theme reads these) */
+  --code-bg: #f3f4f3;
+  --code-keyword: #2457d6;
+  --code-string: #1a7040;
+  --code-number: #c8202c;
+  --code-comment: #6b6e6b;
+  --code-function: #080708;
+  --code-type: #8a6400;
+  --code-line-hl: #e6e8e6;
+  --code-selection: #3772ff33;
+
+  /* type */
+  --font-sans: "Inter Tight", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --t-display: 4rem;    --t-display-lh: .95; --t-display-ls: -.045em;   /* ready-screen title */
+  --t-h1: 2.5rem;       --t-h1-lh: 1;        --t-h1-ls: -.035em;
+  --t-h2: 1.75rem;      --t-h2-lh: 1.1;      --t-h2-ls: -.03em;
+  --t-h3: 1.25rem;      --t-h3-lh: 1.2;      --t-h3-ls: -.015em;
+  --t-body: .9375rem;   --t-body-lh: 1.5;
+  --t-small: .8125rem;  --t-small-lh: 1.45;
+  --t-label: .75rem;    --t-label-ls: .05em;   /* uppercase labels */
+  --t-code: .8125rem;   --t-code-lh: 1.6;
+  --t-timer: 2.25rem;                          /* round-screen clock */
+
+  /* space (4px grid), radius, motion */
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 64px;
+  --r-xs: 2px; --r-sm: 4px; --r-md: 6px; --r-lg: 8px; --r-xl: 12px; --r-pill: 999px;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  --dur: 160ms;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+  --bg: #080708; --surface: #121112; --surface-2: #1d1c1d; --line: #e6e8e61a; --line-strong: #e6e8e661;
+  --fg: #e6e8e6; --fg-2: #e6e8e6b8; --fg-3: #e6e8e68c; --inverse-bg: #e6e8e6; --inverse-fg: #080708;
+  --accent: #3772ff; --accent-hover: #5a8bff; --on-accent: #080708; --focus: #6f9bff; --link: #7fa6ff;
+  --pass: #4cd98a; --pass-bg: #4cd98a1a; --fail: #f2444f; --fail-bg: #df293524; --warn: #fdca40; --warn-bg: #fdca401f; --idle: #e6e8e666;
+  --timer-low-fg: #080708; --timer-low-bg: #fdca40;
+  --code-bg: #080708; --code-keyword: #7fa6ff; --code-string: #6fdc9a; --code-number: #ff7a84; --code-comment: #7c7f7c;
+  --code-function: #e6e8e6; --code-type: #fdca40; --code-line-hl: #121112; --code-selection: #3772ff40;
+  color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #080708; --surface: #121112; --surface-2: #1d1c1d; --line: #e6e8e61a; --line-strong: #e6e8e661;
+  --fg: #e6e8e6; --fg-2: #e6e8e6b8; --fg-3: #e6e8e68c; --inverse-bg: #e6e8e6; --inverse-fg: #080708;
+  --accent: #3772ff; --accent-hover: #5a8bff; --on-accent: #080708; --focus: #6f9bff; --link: #7fa6ff;
+  --pass: #4cd98a; --pass-bg: #4cd98a1a; --fail: #f2444f; --fail-bg: #df293524; --warn: #fdca40; --warn-bg: #fdca401f; --idle: #e6e8e666;
+  --timer-low-fg: #080708; --timer-low-bg: #fdca40;
+  --code-bg: #080708; --code-keyword: #7fa6ff; --code-string: #6fdc9a; --code-number: #ff7a84; --code-comment: #7c7f7c;
+  --code-function: #e6e8e6; --code-type: #fdca40; --code-line-hl: #121112; --code-selection: #3772ff40;
+  color-scheme: dark;
+}
+
+/* ---------- base ---------- */
+body { background: var(--bg); color: var(--fg); font: 400 var(--t-body)/var(--t-body-lh) var(--font-sans); -webkit-font-smoothing: antialiased; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+code, kbd, pre, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.label { font-size: var(--t-label); letter-spacing: var(--t-label-ls); text-transform: uppercase; color: var(--fg-3); font-weight: 500; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* ---------- buttons: accent (Submit only) · outline · ghost · danger ---------- */
+.btn { display: inline-flex; align-items: center; gap: var(--s-2); height: 34px; padding: 0 var(--s-4);
+  border-radius: var(--r-md); border: 1px solid transparent; font: 500 var(--t-small)/1 var(--font-sans);
+  color: var(--fg); background: none; cursor: pointer; transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease); }
+.btn kbd { font-size: .6875rem; color: var(--fg-3); padding: 1px 5px; border: 1px solid var(--line); border-radius: var(--r-xs); }
+.btn-accent { background: var(--accent); color: var(--on-accent); }
+.btn-accent:hover { background: var(--accent-hover); }
+.btn-accent kbd { color: var(--on-accent); border-color: color-mix(in srgb, currentColor 30%, transparent); }
+.btn-solid { background: var(--fg); color: var(--bg); }
+.btn-solid:hover { opacity: .88; }
+.btn-outline { border-color: var(--line-strong); }
+.btn-outline:hover { background: var(--surface-2); }
+.btn-ghost:hover { background: var(--surface-2); }
+.btn-danger { color: var(--fail); }
+.btn-danger:hover { background: var(--fail-bg); }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.btn-lg { height: 48px; padding: 0 var(--s-5); font-size: var(--t-body); border-radius: var(--r-md); }
+
+/* ---------- pills, badges, chips ---------- */
+.pill { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 var(--s-3); border-radius: var(--r-pill);
+  border: 1px solid var(--line-strong); font-size: var(--t-small); color: var(--fg-2); }
+.badge { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 var(--s-2); border-radius: var(--r-sm);
+  font: 500 var(--t-small)/1 var(--font-sans); }
+.badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.badge.pass { color: var(--pass); background: var(--pass-bg); }
+.badge.fail { color: var(--fail); background: var(--fail-bg); }
+.badge.warn { color: var(--warn); background: var(--warn-bg); }
+.chip { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 var(--s-3); border-radius: var(--r-pill);
+  font-size: var(--t-small); border: 1px solid var(--line); color: var(--fg-2); }
+.chip.done { color: var(--pass); border-color: transparent; background: var(--pass-bg); }
+.chip.current { color: var(--fg); border-color: var(--fg); }
+
+/* ---------- timer ---------- */
+.timer { font: 400 var(--t-timer)/1 var(--font-mono); letter-spacing: -.04em; font-variant-numeric: tabular-nums; color: var(--fg); }
+.timer.low { color: var(--timer-low-fg); background: var(--timer-low-bg); border-radius: var(--r-sm); box-shadow: 0 0 0 .12em var(--timer-low-bg); }
+.timer.over { color: var(--fail); }

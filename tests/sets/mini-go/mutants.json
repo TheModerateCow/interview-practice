@@ -1,0 +1,4 @@
+[
+ {"file":"merge.go","old":"v.Start <= last.End","new":"v.Start < last.End","label":"touching intervals not merged","k":"test_p1_"},
+ {"file":"merge.go","old":"s := append([]Interval(nil), in...)","new":"s := in","label":"sorts caller's slice in place","k":"test_p1_"}
+]

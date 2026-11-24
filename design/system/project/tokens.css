@@ -1,0 +1,131 @@
+/* Interview Lab — generated from tokens.json */
+:root, [data-theme="light"] {
+  --brand-black: #080708;
+  --brand-blue: #3772ff;
+  --brand-red: #df2935;
+  --brand-yellow: #fdca40;
+  --brand-grey: #e6e8e6;
+  --bg: #f3f4f3;
+  --surface: #e6e8e6;
+  --surface-2: #d9dcd9;
+  --line: #0807081a;
+  --line-strong: #08070870;
+  --fg: #080708;
+  --fg-2: #080708b8;
+  --fg-3: #08070894;
+  --inverse-bg: #080708;
+  --inverse-fg: #e6e8e6;
+  --accent: #3772ff;
+  --accent-hover: #2a63f0;
+  --on-accent: var(--bg);
+  --focus: #3772ff;
+  --link: #1f4fd1;
+  --pass: #1a7040;
+  --pass-bg: #1a704017;
+  --fail: #c8202c;
+  --fail-bg: #df293514;
+  --warn: #7a5900;
+  --warn-bg: #fdca4059;
+  --idle: #08070866;
+  --timer-low-fg: #080708;
+  --timer-low-bg: #fdca40;
+  --code-bg: #f3f4f3;
+  --code-keyword: #2457d6;
+  --code-string: #1a7040;
+  --code-number: #c8202c;
+  --code-comment: #6b6e6b;
+  --code-function: #080708;
+  --code-type: #8a6400;
+  --code-line-hl: #e6e8e6;
+  --code-selection: #3772ff33;
+}
+[data-theme="dark"] {
+  --bg: #080708;
+  --surface: #121112;
+  --surface-2: #1d1c1d;
+  --line: #e6e8e61a;
+  --line-strong: #e6e8e661;
+  --fg: #e6e8e6;
+  --fg-2: #e6e8e6b8;
+  --fg-3: #e6e8e68c;
+  --inverse-bg: #e6e8e6;
+  --inverse-fg: #080708;
+  --accent: #3772ff;
+  --accent-hover: #5a8bff;
+  --on-accent: var(--bg);
+  --focus: #6f9bff;
+  --link: #7fa6ff;
+  --pass: #4cd98a;
+  --pass-bg: #4cd98a1a;
+  --fail: #f2444f;
+  --fail-bg: #df293524;
+  --warn: #fdca40;
+  --warn-bg: #fdca401f;
+  --idle: #e6e8e666;
+  --timer-low-fg: #080708;
+  --timer-low-bg: #fdca40;
+  --code-bg: #080708;
+  --code-keyword: #7fa6ff;
+  --code-string: #6fdc9a;
+  --code-number: #ff7a84;
+  --code-comment: #7c7f7c;
+  --code-function: #e6e8e6;
+  --code-type: #fdca40;
+  --code-line-hl: #121112;
+  --code-selection: #3772ff40;
+}
+:root {
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --r-xs: 2px;
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 8px;
+  --r-xl: 12px;
+  --r-pill: 999px;
+  --t-display: 4rem;
+  --t-display-lh: .95;
+  --t-display-ls: -.045em;
+  --t-h1: 2.5rem;
+  --t-h1-lh: 1;
+  --t-h1-ls: -.035em;
+  --t-h2: 1.75rem;
+  --t-h2-lh: 1.1;
+  --t-h2-ls: -.03em;
+  --t-h3: 1.25rem;
+  --t-h3-lh: 1.2;
+  --t-h3-ls: -.015em;
+  --t-body: .9375rem;
+  --t-body-lh: 1.5;
+  --t-small: .8125rem;
+  --t-small-lh: 1.45;
+  --t-label: .75rem;
+  --t-label-ls: .05em;
+  --t-code: .8125rem;
+  --t-code-lh: 1.6;
+  --t-timer: 2.25rem;
+  --dur: 160ms;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  --font-sans: "Inter Tight", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+.display { font-family: var(--font-sans); font-size: 64px; line-height: 0.95; font-weight: 400; letter-spacing: -.045em; }
+.h1 { font-family: var(--font-sans); font-size: 40px; line-height: 1.0; font-weight: 400; letter-spacing: -.035em; }
+.h2 { font-family: var(--font-sans); font-size: 28px; line-height: 1.1; font-weight: 400; letter-spacing: -.03em; }
+.h3 { font-family: var(--font-sans); font-size: 20px; line-height: 1.2; font-weight: 400; letter-spacing: -.015em; }
+.body { font-family: var(--font-sans); font-size: 15px; line-height: 1.5; font-weight: 400; }
+.small { font-family: var(--font-sans); font-size: 13px; line-height: 1.45; font-weight: 400; }
+.label { font-family: var(--font-sans); font-size: 12px; line-height: 1.3; font-weight: 500; letter-spacing: .05em; }
+.code { font-family: var(--font-mono); font-size: 13px; line-height: 1.6; font-weight: 400; }
+.timer { font-family: var(--font-mono); font-size: 36px; line-height: 1; font-weight: 400; letter-spacing: -0.04em; }
+@font-face { font-family: "Inter Tight"; src: url("fonts/inter-tight-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Inter Tight"; src: url("fonts/inter-tight-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Inter Tight"; src: url("fonts/inter-tight-latin-600-normal.woff2") format("woff2"); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Geist Mono"; src: url("fonts/geist-mono-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Geist Mono"; src: url("fonts/geist-mono-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }

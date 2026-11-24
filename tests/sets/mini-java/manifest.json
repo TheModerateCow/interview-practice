@@ -1,0 +1,21 @@
+{
+ "format": "interview-set/1",
+ "name": "mini-java",
+ "title": "Roman numerals (Java)",
+ "round": "dsa",
+ "language": "java",
+ "difficulty": "medium",
+ "minutes": 20,
+ "tags": [
+  "test_p1_"
+ ],
+ "hidden_tests": ".hidden/HiddenTest.java",
+ "your_tests": "*Test.java",
+ "run_entry": "Main.java",
+ "testcases": [
+  {
+   "stdin": "III\nMCMXCIV\nIX\n",
+   "expected": "3\n1994\n9\n"
+  }
+ ]
+}

@@ -1,0 +1,4 @@
+[
+ {"file":"Roman.java","old":"v < val(s.charAt(i + 1))","new":"v <= val(s.charAt(i + 1))","label":"equal neighbours treated as subtractive","k":"test_p1_"},
+ {"file":"Roman.java","old":"if (s == null || s.isEmpty()) throw new IllegalArgumentException(\"empty\");","new":"if (s == null) throw new IllegalArgumentException(\"empty\");","label":"empty string returns 0","k":"test_p1_"}
+]

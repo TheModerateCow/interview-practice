@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interview Lab Theme</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../ui/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding-inline: max(16px, env(safe-area-inset-left, 0px)); padding-block: var(--s-6) var(--s-8); display: grid; gap: var(--s-8); }
+  h1, h2, h3 { font-weight: 400; margin: 0; text-wrap: balance; }
+  h2.sec { font-size: var(--t-h2); line-height: var(--t-h2-lh); letter-spacing: var(--t-h2-ls); }
+  .sec-head { display: grid; gap: var(--s-2); margin-bottom: var(--s-5); }
+  .sec-head p { margin: 0; color: var(--fg-2); max-width: 62ch; }
+  .row { display: flex; flex-wrap: wrap; gap: var(--s-3); align-items: center; }
+  .stack { display: grid; gap: var(--s-4); align-content: start; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: var(--s-5); min-width: 0; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--s-4); }
+
+  /* top bar of this page */
+  .page-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: var(--s-4); padding-bottom: var(--s-5); border-bottom: 1px solid var(--line); }
+  .page-top h1 { font-size: var(--t-h1); line-height: var(--t-h1-lh); letter-spacing: var(--t-h1-ls); }
+  .page-top p { margin: var(--s-2) 0 0; color: var(--fg-2); }
+  .seg { display: inline-flex; border: 1px solid var(--line-strong); border-radius: var(--r-md); overflow: hidden; }
+  .seg button { border: 0; background: none; color: var(--fg-2); font: 500 var(--t-small)/1 var(--font-sans); padding: 9px 14px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+
+  /* swatches */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--s-3); }
+  .sw { border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; background: var(--bg); }
+  .sw i { display: block; height: 56px; border-bottom: 1px solid var(--line); }
+  .sw div { padding: var(--s-2) var(--s-3); display: grid; gap: 2px; }
+  .sw b { font-weight: 500; font-size: var(--t-small); }
+  .sw span { font: var(--t-label)/1.3 var(--font-mono); color: var(--fg-3); }
+
+  /* type specimen */
+  .spec { display: grid; gap: var(--s-4); }
+  .spec > div { display: grid; grid-template-columns: 120px 1fr; gap: var(--s-4); align-items: baseline; border-top: 1px solid var(--line); padding-top: var(--s-3); }
+  .spec > div > span:first-child { font: var(--t-label)/1.3 var(--font-mono); color: var(--fg-3); }
+  .t-display { font-size: var(--t-display); line-height: var(--t-display-lh); letter-spacing: var(--t-display-ls); }
+  .t-h1 { font-size: var(--t-h1); line-height: var(--t-h1-lh); letter-spacing: var(--t-h1-ls); }
+  .t-h2 { font-size: var(--t-h2); line-height: var(--t-h2-lh); letter-spacing: var(--t-h2-ls); }
+  .t-h3 { font-size: var(--t-h3); line-height: var(--t-h3-lh); letter-spacing: var(--t-h3-ls); }
+  .t-small { font-size: var(--t-small); line-height: var(--t-small-lh); color: var(--fg-2); }
+  .t-code { font: var(--t-code)/var(--t-code-lh) var(--font-mono); }
+
+  /* ready screen */
+  .ready { background: var(--bg); border: 1px solid var(--line); border-radius: var(--r-xl); padding: var(--s-7) var(--s-6); display: grid; gap: var(--s-5); }
+  .ready .eyebrow { color: var(--fg-2); font-size: var(--t-body); }
+  .ready h3 { font-size: var(--t-display); line-height: var(--t-display-lh); letter-spacing: var(--t-display-ls); }
+  .ready .rules { border-top: 1px solid var(--line); padding-top: var(--s-4); display: grid; gap: var(--s-2); max-width: 60ch; }
+  .ready ul { margin: 0; padding-left: 1.1em; color: var(--fg-2); display: grid; gap: 4px; }
+  .ready .go { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-4); }
+  .ready .go small { color: var(--fg-3); font-size: var(--t-small); }
+
+  /* app mock */
+  .app { border: 1px solid var(--line); border-radius: var(--r-xl); overflow: hidden; background: var(--bg); }
+  .bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-4); padding: var(--s-3) var(--s-4); border-bottom: 1px solid var(--line); }
+  .brand { font-weight: 600; letter-spacing: -.01em; }
+  .picker { display: inline-flex; align-items: center; gap: var(--s-2); height: 30px; padding: 0 var(--s-3); border: 1px solid var(--line); border-radius: var(--r-md); font-size: var(--t-small); color: var(--fg-2); }
+  .picker .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+  .bar .spacer { flex: 1; }
+  .bar .timer-wrap { display: flex; align-items: baseline; gap: var(--s-2); }
+  .tools { display: flex; flex-wrap: wrap; gap: var(--s-2); align-items: center; padding: var(--s-2) var(--s-4); border-bottom: 1px solid var(--line); }
+  .tools .saved { margin-left: auto; font-size: var(--t-small); color: var(--fg-3); }
+  .body3 { display: grid; grid-template-columns: 180px minmax(0, 1fr) minmax(0, 340px); min-height: 440px; }
+  .files { background: var(--surface); border-right: 1px solid var(--line); padding: var(--s-3) var(--s-2); display: grid; align-content: start; gap: 2px; }
+  .files a { display: block; padding: 6px var(--s-2); border-radius: var(--r-sm); font: var(--t-small)/1.3 var(--font-mono); color: var(--fg-2); text-decoration: none; }
+  .files a:hover { background: var(--surface-2); }
+  .files a[aria-current] { background: var(--surface-2); color: var(--fg); }
+  .files .new { margin-top: var(--s-2); color: var(--fg-3); font-family: var(--font-sans); }
+  .center { display: grid; grid-template-rows: minmax(0, 1fr) auto; min-width: 0; }
+  .editor { background: var(--code-bg); font: var(--t-code)/var(--t-code-lh) var(--font-mono); padding: var(--s-3) 0; overflow-x: auto; }
+  .editor div { display: grid; grid-template-columns: 44px 1fr; white-space: pre; }
+  .editor div.hl { background: var(--code-line-hl); }
+  .editor div > span:first-child { color: var(--fg-3); text-align: right; padding-right: var(--s-3); }
+  .k { color: var(--code-keyword); } .s { color: var(--code-string); } .n { color: var(--code-number); }
+  .c { color: var(--code-comment); font-style: italic; } .f { color: var(--code-function); } .ty { color: var(--code-type); }
+  .results { border-top: 1px solid var(--line); background: var(--surface); padding: var(--s-4); display: grid; gap: var(--s-3); min-width: 0; }
+  .results header { display: flex; flex-wrap: wrap; gap: var(--s-3); align-items: center; }
+  .results .meta { font: var(--t-small)/1 var(--font-mono); color: var(--fg-3); }
+  .problem { border-left: 1px solid var(--line); padding: var(--s-5) var(--s-5); display: grid; align-content: start; gap: var(--s-3); min-width: 0; }
+  .problem h4 { margin: 0; font-weight: 400; font-size: var(--t-h2); line-height: var(--t-h2-lh); letter-spacing: var(--t-h2-ls); }
+  .problem p { margin: 0; color: var(--fg-2); font-size: var(--t-small); line-height: 1.6; }
+  .problem code { font-size: .9em; background: var(--surface-2); padding: 1px 4px; border-radius: var(--r-xs); color: var(--fg); }
+  .parts { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+  .divider { display: flex; align-items: center; gap: var(--s-2); color: var(--fg-3); font-size: var(--t-label); letter-spacing: var(--t-label-ls); text-transform: uppercase; }
+  .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+  /* tables and result rows */
+  .tbl-wrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: var(--t-small); }
+  th { text-align: left; font-weight: 500; color: var(--fg-3); font-size: var(--t-label); letter-spacing: var(--t-label-ls); text-transform: uppercase; padding: 6px var(--s-2); border-bottom: 1px solid var(--line); }
+  td { padding: 8px var(--s-2); border-bottom: 1px solid var(--line); vertical-align: top; }
+  td.mono { font-family: var(--font-mono); white-space: pre; }
+  .ok { color: var(--pass); font-weight: 600; } .no { color: var(--fail); font-weight: 600; }
+  .grade { display: grid; grid-template-columns: 90px 64px 1fr; gap: var(--s-3); align-items: center; padding: var(--s-2) 0; border-bottom: 1px solid var(--line); }
+  .grade .tag { font: var(--t-small)/1 var(--font-mono); }
+  .grade .count { font: 500 var(--t-small)/1 var(--font-mono); text-align: right; }
+  .meter { height: 6px; border-radius: var(--r-pill); background: var(--surface-2); overflow: hidden; }
+  .meter i { display: block; height: 100%; background: var(--pass); }
+  .meter.part i { background: var(--fg); }
+  .grade .why { grid-column: 2 / -1; font: var(--t-small)/1.4 var(--font-mono); color: var(--fail); overflow-wrap: anywhere; }
+
+  /* drop zone */
+  .drop { border: 1.5px dashed var(--line-strong); border-radius: var(--r-xl); padding: var(--s-7) var(--s-5); display: grid; place-items: center; text-align: center; gap: var(--s-2); }
+  .drop .big { font-size: var(--t-h1); line-height: var(--t-h1-lh); letter-spacing: var(--t-h1-ls); }
+  .drop p { margin: 0; color: var(--fg-3); font-size: var(--t-small); }
+  .drop.over { border-color: var(--fg); border-style: solid; background: var(--surface); }
+
+  /* toast, confirm, events */
+  .toast { display: inline-flex; align-items: center; gap: var(--s-3); background: var(--inverse-bg); color: var(--inverse-fg); padding: 10px var(--s-4); border-radius: var(--r-md); font-size: var(--t-small); }
+  .toast b { font-weight: 500; }
+  .confirm { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3); padding: var(--s-3) var(--s-4); border: 1px solid var(--fail); border-radius: var(--r-md); background: var(--fail-bg); font-size: var(--t-small); }
+  .events { display: grid; gap: 0; font-size: var(--t-small); }
+  .events div { display: grid; grid-template-columns: 64px 1fr; gap: var(--s-3); padding: 7px 0; border-bottom: 1px solid var(--line); }
+  .events span:first-child { font-family: var(--font-mono); color: var(--fg-3); text-align: right; }
+  .events em { color: var(--warn); font-style: normal; }
+  .err-box { border: 1px solid var(--line); border-left: 3px solid var(--fail); border-radius: var(--r-sm); background: var(--bg); padding: var(--s-3); font: var(--t-small)/1.5 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+
+  @media (max-width: 860px) {
+    .body3 { grid-template-columns: 1fr; }
+    .files { border-right: 0; border-bottom: 1px solid var(--line); grid-auto-flow: column; justify-content: start; overflow-x: auto; }
+    .problem { border-left: 0; border-top: 1px solid var(--line); }
+    .ready { padding: var(--s-6) var(--s-4); }
+    .ready h3, .t-display { font-size: 2.75rem; }
+    .spec > div { grid-template-columns: 1fr; gap: var(--s-1); }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="page-top">
+    <div>
+      <div class="label">Interview Lab · design system draft</div>
+      <h1>Theme preview</h1>
+      <p>One accent action per screen, regular-weight headlines. Every value comes from <code>tokens.css</code>.</p>
+    </div>
+    <div class="seg" role="group" aria-label="Theme">
+      <button type="button" id="th-system" data-t="" aria-pressed="true">System</button>
+      <button type="button" id="th-light" data-t="light" aria-pressed="false">Light</button>
+      <button type="button" id="th-dark" data-t="dark" aria-pressed="false">Dark</button>
+    </div>
+  </header>
+
+  <!-- 1. Color -->
+  <section>
+    <div class="sec-head"><h2 class="sec">Color</h2><p>Neutrals carry the layout. The accent marks the one action that matters on the screen. Verdict colors are semantic and never decorate.</p></div>
+    <div class="swatches" id="swatches"></div>
+  </section>
+
+  <!-- 2. Type -->
+  <section>
+    <div class="sec-head"><h2 class="sec">Type</h2><p>Inter Tight for interface and headlines, always at regular weight with tight tracking; size does the work, not bold. Geist Mono for code, the clock, test tags and every number that lines up.</p></div>
+    <div class="spec">
+      <div><span>display 64</span><span class="t-display">Rate limiter</span></div>
+      <div><span>h1 40</span><span class="t-h1">Drop a set .zip here</span></div>
+      <div><span>h2 28</span><span class="t-h2">Part 2: remaining and reset</span></div>
+      <div><span>h3 20</span><span class="t-h3">Before you start</span></div>
+      <div><span>body 15</span><span>A call is allowed when fewer than <code>limit</code> allowed calls for that key fall in the sliding window <code>(ts − window, ts]</code>.</span></div>
+      <div><span>small 13</span><span class="t-small">Saved 2 s ago · Python 3.13 · 512 MB · 5 s per case</span></div>
+      <div><span>label 12</span><span class="label">Hidden tests</span></div>
+      <div><span>mono 13</span><span class="t-code">test_p1_ 4/4 · 12 ms · 9.2 MB · 27:41</span></div>
+    </div>
+  </section>
+
+  <!-- 3. Controls -->
+  <section>
+    <div class="sec-head"><h2 class="sec">Actions</h2><p>Four levels. Submit is the only accent button. Run and My tests are outlined because you press them all the time. Next part is quiet. End is red text and always asks first, in the page.</p></div>
+    <div class="stack">
+      <div class="row">
+        <button class="btn btn-accent" type="button">Submit <kbd>Ctrl ↵</kbd></button>
+        <button class="btn btn-outline" type="button">Run <kbd>Ctrl '</kbd></button>
+        <button class="btn btn-outline" type="button">My tests</button>
+        <button class="btn btn-ghost" type="button">Next part</button>
+        <button class="btn btn-danger" type="button">End interview</button>
+        <button class="btn btn-outline" type="button" disabled>Running…</button>
+      </div>
+      <div class="row">
+        <button class="btn btn-solid btn-lg" type="button">Start interview</button>
+        <button class="btn btn-solid" type="button">Export</button>
+      </div>
+      <div class="confirm" role="alert">End the interview now? Hidden tests run one last time and the clock stops.
+        <button class="btn btn-danger" type="button">End interview</button><button class="btn btn-ghost" type="button">Keep going</button></div>
+    </div>
+  </section>
+
+  <!-- 4. Status -->
+  <section>
+    <div class="sec-head"><h2 class="sec">Status</h2><p>The clock is the loudest number on screen. It changes with five minutes left and turns red when time is up. Verdicts pair a dot with a word, so color is never the only signal.</p></div>
+    <div class="grid2">
+      <div class="panel stack">
+        <div class="label">Clock</div>
+        <div class="row" style="gap: var(--s-6)">
+          <div class="stack" style="gap:4px"><span class="timer">27:41</span><span class="t-small">running</span></div>
+          <div class="stack" style="gap:4px"><span class="timer low">04:12</span><span class="t-small">5 min or less</span></div>
+          <div class="stack" style="gap:4px"><span class="timer over">00:00</span><span class="t-small">time's up</span></div>
+        </div>
+      </div>
+      <div class="panel stack">
+        <div class="label">Verdicts</div>
+        <div class="row">
+          <span class="badge pass">Accepted</span><span class="badge fail">Wrong Answer</span><span class="badge fail">Compile Error</span>
+          <span class="badge fail">Runtime Error</span><span class="badge warn">Time Limit Exceeded</span><span class="badge warn">Memory Limit Exceeded</span>
+        </div>
+        <div class="label">Parts</div>
+        <div class="parts"><span class="chip done">✓ Part 1</span><span class="chip current">Part 2</span></div>
+        <div class="label">Set info</div>
+        <div class="row"><span class="pill">Acme</span><span class="pill">Python</span><span class="pill">Medium</span><span class="pill mono">30 min</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Ready screen -->
+  <section>
+    <div class="sec-head"><h2 class="sec">Ready screen</h2><p>Everything you need before the clock starts, and nothing of the problem itself.</p></div>
+    <div class="ready">
+      <div class="eyebrow">Acme · Backend engineer · Codebase round</div>
+      <h3>Rate limiter</h3>
+      <div class="row"><span class="pill">Python</span><span class="pill">Medium</span><span class="pill mono">30 min</span><span class="pill">2 parts</span></div>
+      <div class="rules">
+        <div class="label">Before you start</div>
+        <ul><li>Edit <code>limiter.py</code>; <code>main.py</code> is complete.</li><li>Part 2 appears after part 1 passes.</li><li>Standard library only.</li></ul>
+      </div>
+      <div class="go"><button class="btn btn-solid btn-lg" type="button">Start interview</button><small>The clock starts when you press Start.</small></div>
+    </div>
+  </section>
+
+  <!-- 6. Round screen -->
+  <section>
+    <div class="sec-head"><h2 class="sec">Round screen</h2><p>Flat panes split by hairlines. Files and results sit on the panel tone; the editor and problem sit on the page tone.</p></div>
+    <div class="app">
+      <div class="bar">
+        <span class="brand">Interview Lab</span>
+        <span class="picker"><span class="dot"></span>Rate limiter · running ▾</span>
+        <span class="spacer"></span>
+        <div class="parts"><span class="chip done">✓ Part 1</span><span class="chip current">Part 2</span></div>
+        <div class="timer-wrap"><span class="label">left</span><span class="timer" style="font-size:1.75rem">18:06</span></div>
+      </div>
+      <div class="tools">
+        <button class="btn btn-outline" type="button">Run <kbd>Ctrl '</kbd></button>
+        <button class="btn btn-outline" type="button">My tests</button>
+        <button class="btn btn-accent" type="button">Submit <kbd>Ctrl ↵</kbd></button>
+        <button class="btn btn-ghost" type="button">Next part</button>
+        <button class="btn btn-danger" type="button">End</button>
+        <span class="saved">Saved</span>
+      </div>
+      <div class="body3">
+        <nav class="files" aria-label="Files">
+          <a href="#" aria-current="page">limiter.py</a><a href="#">main.py</a><a href="#">test_mine.py</a><a href="#" class="new">+ New file</a>
+        </nav>
+        <div class="center">
+          <div class="editor" aria-label="Editor preview">
+<div><span>1</span><span><span class="k">from</span> collections <span class="k">import</span> deque</span></div>
+<div><span>2</span><span></span></div>
+<div><span>3</span><span><span class="k">class</span> <span class="ty">RateLimiter</span>:</span></div>
+<div><span>4</span><span>    <span class="c"># sliding window per key: (ts - window, ts]</span></span></div>
+<div><span>5</span><span>    <span class="k">def</span> <span class="f">__init__</span>(self, limit: <span class="ty">int</span>, window: <span class="ty">int</span>):</span></div>
+<div><span>6</span><span>        self.limit, self.window = limit, window</span></div>
+<div><span>7</span><span>        self.calls: <span class="ty">dict</span>[<span class="ty">str</span>, deque] = {}</span></div>
+<div><span>8</span><span></span></div>
+<div class="hl"><span>9</span><span>    <span class="k">def</span> <span class="f">allow</span>(self, key: <span class="ty">str</span>, ts: <span class="ty">int</span>) -&gt; <span class="ty">bool</span>:</span></div>
+<div><span>10</span><span>        q = self.calls.setdefault(key, deque())</span></div>
+<div><span>11</span><span>        <span class="k">while</span> q <span class="k">and</span> q[<span class="n">0</span>] &lt;= ts - self.window:</span></div>
+<div><span>12</span><span>            q.popleft()</span></div>
+<div><span>13</span><span>        <span class="k">if</span> <span class="f">len</span>(q) &gt;= self.limit:</span></div>
+<div><span>14</span><span>            <span class="k">return</span> <span class="k">False</span></span></div>
+<div><span>15</span><span>        q.append(ts); <span class="k">return</span> <span class="k">True</span></span></div>
+          </div>
+          <div class="results" aria-label="Results">
+            <header><span class="badge fail">Wrong Answer</span><span class="meta">12 ms · 9.2 MB</span></header>
+            <div class="tbl-wrap"><table>
+              <thead><tr><th></th><th>Input</th><th>Expected</th><th>Got</th></tr></thead>
+              <tbody>
+                <tr><td class="ok">✓</td><td class="mono">a 0
+a 1
+a 2</td><td class="mono">True
+True
+False</td><td class="mono">True
+True
+False</td></tr>
+                <tr><td class="no">✗</td><td class="mono">x 0
+x 9
+x 10</td><td class="mono">True
+True
+True</td><td class="mono">True
+True
+False</td></tr>
+              </tbody>
+            </table></div>
+          </div>
+        </div>
+        <aside class="problem" aria-label="Problem">
+          <h4>Rate limiter</h4>
+          <p>Implement <code>RateLimiter(limit, window)</code> in <code>limiter.py</code>. <code>allow(key, ts)</code> records a call and returns <code>True</code> if it is allowed.</p>
+          <div class="divider">Part 2 revealed at 11.4 min</div>
+          <p>Add <code>remaining(key, ts)</code> and <code>reset(key)</code>. Rejected calls are still not recorded.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Feedback -->
+  <section>
+    <div class="sec-head"><h2 class="sec">Feedback</h2><p>Submit shows counts and the last failing line only. Test names appear after the round ends.</p></div>
+    <div class="grid2">
+      <div class="panel stack">
+        <div class="label">Submit, during the round</div>
+        <div>
+          <div class="grade"><span class="tag">test_p1_</span><span class="count">4/4</span><span class="meter"><i style="width:100%"></i></span></div>
+          <div class="grade"><span class="tag">test_p2_</span><span class="count">1/4</span><span class="meter part"><i style="width:25%"></i></span>
+            <span class="why">assert 0 == 2  +  where 0 = remaining('a', 5)</span></div>
+          <div class="grade"><span class="tag">test_p3_</span><span class="count" style="color:var(--warn)">—</span><span class="t-small" style="color:var(--warn)">did not finish in 45 s</span></div>
+        </div>
+        <div class="toast" role="status"><b>Part 2 unlocked</b> Part 1 passed. The problem pane has the new part.</div>
+      </div>
+      <div class="panel stack">
+        <div class="label">Compile error</div>
+        <div class="err-box">./fleet.go:42:9: undefined: heartbeatTimeout
+./fleet.go:57:2: missing return</div>
+        <div class="label">Event log, after End</div>
+        <div class="events">
+          <div><span>0.0</span><span>start</span></div>
+          <div><span>3.2</span><span>run main.py: Wrong Answer, 1/2 cases</span></div>
+          <div><span>11.4</span><span>submit: test_p1_ 4/4 · revealed p2.md (test_p1_ passed)</span></div>
+          <div><span>30.6</span><span>submit: test_p2_ 3/4 <em>(after time)</em></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Empty state -->
+  <section>
+    <div class="sec-head"><h2 class="sec">Empty state</h2><p>The only way in. Dragging a file over the page turns the dashed border solid.</p></div>
+    <div class="grid2">
+      <div class="drop"><div class="big">Drop a set .zip here</div><p>Sets come from Claude's interview-practice skill.</p></div>
+      <div class="drop over"><div class="big">Release to import</div><p>rate-limiter.zip · 14 KB</p></div>
+    </div>
+  </section>
+
+</div>
+<script>
+  const SW = [["--bg","Page"],["--surface","Panel"],["--surface-2","Selected"],["--line","Hairline"],["--line-strong","Control border"],
+    ["--fg","Text"],["--fg-2","Secondary"],["--accent","Accent · Submit"],["--focus","Focus · link"],["--pass","Pass"],["--fail","Fail"],["--warn","TLE · MLE"]];
+  function paint() {
+    const cs = getComputedStyle(document.documentElement);
+    document.getElementById("swatches").innerHTML = SW.map(([v, n]) =>
+      `<div class="sw"><i style="background:var(${v})"></i><div><b>${n}</b><span>${v} ${cs.getPropertyValue(v).trim()}</span></div></div>`).join("");
+  }
+  function setTheme(t) {
+    if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme;
+    document.querySelectorAll(".seg button[data-t]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.t === (t || ""))));
+    try { localStorage.setItem("ilab-theme", t || ""); } catch (e) {}
+    paint();
+  }
+  document.querySelectorAll(".seg button[data-t]").forEach(b => b.addEventListener("click", () => setTheme(b.dataset.t)));
+
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", paint);
+  let saved = ""; try { saved = localStorage.getItem("ilab-theme") || ""; } catch (e) {}
+  const q = new URLSearchParams(location.search).get("theme");
+  setTheme(q !== null ? q : saved);
+
+</script>
+</body>
+</html>
