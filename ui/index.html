@@ -15,7 +15,7 @@
   <select id="set-picker" aria-label="Choose interview set"></select>
   <span class="spacer"></span>
   <div id="parts" class="parts hidden" aria-label="Parts"></div>
-  <div id="timer-wrap" class="timer-wrap hidden"><span class="label">left</span><span id="timer" class="timer" role="timer" aria-label="Time left">--:--</span></div>
+  <div id="timer-wrap" class="timer-wrap hidden"><span id="timer-label" class="label">left</span><span id="timer" class="timer" role="timer" aria-label="Time left">--:--</span></div>
   <div class="seg" role="group" aria-label="Theme">
     <button type="button" data-t="" aria-pressed="true" title="Follow system">Auto</button>
     <button type="button" data-t="light" aria-pressed="false">Light</button>
@@ -40,7 +40,7 @@
     <button id="mytests-btn" class="btn btn-outline hidden" type="button" aria-label="Run my tests">My tests</button>
     <button id="submit-btn" class="btn btn-accent hidden" type="button" aria-label="Submit (Ctrl+Enter)">Submit <kbd>Ctrl ↵</kbd></button>
     <button id="next-btn" class="btn btn-ghost hidden" type="button" aria-label="Next part">Next part</button>
-    <span id="next-bar" class="confirm-inline hidden">Show the next part now? This is logged as asked to move on.
+    <span id="next-bar" class="confirm-inline hidden"><span id="next-bar-text">Show the next part now?</span>
       <button id="next-yes" class="btn btn-solid" type="button">Show it</button><button id="next-no" class="btn btn-ghost" type="button">Cancel</button></span>
     <button id="end-btn" class="btn btn-danger" type="button" aria-label="End interview">End</button>
     <span id="end-bar" class="confirm-inline danger hidden">End now? Hidden tests run one last time and the clock stops.
@@ -50,6 +50,8 @@
     <span id="save-status" class="saved"></span>
     <button id="export-btn" class="btn btn-ghost" type="button" aria-label="Export">Export</button>
   </div>
+  <div id="closed-bar" class="closed-bar hidden" role="status"><span id="closed-text"></span>
+    <button id="closed-results" class="btn btn-ghost" type="button">Show results</button></div>
   <div id="panes">
     <aside id="files" aria-label="Files">
       <div id="file-tree" role="tree" aria-label="Files"></div>
