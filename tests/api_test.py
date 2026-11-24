@@ -305,6 +305,7 @@ def clock_set(label, minutes, slow=False):
     z = {"manifest.json": json.dumps(manifest(n, "python", minutes=minutes, hidden_tests=ht)), "problem.md": "x",
          "starter/main.py": "print('hi')\n", ht: t}
     s, j = imp(mkzip(z)); check(f"{label}: import", s == 200, j)
+    if s != 200: raise RuntimeError(f"{label}: import failed")
     jreq("POST", f"/api/sets/{n}/start")
     return n
 
@@ -318,8 +319,8 @@ def closes(n): return [e for e in sess(n)["events"] if e[1].startswith(("end", "
 @sec("honest clock")
 def _():
     import threading
-    A, B, C = clock_set("t-clkA", 1), clock_set("t-clkB", 1), clock_set("t-clkC", 1, slow=True)
-    D, E = clock_set("t-clkD", 1), clock_set("t-clkE", 1)      # started together; expire together
+    A, B, C = clock_set("t-clk-a", 1), clock_set("t-clk-b", 1), clock_set("t-clk-c", 1, slow=True)
+    D, E = clock_set("t-clk-d", 1), clock_set("t-clk-e", 1)      # started together; expire together
     s, sub = jreq("POST", f"/api/sets/{A}/submit")
     check("A: early Submit is in time", s == 200 and not sub["results"]["test_"]["after_time"], sub)
     time.sleep(5)
