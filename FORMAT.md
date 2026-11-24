@@ -57,6 +57,6 @@ used outside level tests, and keep gofmt layout (a Go test ends at `}` in column
 ## Data written by the app (`data/sets/<name>/`)
 - `work/`: the candidate's code (autosaved).
 - `session.json`: `{"start": epoch_s|null, "minutes", "hints": [], "events": [[minute, "text"], …], "ended": epoch_s|null,
-  "unlocked": [tags], "revealed": [files]}`. This is clock.py's shape, so time left = `minutes - (now - start)/60`.
-- `results.json`: `{"<tag>": {grade.py JSON + "at": minute, "after_time": bool}}` (latest Submit per tag), and `"final"` after End.
+  "unlocked": [tags], "revealed": [files]}`. `ended` is the close (End or time up) and is never later than the deadline `start + minutes*60`; a close requested after the deadline logs "time up" at the last minute, otherwise "end". "(after time)" on an event means it started after the close. This is clock.py's shape, so time left = `minutes - (now - start)/60`.
+- `results.json`: `{"<tag>": {grade.py JSON + "at": minute, "after_time": bool}}` (latest Submit per tag; `at`/`after_time` are taken when the action started), and `"final"` after the close (graded once; `at` = close minute, `after_time` = code edited after the deadline + 5 s).
 - Export → `export.zip` = `submission/` (work/), `session.json`, `results.json`, `manifest.json`.

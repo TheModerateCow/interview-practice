@@ -19,16 +19,17 @@ with a 4xx/5xx status. If Docker or the proxy is unreachable, the response is **
 | POST `/api/sets/<n>/mytests` | | grade JSON for the candidate's own tests (`your_tests` glob), `failed` names included |
 | POST `/api/sets/<n>/submit` | | `{"results": {tag: grade JSON}, "revealed": ["l2.md", …], "state": state}` |
 | POST `/api/sets/<n>/next` | | state (reveals the next locked part, logged "asked to move on") |
-| POST `/api/sets/<n>/end` | | state (with `final`) |
+| POST `/api/sets/<n>/end` | | state (with `final`). Idempotent: waits for an in-flight Run/Submit, closes once and grades the unlocked tags once. After the deadline it closes as "time up" (`ended` = deadline) |
 | GET `/api/sets/<n>/export` | | `application/zip` export.zip: submission/, session.json, results.json, manifest.json |
 
 **grade JSON**: `{"status": "graded"|"did not finish"|"could not be graded"|"no tests selected", "passed", "total",
 "last_error"?, "last_line"?, "failed"? (names, only after End or time up), "at": minute, "after_time": bool}`
+`at` and `after_time` describe when the action **started**: `after_time` means it started after the round closed (End or time up). In `final`, `at` is the close minute and `after_time` means the graded code was edited after the deadline (+5 s grace).
 
 **state**:
 ```
 {"name","title","company","role","round","language","difficulty","minutes","rules",
- "status": "running"|"ended", "start": epoch_s, "now": epoch_s, "left_s": float (>=0), "expired": bool, "ended": bool,
+ "status": "running"|"ended", "start": epoch_s, "now": epoch_s, "left_s": float (>=0), "expired": bool, "ended": bool,   # left_s/expired freeze at the close
  "problem": "markdown", "parts": [{"file": "l2.md", "md": "..."}],   # revealed parts, in order
  "unlocked": ["test_l1_", ...], "has_next": bool,                     # has_next: a locked part remains
  "has_submit": bool, "has_mytests": bool, "run_entry": str|null, "testcases_count": int,
