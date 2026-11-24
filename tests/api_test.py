@@ -251,6 +251,7 @@ def grading(label, setdir):
     s, fin = jreq("POST", f"/api/sets/{n}/end")
     final = fin.get("final") or {}
     check(f"{label}: end -> final with failed lists", s == 200 and final and all("failed" in g for g in final.values() if g.get("status") == "graded"), final)
+    check(f"{label}: on-time End -> final not after time", all(not g["after_time"] for g in final.values()), final)
     s, b = req("GET", f"/api/sets/{n}/export")
     try:
         zf = zipfile.ZipFile(io.BytesIO(b)); names = zf.namelist()
@@ -295,6 +296,58 @@ def _():
         s, sub = jreq("POST", f"/api/sets/{n}/submit")
         g2 = sub.get("results", {}).get("test_l2_", {}) if s == 200 else {}
         check(f"{lang} levelled: L2 says could not be graded with a compiler line", g2.get("status") == "could not be graded" and ("Mul" in g2.get("last_line", "") or "symbol" in g2.get("last_line", "")), g2)
+
+
+# ------------------------------------------------------------------ honest clock
+def clock_set(label, minutes, slow=False):
+    n = uniq(label); ht = ".hidden/test_hidden.py"
+    t = "import time\n\ndef test_ok():\n    time.sleep(4)\n    assert True\n" if slow else "def test_ok():\n    assert True\n"
+    z = {"manifest.json": json.dumps(manifest(n, "python", minutes=minutes, hidden_tests=ht)), "problem.md": "x",
+         "starter/main.py": "print('hi')\n", ht: t}
+    s, j = imp(mkzip(z)); check(f"{label}: import", s == 200, j)
+    jreq("POST", f"/api/sets/{n}/start")
+    return n
+
+
+def sess(n): return json.load(open(os.path.join(DATA, "sets", n, "session.json")))
+
+
+def closes(n): return [e for e in sess(n)["events"] if e[1].startswith(("end", "time up"))]
+
+
+@sec("honest clock")
+def _():
+    import threading
+    A, B, C = clock_set("t-clkA", 1), clock_set("t-clkB", 1), clock_set("t-clkC", 1, slow=True)
+    D, E = clock_set("t-clkD", 1), clock_set("t-clkE", 1)      # started together; expire together
+    s, sub = jreq("POST", f"/api/sets/{A}/submit")
+    check("A: early Submit is in time", s == 200 and not sub["results"]["test_"]["after_time"], sub)
+    time.sleep(5)
+    s, fin = jreq("POST", f"/api/sets/{A}/end"); final = fin.get("final") or {}
+    ev = [e[1] for e in sess(A)["events"]]
+    check("A: End logs 'end' without suffix", "end" in ev and "end (after time)" not in ev, ev)
+    check("A: final on time, at ~ close minute", final and all(not g["after_time"] and g["at"] <= 0.2 for g in final.values()), final)
+    l1 = jreq("GET", f"/api/sets/{A}/state")[1]["left_s"]; time.sleep(3)
+    check("A: left_s frozen after End", jreq("GET", f"/api/sets/{A}/state")[1]["left_s"] == l1, l1)
+    s, sub = jreq("POST", f"/api/sets/{A}/submit")
+    check("A: Submit after End is after time", sub["results"]["test_"]["after_time"] and "(after time)" in sess(A)["events"][-1][1], sess(A)["events"][-1])
+    out = []
+    ts = [threading.Thread(target=lambda: out.append(req("POST", f"/api/sets/{B}/end")[0])) for _ in range(2)]
+    [t.start() for t in ts]; [t.join() for t in ts]
+    check("B: two parallel Ends both 200, one close event", out == [200, 200] and len(closes(B)) == 1, (out, closes(B)))
+    th = threading.Thread(target=lambda: out.append(("sub", jreq("POST", f"/api/sets/{C}/submit")[0]))); th.start(); time.sleep(1)
+    s, fin = jreq("POST", f"/api/sets/{C}/end"); th.join()
+    res = json.load(open(os.path.join(DATA, "sets", C, "results.json")))
+    check("C: End during Submit waits and writes final", s == 200 and fin.get("final") and not res["test_"]["after_time"], (s, res))
+    req("PUT", f"/api/sets/{E}/files/main.py", "print('late edit')\n")   # edit while still in time ...
+    time.sleep(70)
+    req("PUT", f"/api/sets/{E}/files/main.py", "print('later edit')\n")  # ... and after the deadline
+    s, fin = jreq("POST", f"/api/sets/{D}/end")
+    d = sess(D)
+    check("D: close after deadline = 'time up' at 1.0, ended = deadline", any(e == [1.0, "time up"] for e in d["events"]) and abs(d["ended"] - (d["start"] + 60)) < 0.01, d["events"])
+    check("D: no edits -> final on time", all(not g["after_time"] for g in (fin.get("final") or {"x": {"after_time": True}}).values()), fin.get("final"))
+    s, fin = jreq("POST", f"/api/sets/{E}/end")
+    check("E: edit after deadline -> final after_time", fin.get("final") and all(g["after_time"] for g in fin["final"].values()), fin.get("final"))
 
 
 # ------------------------------------------------------------------ import validation

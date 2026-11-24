@@ -63,17 +63,28 @@ def work_files(n):
     return grade.read_tree(os.path.join(sdir(n), "work"))
 
 
+GRACE_S = 5   # ponytail: autosave lag + one request; raise if real rounds show false "after time" on the final grade
+
+
+def deadline(s): return s["start"] + s["minutes"] * 60
+def cutoff(s): return s.get("ended") or deadline(s)          # ended <= deadline from this round on
+def late(s, t): return t > cutoff(s)                          # did an action that started at t come after the close?
+def minute(s, t): return round((t - s["start"]) / 60, 1)
+
+
 def clock(s):
-    used = (time.time() - s["start"]) / 60
-    left = s["minutes"] - used
-    return used, max(left, 0), left <= 0
+    """(minutes used now, minutes left, expired); left/expired freeze at the close."""
+    now = time.time(); stop = min(now, s["ended"]) if s.get("ended") else now
+    left = s["minutes"] - (stop - s["start"]) / 60
+    return (now - s["start"]) / 60, max(left, 0), left <= 0
 
 
-def over(s): return bool(s.get("ended")) or clock(s)[2]
+def closed(s): return bool(s.get("ended")) or clock(s)[2]    # failed names and the "ended" status only
 
 
-def log(s, text):
-    s["events"].append([round(clock(s)[0], 1), text + (" (after time)" if over(s) else "")])
+def log(s, text, t=None):
+    t = t or time.time()
+    s["events"].append([minute(s, t), text + (" (after time)" if late(s, t) else "")])
 
 
 def mutate(n, fn):
@@ -105,7 +116,7 @@ def time_reveals(s, m):
 
 def ready_info(n):
     m, s = manifest(n), session(n)
-    st = "ready" if not s or not s.get("start") else ("ended" if over(s) else "running")
+    st = "ready" if not s or not s.get("start") else ("ended" if closed(s) else "running")
     return {k: m.get(k) for k in ("name", "title", "company", "role", "round", "language", "difficulty", "minutes", "rules")} | {"status": st}
 
 
@@ -117,7 +128,7 @@ def state(n):
     mutate(n, time_reveals)
     d, m, s = sdir(n), manifest(n), session(n)
     used, left, expired = clock(s)
-    names = over(s)
+    names = closed(s)
     results = jload(os.path.join(d, "results.json"), {})
     parts = []
     for f in s["revealed"]:
@@ -126,7 +137,7 @@ def state(n):
     return ready_info(n) | {
         "start": s["start"], "now": time.time(), "left_s": round(left * 60, 1), "expired": expired, "ended": bool(s.get("ended")),
         "problem": open(os.path.join(d, "problem.md")).read(), "parts": parts,
-        "unlocked": s["unlocked"], "has_next": bool(locked(s, m)) and not s.get("ended"),
+        "unlocked": s["unlocked"], "has_next": bool(locked(s, m)),
         "has_submit": bool(m.get("hidden_tests")), "has_mytests": bool(m.get("your_tests")),
         "run_entry": m.get("run_entry"), "testcases_count": len(m.get("testcases", [])),
         "files": sorted(work_files(n)),
@@ -222,6 +233,7 @@ def norm(t): return "\n".join(l.rstrip() for l in t.rstrip().splitlines())
 
 
 def run(n, body):
+    t0 = time.time()
     require_started(n)
     m, f, stdin = manifest(n), body.get("file") or "", body.get("stdin") or ""
     lang = EXT_LANG.get(os.path.splitext(f)[1])
@@ -246,7 +258,7 @@ def run(n, body):
         bad = next((c["verdict"] for c in cases if c["verdict"] != "Accepted"), None)
         verdict = bad or ("Wrong Answer" if any(not c["pass"] for c in tc) else "Accepted")
         out = {"compile": r["compile"], "stdin_case": sc, "testcases": tc, "memory_kb": r["memory_kb"], "verdict": verdict}
-    mutate(n, lambda s, _: log(s, f"run {f}: {out['verdict']}" + (f", {sum(c['pass'] for c in out['testcases'])}/{len(tcs)} cases" if tcs else "")))
+    mutate(n, lambda s, _: log(s, f"run {f}: {out['verdict']}" + (f", {sum(c['pass'] for c in out['testcases'])}/{len(tcs)} cases" if tcs else ""), t0))
     return out
 
 
@@ -258,11 +270,11 @@ def grade_tags(n, tags):
     return {t: grade.grade(files, [base], lang, t, lim, names=True) for t in tags}
 
 
-def stamp(s, res):
-    return res | {"at": round(clock(s)[0], 1), "after_time": over(s)}
+def stamp(s, res, t): return res | {"at": minute(s, t), "after_time": late(s, t)}
 
 
 def submit(n):
+    t0 = time.time()
     s, m = require_started(n), manifest(n)
     if not m.get("hidden_tests"): raise HTTPError(400, "this set has no hidden tests (Run only)")
     lk = busy(n)
@@ -274,21 +286,22 @@ def submit(n):
     def apply(s, m):
         rp = os.path.join(sdir(n), "results.json")
         allr = jload(rp, {})
-        for t, r in res.items(): allr[t] = stamp(s, r)
+        for t, r in res.items(): allr[t] = stamp(s, r, t0)
         jsave(rp, allr)
-        log(s, "submit: " + ", ".join(f"{t} {r['passed']}/{r['total']}" if r["status"] == "graded" else f"{t} {r['status']}" for t, r in res.items()))
+        log(s, "submit: " + ", ".join(f"{t} {r['passed']}/{r['total']}" if r["status"] == "graded" else f"{t} {r['status']}" for t, r in res.items()), t0)
         new = []
         if not s.get("ended"):
             for t, r in res.items():
                 if r["status"] == "graded" and r["total"] and r["passed"] == r["total"]:
                     for e in locked(s, m):
                         if e.get("after_tag") == t: reveal(s, e, f"{t} passed"); new.append(os.path.basename(e["file"]))
-        return allr, new, over(s)
+        return allr, new, closed(s)
     allr, new, names = mutate(n, apply)
     return {"results": {t: public(allr[t], names) for t in res}, "revealed": new, "state": state(n)}
 
 
 def mytests(n):
+    t0 = time.time()
     s, m = require_started(n), manifest(n)
     pat = m.get("your_tests")
     if not pat: raise HTTPError(400, "this set has no your_tests pattern")
@@ -299,7 +312,7 @@ def mytests(n):
         lk = busy(n)
         try: r = grade.grade(files, tests, m["language"], None, m.get("grade_timeout_s", 45), names=True)
         finally: lk.release()
-    mutate(n, lambda s, _: log(s, "my tests: " + (f"{r['passed']}/{r['total']}" if r["status"] == "graded" else r["status"])))
+    mutate(n, lambda s, _: log(s, "my tests: " + (f"{r['passed']}/{r['total']}" if r["status"] == "graded" else r["status"]), t0))
     return r
 
 
@@ -312,18 +325,33 @@ def next_part(n):
     return state(n)
 
 
+def last_edit(n):
+    """Newest mtime under work/ (0 if empty)."""
+    return max((os.path.getmtime(os.path.join(r, f)) for r, _, fs in os.walk(os.path.join(sdir(n), "work")) for f in fs), default=0)
+
+
 def end(n):
-    s, m = require_started(n), manifest(n)
-    if s.get("ended"): return state(n)
-    mutate(n, lambda s, _: (log(s, "end"), s.__setitem__("ended", time.time())))
-    if m.get("hidden_tests"):
-        lk = busy(n)
-        try: res = grade_tags(n, [t for t in m.get("tags", ["test_"]) if t in s["unlocked"]])
-        finally: lk.release()
-        def apply(s, _):
-            rp = os.path.join(sdir(n), "results.json"); allr = jload(rp, {})
-            allr["final"] = {t: stamp(s, r) for t, r in res.items()}; jsave(rp, allr)
-        mutate(n, apply)
+    """The one close: idempotent; waits for an in-flight Run/Submit; grades the unlocked tags once."""
+    require_started(n); m = manifest(n)
+    lk = lock(n, _busy)
+    if not lk.acquire(timeout=m.get("grade_timeout_s", 45) + 30): raise HTTPError(409, "a Run/Submit is still running")
+    try:
+        def close(s, _):
+            if s.get("ended"): return
+            now = time.time()
+            if now > deadline(s): s["ended"] = deadline(s); log(s, "time up", s["ended"])
+            else: s["ended"] = now; log(s, "end", now)
+        mutate(n, close)
+        s = session(n)
+        rp = os.path.join(sdir(n), "results.json")
+        if m.get("hidden_tests") and "final" not in jload(rp, {}):
+            res = grade_tags(n, [t for t in m.get("tags", ["test_"]) if t in s["unlocked"]])
+            after = last_edit(n) > deadline(s) + GRACE_S
+            def apply(s, _):
+                allr = jload(rp, {})
+                allr["final"] = {t: r | {"at": minute(s, s["ended"]), "after_time": after} for t, r in res.items()}; jsave(rp, allr)
+            mutate(n, apply)
+    finally: lk.release()
     return state(n)
 
 
