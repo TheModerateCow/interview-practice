@@ -105,5 +105,7 @@ test('full interview flow', async ({ page, request }) => {
   const [dl] = await Promise.all([page.waitForEvent('download'), page.click((await page.locator('#final-export').isVisible()) ? '#final-export' : '#export-btn')]);
   const zp = `${OUT}/e2e-export.zip`;
   await dl.saveAs(zp);
+  await expect(page.locator('#flash')).toBeVisible();
+  await expect(page.locator('#flash')).toContainText('export.zip');
   // zip contents are checked on the host by e2e.sh (no unzip in this image)
 });
