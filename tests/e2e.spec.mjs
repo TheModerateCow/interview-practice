@@ -55,6 +55,19 @@ test('full interview flow', async ({ page, request }) => {
   await expect.poll(async () => (await api('/api/sets')).sets.some(s => s.name === NAME), { timeout: 30000 }).toBe(true);
   const info = await api(`/api/sets/${NAME}`);
   await expect(page.locator('#ready')).toContainText(info.title);
+  await expect(page.locator('#flash')).toContainText('Imported');
+  await expect(page.locator('#flash')).toContainText(NAME);
+  // a bad drop says "Not imported" and leaves this ready screen alone
+  const badBytes = Array.from(fs.readFileSync('/work/tests/sets/_zips/invalid-bad-manifest.zip'));
+  const bad = await page.evaluateHandle(b => {
+    const d = new DataTransfer();
+    d.items.add(new File([new Uint8Array(b)], 'invalid-bad-manifest.zip', { type: 'application/zip' }));
+    return d;
+  }, badBytes);
+  for (const t of ['dragenter', 'dragover', 'drop']) await page.dispatchEvent('body', t, { dataTransfer: bad });
+  await expect(page.locator('#flash.bad')).toContainText('Not imported: invalid-bad-manifest.zip');
+  await expect(page.locator('#ready')).toContainText(info.title);
+  await expect(page.locator('#start-btn')).toBeVisible();
   await shot('1-ready');
   await expect(page.locator('#ready-name')).toHaveText(NAME);
   await page.click('#set-picker');

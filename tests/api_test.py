@@ -403,6 +403,22 @@ def _():
     check("reference/mutants/bugs not stored", os.path.isdir(os.path.join(DATA, "sets", n)) and not left, left)
 
 
+# ------------------------------------------------------------------ import answers
+@sec("import answers")
+def _():
+    n = uniq("t-ans")
+    z = mkzip({"manifest.json": json.dumps(manifest(n, "python")), "problem.md": "x", "starter/main.py": "print(1)\n"})
+    s, j = imp(z); check("first import: replaced false, title set", s == 200 and j.get("replaced") is False and j.get("title") == "T " + n and j.get("name") == n, (s, j))
+    s, j = imp(z); check("same zip again: replaced true", s == 200 and j.get("replaced") is True, (s, j))
+    jreq("POST", f"/api/sets/{n}/start")
+    s, j = imp(z); check("started set: 409 asking for a new name", s == 409 and "new name" in j.get("error", "") and n in j["error"], (s, j))
+    p = os.path.join(ZIPS, "invalid-bad-manifest.zip")
+    if os.path.exists(p):
+        s, j = imp(open(p, "rb").read())
+        check("bad manifest: plain words first, field detail kept", s == 400 and j.get("error", "").startswith("This zip is not a valid Interview Lab set") and "format:" in j["error"], (s, j))
+    else: skip("bad manifest wording", "zip missing")
+
+
 # ------------------------------------------------------------------ security
 @sec("security")
 def _():

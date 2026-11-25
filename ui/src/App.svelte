@@ -218,7 +218,7 @@
   // ---------- actions
   function showFlash(text, bad) {
     flash = { text, bad: !!bad, on: true, n: flash.n + 1 };   // a new n re-creates the toast, so a repeat visibly re-shows
-    clearTimeout(flashT); flashT = setTimeout(() => { flash.on = false; }, 5000);
+    clearTimeout(flashT); flashT = setTimeout(() => { flash.on = false; }, bad ? 10000 : 5000);
   }
 
   async function guarded(label, fn) {
@@ -319,12 +319,16 @@
     dropErr = ''; importing = f.name;
     const my = ++nav;   // a first load still in flight never lands on top of the drop
     try {
-      const { name } = await api('/import', { method: 'POST', body: await f.arrayBuffer() });
+      const { name, title, replaced } = await api('/import', { method: 'POST', body: await f.arrayBuffer() });
       importing = '';
+      showFlash('Imported ' + title + ' (' + name + ')' + (replaced ? ", replacing the copy you hadn't started." : '.'));
       await loadSets(name, my);
     } catch (err) {
-      importing = ''; dropErr = err.message;
-      if (cur) showFlash('Import failed: ' + err.message, true);
+      importing = '';
+      const msg = 'Not imported: ' + f.name + '. ' + err.message;
+      dropErr = msg; showFlash(msg, true);   // always, on Home too; the screen stays as it was
+      // the import bumped `nav`, which stopped a first load that was still opening a set: pick it up again
+      if (my === nav && !view) (cur ? openSet(cur) : loadSets()).catch(() => {});
     }
   }
 

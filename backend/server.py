@@ -178,13 +178,14 @@ def do_import(body):
     except (ValueError, KeyError): raise HTTPError(400, "manifest.json is not valid JSON")
     errs = pack.validate(m, lambda p: p in keep or (p.endswith("/") and any(k.startswith(p) for k in keep)),
                         read=lambda p: z.read(keep[p]))
-    if errs: raise HTTPError(400, "invalid set: " + "; ".join(errs))
+    if errs: raise HTTPError(400, "This zip is not a valid Interview Lab set. Ask Claude to pack it again. Details: " + "; ".join(errs))
     n = m["name"]
     dest = os.path.join(SETS, n)
     with lock(n):
         s = jload(os.path.join(dest, "session.json"))
         if s and s.get("start"):
-            raise HTTPError(409, f"set {n!r} was already started. Change \"name\" in manifest.json to import it again.")
+            raise HTTPError(409, f"You already started {n}, so it can't be replaced. Ask Claude for a copy with a new name.")
+        replaced = os.path.isdir(dest)   # an unstarted copy is about to be replaced
         tmp = os.path.join(SETS, f".import-{uuid.uuid4().hex}")
         try:
             total = 0
@@ -202,7 +203,7 @@ def do_import(body):
             os.replace(tmp, dest)
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
-    return {"name": n}
+    return {"name": n, "title": m["title"], "replaced": replaced}
 
 
 # ---------------------------------------------------------------- actions
