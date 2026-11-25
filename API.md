@@ -9,7 +9,7 @@ with a 4xx/5xx status. If Docker or the proxy is unreachable, the response is **
 |---|---|---|
 | GET `/api/health` | | `{"ok": true, "docker": bool, "error": str\|null, "images": {"python": "ready"\|"pulling"\|"missing", "go":…, "java":…, "c":…, "javascript":…}}` |
 | POST `/api/import` | raw zip bytes | `{"name": n}` or 400 `{"error": "clear message"}` |
-| GET `/api/sets` | | `{"sets": [{"name","title","language","round","status": "ready"\|"running"\|"ended"}]}` |
+| GET `/api/sets` | | `{"sets": [{"name","title","language","round","minutes","left_s","status": "ready"\|"running"\|"ended"}]}`; `left_s` is seconds left, `null` unless running |
 | GET `/api/sets/<n>` | | Ready info **only**: `{"name","title","company","role","round","language","difficulty","minutes","rules","status"}`. Never the problem, tags, parts or files |
 | POST `/api/sets/<n>/start` | | state (below). The only thing that starts the clock. Starting again returns the existing state |
 | GET `/api/sets/<n>/state` | | 409 `{"error":"not started"}` before Start, otherwise **state** |

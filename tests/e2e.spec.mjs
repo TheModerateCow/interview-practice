@@ -48,6 +48,10 @@ test('full interview flow', async ({ page, request }) => {
   catch { await pickSet(page, NAME).catch(() => page.getByText(info.title).first().click());
           await expect(page.locator('#ready')).toContainText(info.title); }
   await shot('1-ready');
+  await expect(page.locator('#ready-name')).toHaveText(NAME);
+  await page.click('#set-picker');
+  await expect(page.locator(`#set-picker-list [data-value="${NAME}"]`)).toContainText(`${NAME} · not started`);
+  await page.keyboard.press('Escape');
 
   // nothing leaks before Start
   const pb = await page.locator('#problem').count() ? await page.locator('#problem').first().textContent() : '';
@@ -58,6 +62,9 @@ test('full interview flow', async ({ page, request }) => {
   // Start
   await page.click('#start-btn');
   await expect(page.locator('#round')).toBeVisible();
+  await page.click('#set-picker');
+  await expect(page.locator(`#set-picker-list [data-value="${NAME}"]`)).toContainText('min left');
+  await page.keyboard.press('Escape');
   const t1 = await page.locator('#timer').textContent();
   await page.waitForTimeout(2500);
   const t2 = await page.locator('#timer').textContent();
