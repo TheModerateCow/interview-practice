@@ -373,6 +373,7 @@ Every coding round (Codebase, Levelled, AI-assisted, TDD, DSA) is delivered thro
 - **Codebase pattern:** `tags ["test_p1_","test_p2_","test_p3_"]`. `problem.md` holds the overview, bug report and phase 2 spec; `p3.md` is revealed after `test_p2_` passes or 15 minutes are left: `reveal [{"file":".hidden/p3.md","after_tag":"test_p2_","or_minutes_left":15,"unlocks":"test_p3_"}]`.
 - **Levelled pattern:** `tags ["test_l1_",…,"test_l4_"]`. `problem.md` holds L1 only; `l2.md`–`l4.md` each reveal after the previous level's tag with `or_minutes_left` null, unlocking the next.
 - **DSA / TDD:** usually one tag and no `reveal`. Add `run_entry` + `testcases` for stdin/stdout practice.
+- **Every set gives the candidate a way to check their code besides Submit.** Always set `your_tests` to the language's convention (table above) and put one small example test in `starter/` for them to copy; it must not reveal hidden test names or cases. For Levelled and Codebase rounds also add a thin `run_entry` program that drives the class from stdin (Go: `cmd/run/main.go` in `package main` importing the module; Java: `Main.java`; Python/JS/TS: `main.py` / `main.js` / `main.ts`), with 1-2 `testcases` for L1 only.
 
 Example (Codebase, Python):
 ```json
@@ -446,7 +447,7 @@ Simulates working in code you didn't write.
    - **L2:** queries or ranking
    - **L3:** time-based behaviour (timestamps, scheduled or expiring operations)
    - **L4:** history, rollback or merging
-3. `starter/` stubs only the **L1** methods. Each later level's text (kept in `$W/set/levels/`, revealed one at a time) names the new methods the candidate adds to the same class. `problem.md` holds L1 only.
+3. `starter/` stubs only the **L1** methods. Each later level's text (kept in `$W/set/levels/`, revealed one at a time) names the new methods the candidate adds to the same class. `problem.md` holds L1 only. The starter also holds the `run_entry` program and the example test.
 4. About 5 tests per level (about 6 at Hard) (`test_l1_` … `test_l4_`) and one mutant per level with its `k`.
 5. Exact quantities (money, counts, stock) use integers or the language's decimal type. Timestamps are integers passed in by the caller (never the system clock), so tests are deterministic.
 
