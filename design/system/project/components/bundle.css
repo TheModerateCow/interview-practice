@@ -1,10 +1,10 @@
-/* Interview Lab components: ui/tokens.css components + ui/style.css (the app layout), verbatim. Uses only tokens.css custom properties. */
+/* Interview Lab components: ui/tokens.css components + ui/style.css (the app layout), verbatim. Uses only tokens.css custom properties. Rebuilt by tools/design-bundle.sh. */
 /* ---------- base ---------- */
 html, body { margin: 0; } body { background: var(--bg); color: var(--fg); font: 400 var(--t-body)/var(--t-body-lh) var(--font-sans); -webkit-font-smoothing: antialiased; }
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 code, kbd, pre, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 .label { font-size: var(--t-label); letter-spacing: var(--t-label-ls); text-transform: uppercase; color: var(--fg-3); font-weight: 500; }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { *, ::before, ::after { transition: none !important; animation: none !important; } }
 
 /* ---------- buttons: accent (Submit only) · outline · ghost · danger ---------- */
 .btn { display: inline-flex; align-items: center; gap: var(--s-2); height: 34px; padding: 0 var(--s-4);
@@ -43,6 +43,16 @@ code, kbd, pre, .mono { font-family: var(--font-mono); font-variant-numeric: tab
 .timer.low { color: var(--timer-low-fg); background: var(--timer-low-bg); border-radius: var(--r-sm); box-shadow: 0 0 0 .12em var(--timer-low-bg); }
 .timer.over { color: var(--fail); }
 
+/* ---------- loading: a turning ring and words for what is happening ---------- */
+/* Shown only once a wait passes 300 ms. The ring takes the text colour, so it works on bg, buttons and toasts. */
+.loading { display: inline-flex; align-items: center; gap: var(--s-2); }
+.loading::before { content: ""; flex: none; width: .85em; height: .85em; border-radius: 50%;
+  border: 1.5px solid color-mix(in srgb, currentColor 25%, transparent); border-top-color: currentColor;
+  animation: loading-in var(--dur) var(--ease) 300ms both, loading-turn 800ms linear infinite; }
+.loading.block { display: flex; flex: 1; align-items: center; justify-content: center; padding: var(--s-5);
+  color: var(--fg-3); font-size: var(--t-small); animation: loading-in var(--dur) var(--ease) 300ms both; }
+@keyframes loading-turn { to { transform: rotate(360deg); } }
+@keyframes loading-in { from { opacity: 0; } }
 /* ---------- app layer: ui/style.css ---------- */
 /* Interview Lab app layout. Colors, type and the shared components (.btn .badge .chip .pill .timer) live in tokens.css. */
 * { box-sizing: border-box; }
@@ -71,8 +81,17 @@ input { height: 32px; padding: 0 var(--s-3); }
 .seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
 .health { padding: var(--s-2) var(--s-4); background: var(--warn-bg); color: var(--fg); border-bottom: 1px solid var(--line); font-size: var(--t-small); }
 
-/* ---------- drop ---------- */
-#dropzone { flex: 1; display: grid; padding: var(--s-6) max(16px, env(safe-area-inset-left, 0px)); }
+/* ---------- home: drop zone + sets ---------- */
+#dropzone { flex: 1; display: grid; overflow: auto; padding: var(--s-6) max(16px, env(safe-area-inset-left, 0px)); }
+.home { width: 100%; max-width: 860px; margin: 0 auto; display: grid; align-content: start; gap: var(--s-6); }
+.home:not(:has(.sets)) { align-content: stretch; }   /* no sets yet: the drop box fills the page */
+.sets summary { padding: var(--s-2) 0; cursor: pointer; }
+.set-row { display: grid; grid-template-columns: 1fr auto; gap: 2px var(--s-4); width: 100%; padding: var(--s-3) var(--s-2);
+  border: 0; border-bottom: 1px solid var(--line); background: none; color: var(--fg); font: inherit; text-align: left; cursor: pointer; }
+.set-row:hover { background: var(--surface); }
+.set-row:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+.set-meta { color: var(--fg-2); font-size: var(--t-small); }
+.set-name { grid-column: 2; grid-row: 1 / span 2; align-self: center; color: var(--fg-3); font: var(--t-small)/1.3 var(--font-mono); }
 .drop { border: 1.5px dashed var(--line-strong); border-radius: var(--r-xl); display: grid; place-content: center; text-align: center; gap: var(--s-3); padding: var(--s-7) var(--s-5); transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease); }
 .drop-big { font-size: var(--t-display); line-height: var(--t-display-lh); letter-spacing: var(--t-display-ls); }
 .drop p { margin: 0; color: var(--fg-3); }
@@ -94,6 +113,10 @@ body.over:not(:has(#dropzone:not(.hidden)))::after { content: "Release to import
 /* ---------- round ---------- */
 #round { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); padding: var(--s-2) var(--s-4); border-bottom: 1px solid var(--line); }
+.closed-bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2) var(--s-3); padding: var(--s-2) var(--s-4); background: var(--surface); border-bottom: 1px solid var(--line); color: var(--fg-2); font-size: var(--t-small); min-width: 0; }
+.closed-bar span { min-width: 0; overflow-wrap: anywhere; }
+.grade .late { grid-column: 2 / -1; }
+.late { color: var(--warn); font-size: var(--t-small); white-space: nowrap; }
 .confirm-inline { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); padding: 3px 3px 3px var(--s-3); border: 1px solid var(--line-strong); border-radius: var(--r-md); font-size: var(--t-small); }
 .confirm-inline.danger { border-color: var(--fail); background: var(--fail-bg); }
 .busy { font-size: var(--t-small); color: var(--fg-2); }
@@ -108,6 +131,8 @@ body.over:not(:has(#dropzone:not(.hidden)))::after { content: "Release to import
 #newfile:focus { border-color: var(--line-strong); background: var(--bg); }
 #editor-wrap { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 #editor { flex: 1; min-height: 120px; }
+.editor-box { position: relative; flex: 1; display: flex; flex-direction: column; min-height: 120px; }
+.loading.cover { position: absolute; inset: 0; z-index: 1; background: var(--bg); }   /* over the editor until Monaco loads */
 #bottom { display: grid; grid-template-columns: minmax(160px, 30%) minmax(0, 1fr); height: 36%; min-height: 120px; border-top: 1px solid var(--line); background: var(--surface); }
 .stdin-wrap { display: grid; grid-template-rows: auto 1fr; gap: var(--s-1); padding: var(--s-3); border-right: 1px solid var(--line); min-height: 0; }
 #stdin { resize: none; padding: var(--s-2); font: var(--t-code)/var(--t-code-lh) var(--font-mono); min-height: 0; }
@@ -166,6 +191,8 @@ td.mono { font-family: var(--font-mono); white-space: pre-wrap; }
 .events em { color: var(--warn); font-style: normal; }
 .toast { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: max(16px, env(safe-area-inset-bottom, 0px)); z-index: 40;
   background: var(--inverse-bg); color: var(--inverse-fg); padding: 10px var(--s-4); border-radius: var(--r-md); font-size: var(--t-small); max-width: min(480px, calc(100vw - 32px)); }
+@keyframes toast-in { from { opacity: 0; transform: translateY(4px); } }
+.toast:not(.hidden) { animation: toast-in var(--dur) var(--ease); }
 .toast.bad { background: var(--fail); color: var(--bg); }
 
 @media (max-width: 900px) {
