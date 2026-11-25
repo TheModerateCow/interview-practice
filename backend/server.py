@@ -8,7 +8,8 @@ import grade, pack, runner
 
 DATA = os.environ.get("ILAB_DATA", "/data")
 SETS, EXPORTS = os.path.join(DATA, "sets"), os.path.join(DATA, "exports")
-HOSTS = {"127.0.0.1:8765", "localhost:8765"}
+PORT = os.environ.get("ILAB_PORT", "8765")   # the port nginx publishes; the Host/Origin allowlist follows it
+HOSTS = {f"127.0.0.1:{PORT}", f"localhost:{PORT}"}
 ORIGINS = {"http://" + h for h in HOSTS}
 MAX_ZIP, MAX_FILES, MAX_UNPACKED, MAX_FILE = 50 << 20, 2000, 50 << 20, 1 << 20
 DROP = ("reference/", "mutants.json", "bugs.json")

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Playwright e2e in the official image against http://127.0.0.1:8765.
+# Playwright e2e in the official image against the isolated test stack (tests/stack.sh up: http://127.0.0.1:8766).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 ROOT=$PWD
@@ -8,15 +8,6 @@ SRC=tests/sets/_zips/rate-limiter-py.zip
 [ -f "$SRC" ] || { echo "SKIP e2e: $SRC missing"; exit 0; }
 export E2E_NAME="e2e-$(date +%s)"
 export E2E_NAME_1M="$E2E_NAME-1m"
-# Remove this run's two sets and their exports on exit (pass or fail); nothing else in data/ is touched.
-cleanup() {
-  for n in "$E2E_NAME" "$E2E_NAME_1M"; do
-    rm -rf -- "data/sets/$n"
-    rm -f -- data/exports/"$n"-????????-??????.zip
-  done
-  echo "cleanup: removed $E2E_NAME and $E2E_NAME_1M"
-}
-trap cleanup EXIT
 python3 - "$SRC" "tests/out/e2e-set.zip" "$E2E_NAME" <<'PY'
 import sys, zipfile, json
 src, dst, name = sys.argv[1:]
@@ -40,13 +31,13 @@ with zipfile.ZipFile(dst, "w", zipfile.ZIP_DEFLATED) as zo:
         zo.writestr(i.filename, d)
 PY
 docker run --rm --network host --ipc=host --user "$(id -u):$(id -g)" -e HOME=/tmp \
-  -e E2E_NAME -e E2E_NAME_1M -e E2E_ZIP=/work/tests/out/e2e-set.zip -e E2E_ZIP_1M=/work/tests/out/e2e-set-1m.zip -v "$ROOT":/work \
+  -e E2E_BASE="http://127.0.0.1:${ILAB_TEST_PORT:-8766}" -e E2E_NAME -e E2E_NAME_1M -e E2E_ZIP=/work/tests/out/e2e-set.zip -e E2E_ZIP_1M=/work/tests/out/e2e-set-1m.zip -v "$ROOT":/work \
   mcr.microsoft.com/playwright:v1.56.0-noble bash -ec '
 mkdir -p /tmp/pw && cd /tmp/pw
 npm init -y >/dev/null && npm i @playwright/test@1.56.0 >/dev/null
 cp /work/tests/e2e.spec.mjs .
 cat > playwright.config.mjs <<CFG
-export default { testMatch: "e2e.spec.mjs", timeout: 300000, workers: 1, reporter: "line",
+export default { testMatch: "e2e.spec.mjs", timeout: 300000, workers: 2, fullyParallel: true, reporter: "line",
   use: { headless: true, viewport: { width: 1400, height: 900 }, acceptDownloads: true } };
 CFG
 npx playwright test --config playwright.config.mjs

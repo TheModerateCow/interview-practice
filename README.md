@@ -48,3 +48,8 @@ Re-grade an export (unzipped into `<export>`, with the set folder `<set>` that h
 `tests/run_all.sh [--clean]`: gates every set in `tests/sets/`, then runs `tests/api_test.py` (all 7 languages,
 TLE/MLE/fork bomb/no network/read-only/truncation, leak check, grading flows, import validation, security), then
 `tests/e2e.sh` (Playwright: a real drop event → ready → Start → Run → Submit → reveal → End → Export).
+
+Tests never touch the stack you use or `data/`. `run_all.sh` builds a separate stack from the checkout it runs in
+(compose project `ilab-test` on 127.0.0.1:8766, an empty data folder in `tests/out/stack-data`, its own images, runners
+and Go cache) and removes it at the end. To run one suite by hand: `tests/stack.sh up`, then `python3 tests/api_test.py`
+or `tests/e2e.sh`, then `tests/stack.sh down`.

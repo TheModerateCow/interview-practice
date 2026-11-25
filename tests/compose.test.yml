@@ -1,0 +1,14 @@
+# The isolated test stack, used through tests/stack.sh (compose project "ilab-test", built from this checkout).
+# Own port, data folder, image tags, runner label and Go cache: tests and the dev stack on :8765 never see each
+# other's sets, containers or restarts. Shared: the Docker daemon, the pinned runner images, CPU.
+services:
+  nginx:
+    image: ilab-test-nginx
+    ports: !override ["127.0.0.1:${ILAB_TEST_PORT:-8766}:80"]
+  backend:
+    image: ilab-test-backend
+    environment:
+      ILAB_PORT: "${ILAB_TEST_PORT:-8766}"
+      ILAB_INSTANCE: test
+      ILAB_GO_CACHE: ilab-test-go-cache
+    volumes: !override ["${ILAB_TEST_DATA:-./tests/out/stack-data}:/data"]
