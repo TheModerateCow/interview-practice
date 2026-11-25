@@ -1,5 +1,6 @@
 <script>
   import { onMount, tick as flush } from 'svelte';
+  import Dropdown from './Dropdown.svelte';
   import { api, enc, LS, esc, md, ROUND, LANGNAME, cap, partName, mmss, vclass, langOf, darkMQ, monacoTheme, loadMonaco } from './lib.js';
 
   const THEMES = [['', 'Auto', 'Follow system'], ['light', 'Light'], ['dark', 'Dark']];
@@ -346,10 +347,10 @@
 <header id="top">
   <strong class="brand">Interview Lab</strong>
   <button id="home-btn" class="btn btn-ghost" class:hidden={!view || view === 'home'} type="button" onclick={goHome}>All sets</button>
-  <label for="set-picker" class="sr">Interview set</label>
-  <select id="set-picker" aria-label="Choose interview set" class:hidden={!sets.length || view === 'home'} value={cur} onchange={e => openSet(e.currentTarget.value)}>
-    {#each sets as s (s.name)}<option value={s.name}>{s.title} · {s.status}</option>{/each}
-  </select>
+  {#if sets.length && view !== 'home'}
+    <Dropdown id="set-picker" label="Interview set" value={cur} onchange={openSet}
+      options={sets.map(s => ({ value: s.name, label: s.title, meta: s.status }))} />
+  {/if}
   <span class="spacer"></span>
   <div id="parts" class="parts" class:hidden={view !== 'round'} aria-label="Parts">
     {#each chips as c}<span class="chip {c.cls}">{c.label}</span>{/each}

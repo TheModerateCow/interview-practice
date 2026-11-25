@@ -45,8 +45,8 @@ Interview Lab is a local, timed coding-interview simulator. Everything on screen
 ## Iconography
 
 - There is no icon set and no logo. The wordmark is "Interview Lab" set in Inter Tight 600.
-- Meaning comes from words plus two glyphs: ✓ and ✗ in test tables and part chips. Keyboard shortcuts appear as `kbd` hints inside the button: `Ctrl '` for Run, `Ctrl ↵` for Submit.
+- Meaning comes from words plus two glyphs: ✓ and ✗ in test tables and part chips. The dropdown's chevron is drawn with a border, not a glyph. Keyboard shortcuts appear as `kbd` hints inside the button: `Ctrl '` for Run, `Ctrl ↵` for Submit.
 
 ## Components
 
-Buttons (accent · outline · ghost · danger · solid), confirm bars, the clock, verdict badges, part chips, pills, grade rows, the testcase table, the event log, the drop zone, the ready card, the code editor theme, the toast and the loading ring. Each has a guideline and a live preview under Components. All are plain HTML with the classes in `components/bundle.css`; there is no script bundle.
+Buttons (accent · outline · ghost · danger · solid), confirm bars, the clock, verdict badges, part chips, pills, grade rows, the testcase table, the event log, the drop zone, the ready card, the code editor theme, the toast, the loading ring and the dropdown (used instead of the browser's `select`). Each has a guideline and a live preview under Components. All are plain HTML with the classes in `components/bundle.css`; there is no script bundle.
