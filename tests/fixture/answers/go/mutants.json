@@ -1,0 +1,5 @@
+[
+ {"file": "fixture.go", "old": "if k < 1 || k > len(values) {", "new": "if k < 1 || k >= len(values) {", "label": "window as wide as the list rejected", "k": "test_l1_"},
+ {"file": "fixture.go", "old": "return 0, fmt.Errorf(\"%w: %d\", ErrInsufficientFunds, cents)", "new": "return 0, fmt.Errorf(\"%w: %d\", ErrInvalidAmount, cents)", "label": "wrong error kind on overdraw", "k": "test_l1_"},
+ {"file": "fixture.go", "old": "func (w *Wallet) Freeze()           { w.frozen = true }", "new": "func (w *Wallet) Freeze()           { w.frozen = false }", "label": "freeze does nothing", "k": "test_l2_"}
+]
