@@ -1,0 +1,17 @@
+[
+ {"file":"Shop.java","old":"if (have + qty > p.stock) return false;","new":"if (have + qty >= p.stock) return false;","label":"cart can't be filled up to the exact stock","k":"test_l1_"},
+ {"file":"Shop.java","old":"int left = Math.max(0, c.lines.get(sku) - qty);","new":"int left = c.lines.get(sku) - qty;","label":"removing more than the line holds goes negative","k":"test_l1_"},
+ {"file":"Shop.java","old":"final TreeMap<String, Integer> lines = new TreeMap<>();","new":"final Map<String, Integer> lines = new LinkedHashMap<>();","label":"items listed in insertion order, not by sku","k":"test_l1_"},
+ {"file":"Shop.java","old":"return d != 0 ? d : a.compareTo(b);","new":"return d != 0 ? d : b.compareTo(a);","label":"top sellers ties broken by sku descending","k":"test_l2_"},
+ {"file":"Shop.java","old":"if (products.get(e.getKey()).stock < e.getValue()) return -1;","new":"if (products.get(e.getKey()).stock < e.getValue() - 1) return -1;","label":"checkout lets a line exceed stock by one","k":"test_l2_"},
+ {"file":"Shop.java","old":"return ts < c.touched + CART_TTL;","new":"return ts <= c.touched + CART_TTL;","label":"cart still alive at its abandon time","k":"test_l3_"},
+ {"file":"Shop.java","old":"sub -= sub * pr.percent / 100;","new":"sub -= (sub * pr.percent + 99) / 100;","label":"discount rounded up","k":"test_l3_"},
+ {"file":"Shop.java","old":"sub >= pr.minTotal","new":"sub > pr.minTotal","label":"subtotal exactly at the promo minimum gets no discount","k":"test_l3_"},
+ {"file":"Shop.java","old":"ts < pr.expiresAt && sub","new":"ts <= pr.expiresAt && sub","label":"promo still discounts at its expiry time","k":"test_l3_"},
+ {"file":"Shop.java","old":"int q = Math.max(have, Math.min(have + e.getValue(), products.get(e.getKey()).stock));","new":"int q = have + e.getValue();","label":"merge ignores stock","k":"test_l4_"},
+ {"file":"Shop.java","old":"int q = Math.max(have, Math.min(have + e.getValue(), products.get(e.getKey()).stock));","new":"int q = Math.min(have + e.getValue(), products.get(e.getKey()).stock);","label":"merge can shrink the user's own line","k":"test_l4_"},
+ {"file":"Shop.java","old":"if (up == null || ts >= up.expiresAt) u.promo = g.promo;","new":"if (up == null) u.promo = g.promo;","label":"user keeps an expired promo over the guest's","k":"test_l4_"},
+ {"file":"Shop.java","old":"List<Order> moved = history.remove(guestId);","new":"List<Order> moved = null;","label":"merge leaves the guest's orders behind","k":"test_l4_"},
+ {"file":"Shop.java","old":"h.sort(Comparator.comparingInt(o -> o.ts));","new":"h.sort(Comparator.comparingInt(o -> 0));","label":"merged history not ordered by time","k":"test_l4_"},
+ {"file":"Shop.java","old":"p.sold -= e.getValue();","new":"p.sold -= 0;","label":"cancelled orders still count as sold","k":"test_l4_"}
+]

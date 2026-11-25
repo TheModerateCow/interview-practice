@@ -1,0 +1,7 @@
+[
+ {"file":"invoice.py","old":"if quantity >= 50:","new":"if quantity > 50:","label":"exactly 50 units gets no discount (tier starts at 51)","k":"test_p1_"},
+ {"file":"invoice.py","old":"for c, net in by_category.items())","new":"for c, net in self._lines)","label":"tax rounded per line instead of once per category","k":"test_p1_"},
+ {"file":"invoice.py","old":"if day > self.due_day() and owed > 0:","new":"if day >= self.due_day() and owed > 0:","label":"late fee charged on the due day itself","k":"test_p1_"},
+ {"file":"invoice.py","old":"if amount < 1 or amount > self.balance():","new":"if amount < 1:","label":"payment or credit note bigger than the balance accepted","k":"test_p1_"},
+ {"file":"invoice.py","old":"return owed + _half_up(owed * LATE_FEE_BP, 10000)","new":"return owed + _half_up(self.total() * LATE_FEE_BP, 10000)","label":"late fee on the invoice total, ignoring payments and credit notes","k":"test_p1_"}
+]

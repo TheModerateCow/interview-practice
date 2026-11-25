@@ -1,0 +1,25 @@
+{
+  "format": "interview-set/1",
+  "name": "box-office-levelled-go",
+  "title": "Box office: events, holds and history",
+  "company": "Concert ticketing (practice domain)",
+  "round": "levelled",
+  "language": "go",
+  "difficulty": "medium",
+  "minutes": 90,
+  "rules": "Four levels, revealed one at a time. Each opens when the previous level's hidden tests all pass, or when you press Next part. Go standard library only. Hints are free: ask in the chat.",
+  "tags": ["test_l1_", "test_l2_", "test_l3_", "test_l4_"],
+  "hidden_tests": ".hidden/hidden_test.go",
+  "reveal": [
+    {"file": ".hidden/l2.md", "after_tag": "test_l1_", "or_minutes_left": null, "unlocks": "test_l2_"},
+    {"file": ".hidden/l3.md", "after_tag": "test_l2_", "or_minutes_left": null, "unlocks": "test_l3_"},
+    {"file": ".hidden/l4.md", "after_tag": "test_l3_", "or_minutes_left": null, "unlocks": "test_l4_"}
+  ],
+  "your_tests": "*_test.go",
+  "run_entry": "cmd/run/main.go",
+  "testcases": [
+    {"stdin": "create 1 jazz-night 10\nbuy 2 jazz-night maya 4\navailable 3 jazz-night\nrefund 4 jazz-night maya 5\nbuy 5 jazz-night leo 7\n", "expected": "true\ntrue\n6\nfalse\nfalse"},
+    {"stdin": "create 1 gig 2\ncreate 2 gig 5\nbuy 3 gig ana 2\nrefund 4 gig ana 2\navailable 5 gig\n", "expected": "true\nfalse\ntrue\ntrue\n2"}
+  ],
+  "grade_timeout_s": 45
+}

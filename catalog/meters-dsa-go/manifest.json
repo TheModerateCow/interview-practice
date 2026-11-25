@@ -1,0 +1,20 @@
+{
+  "format": "interview-set/1",
+  "name": "meters-dsa-go",
+  "title": "Home battery arbitrage",
+  "company": "Energy utility (practice domain)",
+  "round": "dsa",
+  "language": "go",
+  "difficulty": "medium",
+  "minutes": 45,
+  "rules": "One problem. Talk through your approach and its complexity before coding. Go standard library only. Hints are free: ask in the chat.",
+  "tags": ["test_p1_"],
+  "hidden_tests": ".hidden/hidden_test.go",
+  "your_tests": "*_test.go",
+  "run_entry": "cmd/run/main.go",
+  "testcases": [
+    {"stdin": "8 2 3\n12 9 25 14 30 8 11 27\n", "expected": "44"},
+    {"stdin": "7 4 0\n20 4 6 18 25 3 30\n", "expected": "60"}
+  ],
+  "grade_timeout_s": 45
+}

@@ -1,0 +1,114 @@
+[
+ {
+  "file": "feed/utils.py",
+  "old": "return math.log2(1 + likes) + created_at / DECAY_SECONDS",
+  "new": "return math.log(1 + likes) + created_at / DECAY_SECONDS",
+  "label": "likes weighted with a natural log",
+  "k": "test_p1_"
+ },
+ {
+  "file": "feed/utils.py",
+  "old": "return (-score, post_id)",
+  "new": "return (-score, post_id[::-1])",
+  "label": "equal scores tie on reversed id",
+  "k": "test_p1_"
+ },
+ {
+  "file": "feed/utils.py",
+  "old": "FEED_WINDOW = 7 * 24 * 60 * 60",
+  "new": "FEED_WINDOW = 6 * 24 * 60 * 60",
+  "label": "feed window is 6 days",
+  "k": "test_p1_"
+ },
+ {
+  "file": "feed/storage.py",
+  "old": "lo = bisect.bisect_left(posts, start, key=_created)",
+  "new": "lo = bisect.bisect_right(posts, start, key=_created)",
+  "label": "window start excludes its boundary",
+  "k": "test_p1_"
+ },
+ {
+  "file": "feed/storage.py",
+  "old": "hi = bisect.bisect_right(posts, end, key=_created)",
+  "new": "hi = bisect.bisect_left(posts, end, key=_created)",
+  "label": "posts published at now are left out",
+  "k": "test_p1_"
+ },
+ {
+  "file": "feed/models.py",
+  "old": "return self.until is None or now < self.until",
+  "new": "return self.until is None or now <= self.until",
+  "label": "mute still active at its end second",
+  "k": "test_p1_"
+ },
+ {
+  "file": "feed/service.py",
+  "old": "ranked = self._ranked(self._sources(viewer, now) | {viewer}, now - FEED_WINDOW, now)",
+  "new": "ranked = self._ranked(self._sources(viewer, now), now - FEED_WINDOW, now)",
+  "label": "home feed drops the viewer's own posts",
+  "k": "test_p1_"
+ },
+ {
+  "file": "feed/service.py",
+  "old": "ranked = [r for r in ranked if r[0] > after]",
+  "new": "ranked = [r for r in ranked if r[0] >= after]",
+  "label": "next page repeats the cursor's post",
+  "k": "test_p1_"
+ },
+ {
+  "file": "feed/service.py",
+  "old": "if len(ranked) > limit:",
+  "new": "if len(ranked) >= limit:",
+  "label": "exactly-full last page still returns a cursor",
+  "k": "test_p1_"
+ },
+ {
+  "file": "feed/service.py",
+  "old": "muted = {m.target for m in self._store.mutes(viewer) if m.active(now)}",
+  "new": "muted = {m.target for m in self._store.mutes(viewer)}",
+  "label": "expired mutes still hide posts",
+  "k": "test_p1_"
+ },
+ {
+  "file": "feed/storage.py",
+  "old": "            raise DuplicatePost(f\"post already exists: {post.id}\")\n",
+  "new": "            pass\n",
+  "label": "republishing an id replaces the post",
+  "k": "test_p1_"
+ },
+ {
+  "file": "feed/service.py",
+  "old": "start = max(since + 1, now - FEED_WINDOW)",
+  "new": "start = max(since, now - FEED_WINDOW)",
+  "label": "catch_up includes posts published exactly at since",
+  "k": "test_p2_"
+ },
+ {
+  "file": "feed/service.py",
+  "old": "start = max(since + 1, now - FEED_WINDOW)",
+  "new": "start = since + 1",
+  "label": "catch_up ignores the feed window",
+  "k": "test_p2_"
+ },
+ {
+  "file": "feed/service.py",
+  "old": "if count < CATCH_UP_PER_AUTHOR:",
+  "new": "if count <= CATCH_UP_PER_AUTHOR:",
+  "label": "catch_up allows three posts per account",
+  "k": "test_p2_"
+ },
+ {
+  "file": "feed/service.py",
+  "old": "for _, post in self._ranked(self._sources(viewer, now), start, now):",
+  "new": "for _, post in self._ranked(self._sources(viewer, now) | {viewer}, start, now):",
+  "label": "catch_up includes the viewer's own posts",
+  "k": "test_p2_"
+ },
+ {
+  "file": "feed/service.py",
+  "old": "                if len(picked) == limit:\n                    break\n",
+  "new": "",
+  "label": "catch_up ignores limit",
+  "k": "test_p2_"
+ }
+]

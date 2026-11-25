@@ -1,0 +1,79 @@
+[
+ {
+  "file": "replenish.go",
+  "old": "if pos > rule.Min {",
+  "new": "if pos >= rule.Min {",
+  "label": "reorders only strictly below Min",
+  "k": "test_p2_"
+ },
+ {
+  "file": "replenish.go",
+  "old": "qty = (qty + rule.Pack - 1) / rule.Pack * rule.Pack",
+  "new": "qty = qty / rule.Pack * rule.Pack",
+  "label": "case pack rounded down",
+  "k": "test_p2_"
+ },
+ {
+  "file": "replenish.go",
+  "old": "pos := s.available(k) + s.store.inbound[k]",
+  "new": "pos := s.available(k)",
+  "label": "inbound transfers ignored",
+  "k": "test_p2_"
+ },
+ {
+  "file": "replenish.go",
+  "old": "pos := s.available(k) + s.store.inbound[k]",
+  "new": "pos := s.store.onHand[k] + s.store.inbound[k]",
+  "label": "holds ignored in position",
+  "k": "test_p2_"
+ },
+ {
+  "file": "replenish.go",
+  "old": "surplus := s.available(k) - s.store.rules[k].Min",
+  "new": "surplus := s.available(k)",
+  "label": "source surplus ignores its own Min",
+  "k": "test_p2_"
+ },
+ {
+  "file": "replenish.go",
+  "old": "surplus := s.available(k) - s.store.rules[k].Min",
+  "new": "surplus := s.store.onHand[k] - s.store.rules[k].Min",
+  "label": "source surplus ignores its holds",
+  "k": "test_p2_"
+ },
+ {
+  "file": "replenish.go",
+  "old": "(best == \"\" || surplus > bestSurplus)",
+  "new": "(best == \"\" || surplus >= bestSurplus)",
+  "label": "tie goes to highest id",
+  "k": "test_p2_"
+ },
+ {
+  "file": "replenish.go",
+  "old": "if surplus >= qty &&",
+  "new": "if surplus > qty &&",
+  "label": "source must strictly exceed need",
+  "k": "test_p2_"
+ },
+ {
+  "file": "expiry.go",
+  "old": "s.holds[0].ExpiresAt <= now",
+  "new": "s.holds[0].ExpiresAt < now",
+  "label": "hold still active at ExpiresAt",
+  "k": "test_p1_"
+ },
+ {
+  "file": "store.go",
+  "old": "take := min(qty, s.bins[bk])",
+  "new": "take := s.bins[bk]",
+  "label": "pick empties whole bins",
+  "k": "test_p1_"
+ },
+ {
+  "file": "reservations.go",
+  "old": "if avail := s.available(k); avail < qty {",
+  "new": "if avail := s.available(k); avail <= qty {",
+  "label": "reserve refuses the last unit",
+  "k": "test_p1_"
+ }
+]

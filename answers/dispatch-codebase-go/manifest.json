@@ -1,0 +1,23 @@
+{
+  "format": "interview-set/1",
+  "name": "dispatch-codebase-go",
+  "title": "Dispatch service: debug, implement, optimise",
+  "company": "Food delivery (practice domain)",
+  "round": "codebase",
+  "language": "go",
+  "difficulty": "medium",
+  "minutes": 60,
+  "rules": "Three phases: fix the bugs in the ticket, build DispatchPending, then speed up the hot path (phase 3 opens when phase 2 passes or with 15 minutes left). Go standard library only. Hints are free: ask in the chat.",
+  "tags": ["test_p1_", "test_p2_", "test_p3_"],
+  "hidden_tests": ".hidden/hidden_test.go",
+  "reveal": [
+    {"file": ".hidden/p3.md", "after_tag": "test_p2_", "or_minutes_left": 15, "unlocks": "test_p3_"}
+  ],
+  "your_tests": "*_test.go",
+  "run_entry": "cmd/run/main.go",
+  "testcases": [
+    {"stdin": "courier ana 0 0 2\ncourier ben 800 0 1\norder o1 100 0 100 900 0 5\nassign o1\norder o2 700 0 700 500 1 5\nassign o2\nbag ana\nadvance o1 delivered\nadvance o1 picked_up\n", "expected": "ok\nok\nok\nana\nok\nben\n[o1]\nerror: order cannot move to that state\nok"},
+    {"stdin": "courier solo 0 0 1\norder o1 600 0 600 1100 0 0\nassign o1\neta o1 0\nadvance o1 cancelled\norder o2 100 100 900 900 2 5\nassign o2\n", "expected": "ok\nok\nsolo\n8\nok\nok\nsolo"}
+  ],
+  "grade_timeout_s": 45
+}

@@ -1,0 +1,51 @@
+{
+  "format": "interview-set/1",
+  "name": "clinic-levelled-go",
+  "title": "Clinic scheduler: free slots, no-shows and hand-overs",
+  "company": "Healthcare scheduling (practice domain)",
+  "round": "levelled",
+  "language": "go",
+  "difficulty": "hard",
+  "minutes": 90,
+  "rules": "Four levels, revealed one at a time. Each opens when the previous level's hidden tests all pass, or when you press Next part. Go standard library only. Hints are free: ask in the chat.",
+  "tags": [
+    "test_l1_",
+    "test_l2_",
+    "test_l3_",
+    "test_l4_"
+  ],
+  "hidden_tests": ".hidden/hidden_test.go",
+  "reveal": [
+    {
+      "file": ".hidden/l2.md",
+      "after_tag": "test_l1_",
+      "or_minutes_left": null,
+      "unlocks": "test_l2_"
+    },
+    {
+      "file": ".hidden/l3.md",
+      "after_tag": "test_l2_",
+      "or_minutes_left": null,
+      "unlocks": "test_l3_"
+    },
+    {
+      "file": ".hidden/l4.md",
+      "after_tag": "test_l3_",
+      "or_minutes_left": null,
+      "unlocks": "test_l4_"
+    }
+  ],
+  "your_tests": "*_test.go",
+  "run_entry": "cmd/run/main.go",
+  "testcases": [
+    {
+      "stdin": "clinician 1 dr-a\nroom 2 room-1\ntype 3 checkup 30\nbook 4 dr-a pat-1 checkup 540\nbook 5 dr-a pat-2 checkup 550\nbook 6 dr-a pat-2 checkup 570\ncancel 7 appt1\ncancel 8 appt1\nshow 9 appt1\nshow 10 appt2\n",
+      "expected": "true\ntrue\ntrue\nappt1\n(failed)\nappt2\ntrue\nfalse\ndr-a pat-1 checkup room-1 540-570 cancelled\ndr-a pat-2 checkup room-1 570-600 booked"
+    },
+    {
+      "stdin": "clinician 1 dr-a\nclinician 2 dr-a\ntype 3 checkup 30\nbook 4 dr-a pat-1 checkup 540\nroom 5 room-1\nbook 6 dr-a pat-1 x-ray 540\nbook 7 dr-a pat-1 checkup 6\nshow 8 appt1\n",
+      "expected": "true\nfalse\ntrue\n(failed)\ntrue\n(failed)\n(failed)\n(none)"
+    }
+  ],
+  "grade_timeout_s": 45
+}

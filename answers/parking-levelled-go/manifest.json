@@ -1,0 +1,25 @@
+{
+  "format": "interview-set/1",
+  "name": "parking-levelled-go",
+  "title": "Parking garage: spots, reservations and billing",
+  "company": "Parking operations (practice domain)",
+  "round": "levelled",
+  "language": "go",
+  "difficulty": "medium",
+  "minutes": 90,
+  "rules": "Four levels, revealed one at a time. Each opens when the previous level's hidden tests all pass, or when you press Next part. Go standard library only. Hints are free: ask in the chat.",
+  "tags": ["test_l1_", "test_l2_", "test_l3_", "test_l4_"],
+  "hidden_tests": ".hidden/hidden_test.go",
+  "reveal": [
+    {"file": ".hidden/l2.md", "after_tag": "test_l1_", "or_minutes_left": null, "unlocks": "test_l2_"},
+    {"file": ".hidden/l3.md", "after_tag": "test_l2_", "or_minutes_left": null, "unlocks": "test_l3_"},
+    {"file": ".hidden/l4.md", "after_tag": "test_l3_", "or_minutes_left": null, "unlocks": "test_l4_"}
+  ],
+  "your_tests": "*_test.go",
+  "run_entry": "cmd/run/main.go",
+  "testcases": [
+    {"stdin": "add 1 B2 large\nadd 2 A1 small\nadd 3 A2 medium\npark 4 KX-101 medium\npark 5 VAN-7 large\npark 6 MINI-3 small\nspot 7 KX-101\n", "expected": "true\ntrue\ntrue\n\"A2\"\n\"B2\"\n\"A1\"\n\"A2\""},
+    {"stdin": "add 1 A1 small\nadd 2 A1 large\nadd 3 Z9 huge\npark 4 CAR-1 small\npark 5 CAR-1 small\nleave 6 CAR-1\nleave 7 CAR-1\npark 8 CAR-2 medium\n", "expected": "true\nfalse\nfalse\n\"A1\"\n\"\"\ntrue\nfalse\n\"\""}
+  ],
+  "grade_timeout_s": 45
+}

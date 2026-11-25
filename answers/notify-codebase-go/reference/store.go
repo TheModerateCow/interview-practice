@@ -1,0 +1,74 @@
+package notify
+
+// Store keeps users, the per-user notification log and the indexes the
+// fan-out checks on every send, all in memory.
+type Store struct {
+	users  map[string]User
+	seen   map[string]int64    // dedupeID -> At of the last accepted notification
+	recent map[chanKey][]int64 // delivery times per user and channel, oldest first
+	logs   map[string][]Record // per user, oldest first
+}
+
+type chanKey struct {
+	user string
+	ch   Channel
+}
+
+func newStore() *Store {
+	return &Store{
+		users:  map[string]User{},
+		seen:   map[string]int64{},
+		recent: map[chanKey][]int64{},
+		logs:   map[string][]Record{},
+	}
+}
+
+func (st *Store) user(id string) (User, bool) {
+	u, ok := st.users[id]
+	return u, ok
+}
+
+func (st *Store) putUser(u User) { st.users[u.ID] = u }
+
+func (st *Store) setChannels(id string, chans []Channel) {
+	u := st.users[id]
+	u.Channels = append([]Channel(nil), chans...)
+	st.users[id] = u
+}
+
+// dedupeID is the index key for a user's dedupe key.
+func dedupeID(user, key string) string {
+	return user + "\x00" + key
+}
+
+// lastAccepted returns when the user last had a non-duplicate notification
+// with this dedupe key.
+func (st *Store) lastAccepted(user, key string) (int64, bool) {
+	at, ok := st.seen[dedupeID(user, key)]
+	return at, ok
+}
+
+func (st *Store) accept(user, key string, at int64) { st.seen[dedupeID(user, key)] = at }
+
+// deliveriesSince counts the user's deliveries on ch with At > since.
+func (st *Store) deliveriesSince(user string, ch Channel, since int64) int {
+	// Sends for one user arrive in time order, so entries this old can go.
+	k := chanKey{user, ch}
+	q := st.recent[k]
+	i := 0
+	for i < len(q) && q[i] <= since {
+		i++
+	}
+	st.recent[k] = q[i:]
+	return len(q) - i
+}
+
+func (st *Store) delivered(user string, ch Channel, at int64) {
+	k := chanKey{user, ch}
+	st.recent[k] = append(st.recent[k], at)
+}
+
+func (st *Store) record(r Record) { st.logs[r.User] = append(st.logs[r.User], r) }
+
+// log returns the user's records, oldest first.
+func (st *Store) log(user string) []Record { return st.logs[user] }

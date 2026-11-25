@@ -1,0 +1,7 @@
+[
+ {"file":"loyalty.go","old":"case spent >= silverFrom:","new":"case spent > silverFrom:","label":"lifetime spend of exactly 500.00 stays base","k":"test_p1_"},
+ {"file":"loyalty.go","old":"pts := (spendCents*rate(a.spent) + 5_000) / 10_000","new":"pts := (spendCents * rate(a.spent)) / 10_000","label":"points rounded down instead of half up","k":"test_p1_"},
+ {"file":"loyalty.go","old":"if spendCents <= 0 {","new":"if spendCents < 0 {","label":"zero spend accepted as a purchase","k":"test_p1_"},
+ {"file":"loyalty.go","old":"return day < l.day+lifetimeDays","new":"return day <= l.day+lifetimeDays","label":"points still usable on day 365 after earning","k":"test_p1_"},
+ {"file":"loyalty.go","old":"pts := (spendCents*rate(a.spent) + 5_000)","new":"pts := (spendCents*rate(a.spent+spendCents) + 5_000)","label":"purchase that crosses a tier earns at the new tier's rate","k":"test_p1_"}
+]

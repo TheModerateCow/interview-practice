@@ -1,0 +1,6 @@
+[
+ {"file":"search_box.py","old":"count = Counter(log)","new":"count = Counter(set(log))","label":"repeated searches not counted as popularity","k":"test_p1_"},
+ {"file":"search_box.py","old":"if parent[node] != -1:","new":"if False:","label":"no Backspace moves","k":"test_p1_"},
+ {"file":"search_box.py","old":"key=lambda q: (-count[q], q)","new":"key=lambda q: -count[q]","label":"ties go to the first logged query, not the alphabetical one","k":"test_p1_"},
+ {"file":"search_box.py","old":"if tab[node] != -1:","new":"if tab[node] != -1 and node:","label":"Tab does nothing in an empty box","k":"test_p1_"}
+]

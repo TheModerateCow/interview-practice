@@ -1,0 +1,51 @@
+[
+ {
+  "file": "settlement.go",
+  "old": "return (amount*p.Bps+5000)/10000 + p.Fixed[cur]",
+  "new": "return amount*p.Bps/10000 + p.Fixed[cur]",
+  "label": "percentage fee truncated instead of rounded half up",
+  "k": "test_p2_"
+ },
+ {
+  "file": "charges.go",
+  "old": "(*q)[0].AvailableOn <= ts",
+  "new": "(*q)[0].AvailableOn < ts",
+  "label": "cutoff exclusive",
+  "k": "test_p2_"
+ },
+ {
+  "file": "settlement.go",
+  "old": "b.Fees += pricing.fee(c.Amount, cur)",
+  "new": "b.Fees += pricing.fee(c.Amount-c.Refunded, cur)",
+  "label": "fee charged on the refunded-down amount",
+  "k": "test_p2_"
+ },
+ {
+  "file": "settlement.go",
+  "old": "\t\t\tc.Batch = b.ID\n",
+  "new": "",
+  "label": "settled charges not marked with their batch",
+  "k": "test_p2_"
+ },
+ {
+  "file": "charges.go",
+  "old": "return c.seq < o.seq",
+  "new": "return c.seq > o.seq",
+  "label": "ties on AvailableOn not broken by capture order",
+  "k": "test_p2_"
+ },
+ {
+  "file": "settlement.go",
+  "old": "b.Gross += c.Amount - c.Refunded",
+  "new": "b.Gross += c.Amount",
+  "label": "gross ignores refunds made before settlement",
+  "k": "test_p2_"
+ },
+ {
+  "file": "payments.go",
+  "old": "if c.Batch != \"\" {",
+  "new": "if c.Batch == \"never\" {",
+  "label": "refund after settlement taken from pending",
+  "k": "test_p2_"
+ }
+]

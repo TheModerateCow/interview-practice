@@ -1,0 +1,16 @@
+[
+ {"file": "store.go", "old": "if !ok || e.value != expected {", "new": "if e.value != expected {", "label": "compare-and-set on a missing field matches an empty expected value", "k": "test_l1_"},
+ {"file": "store.go", "old": "s.put(ts, key, field, entry{value: value})\n\treturn !had", "new": "s.put(ts, key, field, entry{value: value})\n\treturn true", "label": "Set reports every write as new", "k": "test_l1_"},
+ {"file": "store.go", "old": "if strings.HasPrefix(f, prefix) && e.live(ts) {", "new": "if strings.Contains(f, prefix) && e.live(ts) {", "label": "field prefix matched as a substring", "k": "test_l2_"},
+ {"file": "store.go", "old": "if strings.HasPrefix(k, prefix) && len(s.ScanPrefix(ts, k, \"\")) > 0 {", "new": "if strings.Contains(k, prefix) && len(s.ScanPrefix(ts, k, \"\")) > 0 {", "label": "key prefix matched as a substring", "k": "test_l2_"},
+ {"file": "store.go", "old": "func (e entry) live(ts int) bool { return e.expiresAt == 0 || ts < e.expiresAt }", "new": "func (e entry) live(ts int) bool { return e.expiresAt == 0 || ts <= e.expiresAt }", "label": "field still live at its expiry time", "k": "test_l3_"},
+ {"file": "store.go", "old": "if !ok || !e.live(ts) {", "new": "if !ok {", "label": "Get, Delete and compare-and-set ignore expiry", "k": "test_l3_"},
+ {"file": "store.go", "old": "\te.value = value\n\ts.put(ts, key, field, e)", "new": "\ts.put(ts, key, field, entry{value: value})", "label": "compare-and-set drops the TTL", "k": "test_l3_"},
+ {"file": "store.go", "old": "len(s.ScanPrefix(ts, k, \"\")) > 0", "new": "len(s.records[k]) > 0", "label": "ListKeys lists records whose fields all expired", "k": "test_l3_"},
+ {"file": "store.go", "old": "return e.expiresAt - ts\n}", "new": "return e.expiresAt - ts + 1\n}", "label": "RemainingTTL off by one", "k": "test_l3_"},
+ {"file": "store.go", "old": "e.expiresAt = ts + sv.remaining", "new": "e.expiresAt = sv.remaining", "label": "restore does not restart TTLs from the restore time", "k": "test_l4_"},
+ {"file": "store.go", "old": "\t\t\tif !e.live(ts) {\n\t\t\t\tcontinue\n\t\t\t}", "new": "\t\t\tif false {\n\t\t\t\tcontinue\n\t\t\t}", "label": "backup keeps fields that already expired", "k": "test_l4_"},
+ {"file": "store.go", "old": "if _, kept := b[k][f]; !kept {", "new": "if false {", "label": "restore keeps fields the backup did not have", "k": "test_l4_"},
+ {"file": "store.go", "old": "if c.ts <= atTs {", "new": "if c.ts < atTs {", "label": "GetAt leaves out changes made exactly at atTs", "k": "test_l4_"},
+ {"file": "store.go", "old": "!last.e.live(atTs)", "new": "!last.e.live(ts)", "label": "GetAt checks expiry against now instead of atTs", "k": "test_l4_"}
+]

@@ -1,0 +1,37 @@
+[
+ {
+  "file": "reservations.go",
+  "old": "\tif err := s.advance(now); err != nil {\n\t\treturn err\n\t}\n\tr, ok := s.store.reservations[id]\n\tif !ok {\n\t\treturn fmt.Errorf(\"%w: reservation %q\", ErrNotFound, id)\n\t}\n\tswitch r.Status {\n\tcase Committed:\n\t\treturn fmt.Errorf(\"%w: %s\", ErrNotActive, r.Status)\n\tcase Released, Expired:\n\t\treturn nil\n\t}\n",
+  "new": "\tr, ok := s.store.reservations[id]\n\tif !ok {\n\t\treturn fmt.Errorf(\"%w: reservation %q\", ErrNotFound, id)\n\t}\n\tswitch r.Status {\n\tcase Committed:\n\t\treturn fmt.Errorf(\"%w: %s\", ErrNotActive, r.Status)\n\tcase Released, Expired:\n\t\treturn nil\n\t}\n\tif err := s.advance(now); err != nil {\n\t\treturn err\n\t}\n",
+  "label": "Release checks the hold's status before advancing the clock, so a hold that runs out during that advance is released a second time",
+  "k": "test_p1_"
+ },
+ {
+  "file": "store.go",
+  "old": "\tif _, ok := s.bins[k]; !ok {\n\t\tdelete(s.pickPath, k.stock())\n\t}\n\ts.bins[k] += qty\n\ts.onHand[k.stock()] += qty\n",
+  "new": "\ts.bins[k] += qty\n\ts.onHand[k.stock()] += qty\n\tif _, ok := s.bins[k]; !ok {\n\t\tdelete(s.pickPath, k.stock())\n\t}\n",
+  "label": "putAway checks for a new bin after writing it, so the cached pick path is never invalidated and later picks can't see new bins",
+  "k": "test_p1_"
+ },
+ {
+  "file": "transfers.go",
+  "old": "if avail := s.available(src); avail < qty {",
+  "new": "if avail := s.store.onHand[src]; avail < qty {",
+  "label": "StartTransfer checks on-hand instead of available, so transfers can ship stock held for orders",
+  "k": "test_p1_"
+ },
+ {
+  "file": "replenish.go",
+  "old": "import \"sort\"\n\n// Replenishment plans restocking for one warehouse at time now: one Suggestion for each\n// SKU with a Rule there whose stock position has fallen to the rule's Min, sorted by SKU.\n// It only plans; nothing is moved or ordered.\nfunc (s *Service) Replenishment(warehouse string, now int64) ([]Suggestion, error) {\n\tif err := s.checkWarehouse(warehouse); err != nil {\n\t\treturn nil, err\n\t}\n\tif err := s.advance(now); err != nil {\n\t\treturn nil, err\n\t}\n\tvar skus []string\n\tfor k := range s.store.rules {\n\t\tif k.warehouse == warehouse {\n\t\t\tskus = append(skus, k.sku)\n\t\t}\n\t}\n\tsort.Strings(skus)\n\tvar out []Suggestion\n\tfor _, sku := range skus {\n\t\tk := stockKey{warehouse, sku}\n\t\trule := s.store.rules[k]\n\t\tpos := s.available(k) + s.store.inbound[k]\n\t\tif pos > rule.Min {\n\t\t\tcontinue\n\t\t}\n\t\tqty := rule.Max - pos\n\t\tif rule.Pack > 1 {\n\t\t\tqty = (qty + rule.Pack - 1) / rule.Pack * rule.Pack\n\t\t}\n\t\tout = append(out, Suggestion{SKU: sku, Position: pos, Qty: qty, From: s.source(warehouse, sku, qty)})\n\t}\n\treturn out, nil\n}\n\n// source picks the other warehouse that can best spare qty units of sku: the largest\n// surplus (available minus its own rule's Min) that covers qty, lowest ID on a tie.\nfunc (s *Service) source(dest, sku string, qty int) string {\n\tbest, bestSurplus := \"\", 0\n\tfor _, w := range s.warehouseIDs() {\n\t\tif w == dest {\n\t\t\tcontinue\n\t\t}\n\t\tk := stockKey{w, sku}\n\t\tsurplus := s.available(k) - s.store.rules[k].Min\n\t\tif surplus >= qty && (best == \"\" || surplus > bestSurplus) {\n\t\t\tbest, bestSurplus = w, surplus\n\t\t}\n\t}\n\treturn best\n}\n",
+  "new": "// Replenishment plans restocking for one warehouse at time now: one Suggestion for each\n// SKU with a Rule there whose stock position has fallen to the rule's Min, sorted by SKU.\n// It only plans; nothing is moved or ordered. See problem.md for the full rules.\nfunc (s *Service) Replenishment(warehouse string, now int64) ([]Suggestion, error) {\n\tpanic(\"not implemented\")\n}\n",
+  "label": "Replenishment removed (phase 2 feature)",
+  "k": "test_p2_"
+ },
+ {
+  "file": "expiry.go",
+  "old": "import \"container/heap\"\n\n// holdQueue is a min-heap of reservations ordered by when their hold runs out, then by\n// placement order. Released and committed holds stay in it until their time comes.\ntype holdQueue []*Reservation\n\nfunc (q holdQueue) Len() int { return len(q) }\nfunc (q holdQueue) Less(i, j int) bool {\n\tif q[i].ExpiresAt != q[j].ExpiresAt {\n\t\treturn q[i].ExpiresAt < q[j].ExpiresAt\n\t}\n\treturn q[i].seq < q[j].seq\n}\nfunc (q holdQueue) Swap(i, j int) { q[i], q[j] = q[j], q[i] }\nfunc (q *holdQueue) Push(x any)   { *q = append(*q, x.(*Reservation)) }\nfunc (q *holdQueue) Pop() any {\n\told := *q\n\tr := old[len(old)-1]\n\t*q = old[:len(old)-1]\n\treturn r\n}\n\n// track registers a newly placed reservation for expiry.\nfunc (s *store) track(r *Reservation) { heap.Push(&s.holds, r) }\n\n// expire ends every active reservation whose hold has run out by now (ExpiresAt <= now)\n// and returns its stock to available.\nfunc (s *store) expire(now int64) {\n\tfor len(s.holds) > 0 && s.holds[0].ExpiresAt <= now {\n\t\tr := heap.Pop(&s.holds).(*Reservation)\n\t\tif r.Status == Active {\n\t\t\ts.endHold(r, Expired, r.ExpiresAt)\n\t\t}\n\t}\n}\n",
+  "new": "// holdQueue lists every reservation in the order it was placed.\ntype holdQueue []*Reservation\n\n// track registers a newly placed reservation for expiry.\nfunc (s *store) track(r *Reservation) { s.holds = append(s.holds, r) }\n\n// expire ends every active reservation whose hold has run out by now (ExpiresAt <= now)\n// and returns its stock to available.\nfunc (s *store) expire(now int64) {\n\tfor _, r := range s.holds {\n\t\tif r.Status == Active && r.ExpiresAt <= now {\n\t\t\ts.endHold(r, Expired, r.ExpiresAt)\n\t\t}\n\t}\n}\n",
+  "label": "expire scans every reservation ever placed on every call (phase 3 bottleneck)",
+  "k": "test_p3_"
+ }
+]

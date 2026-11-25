@@ -1,0 +1,6 @@
+[
+ {"file":"route.go","old":"nb >= 0","new":"nb > 0","label":"van may not arrive with an empty battery","k":"test_p1_"},
+ {"file":"route.go","old":"push(u, b+1, it.d+rate[u])","new":"push(u, capacity, it.d+rate[u]*(capacity-b))","label":"always charges to full","k":"test_p1_"},
+ {"file":"route.go","old":"adj[r.B] = append(adj[r.B], Road{r.B, r.A, r.Minutes, r.Energy})","new":"_ = r.B","label":"roads treated as one-way","k":"test_p1_"},
+ {"file":"route.go","old":"if rate[u] > 0 && b < capacity {","new":"if rate[u] >= 0 && b < capacity {","label":"junctions without a charger charge for free","k":"test_p1_"}
+]

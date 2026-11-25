@@ -1,0 +1,17 @@
+[
+ {"file": "service.go", "old": "if used+cost > limit {", "new": "if used+cost >= limit {", "label": "a request that exactly fills the window is denied", "k": "test_p1_"},
+ {"file": "window.go", "old": "return windowStart(now, window) + window - now", "new": "return now % window", "label": "RetryAfter counts seconds elapsed instead of seconds left", "k": "test_p1_"},
+ {"file": "window.go", "old": "return min(unused, p.Burst)", "new": "return unused", "label": "rollover ignores the burst cap", "k": "test_p1_"},
+ {"file": "store.go", "old": "return log[i].At >= from", "new": "return log[i].At > from", "label": "a request at the window start is not counted in it", "k": "test_p1_"},
+ {"file": "store.go", "old": "return log[j].At >= to", "new": "return log[j].At > to", "label": "a request at the window start is also counted in the window before", "k": "test_p1_"},
+ {"file": "service.go", "old": "\tif k.Revoked {\n\t\treturn Decision{}, ErrRevoked\n\t}\n", "new": "", "label": "revoked keys are not rejected", "k": "test_p1_"},
+ {"file": "service.go", "old": "if p.Limit <= 0 || p.Window <= 0 || p.Burst < 0 {", "new": "if p.Limit <= 0 || p.Window <= 0 || p.Burst <= 0 {", "label": "plans without burst are rejected", "k": "test_p1_"},
+ {"file": "service.go", "old": "s.store.record(id, Event{At: now, Cost: cost})\n", "new": "s.store.record(id, Event{At: now, Cost: cost, Allowed: true})\n", "label": "denied requests are logged as allowed", "k": "test_p1_"},
+ {"file": "report.go", "old": "if to <= from {", "new": "if to < from {", "label": "an empty range is accepted", "k": "test_p2_"},
+ {"file": "report.go", "old": "return out[i].Units > out[j].Units", "new": "return out[i].Units < out[j].Units", "label": "fewest units first", "k": "test_p2_"},
+ {"file": "report.go", "old": "return out[i].KeyID < out[j].KeyID", "new": "return out[i].KeyID > out[j].KeyID", "label": "unit ties go to the higher key id", "k": "test_p2_"},
+ {"file": "report.go", "old": "out := []UsageLine{}", "new": "var out []UsageLine", "label": "returns nil instead of an empty slice", "k": "test_p2_"},
+ {"file": "report.go", "old": "\t\tif len(events) == 0 {\n\t\t\tcontinue\n\t\t}\n", "new": "", "label": "keys with no traffic in range get a line", "k": "test_p2_"},
+ {"file": "report.go", "old": "\t\t\t\tline.Requests++\n", "new": "", "label": "allowed requests are not counted", "k": "test_p2_"},
+ {"file": "report.go", "old": "\t\t\t\tline.Denied++\n", "new": "", "label": "denied requests are not counted", "k": "test_p2_"}
+]

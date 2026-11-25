@@ -1,0 +1,37 @@
+[
+ {
+  "file": "geo.go",
+  "old": "return (metres + CourierSpeed - 1) / CourierSpeed",
+  "new": "return metres / CourierSpeed",
+  "label": "TravelMinutes rounds down, so every ETA leg can be a minute early",
+  "k": "test_p1_"
+ },
+ {
+  "file": "models.go",
+  "old": "func (s State) Terminal() bool { return s == Delivered || s == Cancelled }",
+  "new": "func (s State) Terminal() bool { return s == Delivered }",
+  "label": "Cancelled is not terminal: cancelling never frees the courier",
+  "k": "test_p1_"
+ },
+ {
+  "file": "store.go",
+  "old": "\tif _, ok := s.orders[o.ID]; ok {\n\t\treturn ErrDuplicateOrder\n\t}\n\ts.orders[o.ID] = o",
+  "new": "\ts.orders[o.ID] = o",
+  "label": "AddOrder overwrites an existing order on a retried checkout",
+  "k": "test_p1_"
+ },
+ {
+  "file": "batch.go",
+  "old": "import \"sort\"\n\n// DispatchWindow is how many minutes before its food is ready an order may\n// be handed to a courier by DispatchPending.\nconst DispatchWindow = 10\n\n// Assignment records one order handed to one courier.\ntype Assignment struct {\n\tOrderID   string\n\tCourierID string\n}\n\n// DispatchPending is the dispatch loop's tick: it hands out the waiting\n// orders that are due at minute now. See problem.md for the rules.\nfunc (d *Dispatcher) DispatchPending(now int) []Assignment {\n\tvar due []*Order\n\tfor _, o := range d.store.PendingOrders() {\n\t\tif o.ReadyAt()-now <= DispatchWindow {\n\t\t\tdue = append(due, o)\n\t\t}\n\t}\n\tsort.Slice(due, func(i, j int) bool {\n\t\tif due[i].ReadyAt() != due[j].ReadyAt() {\n\t\t\treturn due[i].ReadyAt() < due[j].ReadyAt()\n\t\t}\n\t\treturn due[i].ID < due[j].ID\n\t})\n\tout := []Assignment{}\n\tfor _, o := range due {\n\t\tif c := d.nearestCourier(o.Restaurant); c != nil {\n\t\t\td.assign(o, c)\n\t\t\tout = append(out, Assignment{OrderID: o.ID, CourierID: c.ID})\n\t\t}\n\t}\n\treturn out\n}\n",
+  "new": "// DispatchWindow is how many minutes before its food is ready an order may\n// be handed to a courier by DispatchPending.\nconst DispatchWindow = 10\n\n// Assignment records one order handed to one courier.\ntype Assignment struct {\n\tOrderID   string\n\tCourierID string\n}\n\n// DispatchPending is the dispatch loop's tick: it hands out the waiting\n// orders that are due at minute now. See problem.md for the rules.\nfunc (d *Dispatcher) DispatchPending(now int) []Assignment {\n\tpanic(\"not implemented\")\n}\n",
+  "label": "feature removed: DispatchPending",
+  "k": "test_p2_"
+ },
+ {
+  "file": "dispatch.go",
+  "old": "if c.Active >= c.Capacity {",
+  "new": "if len(d.store.ActiveOrdersOf(c.ID)) >= c.Capacity {",
+  "label": "slow: nearestCourier counts each courier's load by scanning every order",
+  "k": "test_p3_"
+ }
+]

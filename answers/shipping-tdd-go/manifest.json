@@ -1,0 +1,15 @@
+{
+  "format": "interview-set/1",
+  "name": "shipping-tdd-go",
+  "title": "Shipping quotes: weights, zones and promos (TDD)",
+  "company": "E-commerce shipping (practice domain)",
+  "round": "tdd",
+  "language": "go",
+  "difficulty": "hard",
+  "minutes": 60,
+  "rules": "Test-driven: write your tests in a *_test.go file first and run them with My tests, then implement shipping.go. Submit runs the hidden tests. Go standard library only. Hints are free: ask in the chat.",
+  "tags": ["test_p1_"],
+  "hidden_tests": ".hidden/hidden_test.go",
+  "your_tests": "*_test.go",
+  "grade_timeout_s": 45
+}

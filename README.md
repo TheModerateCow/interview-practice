@@ -6,7 +6,7 @@ Send `export.zip` back to Claude for the debrief.
 
 Home is a **catalog of problems** to pick from: the built-in ones in `catalog/` plus every set you've imported (marked Yours). Filter by round, language and difficulty, and click one. That opens its round in progress, an unstarted attempt, or a fresh attempt (`<id>-1`, `-2`, …) on the ready screen, so you can retake any problem. Past attempts stay listed under Not started / Finished.
 
-To add a built-in problem: gate it, pack it with `tools/pack.py`, unzip the zip into `catalog/<id>/`, and rebuild. Keep its source (with `reference/` and `mutants.json`) out of git in `.private/catalog/<id>/`: Claude needs it for the debrief.
+To add a built-in problem: gate its source in `answers/<id>/` (`docker compose run --rm -T -v "$PWD/answers/<id>:/set:ro" backend python3 gate.py /set`), pack it with `tools/pack.py answers/<id> <id>.zip`, unzip the zip into `catalog/<id>/`, and rebuild.
 
 ## Install / remove
 ```
@@ -41,6 +41,7 @@ Only nginx publishes a port. The backend and proxy sit on internal networks. `/a
 | `backend/sandbox/images.py` | `/api/health` and the thread that keeps runner images pulled |
 | `ui/src/` | `App.svelte` the shell; `features/` one folder per screen (`home`, `catalog`, `ready`, `round`, `import`, `health`), `round/round.svelte.js` holds the round's state and actions; `components/` shared pieces; `lib/` API, Monaco and helpers; `styles/` CSS |
 | `catalog/` | Built-in problems, one folder each (interview-set/1, unpacked), baked into the backend image (`backend/lab/catalog.py`) |
+| `answers/` | The answer key for every catalog problem: its full gate-ready source with `reference/`, `mutants.json` and (Codebase) `bugs.json`. Not in the image; used for debriefs, TDD scoring and re-gating |
 | `deploy/` | Everything that builds or runs the app: `docker-compose.yml`, the backend/nginx/runner-python Dockerfiles, `nginx.conf`, install/uninstall. The root `.env` points `docker compose` at it, so compose commands work from the repo root |
 | `tools/pack.py` | Packs a set dir into a zip (refuses reference/, mutants.json, bugs.json) |
 | `tools/status.py` | `python3 tools/status.py data/sets/<name>` → time left, from session.json |

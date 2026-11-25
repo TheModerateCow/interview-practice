@@ -1,0 +1,7 @@
+[
+ {"file":"office.go","old":"e.owned[buyer] < qty","new":"e.owned[buyer] <= qty","label":"refunding every ticket you own is rejected","k":"test_l1_"},
+ {"file":"office.go","old":"return names[i] < names[j]","new":"return names[i] > names[j]","label":"top buyers ties broken by name descending","k":"test_l2_"},
+ {"file":"office.go","old":"!h.confirmed && ts < h.expiresAt","new":"!h.confirmed && ts <= h.expiresAt","label":"hold still blocks seats at its expiry time","k":"test_l3_"},
+ {"file":"office.go","old":"ts >= h.expiresAt","new":"ts > h.expiresAt","label":"hold can be confirmed at its expiry time","k":"test_l3_"},
+ {"file":"office.go","old":"c.ts <= atTs && c.buyer == buyer","new":"c.ts < atTs && c.buyer == buyer","label":"OwnedAt leaves out changes made exactly at atTs","k":"test_l4_"}
+]

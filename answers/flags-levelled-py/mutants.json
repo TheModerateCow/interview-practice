@@ -1,0 +1,9 @@
+[
+ {"file": "flags.py", "old": "if e is None or user_id in e.targets:", "new": "if e is None:", "label": "targeting an already-targeted user succeeds", "k": "test_l1_"},
+ {"file": "flags.py", "old": "return e.on and _bucket(flag_id, user_id) < e.rollout", "new": "return e.on and _bucket(flag_id, user_id) <= e.rollout", "label": "bucket equal to the rollout percent is let in", "k": "test_l2_"},
+ {"file": "flags.py", "old": "rows.sort(key=lambda r: (-r[1], r[0]))", "new": "rows.sort(key=lambda r: -r[1])", "label": "most_evaluated ties left in creation order", "k": "test_l2_"},
+ {"file": "flags.py", "old": "and s[\"at\"] <= ts]", "new": "and s[\"at\"] < ts]", "label": "a change due at ts is applied after the call at ts", "k": "test_l3_"},
+ {"file": "flags.py", "old": "key=lambda s: (s[\"at\"], s[\"seq\"])", "new": "key=lambda s: (s[\"at\"], -s[\"seq\"])", "label": "changes due at the same time applied newest first", "k": "test_l3_"},
+ {"file": "flags.py", "old": "        for t, v in e.state_log:\n            if t <= to_ts:", "new": "        for t, v in e.state_log:\n            if t < to_ts:", "label": "rollback leaves out the on/off change made exactly at to_ts", "k": "test_l4_"},
+ {"file": "flags.py", "old": "        e.rollout = percent\n        e.rollout_log.append((ts, percent))\n        return True\n\n    # ------------------------------------------------------------ internals", "new": "        return True\n\n    # ------------------------------------------------------------ internals", "label": "rollback doesn't restore the rollout", "k": "test_l4_"}
+]

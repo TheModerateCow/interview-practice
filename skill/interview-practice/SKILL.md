@@ -417,6 +417,8 @@ Example (Codebase, Python):
 }
 ```
 
+**Catalog rounds:** the app ships its own problems. An attempt's `manifest.json` names its catalog id in `"problem"`; that problem's full source (reference, mutants, planted bugs, hidden tests) is `~/interview-lab/answers/<problem>/`, so use it as `$W/set` for the debrief and for `gate.py --tdd`.
+
 **Debrief:** the user sends `export.zip` (`final/`, `submission/`, `session.json`, `results.json`, `manifest.json`). `final/` is the code at the close; `submission/` is the latest code. Keep `$W/set/` until the debrief: the hidden tests are not in the export. The official result is `results.json` `final` (graded at the close, test names included). Unzip into an empty folder and re-grade `final/` (`submission/` for older exports) against the hidden tests in `$W/set/` with `grade.py --names`, one phase or level per call. Go and Java compile the whole hidden tests file, so for a Levelled round that stopped early, grade each level against a copy of the tests file with the other levels' test functions deleted; otherwise every level reads "could not be graded". Say "after time" only for actions the app flags or the event log marks "(after time)". An export without `final/` predates the fix: its `final.*.after_time` is unreliable, so use the event log.
 
 ## Round types

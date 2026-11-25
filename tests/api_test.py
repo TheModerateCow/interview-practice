@@ -570,6 +570,11 @@ def _():
     for d in sorted(glob.glob(os.path.join(ROOT, "catalog", "*", "manifest.json"))):
         d = os.path.dirname(d); r = subprocess.run([sys.executable, os.path.join(ROOT, "tools", "pack.py"), d, "/tmp/_cat.zip"], capture_output=True, text=True)
         check(f"sanity: catalog/{os.path.basename(d)} is a valid set", r.returncode == 0 and "packed" in r.stdout, r.stdout + r.stderr)
+    for d in sorted(glob.glob(os.path.join(ROOT, "catalog", "*", "manifest.json"))):
+        pid = os.path.basename(os.path.dirname(d)); ans = os.path.join(ROOT, "answers", pid)
+        check(f"sanity: answers/{pid} has the reference and the same hidden tests", os.path.isdir(os.path.join(ans, "reference"))
+              and all(open(os.path.join(ROOT, "catalog", pid, ".hidden", f), "rb").read() == open(next(p for p in (os.path.join(ans, f), os.path.join(ans, "levels", f)) if os.path.exists(p)), "rb").read()
+                      for f in os.listdir(os.path.join(ROOT, "catalog", pid, ".hidden"))))
     p = built[0]["id"] if built else "none"
     row = lambda: next((x for x in jreq("GET", "/api/catalog")[1]["problems"] if x["id"] == p), {})
     s, a = jreq("POST", f"/api/catalog/{p}/attempt")

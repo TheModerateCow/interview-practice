@@ -1,0 +1,51 @@
+{
+  "format": "interview-set/1",
+  "name": "flags-levelled-py",
+  "title": "Feature flags: rollouts, schedules and rollback",
+  "company": "Feature flags (practice domain)",
+  "round": "levelled",
+  "language": "python",
+  "difficulty": "medium",
+  "minutes": 90,
+  "rules": "Four levels, revealed one at a time. Each opens when the previous level's hidden tests all pass, or when you press Next part. Python standard library only. Hints are free: ask in the chat.",
+  "tags": [
+    "test_l1_",
+    "test_l2_",
+    "test_l3_",
+    "test_l4_"
+  ],
+  "hidden_tests": ".hidden/tests_hidden.py",
+  "reveal": [
+    {
+      "file": ".hidden/l2.md",
+      "after_tag": "test_l1_",
+      "or_minutes_left": null,
+      "unlocks": "test_l2_"
+    },
+    {
+      "file": ".hidden/l3.md",
+      "after_tag": "test_l2_",
+      "or_minutes_left": null,
+      "unlocks": "test_l3_"
+    },
+    {
+      "file": ".hidden/l4.md",
+      "after_tag": "test_l3_",
+      "or_minutes_left": null,
+      "unlocks": "test_l4_"
+    }
+  ],
+  "your_tests": "test_*.py",
+  "run_entry": "main.py",
+  "testcases": [
+    {
+      "stdin": "create 1 dark-mode\nset 2 dark-mode prod on\ncheck 3 dark-mode prod ana\ncheck 4 dark-mode staging ana\ntarget 5 dark-mode staging ana\ncheck 6 dark-mode staging ana\n",
+      "expected": "True\nTrue\nTrue\nFalse\nTrue\nTrue"
+    },
+    {
+      "stdin": "create 1 beta\ncreate 2 beta\nset 3 nope prod on\ntarget 4 beta prod leo\ntarget 5 beta prod leo\nuntarget 6 beta prod leo\ncheck 7 beta prod leo\n",
+      "expected": "True\nFalse\nFalse\nTrue\nFalse\nTrue\nFalse"
+    }
+  ],
+  "grade_timeout_s": 45
+}

@@ -1,0 +1,20 @@
+{
+  "format": "interview-set/1",
+  "name": "search-dsa-py",
+  "title": "Search box: fewest keystrokes with autocomplete",
+  "company": "Site search (practice domain)",
+  "round": "dsa",
+  "language": "python",
+  "difficulty": "medium",
+  "minutes": 45,
+  "rules": "One problem. Explain your approach and its complexity before you code. Python standard library only. Hints are free: ask in the chat.",
+  "tags": ["test_p1_"],
+  "hidden_tests": ".hidden/tests_hidden.py",
+  "your_tests": "test_*.py",
+  "run_entry": "main.py",
+  "testcases": [
+    {"stdin": "7\nshoes\nshirts\nshoes\nshirt\nshirts\nshorts\nshirts\nshirtless\n", "expected": "6\n"},
+    {"stdin": "9\nkayak\nkayak\nkayak\nkayaking\nkayakingtrips\nkettle\nkettle\nkettle\nkettle\nkayakingtrips\n", "expected": "7\n"}
+  ],
+  "grade_timeout_s": 45
+}

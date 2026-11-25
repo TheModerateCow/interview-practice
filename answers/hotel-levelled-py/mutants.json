@@ -1,0 +1,10 @@
+[
+ {"file": "hotel.py", "old": "check_in < b[\"end\"] and b[\"start\"] < check_out", "new": "check_in <= b[\"end\"] and b[\"start\"] < check_out", "label": "back-to-back bookings treated as overlapping", "k": "test_l1_"},
+ {"file": "hotel.py", "old": "if room_id in self.rooms or rate <= 0:", "new": "if room_id in self.rooms or rate < 0:", "label": "a room with rate 0 is accepted", "k": "test_l1_"},
+ {"file": "hotel.py", "old": "key=lambda r: (self.rooms[r][\"rate\"], r)", "new": "key=lambda r: r", "label": "available rooms sorted by id only, ignoring rate", "k": "test_l2_"},
+ {"file": "hotel.py", "old": "key=lambda g: (-nights[g], g)", "new": "key=lambda g: (-nights[g], g[::-1])", "label": "top guests ties not broken by name", "k": "test_l2_"},
+ {"file": "hotel.py", "old": "day > b[\"start\"])", "new": "day >= b[\"start\"])", "label": "booking released as a no-show on its own arrival day", "k": "test_l3_"},
+ {"file": "hotel.py", "old": "max(1, min(day, b[\"end\"]) - b[\"start\"])", "new": "min(day, b[\"end\"]) - b[\"start\"]", "label": "same-day check-out charges nothing", "k": "test_l3_"},
+ {"file": "hotel.py", "old": "return -1\n        return (b[\"end\"] - b[\"start\"]) * b[\"rate\"]", "new": "return -1\n        return (b[\"end\"] - b[\"start\"]) * self.rooms[b[\"room\"]][\"rate\"]", "label": "cost uses the room's current rate, not the booked price", "k": "test_l4_"},
+ {"file": "hotel.py", "old": "if d <= at_day:", "new": "if d < at_day:", "label": "rate_at leaves out a change made exactly on at_day", "k": "test_l4_"}
+]
