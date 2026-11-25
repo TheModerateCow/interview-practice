@@ -566,7 +566,7 @@ def _():
 def _():
     s, j = jreq("GET", "/api/catalog"); ps = j.get("problems", [])
     built = [p for p in ps if p.get("source") == "builtin"]
-    check("catalog lists the built-in problems with ready-screen fields", s == 200 and len(built) >= 10 and all(p.get("id") and p.get("title") and p.get("round") and p.get("language") and "attempts" in p for p in ps), j)
+    check("catalog lists the built-in problems with ready-screen fields", s == 200 and len(built) >= 10 and all(p.get("id") and p.get("title") and p.get("round") and p.get("languages") and "attempts" in p for p in ps), j)
     sys.path.insert(0, os.path.join(ROOT, "backend")); from lab import variants
     for d in sorted(glob.glob(os.path.join(ROOT, "catalog", "*", "problem.json"))):
         d = os.path.dirname(d); pid = os.path.basename(d)
