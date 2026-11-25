@@ -305,3 +305,71 @@ test('Home: delete a finished and an unstarted set', async ({ page, request }) =
   expect((await api('/api/import', { method: 'POST', data: fs.readFileSync(`${OUT}/${A}.zip`) })).status()).toBe(200);   // same zip imports again
   await api(`/api/sets/${A}`, { method: 'DELETE' });
 });
+
+test('panes resize and remember', async ({ page, request }) => {
+  const api = async p => (await request.get(BASE + p, { headers: H })).json();
+  await page.goto(BASE);
+  await page.waitForLoadState('networkidle');
+  const bytes = Array.from(fs.readFileSync(process.env.E2E_ZIP_PANES));
+  const dt = await page.evaluateHandle(b => {
+    const d = new DataTransfer();
+    d.items.add(new File([new Uint8Array(b)], 'set.zip', { type: 'application/zip' }));
+    return d;
+  }, bytes);
+  for (const t of ['dragenter', 'dragover', 'drop']) await page.dispatchEvent('body', t, { dataTransfer: dt });
+  await openIfAsked(page);
+  const NAME_P = process.env.E2E_NAME_PANES;
+  await expect.poll(async () => (await api('/api/sets')).sets.some(s => s.name === NAME_P), { timeout: 30000 }).toBe(true);
+  await pickSet(page, NAME_P);
+  await page.click('#start-btn');
+  await expect(page.locator('#round')).toBeVisible();
+  await expect(page.locator('#editor .monaco-editor')).toBeVisible({ timeout: 60000 });
+
+  const size = async () => ({
+    files: (await page.locator('#files').boundingBox()).width,
+    problem: (await page.locator('#problem').boundingBox()).width,
+    bottom: (await page.locator('#bottom').boundingBox()).height,
+  });
+  const drag = async (sel, dx, dy) => {
+    const r = await page.locator(sel).boundingBox(), x = r.x + r.width / 2, y = r.y + r.height / 2;
+    await page.mouse.move(x, y); await page.mouse.down();
+    await page.mouse.move(x + dx / 2, y + dy / 2, { steps: 4 }); await page.mouse.move(x + dx, y + dy, { steps: 4 });
+    await page.mouse.up();
+  };
+  const near = (got, want) => expect(Math.abs(got - want)).toBeLessThanOrEqual(2);
+  for (const id of ['files', 'problem', 'bottom']) await expect(page.locator('#split-' + id)).toHaveAttribute('role', 'separator');
+
+  // each border follows the pointer
+  const a = await size();
+  await drag('#split-files', 60, 0);
+  await drag('#split-problem', -60, 0);
+  await drag('#split-bottom', 0, -60);
+  const b = await size();
+  near(b.files, a.files + 60); near(b.problem, a.problem + 60); near(b.bottom, a.bottom + 60);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+
+  // keyboard: ArrowRight on Files is +16 px
+  await page.focus('#split-files');
+  await page.keyboard.press('ArrowRight');
+  near((await size()).files, b.files + 16);
+  await expect(page.locator('#split-files')).toHaveAttribute('aria-valuenow', String(Math.round(b.files + 16)));
+
+  // limits: Files never under 120 px, the bottom area never covers the editor
+  await drag('#split-files', -600, 0);
+  near((await size()).files, 120);
+  await page.focus('#split-bottom');
+  await page.keyboard.press('End');
+  const col = (await page.locator('#editor-wrap').boundingBox()).height;
+  expect((await size()).bottom).toBeLessThanOrEqual(0.7 * col + 2);
+  await page.keyboard.press('ArrowDown');
+  const d = await size();
+
+  // the sizes survive a reload; double-click resets one
+  await page.reload();
+  await expect(page.locator('#round')).toBeVisible();
+  await expect(page.locator('#editor .monaco-editor')).toBeVisible({ timeout: 60000 });
+  const e = await size();
+  near(e.files, d.files); near(e.problem, d.problem); near(e.bottom, d.bottom);
+  await page.dblclick('#split-problem');
+  near((await size()).problem, 360);
+});
