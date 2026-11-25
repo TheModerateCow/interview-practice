@@ -5,3 +5,6 @@ data/
 tests/out/
 __pycache__/
 *.pyc
+# Svelte UI: dependencies and build output
+ui/node_modules/
+ui/dist/

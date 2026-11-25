@@ -99,7 +99,7 @@ Export (`submission/` = `work/` now, plus `session.json`, `results.json`, `manif
 `data/exports/`). Clock: `clock()` uses wall time from `start`; `over()` = `ended` **or** time expired; `log()` appends
 `" (after time)"` when `over()`; `stamp()` sets `after_time: over()`.
 
-**UI** (`ui/app.js`, `ui/index.html`, `ui/style.css`, `ui/tokens.css`). Drop zone; picker of `title · status`; ready
+**UI** (`ui/src/App.svelte`, `ui/src/lib.js`, `ui/style.css`, `ui/tokens.css`; Svelte, built by Vite in `nginx/Dockerfile`). Drop zone; picker of `title · status`; ready
 card; round screen with Monaco, file tree, new-file input, stdin, results pane, problem pane, part chips, timer (yellow
 at ≤5 min, red at 0); inline confirm bars for Next part and End; final card with grade rows, "Where the time went" and
 Export; toast. Theme Auto/Light/Dark. Keyboard Ctrl+' / Ctrl+Enter. At 00:00 the UI only polls and shows the final card
