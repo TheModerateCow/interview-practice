@@ -1,0 +1,74 @@
+{
+ "module": "billing",
+ "records": {},
+ "functions": {},
+ "classes": {
+  "Subscription": {
+   "init": [],
+   "methods": {
+    "start": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "plan",
+       "string"
+      ],
+      [
+       "cycle",
+       "string"
+      ],
+      [
+       "seats",
+       "int"
+      ]
+     ],
+     "returns": null,
+     "errors": true
+    },
+    "period_price": {
+     "params": [],
+     "returns": "int"
+    },
+    "period_end": {
+     "params": [],
+     "returns": "int"
+    },
+    "credit": {
+     "params": [],
+     "returns": "int"
+    },
+    "change": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "plan",
+       "string"
+      ],
+      [
+       "seats",
+       "int"
+      ]
+     ],
+     "returns": "int",
+     "errors": true
+    },
+    "renew": {
+     "params": [],
+     "returns": "int"
+    }
+   }
+  }
+ },
+ "errors": [
+  "unknown_plan",
+  "unknown_cycle",
+  "invalid_seats",
+  "outside_period"
+ ]
+}

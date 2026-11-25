@@ -1,0 +1,1076 @@
+[
+ {
+  "name": "new_subscription",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     5,
+     "team",
+     "monthly",
+     3
+    ]
+   },
+   {
+    "call": "period_price",
+    "args": [],
+    "expect": 7497
+   },
+   {
+    "call": "period_end",
+    "args": [],
+    "expect": 35
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "new_annual",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "business",
+     "annual",
+     2
+    ]
+   },
+   {
+    "call": "period_price",
+    "args": [],
+    "expect": 119980
+   },
+   {
+    "call": "period_end",
+    "args": [],
+    "expect": 360
+   }
+  ]
+ },
+ {
+  "name": "new_starter_annual",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "starter",
+     "annual",
+     1
+    ]
+   },
+   {
+    "call": "period_price",
+    "args": [],
+    "expect": 12990
+   }
+  ]
+ },
+ {
+  "name": "new_rejects_bad_input_1",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "team",
+     "weekly",
+     1
+    ],
+    "error": "unknown_cycle"
+   }
+  ]
+ },
+ {
+  "name": "new_rejects_bad_input_2",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "pro",
+     "monthly",
+     1
+    ],
+    "error": "unknown_plan"
+   }
+  ]
+ },
+ {
+  "name": "new_rejects_bad_input_3",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "Team",
+     "monthly",
+     1
+    ],
+    "error": "unknown_plan"
+   }
+  ]
+ },
+ {
+  "name": "new_rejects_bad_input_4",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "pro",
+     "weekly",
+     0
+    ],
+    "error": "unknown_cycle"
+   }
+  ]
+ },
+ {
+  "name": "new_rejects_bad_input_5",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "team",
+     "monthly",
+     0
+    ],
+    "error": "invalid_seats"
+   }
+  ]
+ },
+ {
+  "name": "new_rejects_bad_input_6",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "team",
+     "monthly",
+     -1
+    ],
+    "error": "invalid_seats"
+   }
+  ]
+ },
+ {
+  "name": "new_rejects_bad_input_7",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "team",
+     "monthly",
+     501
+    ],
+    "error": "invalid_seats"
+   }
+  ]
+ },
+ {
+  "name": "new_rejects_bad_input_8",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "pro",
+     "annual",
+     0
+    ],
+    "error": "unknown_plan"
+   }
+  ]
+ },
+ {
+  "name": "seat_limit_1",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "team",
+     "monthly",
+     1
+    ]
+   },
+   {
+    "call": "period_price",
+    "args": [],
+    "expect": 2499
+   }
+  ]
+ },
+ {
+  "name": "seat_limit_500",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "team",
+     "monthly",
+     500
+    ]
+   },
+   {
+    "call": "period_price",
+    "args": [],
+    "expect": 1249500
+   }
+  ]
+ },
+ {
+  "name": "renew_charges_full_period",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "starter",
+     "monthly",
+     4
+    ]
+   },
+   {
+    "call": "renew",
+    "args": [],
+    "expect": 5196
+   },
+   {
+    "call": "period_end",
+    "args": [],
+    "expect": 60
+   },
+   {
+    "call": "renew",
+    "args": [],
+    "expect": 5196
+   },
+   {
+    "call": "period_end",
+    "args": [],
+    "expect": 90
+   }
+  ]
+ },
+ {
+  "name": "renew_annual",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     7,
+     "team",
+     "annual",
+     1
+    ]
+   },
+   {
+    "call": "renew",
+    "args": [],
+    "expect": 24990
+   },
+   {
+    "call": "period_end",
+    "args": [],
+    "expect": 727
+   }
+  ]
+ },
+ {
+  "name": "upgrade_prorated_and_rounded_half_up",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "team",
+     "monthly",
+     1
+    ]
+   },
+   {
+    "call": "change",
+    "args": [
+     25,
+     "team",
+     2
+    ],
+    "expect": 417
+   },
+   {
+    "call": "change",
+    "args": [
+     26,
+     "team",
+     3
+    ],
+    "expect": 333
+   },
+   {
+    "call": "period_price",
+    "args": [],
+    "expect": 7497
+   }
+  ]
+ },
+ {
+  "name": "upgrade_plan_rounding",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "starter",
+     "monthly",
+     1
+    ]
+   },
+   {
+    "call": "change",
+    "args": [
+     20,
+     "team",
+     1
+    ],
+    "expect": 400
+   },
+   {
+    "call": "change",
+    "args": [
+     29,
+     "team",
+     2
+    ],
+    "expect": 83
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "change_on_first_day_is_full_difference",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "team",
+     "monthly",
+     1
+    ]
+   },
+   {
+    "call": "change",
+    "args": [
+     0,
+     "business",
+     1
+    ],
+    "expect": 3500
+   },
+   {
+    "call": "period_price",
+    "args": [],
+    "expect": 5999
+   }
+  ]
+ },
+ {
+  "name": "downgrade_credit_rounded_down",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "team",
+     "monthly",
+     2
+    ]
+   },
+   {
+    "call": "change",
+    "args": [
+     25,
+     "team",
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 416
+   },
+   {
+    "call": "period_price",
+    "args": [],
+    "expect": 2499
+   }
+  ]
+ },
+ {
+  "name": "downgrade_plan_credit",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "business",
+     "monthly",
+     1
+    ]
+   },
+   {
+    "call": "change",
+    "args": [
+     10,
+     "starter",
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 3133
+   }
+  ]
+ },
+ {
+  "name": "downgrade_mixed_credit",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "team",
+     "monthly",
+     3
+    ]
+   },
+   {
+    "call": "change",
+    "args": [
+     4,
+     "starter",
+     2
+    ],
+    "expect": 0
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 4245
+   }
+  ]
+ },
+ {
+  "name": "same_price_change_is_free",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "team",
+     "monthly",
+     2
+    ]
+   },
+   {
+    "call": "change",
+    "args": [
+     5,
+     "team",
+     2
+    ],
+    "expect": 0
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 0
+   },
+   {
+    "call": "change",
+    "args": [
+     5,
+     "team",
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "change",
+    "args": [
+     6,
+     "team",
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 2082
+   }
+  ]
+ },
+ {
+  "name": "credit_pays_renewal_and_rest_carries_over",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "business",
+     "monthly",
+     2
+    ]
+   },
+   {
+    "call": "change",
+    "args": [
+     15,
+     "business",
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 2999
+   },
+   {
+    "call": "change",
+    "args": [
+     20,
+     "team",
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 4165
+   },
+   {
+    "call": "renew",
+    "args": [],
+    "expect": 0
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 1666
+   },
+   {
+    "call": "renew",
+    "args": [],
+    "expect": 833
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 0
+   },
+   {
+    "call": "renew",
+    "args": [],
+    "expect": 2499
+   }
+  ]
+ },
+ {
+  "name": "credit_lasts_several_renewals",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "business",
+     "monthly",
+     1
+    ]
+   },
+   {
+    "call": "change",
+    "args": [
+     3,
+     "starter",
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 4230
+   },
+   {
+    "call": "renew",
+    "args": [],
+    "expect": 0
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 2931
+   },
+   {
+    "call": "renew",
+    "args": [],
+    "expect": 0
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 1632
+   },
+   {
+    "call": "renew",
+    "args": [],
+    "expect": 0
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 333
+   },
+   {
+    "call": "renew",
+    "args": [],
+    "expect": 966
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "credit_pays_upgrade",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "business",
+     "monthly",
+     1
+    ]
+   },
+   {
+    "call": "change",
+    "args": [
+     0,
+     "starter",
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 4700
+   },
+   {
+    "call": "change",
+    "args": [
+     10,
+     "team",
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 3900
+   },
+   {
+    "call": "change",
+    "args": [
+     10,
+     "business",
+     2
+    ],
+    "expect": 2433
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "change_day_must_be_in_current_period",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     10,
+     "team",
+     "monthly",
+     1
+    ]
+   },
+   {
+    "call": "change",
+    "args": [
+     40,
+     "team",
+     2
+    ],
+    "error": "outside_period"
+   },
+   {
+    "call": "change",
+    "args": [
+     9,
+     "team",
+     2
+    ],
+    "error": "outside_period"
+   },
+   {
+    "call": "period_price",
+    "args": [],
+    "expect": 2499
+   },
+   {
+    "call": "change",
+    "args": [
+     39,
+     "team",
+     2
+    ],
+    "expect": 83
+   },
+   {
+    "call": "renew",
+    "args": [],
+    "expect": 4998
+   },
+   {
+    "call": "change",
+    "args": [
+     39,
+     "team",
+     1
+    ],
+    "error": "outside_period"
+   },
+   {
+    "call": "change",
+    "args": [
+     70,
+     "team",
+     1
+    ],
+    "error": "outside_period"
+   },
+   {
+    "call": "change",
+    "args": [
+     40,
+     "team",
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 2499
+   }
+  ]
+ },
+ {
+  "name": "bad_change_changes_nothing",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "team",
+     "monthly",
+     2
+    ]
+   },
+   {
+    "call": "change",
+    "args": [
+     5,
+     "team",
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "change",
+    "args": [
+     6,
+     "pro",
+     1
+    ],
+    "error": "unknown_plan"
+   },
+   {
+    "call": "change",
+    "args": [
+     6,
+     "team",
+     0
+    ],
+    "error": "invalid_seats"
+   },
+   {
+    "call": "change",
+    "args": [
+     6,
+     "team",
+     501
+    ],
+    "error": "invalid_seats"
+   },
+   {
+    "call": "change",
+    "args": [
+     30,
+     "pro",
+     0
+    ],
+    "error": "outside_period"
+   },
+   {
+    "call": "period_price",
+    "args": [],
+    "expect": 2499
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 2082
+   },
+   {
+    "call": "renew",
+    "args": [],
+    "expect": 417
+   }
+  ]
+ },
+ {
+  "name": "annual_proration",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "team",
+     "annual",
+     1
+    ]
+   },
+   {
+    "call": "change",
+    "args": [
+     354,
+     "team",
+     2
+    ],
+    "expect": 417
+   },
+   {
+    "call": "change",
+    "args": [
+     300,
+     "team",
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 4165
+   }
+  ]
+ },
+ {
+  "name": "annual_downgrade_credit_carries_over",
+  "steps": [
+   {
+    "new": "Subscription",
+    "args": []
+   },
+   {
+    "call": "start",
+    "args": [
+     0,
+     "business",
+     "annual",
+     10
+    ]
+   },
+   {
+    "call": "change",
+    "args": [
+     90,
+     "starter",
+     10
+    ],
+    "expect": 0
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 352500
+   },
+   {
+    "call": "renew",
+    "args": [],
+    "expect": 0
+   },
+   {
+    "call": "credit",
+    "args": [],
+    "expect": 222600
+   },
+   {
+    "call": "period_end",
+    "args": [],
+    "expect": 720
+   }
+  ]
+ }
+]

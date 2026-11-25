@@ -1,0 +1,494 @@
+[
+ {
+  "name": "open_and_deposit",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     1,
+     "acc-a"
+    ],
+    "expect": true
+   },
+   {
+    "call": "balance",
+    "args": [
+     2,
+     "acc-a"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "deposit",
+    "args": [
+     3,
+     "acc-a",
+     500
+    ],
+    "expect": 500
+   },
+   {
+    "call": "deposit",
+    "args": [
+     4,
+     "acc-a",
+     250
+    ],
+    "expect": 750
+   },
+   {
+    "call": "balance",
+    "args": [
+     5,
+     "acc-a"
+    ],
+    "expect": 750
+   },
+   {
+    "call": "deposit",
+    "args": [
+     6,
+     "acc-z",
+     100
+    ],
+    "expect": null
+   },
+   {
+    "call": "balance",
+    "args": [
+     7,
+     "acc-z"
+    ],
+    "expect": null
+   }
+  ]
+ },
+ {
+  "name": "open_twice_keeps_money",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     1,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "acc-a",
+     300
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     3,
+     "acc-a"
+    ],
+    "expect": false
+   },
+   {
+    "call": "balance",
+    "args": [
+     4,
+     "acc-a"
+    ],
+    "expect": 300
+   },
+   {
+    "call": "open_account",
+    "args": [
+     5,
+     "ACC-A"
+    ],
+    "expect": true
+   },
+   {
+    "call": "balance",
+    "args": [
+     6,
+     "ACC-A"
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "withdraw",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     1,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "acc-a",
+     400
+    ]
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     3,
+     "acc-a",
+     150
+    ],
+    "expect": 250
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     4,
+     "acc-a",
+     251
+    ],
+    "expect": null
+   },
+   {
+    "call": "balance",
+    "args": [
+     5,
+     "acc-a"
+    ],
+    "expect": 250
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     6,
+     "acc-a",
+     250
+    ],
+    "expect": 0
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     7,
+     "acc-a",
+     1
+    ],
+    "expect": null
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     8,
+     "acc-z",
+     1
+    ],
+    "expect": null
+   }
+  ]
+ },
+ {
+  "name": "transfer",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     1,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "acc-a",
+     1000
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     3,
+     "acc-b"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     4,
+     "acc-b",
+     200
+    ]
+   },
+   {
+    "call": "transfer",
+    "args": [
+     5,
+     "acc-a",
+     "acc-b",
+     300
+    ],
+    "expect": 700
+   },
+   {
+    "call": "balance",
+    "args": [
+     6,
+     "acc-b"
+    ],
+    "expect": 500
+   },
+   {
+    "call": "transfer",
+    "args": [
+     7,
+     "acc-b",
+     "acc-a",
+     501
+    ],
+    "expect": null
+   },
+   {
+    "call": "balance",
+    "args": [
+     8,
+     "acc-b"
+    ],
+    "expect": 500
+   },
+   {
+    "call": "balance",
+    "args": [
+     9,
+     "acc-a"
+    ],
+    "expect": 700
+   },
+   {
+    "call": "transfer",
+    "args": [
+     10,
+     "acc-b",
+     "acc-a",
+     500
+    ],
+    "expect": 0
+   },
+   {
+    "call": "balance",
+    "args": [
+     11,
+     "acc-a"
+    ],
+    "expect": 1200
+   }
+  ]
+ },
+ {
+  "name": "transfer_rejected",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     1,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "acc-a",
+     600
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     3,
+     "acc-b"
+    ]
+   },
+   {
+    "call": "transfer",
+    "args": [
+     4,
+     "acc-a",
+     "acc-z",
+     100
+    ],
+    "expect": null
+   },
+   {
+    "call": "transfer",
+    "args": [
+     5,
+     "acc-z",
+     "acc-a",
+     100
+    ],
+    "expect": null
+   },
+   {
+    "call": "transfer",
+    "args": [
+     6,
+     "acc-a",
+     "acc-a",
+     100
+    ],
+    "expect": null
+   },
+   {
+    "call": "balance",
+    "args": [
+     7,
+     "acc-a"
+    ],
+    "expect": 600
+   },
+   {
+    "call": "transfer",
+    "args": [
+     8,
+     "acc-b",
+     "acc-a",
+     1
+    ],
+    "expect": null
+   },
+   {
+    "call": "balance",
+    "args": [
+     9,
+     "acc-b"
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "accounts_independent",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     1,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "acc-a",
+     100
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     3,
+     "acc-b"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     4,
+     "acc-b",
+     200
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     5,
+     "acc-c"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     6,
+     "acc-c",
+     300
+    ]
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     7,
+     "acc-b",
+     50
+    ]
+   },
+   {
+    "call": "transfer",
+    "args": [
+     8,
+     "acc-c",
+     "acc-a",
+     120
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     9,
+     "acc-b",
+     5
+    ]
+   },
+   {
+    "call": "balance",
+    "args": [
+     10,
+     "acc-a"
+    ],
+    "expect": 220
+   },
+   {
+    "call": "balance",
+    "args": [
+     11,
+     "acc-b"
+    ],
+    "expect": 155
+   },
+   {
+    "call": "balance",
+    "args": [
+     12,
+     "acc-c"
+    ],
+    "expect": 180
+   }
+  ]
+ }
+]

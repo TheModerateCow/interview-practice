@@ -1,0 +1,263 @@
+{
+ "module": "clinic",
+ "records": {},
+ "functions": {},
+ "classes": {
+  "Clinic": {
+   "init": [],
+   "methods": {
+    "add_clinician": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "add_room": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "add_type": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "name",
+       "string"
+      ],
+      [
+       "minutes",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "book": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "clinician",
+       "string"
+      ],
+      [
+       "patient",
+       "string"
+      ],
+      [
+       "kind",
+       "string"
+      ],
+      [
+       "start",
+       "int"
+      ]
+     ],
+     "returns": "optional<string>",
+     "level": 1
+    },
+    "cancel": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "appointment": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "id",
+       "string"
+      ]
+     ],
+     "returns": "optional<string>",
+     "level": 1
+    },
+    "schedule": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "clinician",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "busiest_clinicians": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "n",
+       "int"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "next_free": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "clinician",
+       "string"
+      ],
+      [
+       "kind",
+       "string"
+      ],
+      [
+       "after",
+       "int"
+      ]
+     ],
+     "returns": "optional<int>",
+     "level": 2
+    },
+    "check_in": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 3
+    },
+    "join_waitlist": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "patient",
+       "string"
+      ],
+      [
+       "clinician",
+       "string"
+      ],
+      [
+       "kind",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 3
+    },
+    "waitlist": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "clinician",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 3
+    },
+    "reschedule": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "id",
+       "string"
+      ],
+      [
+       "new_start",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    },
+    "hand_over": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "from_clinician",
+       "string"
+      ],
+      [
+       "to_clinician",
+       "string"
+      ]
+     ],
+     "returns": "optional<list<string>>",
+     "level": 4
+    },
+    "history": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "id",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 4
+    }
+   }
+  }
+ },
+ "errors": []
+}

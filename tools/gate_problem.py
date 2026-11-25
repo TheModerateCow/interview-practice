@@ -1,7 +1,7 @@
 """gate_problem.py <problem_dir> <answers_dir> [--lang go,java] [--keep DIR] [--build-starter]
 
 Render the problem for each language, add that language's answers (reference/, mutants.json, bugs.json) and run the
-unchanged gate.py on it in the app's runner images. Prints "<lang>: GATE PASS" per language; exits 1 if any fails.
+unchanged gate.py on it in the app's runner images, in an isolated compose project (ilab-gate). Prints "<lang>: GATE PASS" per language; exits 1 if any fails.
 --build-starter: Codebase only; write <problem>/<lang>/starter from reference + bugs.json (gate.py --build-starter).
 --keep DIR: leave the rendered sets in DIR/<lang>/ (default: a temp dir, removed).
 Contract: docs/rounds/3-language-variants/CONTRACT.md.
@@ -24,9 +24,16 @@ def stage(problem_dir, answers_dir, lang, dest):
         if os.path.isfile(os.path.join(a, f)): shutil.copy(os.path.join(a, f), os.path.join(dest, f))
 
 
+# Its own compose project ("ilab-gate", built from this checkout, empty data folder): gating never touches the dev stack
+# on :8765 or the test stack on :8766. Image: ilab-test-backend (tests/compose.test.yml).
+COMPOSE = ["docker", "compose", "-p", "ilab-gate", "-f", "deploy/docker-compose.yml", "-f", "tests/compose.test.yml"]
+GATE_ENV = dict(os.environ, ILAB_TEST_DATA=os.path.join(ROOT, "tests", "out", "gate-data"))
+
+
 def gate(dest, extra=()):
-    cmd = ["docker", "compose", "run", "--rm", "-T", "-v", f"{dest}:/set", "backend", "python3", "gate.py", "/set", *extra]
-    r = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
+    os.makedirs(GATE_ENV["ILAB_TEST_DATA"], exist_ok=True)
+    cmd = COMPOSE + ["run", "--rm", "-T", "-v", f"{dest}:/set", "backend", "python3", "gate.py", "/set", *extra]
+    r = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, env=GATE_ENV)
     return r.stdout + r.stderr
 
 

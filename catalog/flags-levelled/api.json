@@ -1,0 +1,264 @@
+{
+ "module": "flags",
+ "classes": {
+  "FlagService": {
+   "init": [],
+   "methods": {
+    "create_flag": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "flag_id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "set_enabled": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "flag_id",
+       "string"
+      ],
+      [
+       "env",
+       "string"
+      ],
+      [
+       "on",
+       "bool"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "add_target": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "flag_id",
+       "string"
+      ],
+      [
+       "env",
+       "string"
+      ],
+      [
+       "user_id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "remove_target": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "flag_id",
+       "string"
+      ],
+      [
+       "env",
+       "string"
+      ],
+      [
+       "user_id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "is_enabled": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "flag_id",
+       "string"
+      ],
+      [
+       "env",
+       "string"
+      ],
+      [
+       "user_id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "set_rollout": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "flag_id",
+       "string"
+      ],
+      [
+       "env",
+       "string"
+      ],
+      [
+       "percent",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 2
+    },
+    "enabled_flags": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "env",
+       "string"
+      ],
+      [
+       "user_id",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "most_evaluated": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "env",
+       "string"
+      ],
+      [
+       "n",
+       "int"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "schedule_change": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "flag_id",
+       "string"
+      ],
+      [
+       "env",
+       "string"
+      ],
+      [
+       "on",
+       "bool"
+      ],
+      [
+       "at_ts",
+       "int"
+      ]
+     ],
+     "returns": "string",
+     "level": 3
+    },
+    "cancel_schedule": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "schedule_id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 3
+    },
+    "pending": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "flag_id",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 3
+    },
+    "history": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "flag_id",
+       "string"
+      ],
+      [
+       "env",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 4
+    },
+    "rollback": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "flag_id",
+       "string"
+      ],
+      [
+       "env",
+       "string"
+      ],
+      [
+       "to_ts",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    }
+   }
+  }
+ }
+}

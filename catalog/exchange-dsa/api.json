@@ -1,0 +1,30 @@
+{
+ "module": "book",
+ "records": {
+  "Event": [
+   [
+    "kind",
+    "string"
+   ],
+   [
+    "price",
+    "long"
+   ],
+   [
+    "qty",
+    "long"
+   ]
+  ]
+ },
+ "functions": {
+  "run_book": {
+   "params": [
+    [
+     "events",
+     "list<Event>"
+    ]
+   ],
+   "returns": "list<long>"
+  }
+ }
+}

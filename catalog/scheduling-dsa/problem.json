@@ -4,7 +4,7 @@
  "round": "dsa",
  "difficulty": "medium",
  "minutes": 45,
- "rules": "One problem. Talk through your approach and its complexity before coding. Java 21 standard library only. Hints are free: ask in the chat.",
+ "rules": "One problem. Talk through your approach and its complexity before coding. Standard library only. Hints are free: ask in the chat.",
  "tags": [
   "test_p1_"
  ],

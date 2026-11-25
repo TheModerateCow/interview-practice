@@ -4,7 +4,7 @@
  "round": "levelled",
  "difficulty": "medium",
  "minutes": 90,
- "rules": "Four levels, revealed one at a time. Each opens when the previous level's hidden tests all pass, or when you press Next part. Python standard library only. Hints are free: ask in the chat.",
+ "rules": "Four levels, revealed one at a time. Each opens when the previous level's hidden tests all pass, or when you press Next part. Standard library only. Hints are free: ask in the chat.",
  "tags": [
   "test_l1_",
   "test_l2_",

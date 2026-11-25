@@ -1,6 +1,0 @@
-[
- {"file":"book.py","old":"if e[1] > total:","new":"if e[1] >= total:","label":"quote for exactly the whole book returns -1","k":"test_p1_"},
- {"file":"book.py","old":"change(k, -part)","new":"change(k, 0)","label":"buy leaves the partly filled level untouched","k":"test_p1_"},
- {"file":"book.py","old":"q = min(e[1], total)","new":"q = e[1] if e[1] <= total else 0","label":"buy larger than the book fills nothing","k":"test_p1_"},
- {"file":"book.py","old":"total -= e[2]","new":"total -= 0","label":"cancels not taken off the book depth","k":"test_p1_"}
-]

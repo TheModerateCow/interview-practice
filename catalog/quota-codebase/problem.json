@@ -4,7 +4,7 @@
  "round": "codebase",
  "difficulty": "medium",
  "minutes": 60,
- "rules": "Three phases: fix the bugs in the ticket, build Report, then speed up the hot path (phase 3 opens when phase 2 passes or with 15 minutes left). Go standard library only. Hints are free: ask in the chat.",
+ "rules": "Three phases: fix the bugs in the ticket, build Report, then speed up the hot path (phase 3 opens when phase 2 passes or with 15 minutes left). Standard library only. Hints are free: ask in the chat.",
  "tags": [
   "test_p1_",
   "test_p2_",

@@ -1,0 +1,698 @@
+[
+ {
+  "name": "cart_expires",
+  "steps": [
+   {
+    "new": "Shop",
+    "args": []
+   },
+   {
+    "call": "add_product",
+    "args": [
+     1,
+     "mug",
+     800,
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     10,
+     "c1",
+     "mug",
+     2
+    ]
+   },
+   {
+    "call": "cart_total",
+    "args": [
+     67,
+     "c1"
+    ],
+    "expect": 1600
+   },
+   {
+    "call": "items",
+    "args": [
+     68,
+     "c1"
+    ],
+    "expect": [
+     "mug:2"
+    ]
+   },
+   {
+    "call": "active_carts",
+    "args": [
+     69
+    ],
+    "expect": 1
+   },
+   {
+    "call": "cart_total",
+    "args": [
+     70,
+     "c1"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "items",
+    "args": [
+     71,
+     "c1"
+    ],
+    "expect": []
+   },
+   {
+    "call": "active_carts",
+    "args": [
+     72
+    ],
+    "expect": 0
+   },
+   {
+    "call": "checkout",
+    "args": [
+     73,
+     "c1"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "remove_from_cart",
+    "args": [
+     74,
+     "c1",
+     "mug",
+     1
+    ],
+    "expect": -1
+   },
+   {
+    "call": "stock_of",
+    "args": [
+     75,
+     "mug"
+    ],
+    "expect": 10
+   }
+  ]
+ },
+ {
+  "name": "touch_restarts_clock",
+  "steps": [
+   {
+    "new": "Shop",
+    "args": []
+   },
+   {
+    "call": "add_product",
+    "args": [
+     1,
+     "mug",
+     800,
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_product",
+    "args": [
+     2,
+     "pen",
+     150,
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     10,
+     "c1",
+     "mug",
+     2
+    ]
+   },
+   {
+    "call": "remove_from_cart",
+    "args": [
+     50,
+     "c1",
+     "mug",
+     1
+    ],
+    "expect": 1
+   },
+   {
+    "call": "cart_total",
+    "args": [
+     100,
+     "c1"
+    ],
+    "expect": 800
+   },
+   {
+    "call": "cart_total",
+    "args": [
+     105,
+     "c1"
+    ]
+   },
+   {
+    "call": "items",
+    "args": [
+     109,
+     "c1"
+    ],
+    "expect": [
+     "mug:1"
+    ]
+   },
+   {
+    "call": "items",
+    "args": [
+     110,
+     "c1"
+    ],
+    "expect": []
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     111,
+     "c1",
+     "pen",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "items",
+    "args": [
+     112,
+     "c1"
+    ],
+    "expect": [
+     "pen:1"
+    ]
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     113,
+     "c2",
+     "mug",
+     1
+    ]
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     114,
+     "c3",
+     "mug",
+     1
+    ]
+   },
+   {
+    "call": "remove_from_cart",
+    "args": [
+     115,
+     "c3",
+     "mug",
+     1
+    ]
+   },
+   {
+    "call": "active_carts",
+    "args": [
+     116
+    ],
+    "expect": 2
+   },
+   {
+    "call": "active_carts",
+    "args": [
+     171
+    ],
+    "expect": 1
+   },
+   {
+    "call": "active_carts",
+    "args": [
+     173
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "promo_discount",
+  "steps": [
+   {
+    "new": "Shop",
+    "args": []
+   },
+   {
+    "call": "add_product",
+    "args": [
+     1,
+     "tee",
+     999,
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_product",
+    "args": [
+     2,
+     "cap",
+     1250,
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_promo",
+    "args": [
+     5,
+     "SAVE15",
+     15,
+     0,
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     6,
+     "c1",
+     "tee",
+     1
+    ]
+   },
+   {
+    "call": "apply_promo",
+    "args": [
+     7,
+     "c1",
+     "SAVE15"
+    ],
+    "expect": true
+   },
+   {
+    "call": "cart_total",
+    "args": [
+     8,
+     "c1"
+    ],
+    "expect": 850
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     9,
+     "c1",
+     "cap",
+     1
+    ]
+   },
+   {
+    "call": "cart_total",
+    "args": [
+     10,
+     "c1"
+    ],
+    "expect": 1912
+   },
+   {
+    "call": "checkout",
+    "args": [
+     11,
+     "c1"
+    ],
+    "expect": 1912
+   },
+   {
+    "call": "add_promo",
+    "args": [
+     12,
+     "HALF",
+     50,
+     0,
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     13,
+     "c2",
+     "cap",
+     1
+    ]
+   },
+   {
+    "call": "apply_promo",
+    "args": [
+     14,
+     "c2",
+     "SAVE15"
+    ],
+    "expect": true
+   },
+   {
+    "call": "apply_promo",
+    "args": [
+     15,
+     "c2",
+     "HALF"
+    ],
+    "expect": true
+   },
+   {
+    "call": "cart_total",
+    "args": [
+     16,
+     "c2"
+    ],
+    "expect": 625
+   }
+  ]
+ },
+ {
+  "name": "promo_min_total",
+  "steps": [
+   {
+    "new": "Shop",
+    "args": []
+   },
+   {
+    "call": "add_product",
+    "args": [
+     1,
+     "mug",
+     1000,
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_product",
+    "args": [
+     2,
+     "pen",
+     1,
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_promo",
+    "args": [
+     5,
+     "BIG",
+     10,
+     5000,
+     500
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     6,
+     "c1",
+     "mug",
+     4
+    ]
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     7,
+     "c1",
+     "pen",
+     9
+    ]
+   },
+   {
+    "call": "apply_promo",
+    "args": [
+     8,
+     "c1",
+     "BIG"
+    ],
+    "expect": true
+   },
+   {
+    "call": "cart_total",
+    "args": [
+     9,
+     "c1"
+    ],
+    "expect": 4009
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     10,
+     "c1",
+     "mug",
+     1
+    ]
+   },
+   {
+    "call": "remove_from_cart",
+    "args": [
+     11,
+     "c1",
+     "pen",
+     9
+    ]
+   },
+   {
+    "call": "cart_total",
+    "args": [
+     12,
+     "c1"
+    ],
+    "expect": 4500
+   },
+   {
+    "call": "remove_from_cart",
+    "args": [
+     13,
+     "c1",
+     "mug",
+     1
+    ]
+   },
+   {
+    "call": "cart_total",
+    "args": [
+     14,
+     "c1"
+    ],
+    "expect": 4000
+   }
+  ]
+ },
+ {
+  "name": "promo_expiry_and_rules",
+  "steps": [
+   {
+    "new": "Shop",
+    "args": []
+   },
+   {
+    "call": "add_product",
+    "args": [
+     1,
+     "mug",
+     1000,
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_promo",
+    "args": [
+     5,
+     "FLASH",
+     20,
+     0,
+     30
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_promo",
+    "args": [
+     6,
+     "FLASH",
+     30,
+     0,
+     30
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_promo",
+    "args": [
+     7,
+     "ZERO",
+     0,
+     0,
+     30
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_promo",
+    "args": [
+     8,
+     "OVER",
+     101,
+     0,
+     30
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_promo",
+    "args": [
+     9,
+     "NEG",
+     10,
+     -1,
+     30
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_promo",
+    "args": [
+     10,
+     "NOW",
+     10,
+     0,
+     0
+    ],
+    "expect": false
+   },
+   {
+    "call": "apply_promo",
+    "args": [
+     11,
+     "c1",
+     "FLASH"
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     12,
+     "c1",
+     "mug",
+     1
+    ]
+   },
+   {
+    "call": "apply_promo",
+    "args": [
+     13,
+     "c1",
+     "NOPE"
+    ],
+    "expect": false
+   },
+   {
+    "call": "apply_promo",
+    "args": [
+     14,
+     "c1",
+     "FLASH"
+    ],
+    "expect": true
+   },
+   {
+    "call": "cart_total",
+    "args": [
+     34,
+     "c1"
+    ],
+    "expect": 800
+   },
+   {
+    "call": "cart_total",
+    "args": [
+     35,
+     "c1"
+    ],
+    "expect": 1000
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     36,
+     "c2",
+     "mug",
+     1
+    ]
+   },
+   {
+    "call": "apply_promo",
+    "args": [
+     37,
+     "c2",
+     "FLASH"
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_promo",
+    "args": [
+     38,
+     "ALL",
+     100,
+     0,
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "apply_promo",
+    "args": [
+     39,
+     "c2",
+     "ALL"
+    ],
+    "expect": true
+   },
+   {
+    "call": "cart_total",
+    "args": [
+     40,
+     "c2"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "active_carts",
+    "args": [
+     41
+    ],
+    "expect": 2
+   }
+  ]
+ }
+]

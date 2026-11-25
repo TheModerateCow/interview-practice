@@ -279,7 +279,9 @@
   "data": "data/large_fast.json",
   "expect": 14866,
   "budget_ms": {
-   "go": 2000
+   "go": 2000,
+   "java": 1000,
+   "python": 11000
   }
  }
 ]

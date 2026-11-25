@@ -1,0 +1,218 @@
+{
+ "module": "bank",
+ "java_class": "Bank",
+ "records": {},
+ "functions": {},
+ "classes": {
+  "Bank": {
+   "init": [],
+   "methods": {
+    "open_account": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "deposit": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "id",
+       "string"
+      ],
+      [
+       "amount",
+       "int"
+      ]
+     ],
+     "returns": "optional<int>",
+     "level": 1
+    },
+    "withdraw": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "id",
+       "string"
+      ],
+      [
+       "amount",
+       "int"
+      ]
+     ],
+     "returns": "optional<int>",
+     "level": 1
+    },
+    "transfer": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "from",
+       "string"
+      ],
+      [
+       "to",
+       "string"
+      ],
+      [
+       "amount",
+       "int"
+      ]
+     ],
+     "returns": "optional<int>",
+     "level": 1
+    },
+    "balance": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "id",
+       "string"
+      ]
+     ],
+     "returns": "optional<int>",
+     "level": 1
+    },
+    "top_spenders": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "n",
+       "int"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "accounts_above": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "min",
+       "int"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "schedule_payment": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "id",
+       "string"
+      ],
+      [
+       "amount",
+       "int"
+      ],
+      [
+       "delay",
+       "int"
+      ]
+     ],
+     "returns": "optional<string>",
+     "level": 3
+    },
+    "cancel_payment": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "id",
+       "string"
+      ],
+      [
+       "payment_id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 3
+    },
+    "payment_status": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "payment_id",
+       "string"
+      ]
+     ],
+     "returns": "string",
+     "level": 3
+    },
+    "merge_accounts": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "keep",
+       "string"
+      ],
+      [
+       "absorb",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    },
+    "balance_at": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "id",
+       "string"
+      ],
+      [
+       "at_ts",
+       "int"
+      ]
+     ],
+     "returns": "optional<int>",
+     "level": 4
+    }
+   }
+  }
+ },
+ "errors": []
+}
