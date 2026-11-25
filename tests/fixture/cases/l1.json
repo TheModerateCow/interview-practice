@@ -1,0 +1,221 @@
+[
+ {
+  "name": "net_basic",
+  "call": "net_by_account",
+  "args": [
+   [
+    {
+     "account_id": "b",
+     "amount_cents": 5
+    },
+    {
+     "account_id": "a",
+     "amount_cents": 7
+    },
+    {
+     "account_id": "b",
+     "amount_cents": -5
+    }
+   ]
+  ],
+  "expect": [
+   {
+    "account_id": "a",
+    "amount_cents": 7
+   },
+   {
+    "account_id": "b",
+    "amount_cents": 0
+   }
+  ]
+ },
+ {
+  "name": "net_empty",
+  "call": "net_by_account",
+  "args": [
+   []
+  ],
+  "expect": []
+ },
+ {
+  "name": "window_basic",
+  "call": "max_window",
+  "args": [
+   [
+    1,
+    -2,
+    3,
+    4,
+    -1
+   ],
+   2
+  ],
+  "expect": 7
+ },
+ {
+  "name": "window_long",
+  "call": "max_window",
+  "args": [
+   [
+    2000000000,
+    2000000000,
+    2000000000
+   ],
+   3
+  ],
+  "expect": 6000000000
+ },
+ {
+  "name": "window_too_wide",
+  "call": "max_window",
+  "args": [
+   [
+    1,
+    2
+   ],
+   3
+  ],
+  "error": "invalid_window"
+ },
+ {
+  "name": "window_zero",
+  "call": "max_window",
+  "args": [
+   [
+    1
+   ],
+   0
+  ],
+  "error": true
+ },
+ {
+  "name": "first_negative_found",
+  "call": "first_negative",
+  "args": [
+   [
+    3,
+    0,
+    -1,
+    -5
+   ]
+  ],
+  "expect": 2
+ },
+ {
+  "name": "first_negative_none",
+  "call": "first_negative",
+  "args": [
+   [
+    1,
+    2
+   ]
+  ],
+  "expect": null
+ },
+ {
+  "name": "grid_two",
+  "call": "grid",
+  "args": [
+   2
+  ],
+  "expect": [
+   [
+    1,
+    2
+   ],
+   [
+    3,
+    4
+   ]
+  ]
+ },
+ {
+  "name": "grid_zero",
+  "call": "grid",
+  "args": [
+   0
+  ],
+  "expect": []
+ },
+ {
+  "name": "wallet_basic",
+  "steps": [
+   {
+    "new": "Wallet",
+    "args": [
+     "ana"
+    ]
+   },
+   {
+    "call": "owner_name",
+    "args": [],
+    "expect": "ana"
+   },
+   {
+    "call": "deposit",
+    "args": [
+     500
+    ]
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     200
+    ],
+    "expect": 300
+   },
+   {
+    "call": "balance",
+    "args": [],
+    "expect": 300
+   }
+  ]
+ },
+ {
+  "name": "wallet_errors",
+  "steps": [
+   {
+    "new": "Wallet",
+    "args": [
+     "bo"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     0
+    ],
+    "error": "invalid_amount"
+   },
+   {
+    "call": "deposit",
+    "args": [
+     100
+    ]
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     150
+    ],
+    "error": "insufficient_funds"
+   },
+   {
+    "call": "balance",
+    "args": [],
+    "expect": 100
+   }
+  ]
+ },
+ {
+  "name": "window_large",
+  "call": "max_window",
+  "data": "data/large.json",
+  "expect": 68692,
+  "budget_ms": {
+   "go": 2000,
+   "java": 3000,
+   "python": 20000
+  }
+ }
+]

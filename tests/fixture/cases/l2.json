@@ -1,0 +1,77 @@
+[
+ {
+  "name": "history",
+  "steps": [
+   {
+    "new": "Wallet",
+    "args": [
+     "cy"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     500
+    ]
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     200
+    ],
+    "expect": 300
+   },
+   {
+    "call": "history",
+    "args": [],
+    "expect": [
+     "+500",
+     "-200"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "freeze",
+  "steps": [
+   {
+    "new": "Wallet",
+    "args": [
+     "dee"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     50
+    ]
+   },
+   {
+    "call": "frozen",
+    "args": [],
+    "expect": false
+   },
+   {
+    "call": "freeze",
+    "args": []
+   },
+   {
+    "call": "frozen",
+    "args": [],
+    "expect": true
+   },
+   {
+    "call": "deposit",
+    "args": [
+     10
+    ],
+    "error": "wallet_frozen"
+   },
+   {
+    "call": "balance",
+    "args": [],
+    "expect": 50
+   }
+  ]
+ }
+]
