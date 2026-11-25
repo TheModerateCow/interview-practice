@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Acceptance tests against the isolated test stack (tests/stack.sh up: http://127.0.0.1:8766). stdlib only."""
-import glob, http.client, io, json, os, random, shutil, socket, subprocess, sys, time, traceback, zipfile
+import glob, http.client, io, json, os, random, re, shutil, socket, subprocess, sys, time, traceback, zipfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.environ.get("ILAB_TEST_DATA", os.path.join(ROOT, "tests/out/stack-data"))   # the test stack's /data
@@ -450,7 +450,8 @@ def _():
         check(f"connect 127.0.0.1:{port} fails", ok)
     for svc, port in (("backend", 8000), ("docker-proxy", 2375)):
         r = subprocess.run([os.path.join(ROOT, "tests/stack.sh"), "compose", "port", svc, str(port)], cwd=ROOT, capture_output=True, text=True)
-        check(f"compose port {svc} {port} publishes nothing", r.stdout.strip() in ("", ":0"), r.stdout + r.stderr)
+        out = r.stdout + r.stderr   # unpublished reads "", ":0" or "invalid IP:0" depending on the Compose version
+        check(f"compose port {svc} {port} publishes nothing", not re.search(r":[1-9][0-9]*\s*$", out, re.M), out)
 
 
 @sec("sets say which is which")

@@ -1,0 +1,58 @@
+# Gate the catalog problems a change can affect, per language (tools/ci_affected.py decides): one job per language with
+# work, each gating only its problems in the app's runner images. Untouched problems and languages are never re-run.
+# Manual run: every problem in every language.
+name: Catalog
+on:
+  pull_request:
+    paths: ["catalog/**", "answers/**", "tests/fixture/**", "backend/lab/variants.py", "backend/lab/langs/**", "backend/sandbox/**", "deploy/backend/**", "deploy/runner-python/**", "deploy/docker-compose.yml", "tests/compose.test.yml", "tools/gate_problem.py", "tools/ci_affected.py"]
+  push:
+    branches: [main]
+    paths: ["catalog/**", "answers/**", "tests/fixture/**", "backend/lab/variants.py", "backend/lab/langs/**", "backend/sandbox/**", "deploy/backend/**", "deploy/runner-python/**", "deploy/docker-compose.yml", "tests/compose.test.yml", "tools/gate_problem.py", "tools/ci_affected.py"]
+  workflow_dispatch:
+concurrency: {group: "catalog-${{ github.ref }}", cancel-in-progress: true}
+permissions: {contents: read}
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs: {matrix: "${{ steps.plan.outputs.matrix }}"}
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0}
+      - id: plan
+        env: {EVENT: "${{ github.event_name }}", BASE: "${{ github.base_ref }}", BEFORE: "${{ github.event.before }}"}
+        run: |
+          case "$EVENT" in
+            pull_request) ref="origin/$BASE" ;;
+            push) ref="$BEFORE"; git cat-file -e "$ref" 2>/dev/null || ref=--all ;;
+            *) ref=--all ;;
+          esac
+          echo "matrix=$(python3 tools/ci_affected.py $ref)" | tee -a "$GITHUB_OUTPUT"
+
+  gate:
+    needs: plan
+    if: needs.plan.outputs.matrix != '{"include": []}'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    env: {LANG_: "${{ matrix.lang }}", PROBLEMS: "${{ matrix.problems }}"}
+    steps:
+      - uses: actions/checkout@v7
+      - run: echo "ILAB_UID=$(id -u)" >> "$GITHUB_ENV" && echo "ILAB_GID=$(id -g)" >> "$GITHUB_ENV"
+      - name: Backend image and this language's runner image only
+        run: |
+          export ILAB_TEST_DATA=$PWD/tests/out/gate-data
+          docker compose -p ilab-gate -f deploy/docker-compose.yml -f tests/compose.test.yml build -q backend
+          if [ "$LANG_" = python ]; then docker compose -f deploy/docker-compose.yml build -q ilab-python; exit; fi
+          img=$(sed -n "s/.*\"$LANG_\": os\.environ\.get(\"ILAB_IMG_[A-Z]*\", *\"\([^\"]*\)\").*/\1/p" backend/sandbox/runner.py)
+          docker pull -q "$img"
+      - name: Gate
+        run: |
+          fail=0
+          for p in $PROBLEMS; do
+            a=answers/${p#catalog/}; [ "$p" = tests/fixture ] && a=tests/fixture/answers
+            echo "::group::$p ($LANG_)"; python3 tools/gate_problem.py "$p" "$a" --lang "$LANG_" || fail=1; echo "::endgroup::"
+          done
+          exit $fail
