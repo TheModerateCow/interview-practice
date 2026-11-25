@@ -4,75 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Interview Lab</title>
-<link rel="stylesheet" href="fonts.css">
-<link rel="stylesheet" href="tokens.css">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="./fonts.css">
+<link rel="stylesheet" href="./tokens.css">
+<link rel="stylesheet" href="./style.css">
 </head>
 <body>
-<header id="top">
-  <strong class="brand">Interview Lab</strong>
-  <label for="set-picker" class="sr">Interview set</label>
-  <select id="set-picker" aria-label="Choose interview set"></select>
-  <span class="spacer"></span>
-  <div id="parts" class="parts hidden" aria-label="Parts"></div>
-  <div id="timer-wrap" class="timer-wrap hidden"><span id="timer-label" class="label">left</span><span id="timer" class="timer" role="timer" aria-label="Time left">--:--</span></div>
-  <div class="seg" role="group" aria-label="Theme">
-    <button type="button" data-t="" aria-pressed="true" title="Follow system">Auto</button>
-    <button type="button" data-t="light" aria-pressed="false">Light</button>
-    <button type="button" data-t="dark" aria-pressed="false">Dark</button>
-  </div>
-</header>
-<div id="health" class="health hidden" role="alert"></div>
-
-<main id="dropzone" class="hidden">
-  <div class="drop">
-    <h1 class="drop-big">Drop a set .zip here</h1>
-    <p>Sets come from Claude's interview-practice skill. Drag the .zip anywhere onto this page.</p>
-    <p id="drop-error" class="err" role="alert"></p>
-  </div>
-</main>
-
-<main id="ready" class="hidden"></main>
-
-<main id="round" class="hidden">
-  <div class="toolbar">
-    <button id="run-btn" class="btn btn-outline" type="button" aria-label="Run (Ctrl+')">Run <kbd>Ctrl '</kbd></button>
-    <button id="mytests-btn" class="btn btn-outline hidden" type="button" aria-label="Run my tests">My tests</button>
-    <button id="submit-btn" class="btn btn-accent hidden" type="button" aria-label="Submit (Ctrl+Enter)">Submit <kbd>Ctrl ↵</kbd></button>
-    <button id="next-btn" class="btn btn-ghost hidden" type="button" aria-label="Next part">Next part</button>
-    <span id="next-bar" class="confirm-inline hidden"><span id="next-bar-text">Show the next part now?</span>
-      <button id="next-yes" class="btn btn-solid" type="button">Show it</button><button id="next-no" class="btn btn-ghost" type="button">Cancel</button></span>
-    <button id="end-btn" class="btn btn-danger" type="button" aria-label="End interview">End</button>
-    <span id="end-bar" class="confirm-inline danger hidden">End now? Hidden tests run one last time and the clock stops.
-      <button id="end-confirm" class="btn btn-danger strong" type="button">End interview</button><button id="end-no" class="btn btn-ghost" type="button">Keep going</button></span>
-    <span class="spacer"></span>
-    <span id="busy" class="busy" aria-live="polite"></span>
-    <span id="save-status" class="saved"></span>
-    <button id="export-btn" class="btn btn-ghost" type="button" aria-label="Export">Export</button>
-  </div>
-  <div id="closed-bar" class="closed-bar hidden" role="status"><span id="closed-text"></span>
-    <button id="closed-results" class="btn btn-ghost" type="button">Show results</button></div>
-  <div id="panes">
-    <aside id="files" aria-label="Files">
-      <div id="file-tree" role="tree" aria-label="Files"></div>
-      <form id="newfile-form"><input id="newfile" placeholder="+ New file" aria-label="New file path" autocomplete="off"></form>
-    </aside>
-    <section id="editor-wrap">
-      <div id="editor"></div>
-      <div id="bottom">
-        <div class="stdin-wrap"><label for="stdin" class="label">stdin</label><textarea id="stdin" spellcheck="false" placeholder="Input for Run"></textarea></div>
-        <div id="results" aria-live="polite"></div>
-      </div>
-    </section>
-    <section id="problem" class="md" aria-label="Problem"></section>
-  </div>
-</main>
-
-<div id="final" class="hidden" role="dialog" aria-modal="true" aria-label="Results"></div>
-<div id="flash" class="toast hidden" role="status"></div>
-
-<script src="vendor/marked.min.js"></script>
-<script src="vendor/monaco/vs/loader.js"></script>
-<script src="app.js"></script>
+<!-- Vendored by nginx/Dockerfile, not bundled: marked is a global, Monaco needs its AMD loader. -->
+<script src="/vendor/marked.min.js"></script>
+<script src="/vendor/monaco/vs/loader.js"></script>
+<script type="module" src="./src/main.js"></script>
 </body>
 </html>
