@@ -523,5 +523,23 @@ def _():
     check("unknown name: 404", jreq("DELETE", "/api/sets/no-such-set")[0] == 404)
 
 
+@sec("run a library (no program)")
+def _():
+    def lib(label, **kw):
+        n = uniq("t-lib")
+        z = {"manifest.json": json.dumps(manifest(n, "go", **kw)), "problem.md": "x",
+             "starter/go.mod": "module flagstore\n\ngo 1.22\n", "starter/store.go": "package flagstore\n\nfunc Get() int { return 1 }\n"}
+        s, j = imp(mkzip(z)); check(f"{label}: import", s == 200, j)
+        jreq("POST", f"/api/sets/{n}/start")
+        r = runfile(n, "store.go"); return r, (r.get("compile") or {})
+
+    r, c = lib("lib with My tests", your_tests="*_test.go"); log = c.get("log", "")
+    check("lib with My tests: Nothing to run, package named, mentions My tests, no shell error",
+          c.get("ok") is False and "Nothing to run" in log and "flagstore" in log and "My tests" in log and "Syntax error" not in json.dumps(r), r)
+    r, c = lib("lib without My tests"); log = c.get("log", "")
+    check("lib without My tests: Nothing to run, package named, says Check it with Submit., no My tests",
+          c.get("ok") is False and "Nothing to run" in log and "flagstore" in log and "Check it with Submit." in log and "My tests" not in log, r)
+
+
 print(f"\n{'ALL PASSED' if not fails else f'{fails} FAILED'}")
 sys.exit(1 if fails else 0)

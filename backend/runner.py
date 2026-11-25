@@ -201,7 +201,12 @@ def run(lang, files, entry, stdins):
     if lang in ("go", "java", "c", "cpp"):
         if lang == "go":
             d = os.path.dirname(entry) or "."
-            script = f"[ -f go.mod ] || go mod init ilab >/dev/null 2>&1\ngo build -o /tmp/out/prog ./{q(d)} > /tmp/out/compile.log 2>&1\necho $? > /tmp/out/compile.rc\n"
+            script = f"[ -f go.mod ] || go mod init ilab >/dev/null 2>&1\ngo build -o /tmp/out/prog ./{q(d)} > /tmp/out/compile.log 2>&1\nrc=$?\n"
+            # a non-main package builds to an archive, not a program: say so instead of executing it
+            script += (f"if [ $rc = 0 ]; then p=$(go list -f '{{{{.Name}}}}' ./{q(d)}); [ \"$p\" = main ] || {{ rc=1; "
+                       "echo \"Nothing to run: this code is a library (package $p), not a program with package main and func main(). "
+                       "Test it with My tests (add a file ending in _test.go) or Submit.\" > /tmp/out/compile.log; }; fi\n"
+                       "echo $rc > /tmp/out/compile.rc\n")
         elif lang == "java":
             files = dict(files); files.setdefault("Expect.java", JAVA_EXPECT)
             script = "javac -d /tmp/out/classes $(find . -name '*.java') > /tmp/out/compile.log 2>&1\necho $? > /tmp/out/compile.rc\n"
