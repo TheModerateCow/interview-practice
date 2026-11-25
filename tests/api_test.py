@@ -339,11 +339,39 @@ def _():
     lv = uniq("t-snap-lvl"); ht = ".hidden/test_hidden.py"
     zz = {"manifest.json": json.dumps(manifest(lv, "python", round="levelled", tags=["test_l1_", "test_l2_"], hidden_tests=ht,
           reveal=[{"file": ".hidden/l2.md", "after_tag": "test_l1_", "or_minutes_left": None, "unlocks": "test_l2_"}])),
-          "problem.md": "L1", ".hidden/l2.md": "L2", "starter/main.py": "x=1\n", ht: "def test_l1_a():\n    assert True\n"}
+          "problem.md": "L1", ".hidden/l2.md": "L2", "starter/main.py": "x=1\n", ht: "def test_l1_a():\n    assert True\ndef test_l2_a():\n    assert True\n"}
     imp(mkzip(zz)); jreq("POST", f"/api/sets/{lv}/start"); jreq("POST", f"/api/sets/{lv}/end")
     check("levelled: has_next true after End", jreq("GET", f"/api/sets/{lv}/state")[1]["has_next"] is True)
     st = jreq("POST", f"/api/sets/{lv}/next")[1]
     check("levelled: Next after End reveals, marked after time", any("l2.md" in e[1] and "(after time)" in e[1] for e in st["events"]), st["events"][-2:])
+
+
+# ------------------------------------------------------------------ manifest sanity
+@sec("manifest sanity")
+def _():
+    ht = ".hidden/tests_hidden.py"; tests = "def test_p1_a():\n    pass\ndef test_p2_a():\n    pass\n"
+    rv = lambda f, a, u: {"file": f, "after_tag": a, "or_minutes_left": None, "unlocks": u}
+    def bad(label, want, tags=("test_p1_", "test_p2_"), reveal=(), **kw):
+        n = uniq("t-san")
+        z = {"manifest.json": json.dumps(manifest(n, "python", tags=list(tags), hidden_tests=ht, reveal=list(reveal), **kw)), "problem.md": "x",
+             "starter/main.py": "x=1\n", ht: tests, ".hidden/p2.md": "P2", ".hidden/p3.md": "P3"}
+        s, j = imp(mkzip(z)); err = j.get("error", "")
+        check(f"sanity: {label} -> 400 naming the field", s == 400 and all(w in err for w in want), (s, err))
+    bad("C1 tag with no test", ["tags: test_p3_ matches no test in .hidden/tests_hidden.py"], tags=("test_p1_", "test_p2_", "test_p3_"),
+        reveal=[rv(".hidden/p2.md", "test_p1_", "test_p2_"), rv(".hidden/p3.md", "test_p2_", "test_p3_")])
+    bad("C2 two files unlock one tag", ["reveal[1].unlocks: test_p2_ is already unlocked by reveal[0]"],
+        reveal=[rv(".hidden/p2.md", "test_p1_", "test_p2_"), rv(".hidden/p3.md", "test_p1_", "test_p2_")])
+    bad("C3 one file twice", ["reveal[1].file: .hidden/p2.md is already revealed by reveal[0]"],
+        reveal=[rv(".hidden/p2.md", "test_p1_", "test_p2_"), rv(".hidden/p2.md", "test_p1_", "test_p2_")])
+    bad("self after_tag", ["reveal[0].after_tag: test_p2_ is never unlocked before this part"], reveal=[rv(".hidden/p2.md", "test_p2_", "test_p2_")])
+    bad("missing reveal file", ["reveal[0].file: .hidden/nope.md is missing"], reveal=[rv(".hidden/nope.md", "test_p1_", "test_p2_")])
+    for d in sorted(os.path.dirname(x) for x in glob.glob(os.path.join(ROOT, "tests", "sets", "*", "manifest.json"))):
+        r = subprocess.run([sys.executable, os.path.join(ROOT, "tools", "pack.py"), d, "/tmp/_san.zip"], capture_output=True, text=True)
+        check(f"sanity: pack.py packs {os.path.basename(d.rstrip('/'))}", r.returncode == 0 and "packed" in r.stdout, r.stdout + r.stderr)
+    sk = open(os.path.join(ROOT, "skill", "interview-practice", "SKILL.md")).read()
+    for f in ("tools/pack.py", "backend/gate.py"):
+        src = open(os.path.join(ROOT, f)).read()
+        check(f"sanity: SKILL.md embeds {f} unchanged", src in sk)
 
 
 # ------------------------------------------------------------------ import validation
