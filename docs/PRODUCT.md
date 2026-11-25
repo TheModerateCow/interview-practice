@@ -81,6 +81,153 @@ Data (per set, data/sets/<name>/):
   data/exports/<name>-<ts>.zip              every export
 ```
 
+## 4a. User flows
+
+Each persona's flow as it works today, then the ideal from §3. Drawn from the code on `main` (6003d09) and the round-1
+usage tests (A-report: candidate; B-report: interviewer agent). Screen names are the ones a user sees.
+
+Legend for every diagram: **thick blue border** = round 2 ("Drop to ready", `docs/rounds/2-drop-to-ready/`) changes
+this step; **dashed border** = round 1 ("Honest round close") already fixed it. Unmarked steps that differ between
+today and ideal are for later rounds.
+
+### Candidate: today
+
+```mermaid
+flowchart TD
+  open["Opens 127.0.0.1:8765"] -->|"no round in progress"| home["Home: drop box + sets by status"]
+  open -->|"a round in progress"| round
+  open -.->|"drops zip while the page loads"| lost["Another set's screen, or an error where Start should be"]
+  home -->|"drops zip"| imp{"Import"}
+  imp -->|"bad zip"| bad["Red text or corner toast; another set's Start stays on screen"]
+  imp -->|"good zip"| ready["Ready screen, no message"]
+  picker["Header picker: title + ready / running / ended"] -->|"picks a set"| ready
+  ready -->|"presses Start"| round["Round screen: clock runs"]
+  round -->|"Run / My tests / Submit"| round
+  round -->|"presses End, or 00:00"| card["End card: final grade per part"]
+  card -->|"presses Close"| closed["Round screen + Round closed bar"]
+  card -->|"presses Export"| export["Toast: Downloaded export.zip"]
+  closed -->|"presses Export"| export
+  export -->|"sends export.zip"| claude["Claude debriefs"]
+  classDef round2 stroke:#3772ff,stroke-width:4px
+  classDef round1 stroke-dasharray:6 4
+  class lost,bad,ready,picker round2
+  class card,closed,export round1
+```
+Thick blue: round 2 changes it. Dashed: round 1 fixed it.
+
+### Candidate: ideal
+
+```mermaid
+flowchart TD
+  open["Opens 127.0.0.1:8765"] --> home["Home: drop box + sets with title, name, status, time left"]
+  home -->|"drops zip"| imp{"Import"}
+  imp -->|"good zip"| ok["Toast: Imported Rate limiter (rate-limiter-py)"]
+  imp -->|"bad zip"| bad["Toast: Not imported: file name, reason. Screen stays"]
+  ok --> ready["Ready screen of that set, its name under the title"]
+  home -->|"picks a set by name and status"| ready
+  ready -->|"checks the name, presses Start"| round["Round screen: clock runs"]
+  round -->|"Run / My tests / Submit: every click answers"| round
+  round -->|"warning, then the last minute"| cue["Time cues scaled to the round"]
+  cue --> round
+  round -->|"presses End, or 00:00"| card["End card: final grade per part"]
+  card -->|"presses Close, keeps practising"| closed["Round closed bar: after time"]
+  card -->|"presses Export"| export["Toast: send export.zip to Claude"]
+  export -->|"sends export.zip"| claude["Claude debriefs"]
+  classDef round2 stroke:#3772ff,stroke-width:4px
+  classDef round1 stroke-dasharray:6 4
+  class home,ok,bad,ready round2
+  class card,closed,export round1
+```
+Thick blue: round 2 changes it. Dashed: round 1 fixed it.
+
+**The drop gives no answer (round 2).** The candidate drops Claude's zip. Today the screen just changes to a ready
+screen, and dropping the same unstarted zip again changes nothing visible (A-31). It should say "Imported Rate limiter
+(rate-limiter-py)", or "…replacing the copy you hadn't started".
+
+**A failed drop looks like a success (round 2).** The candidate drops a broken zip while another set is open. Today that
+set's ready screen and Start button stay, under a red corner toast with author-speak (B-E-e2a-error, A-28). It should
+say "Not imported: <file name>." with a plain reason and leave the screen as it was.
+
+**Sets look alike (round 2).** The candidate opens the header picker to find the set Claude just sent. Today every copy
+reads "Rate limiter · ready" (A-03), and the ready screen never shows the name. The picker should show the name and
+"not started" or "N min left", and the ready screen the name under the title. Home rows already show the name, and
+the Home page (#10) already stopped the stale end card from opening on first load.
+
+**A drop while the page loads can lose (round 2).** With a round in progress, the candidate reloads and drops a new zip
+in the first second. Today the app's own reopening of the round can finish last and land on the new set as an error.
+The latest thing the candidate did should win.
+
+**My tests gives no hint before it fails (later).** The candidate writes `mytest.py` and presses My tests. Today they
+learn the `test_*.py` pattern only from the failure (A-13). The button should show the pattern up front.
+
+**The clock gives no cues (later).** The candidate is in a 2-minute round. Today the timer is yellow from the first
+second and nothing marks the last minute (A-25). Cues should scale with the round.
+
+**Finishing every part is a dead end (later).** The candidate passes every part. Today Next part disappears and nothing
+says what to do (A-35). The screen should say "All parts pass. End now, or keep polishing."
+
+### Interviewer agent: today
+
+```mermaid
+flowchart TD
+  build["Builds the set: reference, tests, mutants, starter, problem"] -->|"runs gate.py"| gate{"GATE PASS?"}
+  gate -->|"FAIL: strengthens a test"| build
+  gate -->|"PASS: writes manifest.json"| pack{"pack.py"}
+  pack -->|"field error"| notpacked["NOT PACKED: field named"]
+  notpacked -->|"fixes the field"| pack
+  pack -->|"good manifest, or a broken reveal chain"| zip["set .zip"]
+  zip -->|"sends: drag it in, read, press Start"| drop["Candidate drops it, with nothing to check"]
+  drop -->|"candidate presses Start"| live["Round in progress"]
+  live -->|"how long is left?"| status["tools/status.py"]
+  live -->|"why does it fail?"| why["last_error; test names kept private"]
+  live -.->|"broken chain shows mid-round"| stuck["A part never passes, or shows twice"]
+  live -->|"End or 00:00, then Export"| export["export.zip: final grade, final/ code, timeline"]
+  export -->|"re-grades final/ against the kept set"| debrief["Debrief from the final grade and final/ code"]
+  classDef round2 stroke:#3772ff,stroke-width:4px
+  classDef round1 stroke-dasharray:6 4
+  class pack,drop,stuck round2
+  class status,export,debrief round1
+```
+Thick blue: round 2 changes it. Dashed: round 1 fixed it.
+
+### Interviewer agent: ideal
+
+```mermaid
+flowchart TD
+  build["Builds the set"] -->|"runs gate.py"| gate{"GATE PASS?"}
+  gate -->|"FAIL: strengthens a test"| build
+  gate -->|"PASS: writes manifest.json"| pack{"pack.py"}
+  pack -->|"field, reveal-chain or tag error"| fix["NOT PACKED: field named"]
+  fix -->|"fixes it"| pack
+  pack -->|"packed"| zip["set .zip"]
+  zip -->|"sends: drop it, check the Imported name, press Start"| drop["Candidate confirms the name"]
+  drop -->|"candidate presses Start"| live["Round in progress"]
+  live -->|"how long is left?"| status["tools/status.py"]
+  live -->|"why does it fail?"| why["last_error; test names kept private"]
+  live -->|"End or 00:00, then Export"| export["export.zip: final grade, final/ code, timeline"]
+  export -->|"reads the final grade and final/ code"| debrief["Debrief with hints in the timeline"]
+  debrief -->|"picks the next round from past results"| next["Next set"]
+  classDef round2 stroke:#3772ff,stroke-width:4px
+  classDef round1 stroke-dasharray:6 4
+  class fix,drop round2
+  class status,export round1
+```
+Thick blue: round 2 changes it. Dashed: round 1 fixed it.
+
+**Broken reveal chains get packed (round 2).** Claude writes a Levelled manifest with a part whose tag no test carries,
+or reveals the same file twice, and runs `pack.py`. Today it prints "packed" (B-report §4, C1–C3), and the candidate
+meets the mistake mid-round. Pack and import should refuse it with a line naming the field.
+
+**Nothing to check after the drop (round 2).** Claude tells the candidate "drag it in, read the ready screen, press
+Start". Today, with two sets of the same title in the app, the candidate cannot tell which one Claude meant. The skill
+should quote the app's "Imported <title> (<name>)" and tell the candidate to start only if the name matches.
+
+**Hints are stitched in by hand (later).** In the debrief Claude merges its own hint log with the app's event log.
+Today `session.json` has a `hints` list the app never writes. Hints Claude gives should appear in the timeline.
+
+**The next round is chosen from memory (later).** After the debrief Claude suggests the next round. Today nothing keeps
+past results across conversations. A local round history should let Claude cite them.
+
 ## 5. What exists today (bottom-up)
 
 **Runner and grading** (`backend/runner.py`, `backend/grade.py`). One container per Run/Submit with the full lock-down
@@ -238,6 +385,10 @@ documented interviewer path); A's IndentationError when typing via Playwright `i
 human typist).
 
 ## 8. Roadmap
+
+Round 2 (planned, `docs/rounds/2-drop-to-ready/`): **Drop to ready**. It takes the import half of "Every action
+answers" (F9, A-report finding 13), "Set identity" (the picker half of F8; Home (#10) fixed the stale card), "Manifest
+sanity" (F12) and the round-1 follow-up about a drop during page load. My tests (F5) and timer cues (F11) stay in Now.
 
 ### Now: honest and coherent
 
