@@ -598,9 +598,10 @@ def _():
         check("several languages need a language", jreq("POST", f"/api/catalog/{q}/attempt")[0] == 400)
         check("an unknown language is refused", jreq("POST", f"/api/catalog/{q}/attempt", {"language": "cobol"})[0] == 400)
     else: skip("problem in two languages", "no catalog problem has two languages yet")
-    p = built[0]["id"] if built else "none"
+    fresh = next((x for x in built if x is not multi), None)   # one the two-language check above hasn't picked yet
+    p = fresh["id"] if fresh else "none"
     row = lambda: next((x for x in jreq("GET", "/api/catalog")[1]["problems"] if x["id"] == p), {})
-    s, a = jreq("POST", f"/api/catalog/{p}/attempt", {"language": built[0]["languages"][0]} if built else {})
+    s, a = jreq("POST", f"/api/catalog/{p}/attempt", {"language": fresh["languages"][0]} if fresh else {})
     check("attempt: a copy named <id>-<k>, not reused", s == 200 and a.get("name", "").startswith(p + "-") and a.get("reused") is False, a)
     m = json.load(open(os.path.join(DATA, "sets", a["name"], "manifest.json"))) if s == 200 else {}
     check("the attempt's manifest has its own name and the problem it came from", m.get("name") == a.get("name") and m.get("problem") == p, m)
