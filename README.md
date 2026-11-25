@@ -64,6 +64,11 @@ Tests never touch the stack you use or `data/`. `run_all.sh` builds a separate s
 and Go cache) and removes it at the end. To run one suite by hand: `tests/stack.sh up`, then `python3 tests/api_test.py`
 or `tests/e2e.sh`, then `tests/stack.sh down`.
 
-CI (GitHub Actions) runs the same on every PR and push to `main`: `.github/workflows/ci.yml` builds the UI and runs
-`tests/run_all.sh`; `.github/workflows/catalog.yml` gates every catalog problem a PR touches (`answers/<id>/` must print
-GATE PASS in the runner images and pack to exactly `catalog/<id>/`), and all of them when the grader or images change.
+CI (GitHub Actions) runs only what a change can affect:
+- `.github/workflows/catalog.yml` gates catalog problems per language in the runner images. `tools/ci_affected.py` maps the changed
+  files to the gates: a problem's `<lang>/` files → that problem in that language; its shared files (`api.json`, `cases/`,
+  statement) → that problem in every language; a language backend (`backend/lab/langs/<lang>*`) → every problem in that
+  language; the grader core (`variants.py`, `backend/sandbox/`, the backend image) → everything. One job per language.
+- `.github/workflows/ci.yml` builds the UI when `ui/**` changes.
+- `.github/workflows/full.yml` runs `tests/run_all.sh` only on a merge to `main` that touches app code, on demand
+  (Actions → Full suite → Run workflow), or on a PR when you add the `full-suite` label.
