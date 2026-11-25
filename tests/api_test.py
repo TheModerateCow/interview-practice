@@ -523,5 +523,18 @@ def _():
     check("unknown name: 404", jreq("DELETE", "/api/sets/no-such-set")[0] == 404)
 
 
+@sec("run a library (no program)")
+def _():
+    n = uniq("t-lib")
+    z = {"manifest.json": json.dumps(manifest(n, "go")), "problem.md": "x",
+         "starter/go.mod": "module flagstore\n\ngo 1.22\n", "starter/store.go": "package flagstore\n\nfunc Get() int { return 1 }\n"}
+    s, j = imp(mkzip(z)); check("lib: import", s == 200, j)
+    jreq("POST", f"/api/sets/{n}/start")
+    r = runfile(n, "store.go")
+    c = r.get("compile") or {}
+    check("lib: Run says Nothing to run, names the package, no shell error",
+          c.get("ok") is False and "Nothing to run" in c.get("log", "") and "flagstore" in c.get("log", "") and "Syntax error" not in json.dumps(r), r)
+
+
 print(f"\n{'ALL PASSED' if not fails else f'{fails} FAILED'}")
 sys.exit(1 if fails else 0)
