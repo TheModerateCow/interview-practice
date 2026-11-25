@@ -1,0 +1,689 @@
+[
+ {
+  "name": "worked_example",
+  "call": "earliest_quorum_slot",
+  "args": [
+   [
+    {
+     "offset": 0,
+     "work_start": 540,
+     "work_end": 1020,
+     "busy": [
+      [
+       540,
+       610
+      ],
+      [
+       660,
+       720
+      ]
+     ]
+    },
+    {
+     "offset": 60,
+     "work_start": 540,
+     "work_end": 1020,
+     "busy": [
+      [
+       500,
+       630
+      ]
+     ]
+    },
+    {
+     "offset": -120,
+     "work_start": 480,
+     "work_end": 720,
+     "busy": []
+    }
+   ],
+   1,
+   60,
+   2
+  ],
+  "expect": 630
+ },
+ {
+  "name": "east_of_utc_starts_earlier",
+  "call": "earliest_quorum_slot",
+  "args": [
+   [
+    {
+     "offset": 330,
+     "work_start": 540,
+     "work_end": 1020,
+     "busy": []
+    }
+   ],
+   1,
+   45,
+   1
+  ],
+  "expect": 210
+ },
+ {
+  "name": "west_of_utc_previous_local_day",
+  "call": "earliest_quorum_slot",
+  "args": [
+   [
+    {
+     "offset": -600,
+     "work_start": 480,
+     "work_end": 1200,
+     "busy": [
+      [
+       0,
+       330
+      ]
+     ]
+    }
+   ],
+   1,
+   60,
+   1
+  ],
+  "expect": 1080
+ },
+ {
+  "name": "same_people_for_whole_meeting",
+  "steps": [
+   {
+    "call": "earliest_quorum_slot",
+    "args": [
+     [
+      {
+       "offset": 0,
+       "work_start": 0,
+       "work_end": 1440,
+       "busy": [
+        [
+         60,
+         1440
+        ]
+       ]
+      },
+      {
+       "offset": 0,
+       "work_start": 0,
+       "work_end": 1440,
+       "busy": [
+        [
+         0,
+         30
+        ],
+        [
+         90,
+         1440
+        ]
+       ]
+      },
+      {
+       "offset": 0,
+       "work_start": 0,
+       "work_end": 1440,
+       "busy": [
+        [
+         0,
+         60
+        ],
+        [
+         120,
+         1440
+        ]
+       ]
+      }
+     ],
+     1,
+     60,
+     2
+    ],
+    "expect": -1
+   },
+   {
+    "call": "earliest_quorum_slot",
+    "args": [
+     [
+      {
+       "offset": 0,
+       "work_start": 0,
+       "work_end": 1440,
+       "busy": [
+        [
+         60,
+         1440
+        ]
+       ]
+      },
+      {
+       "offset": 0,
+       "work_start": 0,
+       "work_end": 1440,
+       "busy": [
+        [
+         0,
+         30
+        ],
+        [
+         90,
+         1440
+        ]
+       ]
+      },
+      {
+       "offset": 0,
+       "work_start": 0,
+       "work_end": 1440,
+       "busy": [
+        [
+         0,
+         60
+        ],
+        [
+         120,
+         1440
+        ]
+       ]
+      }
+     ],
+     1,
+     60,
+     1
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "exact_fit",
+  "steps": [
+   {
+    "call": "earliest_quorum_slot",
+    "args": [
+     [
+      {
+       "offset": 0,
+       "work_start": 600,
+       "work_end": 660,
+       "busy": []
+      }
+     ],
+     1,
+     60,
+     1
+    ],
+    "expect": 600
+   },
+   {
+    "call": "earliest_quorum_slot",
+    "args": [
+     [
+      {
+       "offset": 0,
+       "work_start": 600,
+       "work_end": 660,
+       "busy": []
+      }
+     ],
+     1,
+     61,
+     1
+    ],
+    "expect": -1
+   }
+  ]
+ },
+ {
+  "name": "unsorted_nested_busy_blocks",
+  "call": "earliest_quorum_slot",
+  "args": [
+   [
+    {
+     "offset": 0,
+     "work_start": 540,
+     "work_end": 1020,
+     "busy": [
+      [
+       700,
+       720
+      ],
+      [
+       550,
+       560
+      ],
+      [
+       540,
+       800
+      ]
+     ]
+    }
+   ],
+   1,
+   60,
+   1
+  ],
+  "expect": 800
+ },
+ {
+  "name": "busy_block_spans_days",
+  "call": "earliest_quorum_slot",
+  "args": [
+   [
+    {
+     "offset": 0,
+     "work_start": 540,
+     "work_end": 1020,
+     "busy": [
+      [
+       500,
+       2040
+      ]
+     ]
+    }
+   ],
+   2,
+   400,
+   1
+  ],
+  "expect": 2040
+ },
+ {
+  "name": "meeting_across_midnight",
+  "steps": [
+   {
+    "call": "earliest_quorum_slot",
+    "args": [
+     [
+      {
+       "offset": 0,
+       "work_start": 0,
+       "work_end": 1440,
+       "busy": [
+        [
+         0,
+         1400
+        ]
+       ]
+      }
+     ],
+     2,
+     120,
+     1
+    ],
+    "expect": 1400
+   },
+   {
+    "call": "earliest_quorum_slot",
+    "args": [
+     [
+      {
+       "offset": 60,
+       "work_start": 0,
+       "work_end": 1440,
+       "busy": [
+        [
+         0,
+         1300
+        ]
+       ]
+      }
+     ],
+     2,
+     200,
+     1
+    ],
+    "expect": 1300
+   }
+  ]
+ },
+ {
+  "name": "meeting_must_end_inside_horizon",
+  "steps": [
+   {
+    "call": "earliest_quorum_slot",
+    "args": [
+     [
+      {
+       "offset": -600,
+       "work_start": 480,
+       "work_end": 1200,
+       "busy": [
+        [
+         0,
+         360
+        ]
+       ]
+      }
+     ],
+     1,
+     360,
+     1
+    ],
+    "expect": 1080
+   },
+   {
+    "call": "earliest_quorum_slot",
+    "args": [
+     [
+      {
+       "offset": -600,
+       "work_start": 480,
+       "work_end": 1200,
+       "busy": [
+        [
+         0,
+         360
+        ]
+       ]
+      }
+     ],
+     1,
+     361,
+     1
+    ],
+    "expect": -1
+   }
+  ]
+ },
+ {
+  "name": "impossible",
+  "steps": [
+   {
+    "call": "earliest_quorum_slot",
+    "args": [
+     [
+      {
+       "offset": 0,
+       "work_start": 540,
+       "work_end": 1020,
+       "busy": []
+      }
+     ],
+     1,
+     30,
+     2
+    ],
+    "expect": -1
+   },
+   {
+    "call": "earliest_quorum_slot",
+    "args": [
+     [
+      {
+       "offset": 0,
+       "work_start": 540,
+       "work_end": 1020,
+       "busy": []
+      },
+      {
+       "offset": 0,
+       "work_start": 540,
+       "work_end": 1020,
+       "busy": []
+      }
+     ],
+     3,
+     481,
+     1
+    ],
+    "expect": -1
+   }
+  ]
+ },
+ {
+  "name": "mixed_time_zones",
+  "steps": [
+   {
+    "call": "earliest_quorum_slot",
+    "args": [
+     [
+      {
+       "offset": 0,
+       "work_start": 540,
+       "work_end": 1020,
+       "busy": [
+        [
+         600,
+         720
+        ]
+       ]
+      },
+      {
+       "offset": 60,
+       "work_start": 480,
+       "work_end": 960,
+       "busy": [
+        [
+         540,
+         560
+        ]
+       ]
+      },
+      {
+       "offset": -300,
+       "work_start": 540,
+       "work_end": 1020,
+       "busy": []
+      },
+      {
+       "offset": 330,
+       "work_start": 600,
+       "work_end": 1080,
+       "busy": [
+        [
+         300,
+         420
+        ]
+       ]
+      },
+      {
+       "offset": 540,
+       "work_start": 540,
+       "work_end": 1140,
+       "busy": [
+        [
+         1000,
+         1200
+        ]
+       ]
+      }
+     ],
+     2,
+     30,
+     3
+    ],
+    "expect": 420
+   },
+   {
+    "call": "earliest_quorum_slot",
+    "args": [
+     [
+      {
+       "offset": 0,
+       "work_start": 540,
+       "work_end": 1020,
+       "busy": [
+        [
+         600,
+         720
+        ]
+       ]
+      },
+      {
+       "offset": 60,
+       "work_start": 480,
+       "work_end": 960,
+       "busy": [
+        [
+         540,
+         560
+        ]
+       ]
+      },
+      {
+       "offset": -300,
+       "work_start": 540,
+       "work_end": 1020,
+       "busy": []
+      },
+      {
+       "offset": 330,
+       "work_start": 600,
+       "work_end": 1080,
+       "busy": [
+        [
+         300,
+         420
+        ]
+       ]
+      },
+      {
+       "offset": 540,
+       "work_start": 540,
+       "work_end": 1140,
+       "busy": [
+        [
+         1000,
+         1200
+        ]
+       ]
+      }
+     ],
+     2,
+     30,
+     4
+    ],
+    "expect": 560
+   },
+   {
+    "call": "earliest_quorum_slot",
+    "args": [
+     [
+      {
+       "offset": 0,
+       "work_start": 540,
+       "work_end": 1020,
+       "busy": [
+        [
+         600,
+         720
+        ]
+       ]
+      },
+      {
+       "offset": 60,
+       "work_start": 480,
+       "work_end": 960,
+       "busy": [
+        [
+         540,
+         560
+        ]
+       ]
+      },
+      {
+       "offset": -300,
+       "work_start": 540,
+       "work_end": 1020,
+       "busy": []
+      },
+      {
+       "offset": 330,
+       "work_start": 600,
+       "work_end": 1080,
+       "busy": [
+        [
+         300,
+         420
+        ]
+       ]
+      },
+      {
+       "offset": 540,
+       "work_start": 540,
+       "work_end": 1140,
+       "busy": [
+        [
+         1000,
+         1200
+        ]
+       ]
+      }
+     ],
+     2,
+     90,
+     3
+    ],
+    "expect": 420
+   },
+   {
+    "call": "earliest_quorum_slot",
+    "args": [
+     [
+      {
+       "offset": 0,
+       "work_start": 540,
+       "work_end": 1020,
+       "busy": [
+        [
+         600,
+         720
+        ]
+       ]
+      },
+      {
+       "offset": 60,
+       "work_start": 480,
+       "work_end": 960,
+       "busy": [
+        [
+         540,
+         560
+        ]
+       ]
+      },
+      {
+       "offset": -300,
+       "work_start": 540,
+       "work_end": 1020,
+       "busy": []
+      },
+      {
+       "offset": 330,
+       "work_start": 600,
+       "work_end": 1080,
+       "busy": [
+        [
+         300,
+         420
+        ]
+       ]
+      },
+      {
+       "offset": 540,
+       "work_start": 540,
+       "work_end": 1140,
+       "busy": [
+        [
+         1000,
+         1200
+        ]
+       ]
+      }
+     ],
+     2,
+     30,
+     5
+    ],
+    "expect": -1
+   }
+  ]
+ },
+ {
+  "name": "large_org",
+  "call": "earliest_quorum_slot",
+  "data": "data/large_org.json",
+  "budget_ms": {
+   "java": 2000
+  }
+ }
+]

@@ -1,0 +1,15 @@
+{
+ "module": "parking",
+ "classes": {"Garage": {"init": [], "methods": {
+  "add_spot": {"params": [["ts", "int"], ["spot_id", "string"], ["size", "string"]], "returns": "bool", "level": 1},
+  "park": {"params": [["ts", "int"], ["plate", "string"], ["size", "string"]], "returns": "string", "level": 1},
+  "leave": {"params": [["ts", "int"], ["plate", "string"]], "returns": "bool", "level": 1},
+  "spot_of": {"params": [["ts", "int"], ["plate", "string"]], "returns": "string", "level": 1},
+  "free_spots": {"params": [["ts", "int"], ["size", "string"]], "returns": "int", "level": 2},
+  "top_visitors": {"params": [["ts", "int"], ["n", "int"]], "returns": "list<string>", "level": 2},
+  "reserve": {"params": [["ts", "int"], ["plate", "string"], ["size", "string"], ["ttl", "int"]], "returns": "string", "level": 3},
+  "cancel": {"params": [["ts", "int"], ["plate", "string"]], "returns": "bool", "level": 3},
+  "occupant_at": {"params": [["ts", "int"], ["spot_id", "string"], ["at_ts", "int"]], "returns": "string", "level": 4},
+  "charges": {"params": [["ts", "int"], ["plate", "string"]], "returns": "int", "level": 4}}}},
+ "errors": []
+}

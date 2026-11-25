@@ -1,0 +1,234 @@
+{
+ "module": "configstore",
+ "java_class": "ConfigStore",
+ "records": {},
+ "functions": {},
+ "classes": {
+  "Store": {
+   "init": [],
+   "methods": {
+    "set": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "key",
+       "string"
+      ],
+      [
+       "field",
+       "string"
+      ],
+      [
+       "value",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "get": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "key",
+       "string"
+      ],
+      [
+       "field",
+       "string"
+      ]
+     ],
+     "returns": "optional<string>",
+     "level": 1
+    },
+    "delete": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "key",
+       "string"
+      ],
+      [
+       "field",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "compare_and_set": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "key",
+       "string"
+      ],
+      [
+       "field",
+       "string"
+      ],
+      [
+       "expected",
+       "string"
+      ],
+      [
+       "value",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "scan": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "key",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "scan_prefix": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "key",
+       "string"
+      ],
+      [
+       "prefix",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "list_keys": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "prefix",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "set_with_ttl": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "key",
+       "string"
+      ],
+      [
+       "field",
+       "string"
+      ],
+      [
+       "value",
+       "string"
+      ],
+      [
+       "ttl",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 3
+    },
+    "remaining_ttl": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "key",
+       "string"
+      ],
+      [
+       "field",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 3
+    },
+    "backup": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ]
+     ],
+     "returns": "string",
+     "level": 4
+    },
+    "restore": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "backup_id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    },
+    "get_at": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "key",
+       "string"
+      ],
+      [
+       "field",
+       "string"
+      ],
+      [
+       "at_ts",
+       "int"
+      ]
+     ],
+     "returns": "optional<string>",
+     "level": 4
+    }
+   }
+  }
+ },
+ "errors": []
+}

@@ -1,0 +1,1375 @@
+[
+ {
+  "name": "peak_windows",
+  "steps": [
+   {
+    "call": "is_peak",
+    "args": [
+     419
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_peak",
+    "args": [
+     420
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_peak",
+    "args": [
+     569
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_peak",
+    "args": [
+     570
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_peak",
+    "args": [
+     3839
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_peak",
+    "args": [
+     3840
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_peak",
+    "args": [
+     4019
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_peak",
+    "args": [
+     4020
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_peak",
+    "args": [
+     6240
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_peak",
+    "args": [
+     7680
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_peak",
+    "args": [
+     9660
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_peak",
+    "args": [
+     10560
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_peak",
+    "args": [
+     18300
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_peak",
+    "args": [
+     20610
+    ],
+    "expect": true
+   }
+  ]
+ },
+ {
+  "name": "journey_fare_table",
+  "steps": [
+   {
+    "call": "journey_fare",
+    "args": [
+     1,
+     false,
+     "adult"
+    ],
+    "expect": 250
+   },
+   {
+    "call": "journey_fare",
+    "args": [
+     3,
+     false,
+     "adult"
+    ],
+    "expect": 410
+   },
+   {
+    "call": "journey_fare",
+    "args": [
+     6,
+     false,
+     "adult"
+    ],
+    "expect": 620
+   },
+   {
+    "call": "journey_fare",
+    "args": [
+     1,
+     true,
+     "adult"
+    ],
+    "expect": 330
+   },
+   {
+    "call": "journey_fare",
+    "args": [
+     2,
+     true,
+     "adult"
+    ],
+    "expect": 420
+   },
+   {
+    "call": "journey_fare",
+    "args": [
+     3,
+     true,
+     "adult"
+    ],
+    "expect": 540
+   },
+   {
+    "call": "journey_fare",
+    "args": [
+     4,
+     true,
+     "adult"
+    ],
+    "expect": 630
+   },
+   {
+    "call": "journey_fare",
+    "args": [
+     6,
+     true,
+     "adult"
+    ],
+    "expect": 810
+   }
+  ]
+ },
+ {
+  "name": "concession_rounding",
+  "steps": [
+   {
+    "call": "journey_fare",
+    "args": [
+     1,
+     false,
+     "child"
+    ],
+    "expect": 125
+   },
+   {
+    "call": "journey_fare",
+    "args": [
+     1,
+     true,
+     "child"
+    ],
+    "expect": 165
+   },
+   {
+    "call": "journey_fare",
+    "args": [
+     3,
+     true,
+     "child"
+    ],
+    "expect": 270
+   },
+   {
+    "call": "journey_fare",
+    "args": [
+     5,
+     false,
+     "child"
+    ],
+    "expect": 275
+   },
+   {
+    "call": "journey_fare",
+    "args": [
+     1,
+     false,
+     "senior"
+    ],
+    "expect": 175
+   },
+   {
+    "call": "journey_fare",
+    "args": [
+     1,
+     true,
+     "senior"
+    ],
+    "expect": 230
+   },
+   {
+    "call": "journey_fare",
+    "args": [
+     2,
+     true,
+     "senior"
+    ],
+    "expect": 290
+   },
+   {
+    "call": "journey_fare",
+    "args": [
+     4,
+     false,
+     "senior"
+    ],
+    "expect": 335
+   },
+   {
+    "call": "journey_fare",
+    "args": [
+     6,
+     true,
+     "senior"
+    ],
+    "expect": 565
+   }
+  ]
+ },
+ {
+  "name": "single_rides_any_direction",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "adult"
+    ]
+   },
+   {
+    "call": "ride",
+    "args": [
+     660,
+     5,
+     2
+    ],
+    "expect": 480
+   },
+   {
+    "call": "ride",
+    "args": [
+     2280,
+     2,
+     5
+    ],
+    "expect": 480
+   },
+   {
+    "call": "ride",
+    "args": [
+     4080,
+     6,
+     1
+    ],
+    "expect": 620
+   },
+   {
+    "call": "ride",
+    "args": [
+     5040,
+     3,
+     3
+    ],
+    "expect": 250
+   }
+  ]
+ },
+ {
+  "name": "single_rides_peak",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "adult"
+    ]
+   },
+   {
+    "call": "ride",
+    "args": [
+     480,
+     2,
+     4
+    ],
+    "expect": 540
+   },
+   {
+    "call": "ride",
+    "args": [
+     2490,
+     4,
+     1
+    ],
+    "expect": 630
+   }
+  ]
+ },
+ {
+  "name": "transfer_pays_the_difference",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "adult"
+    ]
+   },
+   {
+    "call": "ride",
+    "args": [
+     2040,
+     2,
+     2
+    ],
+    "expect": 250
+   },
+   {
+    "call": "ride",
+    "args": [
+     2070,
+     2,
+     4
+    ],
+    "expect": 160
+   },
+   {
+    "call": "ride",
+    "args": [
+     2100,
+     1,
+     3
+    ],
+    "expect": 70
+   }
+  ]
+ },
+ {
+  "name": "transfer_no_new_zones",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "adult"
+    ]
+   },
+   {
+    "call": "ride",
+    "args": [
+     2040,
+     1,
+     4
+    ],
+    "expect": 480
+   },
+   {
+    "call": "ride",
+    "args": [
+     2080,
+     3,
+     2
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "transfer_window_89_joins",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "adult"
+    ]
+   },
+   {
+    "call": "ride",
+    "args": [
+     3600,
+     1,
+     1
+    ],
+    "expect": 250
+   },
+   {
+    "call": "ride",
+    "args": [
+     3689,
+     1,
+     2
+    ],
+    "expect": 70
+   },
+   {
+    "call": "ride",
+    "args": [
+     3720,
+     1,
+     1
+    ],
+    "expect": 250
+   },
+   {
+    "call": "ride",
+    "args": [
+     3810,
+     1,
+     2
+    ],
+    "expect": 320
+   }
+  ]
+ },
+ {
+  "name": "transfer_window_90_does_not",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "adult"
+    ]
+   },
+   {
+    "call": "ride",
+    "args": [
+     3600,
+     1,
+     1
+    ],
+    "expect": 250
+   },
+   {
+    "call": "ride",
+    "args": [
+     3660,
+     1,
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "ride",
+    "args": [
+     3720,
+     1,
+     2
+    ],
+    "expect": 320
+   }
+  ]
+ },
+ {
+  "name": "transfer_across_midnight",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "adult"
+    ]
+   },
+   {
+    "call": "ride",
+    "args": [
+     1430,
+     1,
+     1
+    ],
+    "expect": 250
+   },
+   {
+    "call": "ride",
+    "args": [
+     1470,
+     1,
+     3
+    ],
+    "expect": 160
+   }
+  ]
+ },
+ {
+  "name": "at_most_three_rides_per_journey",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "adult"
+    ]
+   },
+   {
+    "call": "ride",
+    "args": [
+     5040,
+     1,
+     1
+    ],
+    "expect": 250
+   },
+   {
+    "call": "ride",
+    "args": [
+     5050,
+     1,
+     2
+    ],
+    "expect": 70
+   },
+   {
+    "call": "ride",
+    "args": [
+     5060,
+     2,
+     3
+    ],
+    "expect": 90
+   },
+   {
+    "call": "ride",
+    "args": [
+     5070,
+     3,
+     3
+    ],
+    "expect": 250
+   }
+  ]
+ },
+ {
+  "name": "journey_peak_from_first_ride_offpeak_start",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "adult"
+    ]
+   },
+   {
+    "call": "ride",
+    "args": [
+     560,
+     1,
+     1
+    ],
+    "expect": 330
+   },
+   {
+    "call": "ride",
+    "args": [
+     580,
+     1,
+     3
+    ],
+    "expect": 210
+   }
+  ]
+ },
+ {
+  "name": "journey_peak_from_first_ride_offpeak",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "adult"
+    ]
+   },
+   {
+    "call": "ride",
+    "args": [
+     950,
+     2,
+     2
+    ],
+    "expect": 250
+   },
+   {
+    "call": "ride",
+    "args": [
+     970,
+     2,
+     3
+    ],
+    "expect": 70
+   }
+  ]
+ },
+ {
+  "name": "journey_peak_from_first_ride_peak",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "adult"
+    ]
+   },
+   {
+    "call": "ride",
+    "args": [
+     6890,
+     1,
+     1
+    ],
+    "expect": 330
+   },
+   {
+    "call": "ride",
+    "args": [
+     6910,
+     1,
+     2
+    ],
+    "expect": 90
+   },
+   {
+    "call": "ride",
+    "args": [
+     6940,
+     1,
+     4
+    ],
+    "expect": 210
+   }
+  ]
+ },
+ {
+  "name": "concession_transfers_child",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "child"
+    ]
+   },
+   {
+    "call": "ride",
+    "args": [
+     480,
+     1,
+     2
+    ],
+    "expect": 210
+   },
+   {
+    "call": "ride",
+    "args": [
+     510,
+     2,
+     5
+    ],
+    "expect": 150
+   }
+  ]
+ },
+ {
+  "name": "concession_transfers_senior",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "senior"
+    ]
+   },
+   {
+    "call": "ride",
+    "args": [
+     480,
+     1,
+     2
+    ],
+    "expect": 290
+   },
+   {
+    "call": "ride",
+    "args": [
+     510,
+     2,
+     5
+    ],
+    "expect": 210
+   }
+  ]
+ },
+ {
+  "name": "daily_cap_adult_a",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "adult"
+    ]
+   },
+   {
+    "call": "ride",
+    "args": [
+     480,
+     1,
+     6
+    ],
+    "expect": 810
+   },
+   {
+    "call": "ride",
+    "args": [
+     720,
+     1,
+     3
+    ],
+    "expect": 390
+   },
+   {
+    "call": "ride",
+    "args": [
+     1020,
+     1,
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "ride",
+    "args": [
+     1260,
+     1,
+     1
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "daily_cap_adult_b",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "adult"
+    ]
+   },
+   {
+    "call": "ride",
+    "args": [
+     480,
+     1,
+     6
+    ],
+    "expect": 810
+   },
+   {
+    "call": "ride",
+    "args": [
+     720,
+     1,
+     1
+    ],
+    "expect": 250
+   },
+   {
+    "call": "ride",
+    "args": [
+     1020,
+     1,
+     2
+    ],
+    "expect": 140
+   },
+   {
+    "call": "ride",
+    "args": [
+     1080,
+     1,
+     4
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "daily_cap_senior",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "senior"
+    ]
+   },
+   {
+    "call": "ride",
+    "args": [
+     480,
+     1,
+     6
+    ],
+    "expect": 565
+   },
+   {
+    "call": "ride",
+    "args": [
+     1020,
+     1,
+     4
+    ],
+    "expect": 275
+   }
+  ]
+ },
+ {
+  "name": "service_day_starts_at_four_a",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "adult"
+    ]
+   },
+   {
+    "call": "ride",
+    "args": [
+     480,
+     1,
+     6
+    ],
+    "expect": 810
+   },
+   {
+    "call": "ride",
+    "args": [
+     1020,
+     1,
+     4
+    ],
+    "expect": 390
+   },
+   {
+    "call": "ride",
+    "args": [
+     1560,
+     1,
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "ride",
+    "args": [
+     1680,
+     1,
+     1
+    ],
+    "expect": 250
+   }
+  ]
+ },
+ {
+  "name": "service_day_starts_at_four_b",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "adult"
+    ]
+   },
+   {
+    "call": "ride",
+    "args": [
+     480,
+     1,
+     6
+    ],
+    "expect": 810
+   },
+   {
+    "call": "ride",
+    "args": [
+     1020,
+     1,
+     4
+    ],
+    "expect": 390
+   },
+   {
+    "call": "ride",
+    "args": [
+     1650,
+     1,
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "ride",
+    "args": [
+     1690,
+     1,
+     3
+    ],
+    "expect": 160
+   }
+  ]
+ },
+ {
+  "name": "service_day_starts_at_four_child",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "child"
+    ]
+   },
+   {
+    "call": "ride",
+    "args": [
+     1020,
+     1,
+     6
+    ],
+    "expect": 405
+   },
+   {
+    "call": "ride",
+    "args": [
+     1125,
+     1,
+     6
+    ],
+    "expect": 195
+   },
+   {
+    "call": "ride",
+    "args": [
+     1580,
+     1,
+     3
+    ],
+    "expect": 0
+   },
+   {
+    "call": "ride",
+    "args": [
+     1710,
+     1,
+     3
+    ],
+    "expect": 205
+   }
+  ]
+ },
+ {
+  "name": "weekly_cap_adult",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "adult"
+    ]
+   },
+   {
+    "call": "ride",
+    "args": [
+     480,
+     1,
+     6
+    ],
+    "expect": 810
+   },
+   {
+    "call": "ride",
+    "args": [
+     1020,
+     1,
+     6
+    ],
+    "expect": 390
+   },
+   {
+    "call": "ride",
+    "args": [
+     1920,
+     1,
+     6
+    ],
+    "expect": 810
+   },
+   {
+    "call": "ride",
+    "args": [
+     2460,
+     1,
+     6
+    ],
+    "expect": 390
+   },
+   {
+    "call": "ride",
+    "args": [
+     3360,
+     1,
+     6
+    ],
+    "expect": 810
+   },
+   {
+    "call": "ride",
+    "args": [
+     3900,
+     1,
+     6
+    ],
+    "expect": 390
+   },
+   {
+    "call": "ride",
+    "args": [
+     4800,
+     1,
+     6
+    ],
+    "expect": 810
+   },
+   {
+    "call": "ride",
+    "args": [
+     5340,
+     1,
+     6
+    ],
+    "expect": 390
+   },
+   {
+    "call": "ride",
+    "args": [
+     6240,
+     1,
+     6
+    ],
+    "expect": 0
+   },
+   {
+    "call": "ride",
+    "args": [
+     6780,
+     1,
+     6
+    ],
+    "expect": 0
+   },
+   {
+    "call": "ride",
+    "args": [
+     10200,
+     1,
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "ride",
+    "args": [
+     10320,
+     1,
+     1
+    ],
+    "expect": 250
+   }
+  ]
+ },
+ {
+  "name": "weekly_cap_child",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "child"
+    ]
+   },
+   {
+    "call": "ride",
+    "args": [
+     480,
+     1,
+     6
+    ],
+    "expect": 405
+   },
+   {
+    "call": "ride",
+    "args": [
+     1020,
+     1,
+     6
+    ],
+    "expect": 195
+   },
+   {
+    "call": "ride",
+    "args": [
+     1920,
+     1,
+     6
+    ],
+    "expect": 405
+   },
+   {
+    "call": "ride",
+    "args": [
+     2460,
+     1,
+     6
+    ],
+    "expect": 195
+   },
+   {
+    "call": "ride",
+    "args": [
+     3360,
+     1,
+     6
+    ],
+    "expect": 405
+   },
+   {
+    "call": "ride",
+    "args": [
+     3900,
+     1,
+     6
+    ],
+    "expect": 195
+   },
+   {
+    "call": "ride",
+    "args": [
+     4800,
+     1,
+     6
+    ],
+    "expect": 405
+   },
+   {
+    "call": "ride",
+    "args": [
+     5340,
+     1,
+     6
+    ],
+    "expect": 195
+   },
+   {
+    "call": "ride",
+    "args": [
+     6240,
+     1,
+     6
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "weekend_and_next_week",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "adult"
+    ]
+   },
+   {
+    "call": "ride",
+    "args": [
+     7680,
+     1,
+     2
+    ],
+    "expect": 320
+   },
+   {
+    "call": "ride",
+    "args": [
+     9660,
+     1,
+     2
+    ],
+    "expect": 320
+   },
+   {
+    "call": "ride",
+    "args": [
+     10560,
+     1,
+     2
+    ],
+    "expect": 420
+   }
+  ]
+ },
+ {
+  "name": "errors",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "adult"
+    ]
+   },
+   {
+    "call": "ride",
+    "args": [
+     600,
+     0,
+     2
+    ],
+    "error": "invalid_zone"
+   },
+   {
+    "call": "ride",
+    "args": [
+     600,
+     2,
+     7
+    ],
+    "error": "invalid_zone"
+   },
+   {
+    "call": "ride",
+    "args": [
+     -1,
+     1,
+     1
+    ],
+    "error": "invalid_time"
+   },
+   {
+    "call": "ride",
+    "args": [
+     -5,
+     0,
+     9
+    ],
+    "error": "invalid_time"
+   },
+   {
+    "call": "ride",
+    "args": [
+     600,
+     1,
+     1
+    ],
+    "expect": 250
+   },
+   {
+    "call": "ride",
+    "args": [
+     600,
+     1,
+     2
+    ],
+    "expect": 70
+   },
+   {
+    "call": "ride",
+    "args": [
+     599,
+     1,
+     1
+    ],
+    "error": "invalid_time"
+   },
+   {
+    "call": "ride",
+    "args": [
+     620,
+     1,
+     9
+    ],
+    "error": "invalid_zone"
+   },
+   {
+    "call": "ride",
+    "args": [
+     630,
+     1,
+     3
+    ],
+    "expect": 90
+   }
+  ]
+ },
+ {
+  "name": "unknown_concession",
+  "steps": [
+   {
+    "call": "journey_fare",
+    "args": [
+     1,
+     false,
+     "pensioner"
+    ],
+    "error": "unknown_concession"
+   },
+   {
+    "call": "journey_fare",
+    "args": [
+     1,
+     true,
+     null
+    ],
+    "error": "unknown_concession"
+   },
+   {
+    "call": "journey_fare",
+    "args": [
+     1,
+     false,
+     "adult"
+    ],
+    "expect": 250
+   }
+  ]
+ },
+ {
+  "name": "card_unknown_concession",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "pensioner"
+    ],
+    "error": "unknown_concession"
+   }
+  ]
+ }
+]

@@ -1,0 +1,18 @@
+[
+ {"file": "bank.go", "old": "if !ok || a.balance < amount {", "new": "if !ok || a.balance <= amount {", "label": "withdrawing the whole balance is refused", "k": "test_l1_"},
+ {"file": "bank.go", "old": "if !ok1 || !ok2 || from == to || src.balance < amount {", "new": "if !ok1 || !ok2 || src.balance < amount {", "label": "transfer to the same account allowed", "k": "test_l1_"},
+ {"file": "bank.go", "old": "if _, ok := b.accounts[id]; ok {", "new": "if _, ok := b.accounts[id]; ok && false {", "label": "opening an open id resets it", "k": "test_l1_"},
+ {"file": "bank.go", "old": "\t\t\treturn si > sj", "new": "\t\t\treturn si < sj", "label": "top spenders ranked smallest first", "k": "test_l2_"},
+ {"file": "bank.go", "old": "\tsrc.spent += amount", "new": "\tsrc.spent += 0", "label": "transfers sent don't count as spending", "k": "test_l2_"},
+ {"file": "bank.go", "old": "if a.balance >= min {", "new": "if a.balance > min {", "label": "AccountsAbove threshold exclusive", "k": "test_l2_"},
+ {"file": "bank.go", "old": "if p.status == \"pending\" && p.due <= ts {", "new": "if p.status == \"pending\" && p.due < ts {", "label": "payment due now runs after the call instead of before", "k": "test_l3_"},
+ {"file": "bank.go", "old": "return due[i].due < due[j].due", "new": "return false", "label": "due payments run in schedule order, not due order", "k": "test_l3_"},
+ {"file": "bank.go", "old": "if !ok || a.balance < p.amount {", "new": "if !ok || a.balance < 0 {", "label": "scheduled payment overdraws the account", "k": "test_l3_"},
+ {"file": "bank.go", "old": "|| p.account != id {", "new": "{", "label": "any account can cancel any payment", "k": "test_l3_"},
+ {"file": "bank.go", "old": "\t\ta.spent += p.amount", "new": "\t\ta.spent += 0", "label": "scheduled payments don't count as spending", "k": "test_l3_"},
+ {"file": "bank.go", "old": "\tk.spent += a.spent", "new": "\tk.spent += 0", "label": "merge drops the absorbed account's spending", "k": "test_l4_"},
+ {"file": "bank.go", "old": "\t\t\tp.account = keep", "new": "\t\t\tp.account = absorb", "label": "merge leaves pending payments on the closed account", "k": "test_l4_"},
+ {"file": "bank.go", "old": "b.record(p.due, p.account)", "new": "b.record(ts, p.account)", "label": "history dates a payment at the call that settled it", "k": "test_l4_"},
+ {"file": "bank.go", "old": "return h[i].ts > atTs", "new": "return h[i].ts >= atTs", "label": "BalanceAt leaves out changes made exactly at atTs", "k": "test_l4_"},
+ {"file": "bank.go", "old": "\tb.record(ts, absorb)", "new": "\t_ = absorb", "label": "history never marks the absorbed account closed", "k": "test_l4_"}
+]

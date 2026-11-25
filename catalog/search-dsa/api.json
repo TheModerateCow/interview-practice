@@ -1,0 +1,2 @@
+{"module": "search_box",
+ "functions": {"fewest_keystrokes": {"params": [["log", "list<string>"], ["target", "string"]], "returns": "int"}}}

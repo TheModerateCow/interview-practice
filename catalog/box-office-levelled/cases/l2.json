@@ -1,0 +1,381 @@
+[
+ {
+  "name": "top_buyers_order",
+  "steps": [
+   {
+    "new": "Office",
+    "args": []
+   },
+   {
+    "call": "create_event",
+    "args": [
+     1,
+     "gig",
+     20
+    ]
+   },
+   {
+    "call": "buy",
+    "args": [
+     2,
+     "gig",
+     "cy",
+     2
+    ]
+   },
+   {
+    "call": "buy",
+    "args": [
+     3,
+     "gig",
+     "bo",
+     5
+    ]
+   },
+   {
+    "call": "buy",
+    "args": [
+     4,
+     "gig",
+     "ana",
+     2
+    ]
+   },
+   {
+    "call": "buy",
+    "args": [
+     5,
+     "gig",
+     "dee",
+     1
+    ]
+   },
+   {
+    "call": "top_buyers",
+    "args": [
+     6,
+     "gig",
+     3
+    ],
+    "expect": [
+     "bo(5)",
+     "ana(2)",
+     "cy(2)"
+    ]
+   },
+   {
+    "call": "top_buyers",
+    "args": [
+     7,
+     "gig",
+     10
+    ],
+    "expect": [
+     "bo(5)",
+     "ana(2)",
+     "cy(2)",
+     "dee(1)"
+    ]
+   },
+   {
+    "call": "top_buyers",
+    "args": [
+     8,
+     "gig",
+     0
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "top_buyers_after_refunds",
+  "steps": [
+   {
+    "new": "Office",
+    "args": []
+   },
+   {
+    "call": "create_event",
+    "args": [
+     1,
+     "gig",
+     20
+    ]
+   },
+   {
+    "call": "buy",
+    "args": [
+     2,
+     "gig",
+     "ana",
+     4
+    ]
+   },
+   {
+    "call": "buy",
+    "args": [
+     3,
+     "gig",
+     "bo",
+     3
+    ]
+   },
+   {
+    "call": "buy",
+    "args": [
+     4,
+     "gig",
+     "cy",
+     1
+    ]
+   },
+   {
+    "call": "refund",
+    "args": [
+     5,
+     "gig",
+     "ana",
+     2
+    ]
+   },
+   {
+    "call": "refund",
+    "args": [
+     6,
+     "gig",
+     "cy",
+     1
+    ]
+   },
+   {
+    "call": "buy",
+    "args": [
+     7,
+     "gig",
+     "ana",
+     1
+    ]
+   },
+   {
+    "call": "top_buyers",
+    "args": [
+     8,
+     "gig",
+     5
+    ],
+    "expect": [
+     "ana(3)",
+     "bo(3)"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "top_buyers_unknown_or_empty",
+  "steps": [
+   {
+    "new": "Office",
+    "args": []
+   },
+   {
+    "call": "top_buyers",
+    "args": [
+     1,
+     "gig",
+     3
+    ],
+    "expect": []
+   },
+   {
+    "call": "create_event",
+    "args": [
+     2,
+     "gig",
+     5
+    ]
+   },
+   {
+    "call": "top_buyers",
+    "args": [
+     3,
+     "gig",
+     3
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "busiest_events",
+  "steps": [
+   {
+    "new": "Office",
+    "args": []
+   },
+   {
+    "call": "create_event",
+    "args": [
+     1,
+     "d",
+     10
+    ]
+   },
+   {
+    "call": "create_event",
+    "args": [
+     2,
+     "c",
+     10
+    ]
+   },
+   {
+    "call": "create_event",
+    "args": [
+     3,
+     "b",
+     10
+    ]
+   },
+   {
+    "call": "create_event",
+    "args": [
+     4,
+     "a",
+     10
+    ]
+   },
+   {
+    "call": "buy",
+    "args": [
+     5,
+     "a",
+     "ana",
+     3
+    ]
+   },
+   {
+    "call": "buy",
+    "args": [
+     6,
+     "b",
+     "bo",
+     7
+    ]
+   },
+   {
+    "call": "buy",
+    "args": [
+     7,
+     "d",
+     "cy",
+     2
+    ]
+   },
+   {
+    "call": "buy",
+    "args": [
+     8,
+     "d",
+     "dee",
+     1
+    ]
+   },
+   {
+    "call": "busiest_events",
+    "args": [
+     9,
+     10
+    ],
+    "expect": [
+     "b(7)",
+     "a(3)",
+     "d(3)",
+     "c(0)"
+    ]
+   },
+   {
+    "call": "busiest_events",
+    "args": [
+     10,
+     2
+    ],
+    "expect": [
+     "b(7)",
+     "a(3)"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "busiest_after_refund",
+  "steps": [
+   {
+    "new": "Office",
+    "args": []
+   },
+   {
+    "call": "busiest_events",
+    "args": [
+     1,
+     3
+    ],
+    "expect": []
+   },
+   {
+    "call": "create_event",
+    "args": [
+     2,
+     "a",
+     10
+    ]
+   },
+   {
+    "call": "create_event",
+    "args": [
+     3,
+     "b",
+     10
+    ]
+   },
+   {
+    "call": "buy",
+    "args": [
+     4,
+     "a",
+     "ana",
+     5
+    ]
+   },
+   {
+    "call": "buy",
+    "args": [
+     5,
+     "b",
+     "bo",
+     4
+    ]
+   },
+   {
+    "call": "refund",
+    "args": [
+     6,
+     "a",
+     "ana",
+     2
+    ]
+   },
+   {
+    "call": "busiest_events",
+    "args": [
+     7,
+     5
+    ],
+    "expect": [
+     "b(4)",
+     "a(3)"
+    ]
+   }
+  ]
+ }
+]

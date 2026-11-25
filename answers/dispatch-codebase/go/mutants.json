@@ -1,0 +1,72 @@
+[
+ {
+  "file": "dispatch.go",
+  "old": "if c.Active >= c.Capacity {",
+  "new": "if c.Active > c.Capacity {",
+  "label": "capacity check lets one extra order through",
+  "k": "test_p1_"
+ },
+ {
+  "file": "dispatch.go",
+  "old": "(dist == bestDist && c.ID < best.ID)",
+  "new": "(dist == bestDist && c.ID > best.ID)",
+  "label": "tie goes to the higher courier id",
+  "k": "test_p1_"
+ },
+ {
+  "file": "dispatch.go",
+  "old": "if dist > MaxPickupDistance {",
+  "new": "if dist >= MaxPickupDistance {",
+  "label": "pickup range excludes its boundary",
+  "k": "test_p1_"
+ },
+ {
+  "file": "dispatch.go",
+  "old": "\t\tc.Location = o.Restaurant\n",
+  "new": "",
+  "label": "pickup does not move the courier to the restaurant",
+  "k": "test_p1_"
+ },
+ {
+  "file": "dispatch.go",
+  "old": "\t\tc.Location = o.Customer\n",
+  "new": "",
+  "label": "delivery does not move the courier to the customer",
+  "k": "test_p1_"
+ },
+ {
+  "file": "eta.go",
+  "old": "pickup := max(now+TravelMinutes(Distance(c.Location, o.Restaurant)), o.ReadyAt())",
+  "new": "pickup := now + TravelMinutes(Distance(c.Location, o.Restaurant))",
+  "label": "ETA ignores the kitchen's ready time",
+  "k": "test_p1_"
+ },
+ {
+  "file": "batch.go",
+  "old": "if o.ReadyAt()-now <= DispatchWindow {",
+  "new": "if o.ReadyAt()-now < DispatchWindow {",
+  "label": "dispatch window excludes its boundary",
+  "k": "test_p2_"
+ },
+ {
+  "file": "batch.go",
+  "old": "return due[i].ReadyAt() < due[j].ReadyAt()",
+  "new": "return due[i].PlacedAt < due[j].PlacedAt",
+  "label": "dispatch by placement time instead of ready time",
+  "k": "test_p2_"
+ },
+ {
+  "file": "batch.go",
+  "old": "return due[i].ID < due[j].ID",
+  "new": "return due[i].ID > due[j].ID",
+  "label": "ready-time ties go to the higher order id",
+  "k": "test_p2_"
+ },
+ {
+  "file": "batch.go",
+  "old": "out := []Assignment{}",
+  "new": "var out []Assignment",
+  "label": "returns nil instead of an empty slice",
+  "k": "test_p2_"
+ }
+]

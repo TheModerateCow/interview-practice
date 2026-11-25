@@ -1,0 +1,11 @@
+[
+ {"file":"garage.go","old":"best == nil || s.size < best.size ||","new":"best == nil || s.size > best.size ||","label":"park prefers the largest fitting spot","k":"test_l1_"},
+ {"file":"garage.go","old":"(s.size == best.size && s.id < best.id)","new":"(s.size == best.size && s.id > best.id)","label":"ties go to the highest spot id","k":"test_l1_"},
+ {"file":"garage.go","old":"if s.size == n && g.free(ts, s) {","new":"if s.size >= n && g.free(ts, s) {","label":"free spots counts larger sizes too","k":"test_l2_"},
+ {"file":"garage.go","old":"return plates[i] < plates[j]","new":"return plates[i] > plates[j]","label":"top visitors ties broken by plate descending","k":"test_l2_"},
+ {"file":"garage.go","old":"r.spotID == s.id && ts < r.expiresAt","new":"r.spotID == s.id && ts <= r.expiresAt","label":"reservation still blocks its spot at the expiry time","k":"test_l3_"},
+ {"file":"garage.go","old":"if !ok || ts >= r.expiresAt {","new":"if !ok || ts > r.expiresAt {","label":"reservation can be cancelled at its expiry time","k":"test_l3_"},
+ {"file":"garage.go","old":"\tdelete(g.reserved, plate)\n\ts.plate = plate","new":"\ts.plate = plate","label":"parking doesn't use up the reservation","k":"test_l3_"},
+ {"file":"garage.go","old":"atTs < st.to)","new":"atTs <= st.to)","label":"OccupantAt still shows the plate at the time it left","k":"test_l4_"},
+ {"file":"garage.go","old":"((st.to - st.from + 59) / 60)","new":"((st.to - st.from) / 60)","label":"charges round hours down","k":"test_l4_"}
+]

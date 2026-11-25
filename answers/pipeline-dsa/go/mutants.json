@@ -1,0 +1,6 @@
+[
+ {"file":"pipeline.go","old":"max(g[b-i], fc[i])","new":"g[b-i] + fc[i]","label":"inputs run one after another, not in parallel","k":"test_p1_"},
+ {"file":"pipeline.go","old":"jobs[v].Warm+g[b-1]","new":"jobs[v].Warm+g[b]","label":"warming a job doesn't use up a slot","k":"test_p1_"},
+ {"file":"pipeline.go","old":"if len(order) != n {","new":"if len(order) > n {","label":"cycles not rejected","k":"test_p1_"},
+ {"file":"pipeline.go","old":"k = min(k, n)","new":"k = min(k, n-1)","label":"can never warm every job","k":"test_p1_"}
+]

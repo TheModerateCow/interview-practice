@@ -1,0 +1,880 @@
+[
+ {
+  "name": "history",
+  "steps": [
+   {
+    "new": "Library",
+    "args": []
+   },
+   {
+    "call": "add_member",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_member",
+    "args": [
+     2,
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     3,
+     "D-1",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     4,
+     "E-1",
+     "Emma"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     5,
+     "H-1",
+     "Hamlet"
+    ],
+    "expect": true
+   },
+   {
+    "call": "history",
+    "args": [
+     10,
+     "zed"
+    ],
+    "expect": []
+   },
+   {
+    "call": "history",
+    "args": [
+     11,
+     "ana"
+    ],
+    "expect": []
+   },
+   {
+    "call": "checkout",
+    "args": [
+     12,
+     "ana",
+     "Hamlet"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     13,
+     "ana",
+     "Dune"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     14,
+     "ana",
+     "Dune"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     15,
+     "bo",
+     "Emma"
+    ]
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     16,
+     "D-1"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     17,
+     "ana",
+     "Dune"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     18,
+     "ana",
+     "Ulysses"
+    ]
+   },
+   {
+    "call": "history",
+    "args": [
+     19,
+     "ana"
+    ],
+    "expect": [
+     "Hamlet",
+     "Dune",
+     "Dune"
+    ]
+   },
+   {
+    "call": "history",
+    "args": [
+     20,
+     "bo"
+    ],
+    "expect": [
+     "Emma"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "merge_moves_loans",
+  "steps": [
+   {
+    "new": "Library",
+    "args": []
+   },
+   {
+    "call": "add_member",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_member",
+    "args": [
+     2,
+     "ana2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     3,
+     "D-1",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     4,
+     "E-1",
+     "Emma"
+    ],
+    "expect": true
+   },
+   {
+    "call": "checkout",
+    "args": [
+     10,
+     "ana",
+     "Dune"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     11,
+     "ana2",
+     "Emma"
+    ]
+   },
+   {
+    "call": "merge",
+    "args": [
+     12,
+     "ana",
+     "ana2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "borrower",
+    "args": [
+     13,
+     "E-1"
+    ],
+    "expect": "ana"
+   },
+   {
+    "call": "loans_of",
+    "args": [
+     14,
+     "ana"
+    ],
+    "expect": [
+     "D-1",
+     "E-1"
+    ]
+   },
+   {
+    "call": "loans_of",
+    "args": [
+     15,
+     "ana2"
+    ],
+    "expect": []
+   },
+   {
+    "call": "due_date",
+    "args": [
+     16,
+     "E-1"
+    ],
+    "expect": 25
+   },
+   {
+    "call": "checkout",
+    "args": [
+     17,
+     "ana2",
+     "Dune"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "merge",
+    "args": [
+     18,
+     "ana",
+     "ana2"
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_member",
+    "args": [
+     19,
+     "ana2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "history",
+    "args": [
+     20,
+     "ana2"
+    ],
+    "expect": []
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     21,
+     "E-1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "checkout",
+    "args": [
+     22,
+     "ana2",
+     "Emma"
+    ],
+    "expect": "E-1"
+   }
+  ]
+ },
+ {
+  "name": "merge_history_and_fines",
+  "steps": [
+   {
+    "new": "Library",
+    "args": []
+   },
+   {
+    "call": "add_member",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_member",
+    "args": [
+     2,
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     3,
+     "D-1",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     4,
+     "E-1",
+     "Emma"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     5,
+     "H-1",
+     "Hamlet"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     6,
+     "O-1",
+     "Odyssey"
+    ],
+    "expect": true
+   },
+   {
+    "call": "checkout",
+    "args": [
+     10,
+     "bo",
+     "Odyssey"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     11,
+     "ana",
+     "Hamlet"
+    ]
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     12,
+     "O-1"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     13,
+     "bo",
+     "Dune"
+    ]
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     30,
+     "D-1"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     31,
+     "ana",
+     "Emma"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     32,
+     "bo",
+     "Odyssey"
+    ]
+   },
+   {
+    "call": "fines",
+    "args": [
+     33,
+     "bo"
+    ],
+    "expect": 75
+   },
+   {
+    "call": "merge",
+    "args": [
+     34,
+     "ana",
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "history",
+    "args": [
+     35,
+     "ana"
+    ],
+    "expect": [
+     "Odyssey",
+     "Hamlet",
+     "Dune",
+     "Emma",
+     "Odyssey"
+    ]
+   },
+   {
+    "call": "fines",
+    "args": [
+     36,
+     "ana"
+    ],
+    "expect": 75
+   },
+   {
+    "call": "fines",
+    "args": [
+     37,
+     "bo"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     50,
+     "O-1"
+    ]
+   },
+   {
+    "call": "fines",
+    "args": [
+     51,
+     "ana"
+    ],
+    "expect": 175
+   },
+   {
+    "call": "popular",
+    "args": [
+     52,
+     2
+    ],
+    "expect": [
+     "Odyssey(2)",
+     "Dune(1)"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "merge_rejects",
+  "steps": [
+   {
+    "new": "Library",
+    "args": []
+   },
+   {
+    "call": "add_member",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_member",
+    "args": [
+     2,
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_member",
+    "args": [
+     3,
+     "cy"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     4,
+     "D-1",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     5,
+     "D-2",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     6,
+     "E-1",
+     "Emma"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     7,
+     "H-1",
+     "Hamlet"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     8,
+     "O-1",
+     "Odyssey"
+    ],
+    "expect": true
+   },
+   {
+    "call": "merge",
+    "args": [
+     10,
+     "zed",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "merge",
+    "args": [
+     11,
+     "ana",
+     "zed"
+    ],
+    "expect": false
+   },
+   {
+    "call": "merge",
+    "args": [
+     12,
+     "ana",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "checkout",
+    "args": [
+     13,
+     "ana",
+     "Dune"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     14,
+     "bo",
+     "Dune"
+    ]
+   },
+   {
+    "call": "merge",
+    "args": [
+     15,
+     "ana",
+     "bo"
+    ],
+    "expect": false
+   },
+   {
+    "call": "borrower",
+    "args": [
+     16,
+     "D-2"
+    ],
+    "expect": "bo"
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     17,
+     "D-2"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     18,
+     "ana",
+     "Emma"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     19,
+     "bo",
+     "Hamlet"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     20,
+     "bo",
+     "Odyssey"
+    ]
+   },
+   {
+    "call": "merge",
+    "args": [
+     21,
+     "ana",
+     "bo"
+    ],
+    "expect": false
+   },
+   {
+    "call": "loans_of",
+    "args": [
+     22,
+     "bo"
+    ],
+    "expect": [
+     "H-1",
+     "O-1"
+    ]
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     23,
+     "O-1"
+    ]
+   },
+   {
+    "call": "merge",
+    "args": [
+     24,
+     "ana",
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "loans_of",
+    "args": [
+     25,
+     "ana"
+    ],
+    "expect": [
+     "D-1",
+     "E-1",
+     "H-1"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "merged_account_follows_rules",
+  "steps": [
+   {
+    "new": "Library",
+    "args": []
+   },
+   {
+    "call": "add_member",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_member",
+    "args": [
+     2,
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_member",
+    "args": [
+     3,
+     "cy"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     4,
+     "D-1",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     5,
+     "D-2",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     6,
+     "E-1",
+     "Emma"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     7,
+     "H-1",
+     "Hamlet"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     8,
+     "O-1",
+     "Odyssey"
+    ],
+    "expect": true
+   },
+   {
+    "call": "checkout",
+    "args": [
+     10,
+     "bo",
+     "Dune"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     11,
+     "bo",
+     "Emma"
+    ]
+   },
+   {
+    "call": "merge",
+    "args": [
+     12,
+     "ana",
+     "bo"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     13,
+     "ana",
+     "Dune"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "checkout",
+    "args": [
+     14,
+     "ana",
+     "Hamlet"
+    ],
+    "expect": "H-1"
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     15,
+     "D-1"
+    ]
+   },
+   {
+    "call": "merge",
+    "args": [
+     16,
+     "cy",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "history",
+    "args": [
+     17,
+     "cy"
+    ],
+    "expect": [
+     "Dune",
+     "Emma",
+     "Hamlet"
+    ]
+   },
+   {
+    "call": "borrower",
+    "args": [
+     18,
+     "E-1"
+    ],
+    "expect": "cy"
+   },
+   {
+    "call": "checkout",
+    "args": [
+     19,
+     "cy",
+     "Dune"
+    ],
+    "expect": "D-1"
+   },
+   {
+    "call": "checkout",
+    "args": [
+     20,
+     "cy",
+     "Odyssey"
+    ],
+    "expect": ""
+   }
+  ]
+ }
+]

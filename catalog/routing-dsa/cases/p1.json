@@ -1,0 +1,404 @@
+[
+ {
+  "name": "worked_example",
+  "call": "fastest_delivery",
+  "args": [
+   5,
+   10,
+   4,
+   [
+    0,
+    5,
+    1,
+    0,
+    0
+   ],
+   [
+    {
+     "a": 0,
+     "b": 1,
+     "minutes": 10,
+     "energy": 2
+    },
+    {
+     "a": 1,
+     "b": 2,
+     "minutes": 10,
+     "energy": 2
+    },
+    {
+     "a": 2,
+     "b": 4,
+     "minutes": 10,
+     "energy": 6
+    },
+    {
+     "a": 0,
+     "b": 3,
+     "minutes": 5,
+     "energy": 4
+    },
+    {
+     "a": 3,
+     "b": 4,
+     "minutes": 5,
+     "energy": 6
+    }
+   ]
+  ],
+  "expect": 36
+ },
+ {
+  "name": "single_junction",
+  "call": "fastest_delivery",
+  "args": [
+   1,
+   0,
+   0,
+   [
+    0
+   ],
+   []
+  ],
+  "expect": 0
+ },
+ {
+  "name": "disconnected",
+  "call": "fastest_delivery",
+  "args": [
+   3,
+   5,
+   5,
+   [
+    1,
+    1,
+    1
+   ],
+   [
+    {
+     "a": 0,
+     "b": 1,
+     "minutes": 1,
+     "energy": 1
+    }
+   ]
+  ],
+  "expect": -1
+ },
+ {
+  "name": "too_little_charge_no_charger",
+  "call": "fastest_delivery",
+  "args": [
+   2,
+   5,
+   3,
+   [
+    0,
+    0
+   ],
+   [
+    {
+     "a": 0,
+     "b": 1,
+     "minutes": 1,
+     "energy": 4
+    }
+   ]
+  ],
+  "expect": -1
+ },
+ {
+  "name": "arrive_with_empty_battery",
+  "call": "fastest_delivery",
+  "args": [
+   3,
+   4,
+   4,
+   [
+    0,
+    0,
+    0
+   ],
+   [
+    {
+     "a": 0,
+     "b": 1,
+     "minutes": 3,
+     "energy": 1
+    },
+    {
+     "a": 1,
+     "b": 2,
+     "minutes": 4,
+     "energy": 3
+    }
+   ]
+  ],
+  "expect": 7
+ },
+ {
+  "name": "road_longer_than_battery",
+  "call": "fastest_delivery",
+  "args": [
+   3,
+   3,
+   3,
+   [
+    1,
+    1,
+    0
+   ],
+   [
+    {
+     "a": 0,
+     "b": 1,
+     "minutes": 1,
+     "energy": 1
+    },
+    {
+     "a": 1,
+     "b": 2,
+     "minutes": 1,
+     "energy": 4
+    }
+   ]
+  ],
+  "expect": -1
+ },
+ {
+  "name": "partial_charge_beats_full",
+  "call": "fastest_delivery",
+  "args": [
+   2,
+   10,
+   0,
+   [
+    3,
+    0
+   ],
+   [
+    {
+     "a": 0,
+     "b": 1,
+     "minutes": 5,
+     "energy": 2
+    }
+   ]
+  ],
+  "expect": 11
+ },
+ {
+  "name": "slow_road_saves_energy",
+  "call": "fastest_delivery",
+  "args": [
+   3,
+   5,
+   5,
+   [
+    0,
+    0,
+    0
+   ],
+   [
+    {
+     "a": 0,
+     "b": 1,
+     "minutes": 2,
+     "energy": 5
+    },
+    {
+     "a": 0,
+     "b": 1,
+     "minutes": 6,
+     "energy": 1
+    },
+    {
+     "a": 1,
+     "b": 2,
+     "minutes": 2,
+     "energy": 3
+    }
+   ]
+  ],
+  "expect": 8
+ },
+ {
+  "name": "detour_to_charger_and_back",
+  "call": "fastest_delivery",
+  "args": [
+   3,
+   6,
+   2,
+   [
+    0,
+    2,
+    0
+   ],
+   [
+    {
+     "a": 0,
+     "b": 1,
+     "minutes": 1,
+     "energy": 1
+    },
+    {
+     "a": 0,
+     "b": 2,
+     "minutes": 4,
+     "energy": 5
+    }
+   ]
+  ],
+  "expect": 16
+ },
+ {
+  "name": "roads_work_both_ways",
+  "call": "fastest_delivery",
+  "args": [
+   4,
+   5,
+   5,
+   [
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    {
+     "a": 3,
+     "b": 2,
+     "minutes": 1,
+     "energy": 1
+    },
+    {
+     "a": 2,
+     "b": 1,
+     "minutes": 1,
+     "energy": 1
+    },
+    {
+     "a": 1,
+     "b": 0,
+     "minutes": 1,
+     "energy": 1
+    },
+    {
+     "a": 0,
+     "b": 3,
+     "minutes": 1,
+     "energy": 9
+    }
+   ]
+  ],
+  "expect": 3
+ },
+ {
+  "name": "no_charger_means_no_charge",
+  "call": "fastest_delivery",
+  "args": [
+   2,
+   5,
+   0,
+   [
+    0,
+    0
+   ],
+   [
+    {
+     "a": 0,
+     "b": 1,
+     "minutes": 1,
+     "energy": 1
+    }
+   ]
+  ],
+  "expect": -1
+ },
+ {
+  "name": "split_charging_across_stations",
+  "call": "fastest_delivery",
+  "args": [
+   4,
+   10,
+   1,
+   [
+    2,
+    6,
+    1,
+    0
+   ],
+   [
+    {
+     "a": 0,
+     "b": 1,
+     "minutes": 3,
+     "energy": 1
+    },
+    {
+     "a": 1,
+     "b": 2,
+     "minutes": 3,
+     "energy": 1
+    },
+    {
+     "a": 2,
+     "b": 3,
+     "minutes": 3,
+     "energy": 10
+    },
+    {
+     "a": 0,
+     "b": 3,
+     "minutes": 40,
+     "energy": 8
+    }
+   ]
+  ],
+  "expect": 21
+ },
+ {
+  "name": "equal_time_parallel_roads",
+  "call": "fastest_delivery",
+  "args": [
+   3,
+   5,
+   5,
+   [
+    0,
+    0,
+    0
+   ],
+   [
+    {
+     "a": 0,
+     "b": 1,
+     "minutes": 3,
+     "energy": 4
+    },
+    {
+     "a": 0,
+     "b": 1,
+     "minutes": 3,
+     "energy": 1
+    },
+    {
+     "a": 1,
+     "b": 2,
+     "minutes": 3,
+     "energy": 3
+    }
+   ]
+  ],
+  "expect": 6
+ },
+ {
+  "name": "large_network",
+  "call": "fastest_delivery",
+  "data": "data/large_network.json",
+  "expect": 14023,
+  "budget_ms": {
+   "go": 2000
+  }
+ }
+]

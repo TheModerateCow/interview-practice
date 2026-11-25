@@ -1,0 +1,37 @@
+[
+ {
+  "file": "store.go",
+  "old": "return append([]Line(nil), s.lines[b]...)",
+  "new": "return s.lines[b]",
+  "label": "history hands out the store's own lines; Statement reverses them in place",
+  "k": "test_p1_"
+ },
+ {
+  "file": "store.go",
+  "old": "\t*p = next\n",
+  "new": "\tp = &next\n",
+  "label": "updatePayout never stores the updated copy, so webhook retries re-post",
+  "k": "test_p1_"
+ },
+ {
+  "file": "journal.go",
+  "old": "\tsums := map[string]int64{}\n\tfor _, p := range e.Postings {\n\t\tif p.Account == \"\" || p.Amount == 0 {\n\t\t\treturn fmt.Errorf(\"%w: empty account or zero amount\", ErrInvalid)\n\t\t}\n\t\tif !ValidCurrency(p.Currency) {\n\t\t\treturn fmt.Errorf(\"%w: %q\", ErrUnknownCurrency, p.Currency)\n\t\t}\n\t\tsums[p.Currency] += p.Amount\n\t}\n\tfor _, p := range e.Postings {\n\t\tif sum := sums[p.Currency]; sum != 0 {\n\t\t\treturn fmt.Errorf(\"%w: off by %s\", ErrUnbalanced, Format(sum, p.Currency))\n\t\t}\n\t}",
+  "new": "\tvar total int64\n\tfor _, p := range e.Postings {\n\t\tif p.Account == \"\" || p.Amount == 0 {\n\t\t\treturn fmt.Errorf(\"%w: empty account or zero amount\", ErrInvalid)\n\t\t}\n\t\tif !ValidCurrency(p.Currency) {\n\t\t\treturn fmt.Errorf(\"%w: %q\", ErrUnknownCurrency, p.Currency)\n\t\t}\n\t\ttotal += p.Amount\n\t}\n\tif total != 0 {\n\t\treturn fmt.Errorf(\"%w: off by %d minor units\", ErrUnbalanced, total)\n\t}",
+  "label": "validate nets amounts across currencies instead of per currency",
+  "k": "test_p1_"
+ },
+ {
+  "file": "settlement.go",
+  "old": "import (\n\t\"fmt\"\n\t\"sort\"\n)\n\n// Settle moves every charge of merchant whose funds are available at ts from pending to\n// available, minus fees, as one batch per currency (sorted by currency code).\nfunc (l *Ledger) Settle(merchant string, ts int64) ([]Batch, error) {\n\tpricing, ok := l.merchants[merchant]\n\tif !ok {\n\t\treturn nil, fmt.Errorf(\"%w: %q\", ErrUnknownMerchant, merchant)\n\t}\n\tif ts < l.store.headTS {\n\t\treturn nil, ErrBackdated\n\t}\n\tdue := l.charges.due(merchant, ts)\n\tif len(due) == 0 {\n\t\treturn nil, nil\n\t}\n\tgroups := map[string][]*Charge{}\n\tfor _, c := range due {\n\t\tgroups[c.Currency] = append(groups[c.Currency], c)\n\t}\n\tcurs := make([]string, 0, len(groups))\n\tfor cur := range groups {\n\t\tcurs = append(curs, cur)\n\t}\n\tsort.Strings(curs)\n\tvar out []Batch\n\tfor _, cur := range curs {\n\t\tl.batchSeq++\n\t\tb := Batch{ID: fmt.Sprintf(\"b%d\", l.batchSeq), Merchant: merchant, Currency: cur, TS: ts}\n\t\tfor _, c := range groups[cur] {\n\t\t\tb.Charges = append(b.Charges, c.ID)\n\t\t\tb.Gross += c.Amount - c.Refunded\n\t\t\tb.Fees += pricing.fee(c.Amount, cur)\n\t\t\tc.Batch = b.ID\n\t\t}\n\t\tb.Net = b.Gross - b.Fees\n\t\tvar ps []Posting\n\t\tfor _, p := range []Posting{\n\t\t\t{PendingAccount(merchant), cur, -b.Gross},\n\t\t\t{AvailableAccount(merchant), cur, b.Net},\n\t\t\t{FeesAccount, cur, b.Fees},\n\t\t} {\n\t\t\tif p.Amount != 0 {\n\t\t\t\tps = append(ps, p)\n\t\t\t}\n\t\t}\n\t\tif len(ps) > 0 {\n\t\t\tif _, err := l.Post(Entry{TS: ts, Memo: \"settlement \" + b.ID, Postings: ps}); err != nil {\n\t\t\t\treturn out, err\n\t\t\t}\n\t\t}\n\t\tout = append(out, b)\n\t}\n\treturn out, nil\n}\n",
+  "new": "// Settle moves every charge of merchant whose funds are available at ts from pending to\n// available, minus fees, as one batch per currency (sorted by currency code).\nfunc (l *Ledger) Settle(merchant string, ts int64) ([]Batch, error) {\n\tpanic(\"not implemented\")\n}\n",
+  "label": "Settle removed (phase 2 feature)",
+  "k": "test_p2_"
+ },
+ {
+  "file": "charges.go",
+  "old": "import \"container/heap\"\n\n// chargeBook holds every captured charge by ID, plus each merchant's unsettled charges\n// in a min-heap keyed on when their funds become available.\ntype chargeBook struct {\n\tbyID    map[string]*Charge\n\tpending map[string]*dueQueue\n}\n\nfunc newChargeBook() *chargeBook {\n\treturn &chargeBook{byID: map[string]*Charge{}, pending: map[string]*dueQueue{}}\n}\n\nfunc (b *chargeBook) add(c *Charge) {\n\tc.seq = len(b.byID)\n\tb.byID[c.ID] = c\n\tq := b.pending[c.Merchant]\n\tif q == nil {\n\t\tq = &dueQueue{}\n\t\tb.pending[c.Merchant] = q\n\t}\n\theap.Push(q, c)\n}\n\n// due returns the merchant's unsettled charges whose funds are available at ts, earliest\n// AvailableOn first (capture order breaks ties). It takes them off the merchant's pending set.\nfunc (b *chargeBook) due(merchant string, ts int64) []*Charge {\n\tq := b.pending[merchant]\n\tvar out []*Charge\n\tfor q != nil && q.Len() > 0 && (*q)[0].AvailableOn <= ts {\n\t\tout = append(out, heap.Pop(q).(*Charge))\n\t}\n\treturn out\n}\n\n// dueQueue implements heap.Interface over charges, ordered by Charge.before.\ntype dueQueue []*Charge\n\nfunc (q dueQueue) Len() int           { return len(q) }\nfunc (q dueQueue) Less(i, j int) bool { return q[i].before(q[j]) }\nfunc (q dueQueue) Swap(i, j int)      { q[i], q[j] = q[j], q[i] }\nfunc (q *dueQueue) Push(x any)        { *q = append(*q, x.(*Charge)) }\nfunc (q *dueQueue) Pop() any {\n\told := *q\n\tc := old[len(old)-1]\n\t*q = old[:len(old)-1]\n\treturn c\n}",
+  "new": "import \"sort\"\n\n// chargeBook holds every captured charge, by ID and by merchant in capture order.\ntype chargeBook struct {\n\tbyID       map[string]*Charge\n\tbyMerchant map[string][]*Charge\n}\n\nfunc newChargeBook() *chargeBook {\n\treturn &chargeBook{byID: map[string]*Charge{}, byMerchant: map[string][]*Charge{}}\n}\n\nfunc (b *chargeBook) add(c *Charge) {\n\tc.seq = len(b.byID)\n\tb.byID[c.ID] = c\n\tb.byMerchant[c.Merchant] = append(b.byMerchant[c.Merchant], c)\n}\n\n// due returns the merchant's unsettled charges whose funds are available at ts, earliest\n// AvailableOn first (capture order breaks ties). A charge counts as settled once its\n// Batch is set.\nfunc (b *chargeBook) due(merchant string, ts int64) []*Charge {\n\tvar out []*Charge\n\tfor _, c := range b.byMerchant[merchant] {\n\t\tif c.Batch == \"\" && c.AvailableOn <= ts {\n\t\t\tout = append(out, c)\n\t\t}\n\t}\n\tsort.Slice(out, func(i, j int) bool { return out[i].before(out[j]) })\n\treturn out\n}",
+  "label": "due scans every charge the merchant ever had, then sorts (phase 3 bottleneck)",
+  "k": "test_p3_"
+ }
+]

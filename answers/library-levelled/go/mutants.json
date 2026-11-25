@@ -1,0 +1,16 @@
+[
+ {"file":"library.go","old":"(best == nil || c.id < best.id)","new":"(best == nil || c.id > best.id)","label":"checkout lends the highest copy id","k":"test_l1_"},
+ {"file":"library.go","old":"len(m.onLoan()) >= MaxLoans || m.hasTitle(title)","new":"len(m.onLoan()) > MaxLoans || m.hasTitle(title)","label":"members can have four copies on loan","k":"test_l1_"},
+ {"file":"library.go","old":"|| m.hasTitle(title) {","new":"{","label":"a member can borrow two copies of one title","k":"test_l1_"},
+ {"file":"library.go","old":"c.current == nil {\n\t\t\tn++","new":"true {\n\t\t\tn++","label":"available counts copies on loan too","k":"test_l2_"},
+ {"file":"library.go","old":"return titles[i] < titles[j]","new":"return titles[i] > titles[j]","label":"popular ties broken by title descending","k":"test_l2_"},
+ {"file":"library.go","old":"\tsort.Strings(out)\n","new":"\n","label":"loans listed unsorted","k":"test_l2_"},
+ {"file":"library.go","old":"if ts > l.due || l.renewals >= 2 {","new":"if ts >= l.due || l.renewals >= 2 {","label":"no renewing on the due date","k":"test_l3_"},
+ {"file":"library.go","old":"l.renewals >= 2 {","new":"l.renewals >= 3 {","label":"three renewals allowed","k":"test_l3_"},
+ {"file":"library.go","old":"l.due += LoanDays","new":"l.due = ts + LoanDays","label":"renewal counts from today, not the due date","k":"test_l3_"},
+ {"file":"library.go","old":"total += min(FineCap, FinePerDay*(l.back-l.due))","new":"total += FinePerDay * (l.back - l.due)","label":"fines aren't capped","k":"test_l3_"},
+ {"file":"library.go","old":"\tsort.SliceStable(k.loans, func(i, j int) bool { return k.loans[i].out < k.loans[j].out })\n","new":"\n","label":"merged history isn't in checkout order","k":"test_l4_"},
+ {"file":"library.go","old":"if k.hasTitle(l.title) {","new":"if false {","label":"merge allows the same title twice","k":"test_l4_"},
+ {"file":"library.go","old":"len(k.onLoan())+len(d.onLoan()) > MaxLoans","new":"len(k.onLoan())+len(d.onLoan()) > MaxLoans+1","label":"merge can go over the loan limit","k":"test_l4_"},
+ {"file":"library.go","old":"\t\tl.member = keepID\n","new":"\n","label":"moved loans still name the dropped member","k":"test_l4_"}
+]

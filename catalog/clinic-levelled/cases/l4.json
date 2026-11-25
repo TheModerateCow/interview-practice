@@ -1,0 +1,910 @@
+[
+ {
+  "name": "reschedule",
+  "steps": [
+   {
+    "new": "Clinic",
+    "args": []
+   },
+   {
+    "call": "add_clinician",
+    "args": [
+     1,
+     "dr-a"
+    ]
+   },
+   {
+    "call": "add_clinician",
+    "args": [
+     2,
+     "dr-b"
+    ]
+   },
+   {
+    "call": "add_room",
+    "args": [
+     3,
+     "room-1"
+    ]
+   },
+   {
+    "call": "add_room",
+    "args": [
+     4,
+     "room-2"
+    ]
+   },
+   {
+    "call": "add_type",
+    "args": [
+     5,
+     "checkup",
+     30
+    ]
+   },
+   {
+    "call": "add_type",
+    "args": [
+     6,
+     "consult",
+     60
+    ]
+   },
+   {
+    "call": "add_type",
+    "args": [
+     7,
+     "review",
+     20
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     20,
+     "dr-a",
+     "pat-1",
+     "checkup",
+     100
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     21,
+     "dr-b",
+     "pat-2",
+     "consult",
+     200
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     22,
+     "dr-a",
+     "pat-3",
+     "checkup",
+     300
+    ]
+   },
+   {
+    "call": "reschedule",
+    "args": [
+     23,
+     "appt1",
+     110
+    ],
+    "expect": true
+   },
+   {
+    "call": "appointment",
+    "args": [
+     24,
+     "appt1"
+    ],
+    "expect": "dr-a pat-1 checkup room-1 110-140 booked"
+   },
+   {
+    "call": "reschedule",
+    "args": [
+     25,
+     "appt1",
+     290
+    ],
+    "expect": false
+   },
+   {
+    "call": "reschedule",
+    "args": [
+     26,
+     "appt1",
+     25
+    ],
+    "expect": false
+   },
+   {
+    "call": "reschedule",
+    "args": [
+     27,
+     "appt1",
+     210
+    ],
+    "expect": true
+   },
+   {
+    "call": "appointment",
+    "args": [
+     28,
+     "appt1"
+    ],
+    "expect": "dr-a pat-1 checkup room-2 210-240 booked"
+   },
+   {
+    "call": "reschedule",
+    "args": [
+     29,
+     "appt9",
+     400
+    ],
+    "expect": false
+   },
+   {
+    "call": "reschedule",
+    "args": [
+     205,
+     "appt2",
+     500
+    ],
+    "expect": false
+   },
+   {
+    "call": "check_in",
+    "args": [
+     280,
+     "appt3"
+    ]
+   },
+   {
+    "call": "reschedule",
+    "args": [
+     281,
+     "appt3",
+     500
+    ],
+    "expect": false
+   }
+  ]
+ },
+ {
+  "name": "reschedule_offers_old_slot",
+  "steps": [
+   {
+    "new": "Clinic",
+    "args": []
+   },
+   {
+    "call": "add_clinician",
+    "args": [
+     1,
+     "dr-a"
+    ]
+   },
+   {
+    "call": "add_room",
+    "args": [
+     2,
+     "room-1"
+    ]
+   },
+   {
+    "call": "add_type",
+    "args": [
+     3,
+     "checkup",
+     30
+    ]
+   },
+   {
+    "call": "add_type",
+    "args": [
+     4,
+     "consult",
+     60
+    ]
+   },
+   {
+    "call": "add_type",
+    "args": [
+     5,
+     "review",
+     20
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     20,
+     "dr-a",
+     "pat-1",
+     "checkup",
+     100
+    ]
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     21,
+     "pat-w",
+     "dr-a",
+     "review"
+    ]
+   },
+   {
+    "call": "reschedule",
+    "args": [
+     22,
+     "appt1",
+     300
+    ],
+    "expect": true
+   },
+   {
+    "call": "appointment",
+    "args": [
+     23,
+     "appt2"
+    ],
+    "expect": "dr-a pat-w review room-1 100-120 booked"
+   },
+   {
+    "call": "schedule",
+    "args": [
+     24,
+     "dr-a"
+    ],
+    "expect": [
+     "appt2@100-120",
+     "appt1@300-330"
+    ]
+   },
+   {
+    "call": "cancel",
+    "args": [
+     25,
+     "appt2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "reschedule",
+    "args": [
+     26,
+     "appt2",
+     400
+    ],
+    "expect": false
+   }
+  ]
+ },
+ {
+  "name": "hand_over",
+  "steps": [
+   {
+    "new": "Clinic",
+    "args": []
+   },
+   {
+    "call": "add_clinician",
+    "args": [
+     1,
+     "dr-a"
+    ]
+   },
+   {
+    "call": "add_clinician",
+    "args": [
+     2,
+     "dr-b"
+    ]
+   },
+   {
+    "call": "add_room",
+    "args": [
+     3,
+     "room-1"
+    ]
+   },
+   {
+    "call": "add_room",
+    "args": [
+     4,
+     "room-2"
+    ]
+   },
+   {
+    "call": "add_room",
+    "args": [
+     5,
+     "room-3"
+    ]
+   },
+   {
+    "call": "add_type",
+    "args": [
+     6,
+     "checkup",
+     30
+    ]
+   },
+   {
+    "call": "add_type",
+    "args": [
+     7,
+     "consult",
+     60
+    ]
+   },
+   {
+    "call": "add_type",
+    "args": [
+     8,
+     "review",
+     20
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     20,
+     "dr-a",
+     "pat-1",
+     "checkup",
+     300
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     21,
+     "dr-a",
+     "pat-2",
+     "checkup",
+     100
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     22,
+     "dr-a",
+     "pat-3",
+     "review",
+     200
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     23,
+     "dr-a",
+     "pat-4",
+     "review",
+     150
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     24,
+     "dr-b",
+     "pat-5",
+     "consult",
+     290
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     25,
+     "dr-b",
+     "pat-6",
+     "review",
+     205
+    ]
+   },
+   {
+    "call": "check_in",
+    "args": [
+     90,
+     "appt2"
+    ]
+   },
+   {
+    "call": "hand_over",
+    "args": [
+     91,
+     "dr-a",
+     "dr-b"
+    ],
+    "expect": [
+     "appt3",
+     "appt1"
+    ]
+   },
+   {
+    "call": "schedule",
+    "args": [
+     92,
+     "dr-b"
+    ],
+    "expect": [
+     "appt4@150-170",
+     "appt6@205-225",
+     "appt5@290-350"
+    ]
+   },
+   {
+    "call": "schedule",
+    "args": [
+     93,
+     "dr-a"
+    ],
+    "expect": [
+     "appt2@100-130"
+    ]
+   },
+   {
+    "call": "appointment",
+    "args": [
+     94,
+     "appt4"
+    ],
+    "expect": "dr-b pat-4 review room-1 150-170 booked"
+   },
+   {
+    "call": "appointment",
+    "args": [
+     95,
+     "appt1"
+    ],
+    "expect": "dr-a pat-1 checkup room-1 300-330 cancelled"
+   },
+   {
+    "call": "busiest_clinicians",
+    "args": [
+     96,
+     2
+    ],
+    "expect": [
+     "dr-b:100",
+     "dr-a:30"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "hand_over_waitlist",
+  "steps": [
+   {
+    "new": "Clinic",
+    "args": []
+   },
+   {
+    "call": "add_clinician",
+    "args": [
+     1,
+     "dr-a"
+    ]
+   },
+   {
+    "call": "add_clinician",
+    "args": [
+     2,
+     "dr-b"
+    ]
+   },
+   {
+    "call": "add_clinician",
+    "args": [
+     3,
+     "dr-c"
+    ]
+   },
+   {
+    "call": "add_room",
+    "args": [
+     4,
+     "room-1"
+    ]
+   },
+   {
+    "call": "add_type",
+    "args": [
+     5,
+     "checkup",
+     30
+    ]
+   },
+   {
+    "call": "add_type",
+    "args": [
+     6,
+     "consult",
+     60
+    ]
+   },
+   {
+    "call": "add_type",
+    "args": [
+     7,
+     "review",
+     20
+    ]
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     20,
+     "pat-1",
+     "dr-b",
+     "review"
+    ]
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     21,
+     "pat-2",
+     "dr-a",
+     "checkup"
+    ]
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     22,
+     "pat-1",
+     "dr-a",
+     "consult"
+    ]
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     23,
+     "pat-3",
+     "dr-a",
+     "review"
+    ]
+   },
+   {
+    "call": "hand_over",
+    "args": [
+     24,
+     "dr-a",
+     "dr-b"
+    ],
+    "expect": []
+   },
+   {
+    "call": "waitlist",
+    "args": [
+     25,
+     "dr-b"
+    ],
+    "expect": [
+     "pat-1:review",
+     "pat-2:checkup",
+     "pat-3:review"
+    ]
+   },
+   {
+    "call": "waitlist",
+    "args": [
+     26,
+     "dr-a"
+    ],
+    "expect": []
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     27,
+     "pat-2",
+     "dr-a",
+     "review"
+    ],
+    "expect": true
+   },
+   {
+    "call": "hand_over",
+    "args": [
+     28,
+     "dr-a",
+     "dr-a"
+    ],
+    "expect": null
+   },
+   {
+    "call": "hand_over",
+    "args": [
+     29,
+     "dr-a",
+     "dr-z"
+    ],
+    "expect": null
+   },
+   {
+    "call": "waitlist",
+    "args": [
+     30,
+     "dr-a"
+    ],
+    "expect": [
+     "pat-2:review"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "history",
+  "steps": [
+   {
+    "new": "Clinic",
+    "args": []
+   },
+   {
+    "call": "add_clinician",
+    "args": [
+     1,
+     "dr-a"
+    ]
+   },
+   {
+    "call": "add_clinician",
+    "args": [
+     2,
+     "dr-b"
+    ]
+   },
+   {
+    "call": "add_room",
+    "args": [
+     3,
+     "room-1"
+    ]
+   },
+   {
+    "call": "add_type",
+    "args": [
+     4,
+     "checkup",
+     30
+    ]
+   },
+   {
+    "call": "add_type",
+    "args": [
+     5,
+     "consult",
+     60
+    ]
+   },
+   {
+    "call": "add_type",
+    "args": [
+     6,
+     "review",
+     20
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     20,
+     "dr-a",
+     "pat-1",
+     "checkup",
+     100
+    ]
+   },
+   {
+    "call": "reschedule",
+    "args": [
+     30,
+     "appt1",
+     200
+    ]
+   },
+   {
+    "call": "hand_over",
+    "args": [
+     40,
+     "dr-a",
+     "dr-b"
+    ]
+   },
+   {
+    "call": "check_in",
+    "args": [
+     185,
+     "appt1"
+    ]
+   },
+   {
+    "call": "history",
+    "args": [
+     300,
+     "appt1"
+    ],
+    "expect": [
+     "20:booked",
+     "30:rescheduled:200",
+     "40:handed-over:dr-b",
+     "185:checked-in"
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     301,
+     "dr-a",
+     "pat-2",
+     "review",
+     400
+    ]
+   },
+   {
+    "call": "cancel",
+    "args": [
+     302,
+     "appt2"
+    ]
+   },
+   {
+    "call": "history",
+    "args": [
+     303,
+     "appt2"
+    ],
+    "expect": [
+     "301:booked",
+     "302:cancelled"
+    ]
+   },
+   {
+    "call": "history",
+    "args": [
+     304,
+     "appt9"
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "history_event_times",
+  "steps": [
+   {
+    "new": "Clinic",
+    "args": []
+   },
+   {
+    "call": "add_clinician",
+    "args": [
+     1,
+     "dr-a"
+    ]
+   },
+   {
+    "call": "add_room",
+    "args": [
+     2,
+     "room-1"
+    ]
+   },
+   {
+    "call": "add_type",
+    "args": [
+     3,
+     "checkup",
+     30
+    ]
+   },
+   {
+    "call": "add_type",
+    "args": [
+     4,
+     "consult",
+     60
+    ]
+   },
+   {
+    "call": "add_type",
+    "args": [
+     5,
+     "review",
+     20
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     20,
+     "dr-a",
+     "pat-1",
+     "consult",
+     100
+    ]
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     21,
+     "pat-w",
+     "dr-a",
+     "review"
+    ]
+   },
+   {
+    "call": "history",
+    "args": [
+     500,
+     "appt1"
+    ],
+    "expect": [
+     "20:booked",
+     "110:no-show"
+    ]
+   },
+   {
+    "call": "history",
+    "args": [
+     501,
+     "appt2"
+    ],
+    "expect": [
+     "110:booked",
+     "110:checked-in"
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     502,
+     "dr-a",
+     "pat-2",
+     "checkup",
+     600
+    ]
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     503,
+     "pat-v",
+     "dr-a",
+     "checkup"
+    ]
+   },
+   {
+    "call": "cancel",
+    "args": [
+     504,
+     "appt3"
+    ]
+   },
+   {
+    "call": "history",
+    "args": [
+     505,
+     "appt4"
+    ],
+    "expect": [
+     "504:booked"
+    ]
+   }
+  ]
+ }
+]

@@ -1,0 +1,14 @@
+{
+ "run_entry": "cmd/run/main.go",
+ "testcases": [
+  {
+   "stdin": "open 1 acc-a\nopen 2 acc-b\ndeposit 3 acc-a 500\ntransfer 4 acc-a acc-b 200\nwithdraw 5 acc-b 250\nwithdraw 6 acc-b 200\nbalance 7 acc-a\nbalance 8 acc-b\n",
+   "expected": "true\ntrue\n500\n300\n(failed)\n0\n300\n0"
+  },
+  {
+   "stdin": "open 1 acc-a\nopen 2 acc-a\ndeposit 3 acc-z 50\ntransfer 4 acc-a acc-a 10\nbalance 5 acc-z\nbalance 6 acc-a\n",
+   "expected": "true\nfalse\n(failed)\n(failed)\n(none)\n0"
+  }
+ ],
+ "your_tests": "*_test.go"
+}

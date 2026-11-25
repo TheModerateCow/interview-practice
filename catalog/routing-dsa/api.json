@@ -1,0 +1,52 @@
+{
+ "module": "route",
+ "records": {
+  "Road": [
+   [
+    "a",
+    "int"
+   ],
+   [
+    "b",
+    "int"
+   ],
+   [
+    "minutes",
+    "int"
+   ],
+   [
+    "energy",
+    "int"
+   ]
+  ]
+ },
+ "functions": {
+  "fastest_delivery": {
+   "params": [
+    [
+     "n",
+     "int"
+    ],
+    [
+     "capacity",
+     "int"
+    ],
+    [
+     "charge",
+     "int"
+    ],
+    [
+     "rate",
+     "list<int>"
+    ],
+    [
+     "roads",
+     "list<Road>"
+    ]
+   ],
+   "returns": "int"
+  }
+ },
+ "classes": {},
+ "errors": []
+}

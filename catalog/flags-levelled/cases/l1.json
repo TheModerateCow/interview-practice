@@ -1,0 +1,451 @@
+[
+ {
+  "name": "create_and_default_off",
+  "steps": [
+   {
+    "new": "FlagService",
+    "args": []
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "dark-mode"
+    ],
+    "expect": true
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     2,
+     "dark-mode"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     3,
+     "dark-mode",
+     "prod",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     4,
+     "nope",
+     "prod",
+     "ana"
+    ],
+    "expect": false
+   }
+  ]
+ },
+ {
+  "name": "flags_independent",
+  "steps": [
+   {
+    "new": "FlagService",
+    "args": []
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "a"
+    ],
+    "expect": true
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "b"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     3,
+     "a",
+     "prod",
+     true
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_target",
+    "args": [
+     4,
+     "b",
+     "prod",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     5,
+     "a",
+     "prod",
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     6,
+     "b",
+     "prod",
+     "bo"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     7,
+     "b",
+     "prod",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     8,
+     "c"
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     9,
+     "c",
+     "prod",
+     "ana"
+    ],
+    "expect": false
+   }
+  ]
+ },
+ {
+  "name": "remove_target",
+  "steps": [
+   {
+    "new": "FlagService",
+    "args": []
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "dark-mode"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_target",
+    "args": [
+     2,
+     "dark-mode",
+     "prod",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "remove_target",
+    "args": [
+     3,
+     "dark-mode",
+     "prod",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "remove_target",
+    "args": [
+     4,
+     "dark-mode",
+     "prod",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     5,
+     "dark-mode",
+     "prod",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "remove_target",
+    "args": [
+     6,
+     "dark-mode",
+     "prod",
+     "bo"
+    ],
+    "expect": false
+   },
+   {
+    "call": "remove_target",
+    "args": [
+     7,
+     "dark-mode",
+     "staging",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "remove_target",
+    "args": [
+     8,
+     "nope",
+     "prod",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     9,
+     "dark-mode",
+     "prod",
+     true
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_target",
+    "args": [
+     10,
+     "dark-mode",
+     "prod",
+     "cy"
+    ],
+    "expect": true
+   },
+   {
+    "call": "remove_target",
+    "args": [
+     11,
+     "dark-mode",
+     "prod",
+     "cy"
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     12,
+     "dark-mode",
+     "prod",
+     "cy"
+    ],
+    "expect": true
+   }
+  ]
+ },
+ {
+  "name": "set_enabled_per_environment",
+  "steps": [
+   {
+    "new": "FlagService",
+    "args": []
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "dark-mode"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     2,
+     "dark-mode",
+     "prod",
+     true
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     3,
+     "dark-mode",
+     "prod",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     4,
+     "dark-mode",
+     "prod",
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     5,
+     "dark-mode",
+     "staging",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     6,
+     "nope",
+     "prod",
+     true
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     7,
+     "dark-mode",
+     "prod",
+     false
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     8,
+     "dark-mode",
+     "prod",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     9,
+     "dark-mode",
+     "prod",
+     false
+    ],
+    "expect": true
+   }
+  ]
+ },
+ {
+  "name": "targeting",
+  "steps": [
+   {
+    "new": "FlagService",
+    "args": []
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "dark-mode"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_target",
+    "args": [
+     2,
+     "dark-mode",
+     "staging",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_target",
+    "args": [
+     3,
+     "dark-mode",
+     "staging",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     4,
+     "dark-mode",
+     "staging",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     5,
+     "dark-mode",
+     "staging",
+     "bo"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     6,
+     "dark-mode",
+     "prod",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_target",
+    "args": [
+     7,
+     "nope",
+     "staging",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_target",
+    "args": [
+     8,
+     "dark-mode",
+     "prod",
+     "ana"
+    ],
+    "expect": true
+   }
+  ]
+ }
+]

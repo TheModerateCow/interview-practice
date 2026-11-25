@@ -1,0 +1,484 @@
+[
+ {
+  "name": "reservation_blocks_spot",
+  "steps": [
+   {
+    "new": "Garage",
+    "args": []
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     1,
+     "S1",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     2,
+     "S2",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "reserve",
+    "args": [
+     10,
+     "RES",
+     "small",
+     30
+    ],
+    "expect": "S1"
+   },
+   {
+    "call": "free_spots",
+    "args": [
+     11,
+     "small"
+    ],
+    "expect": 1
+   },
+   {
+    "call": "park",
+    "args": [
+     12,
+     "X",
+     "small"
+    ],
+    "expect": "S2"
+   },
+   {
+    "call": "park",
+    "args": [
+     13,
+     "Y",
+     "small"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "park",
+    "args": [
+     39,
+     "Y",
+     "small"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "free_spots",
+    "args": [
+     40,
+     "small"
+    ],
+    "expect": 1
+   },
+   {
+    "call": "park",
+    "args": [
+     41,
+     "Y",
+     "small"
+    ],
+    "expect": "S1"
+   }
+  ]
+ },
+ {
+  "name": "reserved_plate_gets_its_spot",
+  "steps": [
+   {
+    "new": "Garage",
+    "args": []
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     1,
+     "S5",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     2,
+     "M1",
+     "medium"
+    ],
+    "expect": true
+   },
+   {
+    "call": "reserve",
+    "args": [
+     10,
+     "RES",
+     "small",
+     50
+    ],
+    "expect": "S5"
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     11,
+     "S0",
+     "small"
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     12,
+     "RES",
+     "small"
+    ],
+    "expect": "S5"
+   },
+   {
+    "call": "free_spots",
+    "args": [
+     13,
+     "small"
+    ],
+    "expect": 1
+   },
+   {
+    "call": "top_visitors",
+    "args": [
+     14,
+     5
+    ],
+    "expect": [
+     "RES(1)"
+    ]
+   },
+   {
+    "call": "leave",
+    "args": [
+     15,
+     "RES"
+    ]
+   },
+   {
+    "call": "free_spots",
+    "args": [
+     16,
+     "small"
+    ],
+    "expect": 2
+   },
+   {
+    "call": "park",
+    "args": [
+     17,
+     "X",
+     "small"
+    ],
+    "expect": "S0"
+   },
+   {
+    "call": "park",
+    "args": [
+     18,
+     "Y",
+     "small"
+    ],
+    "expect": "S5"
+   }
+  ]
+ },
+ {
+  "name": "reserve_rules",
+  "steps": [
+   {
+    "new": "Garage",
+    "args": []
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     1,
+     "S1",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     2,
+     "M1",
+     "medium"
+    ],
+    "expect": true
+   },
+   {
+    "call": "reserve",
+    "args": [
+     10,
+     "A",
+     "huge",
+     5
+    ],
+    "expect": ""
+   },
+   {
+    "call": "reserve",
+    "args": [
+     11,
+     "A",
+     "small",
+     0
+    ],
+    "expect": ""
+   },
+   {
+    "call": "reserve",
+    "args": [
+     12,
+     "A",
+     "large",
+     5
+    ],
+    "expect": ""
+   },
+   {
+    "call": "park",
+    "args": [
+     13,
+     "P",
+     "small"
+    ]
+   },
+   {
+    "call": "reserve",
+    "args": [
+     14,
+     "P",
+     "small",
+     5
+    ],
+    "expect": ""
+   },
+   {
+    "call": "reserve",
+    "args": [
+     15,
+     "A",
+     "small",
+     5
+    ],
+    "expect": "M1"
+   },
+   {
+    "call": "reserve",
+    "args": [
+     16,
+     "A",
+     "small",
+     5
+    ],
+    "expect": ""
+   },
+   {
+    "call": "reserve",
+    "args": [
+     17,
+     "B",
+     "small",
+     5
+    ],
+    "expect": ""
+   },
+   {
+    "call": "reserve",
+    "args": [
+     20,
+     "A",
+     "medium",
+     5
+    ],
+    "expect": "M1"
+   }
+  ]
+ },
+ {
+  "name": "cancel",
+  "steps": [
+   {
+    "new": "Garage",
+    "args": []
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     1,
+     "S1",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "reserve",
+    "args": [
+     10,
+     "A",
+     "small",
+     20
+    ]
+   },
+   {
+    "call": "cancel",
+    "args": [
+     11,
+     "A"
+    ],
+    "expect": true
+   },
+   {
+    "call": "free_spots",
+    "args": [
+     12,
+     "small"
+    ],
+    "expect": 1
+   },
+   {
+    "call": "cancel",
+    "args": [
+     13,
+     "A"
+    ],
+    "expect": false
+   },
+   {
+    "call": "cancel",
+    "args": [
+     14,
+     "NOPE"
+    ],
+    "expect": false
+   },
+   {
+    "call": "reserve",
+    "args": [
+     15,
+     "B",
+     "small",
+     10
+    ]
+   },
+   {
+    "call": "cancel",
+    "args": [
+     25,
+     "B"
+    ],
+    "expect": false
+   },
+   {
+    "call": "park",
+    "args": [
+     26,
+     "A",
+     "small"
+    ],
+    "expect": "S1"
+   },
+   {
+    "call": "cancel",
+    "args": [
+     27,
+     "A"
+    ],
+    "expect": false
+   }
+  ]
+ },
+ {
+  "name": "expired_reservation_parks_normally",
+  "steps": [
+   {
+    "new": "Garage",
+    "args": []
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     1,
+     "S1",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     2,
+     "S2",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "reserve",
+    "args": [
+     10,
+     "RES",
+     "small",
+     10
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     20,
+     "X",
+     "small"
+    ],
+    "expect": "S1"
+   },
+   {
+    "call": "park",
+    "args": [
+     21,
+     "RES",
+     "small"
+    ],
+    "expect": "S2"
+   },
+   {
+    "call": "leave",
+    "args": [
+     22,
+     "RES"
+    ]
+   },
+   {
+    "call": "reserve",
+    "args": [
+     23,
+     "RES",
+     "small",
+     10
+    ],
+    "expect": "S2"
+   },
+   {
+    "call": "park",
+    "args": [
+     24,
+     "Y",
+     "small"
+    ],
+    "expect": ""
+   }
+  ]
+ }
+]

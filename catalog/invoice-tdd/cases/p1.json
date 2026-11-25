@@ -1,0 +1,1096 @@
+[
+ {
+  "name": "line_below_discount_tiers",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     "net30"
+    ]
+   },
+   {
+    "call": "add_line",
+    "args": [
+     1999,
+     3,
+     "standard"
+    ],
+    "expect": 5997
+   },
+   {
+    "call": "add_line",
+    "args": [
+     200,
+     49,
+     "zero"
+    ],
+    "expect": 9800
+   },
+   {
+    "call": "add_line",
+    "args": [
+     1,
+     49,
+     "zero"
+    ],
+    "expect": 49
+   }
+  ]
+ },
+ {
+  "name": "discount_tiers_start_at_50_and_100",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     "net30"
+    ]
+   },
+   {
+    "call": "add_line",
+    "args": [
+     200,
+     50,
+     "zero"
+    ],
+    "expect": 9500
+   },
+   {
+    "call": "add_line",
+    "args": [
+     200,
+     99,
+     "zero"
+    ],
+    "expect": 18810
+   },
+   {
+    "call": "add_line",
+    "args": [
+     200,
+     100,
+     "zero"
+    ],
+    "expect": 18000
+   },
+   {
+    "call": "add_line",
+    "args": [
+     7,
+     100,
+     "zero"
+    ],
+    "expect": 630
+   }
+  ]
+ },
+ {
+  "name": "discount_rounded_half_up",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     "net30"
+    ]
+   },
+   {
+    "call": "add_line",
+    "args": [
+     1,
+     50,
+     "zero"
+    ],
+    "expect": 47
+   },
+   {
+    "call": "add_line",
+    "args": [
+     3,
+     51,
+     "zero"
+    ],
+    "expect": 145
+   }
+  ]
+ },
+ {
+  "name": "free_line_allowed",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     "net30"
+    ]
+   },
+   {
+    "call": "add_line",
+    "args": [
+     0,
+     5,
+     "standard"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "subtotal",
+    "args": [],
+    "expect": 0
+   },
+   {
+    "call": "tax",
+    "args": [],
+    "expect": 0
+   },
+   {
+    "call": "total",
+    "args": [],
+    "expect": 0
+   },
+   {
+    "call": "balance",
+    "args": [],
+    "expect": 0
+   },
+   {
+    "call": "due_day",
+    "args": [],
+    "expect": 30
+   }
+  ]
+ },
+ {
+  "name": "empty_invoice",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     3,
+     "net15"
+    ]
+   },
+   {
+    "call": "subtotal",
+    "args": [],
+    "expect": 0
+   },
+   {
+    "call": "tax",
+    "args": [],
+    "expect": 0
+   },
+   {
+    "call": "total",
+    "args": [],
+    "expect": 0
+   },
+   {
+    "call": "balance",
+    "args": [],
+    "expect": 0
+   },
+   {
+    "call": "due_day",
+    "args": [],
+    "expect": 18
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     100
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "tax_by_category",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     "net30"
+    ]
+   },
+   {
+    "call": "add_line",
+    "args": [
+     4250,
+     2,
+     "standard"
+    ],
+    "expect": 8500
+   },
+   {
+    "call": "add_line",
+    "args": [
+     1599,
+     10,
+     "reduced"
+    ],
+    "expect": 15990
+   },
+   {
+    "call": "add_line",
+    "args": [
+     2000,
+     3,
+     "zero"
+    ],
+    "expect": 6000
+   },
+   {
+    "call": "subtotal",
+    "args": [],
+    "expect": 30490
+   },
+   {
+    "call": "tax",
+    "args": [],
+    "expect": 2500
+   },
+   {
+    "call": "total",
+    "args": [],
+    "expect": 32990
+   },
+   {
+    "call": "balance",
+    "args": [],
+    "expect": 32990
+   }
+  ]
+ },
+ {
+  "name": "tax_rounded_once_per_category_not_per_line",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     "net30"
+    ]
+   },
+   {
+    "call": "add_line",
+    "args": [
+     3,
+     1,
+     "standard"
+    ],
+    "expect": 3
+   },
+   {
+    "call": "add_line",
+    "args": [
+     3,
+     1,
+     "standard"
+    ],
+    "expect": 3
+   },
+   {
+    "call": "tax",
+    "args": [],
+    "expect": 1
+   }
+  ]
+ },
+ {
+  "name": "tax_rounded_once_per_category_reduced",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     "net30"
+    ]
+   },
+   {
+    "call": "add_line",
+    "args": [
+     6,
+     1,
+     "reduced"
+    ],
+    "expect": 6
+   },
+   {
+    "call": "add_line",
+    "args": [
+     6,
+     1,
+     "reduced"
+    ],
+    "expect": 6
+   },
+   {
+    "call": "add_line",
+    "args": [
+     6,
+     1,
+     "reduced"
+    ],
+    "expect": 6
+   },
+   {
+    "call": "tax",
+    "args": [],
+    "expect": 1
+   }
+  ]
+ },
+ {
+  "name": "tax_rounded_half_up_single",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     "net30"
+    ]
+   },
+   {
+    "call": "add_line",
+    "args": [
+     10,
+     1,
+     "reduced"
+    ],
+    "expect": 10
+   },
+   {
+    "call": "tax",
+    "args": [],
+    "expect": 1
+   }
+  ]
+ },
+ {
+  "name": "tax_rounded_half_up_sum",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     "net30"
+    ]
+   },
+   {
+    "call": "add_line",
+    "args": [
+     30,
+     1,
+     "reduced"
+    ],
+    "expect": 30
+   },
+   {
+    "call": "add_line",
+    "args": [
+     1,
+     1,
+     "reduced"
+    ],
+    "expect": 1
+   },
+   {
+    "call": "tax",
+    "args": [],
+    "expect": 2
+   }
+  ]
+ },
+ {
+  "name": "due_day_net15",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     "net15"
+    ]
+   },
+   {
+    "call": "due_day",
+    "args": [],
+    "expect": 15
+   }
+  ]
+ },
+ {
+  "name": "due_day_net30",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     10,
+     "net30"
+    ]
+   },
+   {
+    "call": "due_day",
+    "args": [],
+    "expect": 40
+   }
+  ]
+ },
+ {
+  "name": "due_day_net60",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     7,
+     "net60"
+    ]
+   },
+   {
+    "call": "due_day",
+    "args": [],
+    "expect": 67
+   }
+  ]
+ },
+ {
+  "name": "rejects_unknown_terms_0",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     "net45"
+    ],
+    "error": "invalid_terms"
+   }
+  ]
+ },
+ {
+  "name": "rejects_unknown_terms_1",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     "NET30"
+    ],
+    "error": "invalid_terms"
+   }
+  ]
+ },
+ {
+  "name": "rejects_unknown_terms_2",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     "net 30"
+    ],
+    "error": "invalid_terms"
+   }
+  ]
+ },
+ {
+  "name": "rejects_unknown_terms_3",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     ""
+    ],
+    "error": "invalid_terms"
+   }
+  ]
+ },
+ {
+  "name": "bad_line_rejected_and_changes_nothing",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     "net30"
+    ]
+   },
+   {
+    "call": "add_line",
+    "args": [
+     1000,
+     1,
+     "standard"
+    ],
+    "expect": 1000
+   },
+   {
+    "call": "add_line",
+    "args": [
+     100,
+     1,
+     "Standard"
+    ],
+    "error": "invalid_category"
+   },
+   {
+    "call": "add_line",
+    "args": [
+     100,
+     1,
+     "luxury"
+    ],
+    "error": "invalid_category"
+   },
+   {
+    "call": "add_line",
+    "args": [
+     100,
+     0,
+     "zero"
+    ],
+    "error": "invalid_quantity"
+   },
+   {
+    "call": "add_line",
+    "args": [
+     100,
+     -2,
+     "zero"
+    ],
+    "error": "invalid_quantity"
+   },
+   {
+    "call": "add_line",
+    "args": [
+     -1,
+     1,
+     "zero"
+    ],
+    "error": "invalid_price"
+   },
+   {
+    "call": "subtotal",
+    "args": [],
+    "expect": 1000
+   },
+   {
+    "call": "tax",
+    "args": [],
+    "expect": 200
+   },
+   {
+    "call": "total",
+    "args": [],
+    "expect": 1200
+   },
+   {
+    "call": "balance",
+    "args": [],
+    "expect": 1200
+   },
+   {
+    "call": "due_day",
+    "args": [],
+    "expect": 30
+   }
+  ]
+ },
+ {
+  "name": "payments_and_credit_notes_reduce_balance",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     "net30"
+    ]
+   },
+   {
+    "call": "add_line",
+    "args": [
+     100000,
+     1,
+     "standard"
+    ],
+    "expect": 100000
+   },
+   {
+    "call": "pay",
+    "args": [
+     40000
+    ]
+   },
+   {
+    "call": "balance",
+    "args": [],
+    "expect": 80000
+   },
+   {
+    "call": "credit_note",
+    "args": [
+     20000
+    ]
+   },
+   {
+    "call": "balance",
+    "args": [],
+    "expect": 60000
+   },
+   {
+    "call": "total",
+    "args": [],
+    "expect": 120000
+   }
+  ]
+ },
+ {
+  "name": "settle_only_up_to_the_balance_pay",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     "net30"
+    ]
+   },
+   {
+    "call": "add_line",
+    "args": [
+     500,
+     1,
+     "zero"
+    ],
+    "expect": 500
+   },
+   {
+    "call": "pay",
+    "args": [
+     0
+    ],
+    "error": "invalid_amount"
+   },
+   {
+    "call": "pay",
+    "args": [
+     -100
+    ],
+    "error": "invalid_amount"
+   },
+   {
+    "call": "pay",
+    "args": [
+     501
+    ],
+    "error": "invalid_amount"
+   },
+   {
+    "call": "balance",
+    "args": [],
+    "expect": 500
+   }
+  ]
+ },
+ {
+  "name": "settle_only_up_to_the_balance_credit_note",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     "net30"
+    ]
+   },
+   {
+    "call": "add_line",
+    "args": [
+     500,
+     1,
+     "zero"
+    ],
+    "expect": 500
+   },
+   {
+    "call": "credit_note",
+    "args": [
+     0
+    ],
+    "error": "invalid_amount"
+   },
+   {
+    "call": "credit_note",
+    "args": [
+     -100
+    ],
+    "error": "invalid_amount"
+   },
+   {
+    "call": "credit_note",
+    "args": [
+     501
+    ],
+    "error": "invalid_amount"
+   },
+   {
+    "call": "balance",
+    "args": [],
+    "expect": 500
+   }
+  ]
+ },
+ {
+  "name": "settle_up_to_the_balance_then_nothing_left",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     "net30"
+    ]
+   },
+   {
+    "call": "add_line",
+    "args": [
+     500,
+     1,
+     "zero"
+    ],
+    "expect": 500
+   },
+   {
+    "call": "credit_note",
+    "args": [
+     200
+    ]
+   },
+   {
+    "call": "pay",
+    "args": [
+     301
+    ],
+    "error": "invalid_amount"
+   },
+   {
+    "call": "pay",
+    "args": [
+     300
+    ]
+   },
+   {
+    "call": "balance",
+    "args": [],
+    "expect": 0
+   },
+   {
+    "call": "credit_note",
+    "args": [
+     1
+    ],
+    "error": "invalid_amount"
+   },
+   {
+    "call": "balance",
+    "args": [],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "lines_added_after_payment_raise_balance",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     "net30"
+    ]
+   },
+   {
+    "call": "add_line",
+    "args": [
+     500,
+     1,
+     "zero"
+    ],
+    "expect": 500
+   },
+   {
+    "call": "pay",
+    "args": [
+     500
+    ]
+   },
+   {
+    "call": "add_line",
+    "args": [
+     1000,
+     1,
+     "standard"
+    ],
+    "expect": 1000
+   },
+   {
+    "call": "balance",
+    "args": [],
+    "expect": 1200
+   }
+  ]
+ },
+ {
+  "name": "no_late_fee_until_after_due_day",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     5,
+     "net15"
+    ]
+   },
+   {
+    "call": "add_line",
+    "args": [
+     100000,
+     1,
+     "standard"
+    ],
+    "expect": 100000
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     5
+    ],
+    "expect": 120000
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     20
+    ],
+    "expect": 120000
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     21
+    ],
+    "expect": 121800
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     400
+    ],
+    "expect": 121800
+   }
+  ]
+ },
+ {
+  "name": "late_fee_on_remaining_balance",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     5,
+     "net15"
+    ]
+   },
+   {
+    "call": "add_line",
+    "args": [
+     100000,
+     1,
+     "standard"
+    ],
+    "expect": 100000
+   },
+   {
+    "call": "pay",
+    "args": [
+     40000
+    ]
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     21
+    ],
+    "expect": 81200
+   },
+   {
+    "call": "credit_note",
+    "args": [
+     20000
+    ]
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     100
+    ],
+    "expect": 60900
+   },
+   {
+    "call": "balance",
+    "args": [],
+    "expect": 60000
+   }
+  ]
+ },
+ {
+  "name": "late_fee_rounded_half_up",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     "net30"
+    ]
+   },
+   {
+    "call": "add_line",
+    "args": [
+     100,
+     1,
+     "zero"
+    ],
+    "expect": 100
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     31
+    ],
+    "expect": 102
+   }
+  ]
+ },
+ {
+  "name": "late_fee_rounded_down",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     "net30"
+    ]
+   },
+   {
+    "call": "add_line",
+    "args": [
+     33,
+     1,
+     "zero"
+    ],
+    "expect": 33
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     31
+    ],
+    "expect": 33
+   }
+  ]
+ },
+ {
+  "name": "late_fee_rounded_up",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     "net30"
+    ]
+   },
+   {
+    "call": "add_line",
+    "args": [
+     34,
+     1,
+     "zero"
+    ],
+    "expect": 34
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     31
+    ],
+    "expect": 35
+   }
+  ]
+ },
+ {
+  "name": "settled_invoice_has_no_late_fee",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     0,
+     "net30"
+    ]
+   },
+   {
+    "call": "add_line",
+    "args": [
+     2500,
+     2,
+     "reduced"
+    ],
+    "expect": 5000
+   },
+   {
+    "call": "credit_note",
+    "args": [
+     5250
+    ]
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     90
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "amount_due_before_issue_day_rejected",
+  "steps": [
+   {
+    "new": "Invoice",
+    "args": [
+     10,
+     "net30"
+    ]
+   },
+   {
+    "call": "add_line",
+    "args": [
+     1000,
+     1,
+     "zero"
+    ],
+    "expect": 1000
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     9
+    ],
+    "error": "invalid_day"
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     10
+    ],
+    "expect": 1000
+   }
+  ]
+ }
+]

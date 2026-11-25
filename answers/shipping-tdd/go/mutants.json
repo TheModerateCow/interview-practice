@@ -1,0 +1,10 @@
+[
+ {"file":"shipping.go","old":"p.HeightCm + 4) / 5","new":"p.HeightCm) / 5","label":"dimensional weight rounded down instead of up","k":"test_p1_"},
+ {"file":"shipping.go","old":"(g + 499) / 500 * 500","new":"(g + 500) / 500 * 500","label":"exact 500 g multiples bumped to the next band","k":"test_p1_"},
+ {"file":"shipping.go","old":"g > maxBillable","new":"g >= maxBillable","label":"exactly 30 kg billable rejected as too heavy","k":"test_p1_"},
+ {"file":"shipping.go","old":"rate = halfUp(rate*135, 100)","new":"rate = rate * 135 / 100","label":"express rate truncated instead of rounded half up","k":"test_p1_"},
+ {"file":"shipping.go","old":"total := sum + halfUp(sum*85, 1000)","new":"total := sum + sum*85/1000","label":"fuel surcharge truncated instead of rounded half up","k":"test_p1_"},
+ {"file":"shipping.go","old":"o.Zone <= 3 && !o.Express","new":"o.Zone <= 3","label":"free shipping also given on express orders","k":"test_p1_"},
+ {"file":"shipping.go","old":"p.HeightCm) > oversizeSide {","new":"p.HeightCm) > oversizeSide && !free {","label":"free shipping also waives the oversize surcharge","k":"test_p1_"},
+ {"file":"shipping.go","old":"o.PromoCode == \"FLAT600\" && !free:","new":"o.PromoCode == \"FLAT600\":","label":"FLAT600 stacks with free shipping","k":"test_p1_"}
+]

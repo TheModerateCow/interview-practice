@@ -1,0 +1,633 @@
+[
+ {
+  "name": "history",
+  "steps": [
+   {
+    "new": "FlagService",
+    "args": []
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "search"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     2,
+     "search",
+     "prod",
+     true
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     5,
+     "search",
+     "prod",
+     false
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     9,
+     "search",
+     "prod",
+     true
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     11,
+     "search",
+     "prod",
+     true
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     12,
+     "search",
+     "staging",
+     true
+    ],
+    "expect": true
+   },
+   {
+    "call": "history",
+    "args": [
+     13,
+     "search",
+     "prod"
+    ],
+    "expect": [
+     "2:on",
+     "5:off",
+     "9:on",
+     "11:on"
+    ]
+   },
+   {
+    "call": "history",
+    "args": [
+     14,
+     "search",
+     "staging"
+    ],
+    "expect": [
+     "12:on"
+    ]
+   },
+   {
+    "call": "history",
+    "args": [
+     15,
+     "search",
+     "qa"
+    ],
+    "expect": []
+   },
+   {
+    "call": "history",
+    "args": [
+     16,
+     "nope",
+     "prod"
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "history_scheduled_at_due_time",
+  "steps": [
+   {
+    "new": "FlagService",
+    "args": []
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "launch"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     2,
+     "launch",
+     "prod",
+     false
+    ],
+    "expect": true
+   },
+   {
+    "call": "schedule_change",
+    "args": [
+     3,
+     "launch",
+     "prod",
+     true,
+     20
+    ],
+    "expect": "s1"
+   },
+   {
+    "call": "schedule_change",
+    "args": [
+     4,
+     "launch",
+     "prod",
+     false,
+     25
+    ],
+    "expect": "s2"
+   },
+   {
+    "call": "cancel_schedule",
+    "args": [
+     5,
+     "s2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     30,
+     "launch",
+     "prod",
+     false
+    ],
+    "expect": true
+   },
+   {
+    "call": "history",
+    "args": [
+     31,
+     "launch",
+     "prod"
+    ],
+    "expect": [
+     "2:off",
+     "20:on",
+     "30:off"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "rollback_restores_rollout",
+  "steps": [
+   {
+    "new": "FlagService",
+    "args": []
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "checkout"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     2,
+     "checkout",
+     "prod",
+     true
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_rollout",
+    "args": [
+     3,
+     "checkout",
+     "prod",
+     30
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_rollout",
+    "args": [
+     6,
+     "checkout",
+     "prod",
+     80
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_target",
+    "args": [
+     7,
+     "checkout",
+     "prod",
+     "cy"
+    ],
+    "expect": true
+   },
+   {
+    "call": "rollback",
+    "args": [
+     8,
+     "checkout",
+     "prod",
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     9,
+     "checkout",
+     "prod",
+     "eli"
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     9,
+     "checkout",
+     "prod",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     9,
+     "checkout",
+     "prod",
+     "hal"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     9,
+     "checkout",
+     "prod",
+     "cy"
+    ],
+    "expect": true
+   },
+   {
+    "call": "rollback",
+    "args": [
+     10,
+     "checkout",
+     "prod",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     11,
+     "checkout",
+     "prod",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     11,
+     "checkout",
+     "prod",
+     "hal"
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     11,
+     "checkout",
+     "prod",
+     "cy"
+    ],
+    "expect": true
+   },
+   {
+    "call": "rollback",
+    "args": [
+     12,
+     "checkout",
+     "prod",
+     6
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     13,
+     "checkout",
+     "prod",
+     "hal"
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     14,
+     "checkout",
+     "prod",
+     "ivy"
+    ],
+    "expect": false
+   }
+  ]
+ },
+ {
+  "name": "rollback_rules",
+  "steps": [
+   {
+    "new": "FlagService",
+    "args": []
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "search"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     2,
+     "search",
+     "prod",
+     true
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     3,
+     "search",
+     "staging",
+     true
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     4,
+     "search",
+     "staging",
+     false
+    ],
+    "expect": true
+   },
+   {
+    "call": "rollback",
+    "args": [
+     5,
+     "nope",
+     "prod",
+     1
+    ],
+    "expect": false
+   },
+   {
+    "call": "rollback",
+    "args": [
+     6,
+     "search",
+     "staging",
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "history",
+    "args": [
+     7,
+     "search",
+     "prod"
+    ],
+    "expect": [
+     "2:on"
+    ]
+   },
+   {
+    "call": "history",
+    "args": [
+     8,
+     "search",
+     "staging"
+    ],
+    "expect": [
+     "3:on",
+     "4:off",
+     "6:on"
+    ]
+   },
+   {
+    "call": "rollback",
+    "args": [
+     9,
+     "search",
+     "prod",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "enabled_flags",
+    "args": [
+     10,
+     "staging",
+     "ana"
+    ],
+    "expect": [
+     "search"
+    ]
+   },
+   {
+    "call": "enabled_flags",
+    "args": [
+     11,
+     "prod",
+     "ana"
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "rollback_state",
+  "steps": [
+   {
+    "new": "FlagService",
+    "args": []
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "search"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     2,
+     "search",
+     "prod",
+     true
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     5,
+     "search",
+     "prod",
+     false
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     9,
+     "search",
+     "prod",
+     true
+    ],
+    "expect": true
+   },
+   {
+    "call": "rollback",
+    "args": [
+     12,
+     "search",
+     "prod",
+     5
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     13,
+     "search",
+     "prod",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "rollback",
+    "args": [
+     14,
+     "search",
+     "prod",
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     15,
+     "search",
+     "prod",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "rollback",
+    "args": [
+     16,
+     "search",
+     "prod",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     17,
+     "search",
+     "prod",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "history",
+    "args": [
+     18,
+     "search",
+     "prod"
+    ],
+    "expect": [
+     "2:on",
+     "5:off",
+     "9:on",
+     "12:off",
+     "14:on",
+     "16:off"
+    ]
+   },
+   {
+    "call": "rollback",
+    "args": [
+     19,
+     "search",
+     "prod",
+     14
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     20,
+     "search",
+     "prod",
+     "ana"
+    ],
+    "expect": true
+   }
+  ]
+ }
+]

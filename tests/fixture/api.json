@@ -1,0 +1,20 @@
+{
+ "module": "fixture",
+ "java_class": "Fixture",
+ "records": {"Entry": [["account_id", "string"], ["amount_cents", "long"]]},
+ "functions": {
+  "net_by_account": {"params": [["entries", "list<Entry>"]], "returns": "list<Entry>"},
+  "max_window": {"params": [["values", "list<int>"], ["k", "int"]], "returns": "long", "errors": true},
+  "first_negative": {"params": [["values", "list<int>"]], "returns": "optional<int>"},
+  "grid": {"params": [["n", "int"]], "returns": "list<list<int>>"}
+ },
+ "classes": {"Wallet": {"init": [["owner", "string"]], "init_errors": true, "methods": {
+  "deposit": {"params": [["cents", "long"]], "returns": null, "errors": true, "level": 1},
+  "withdraw": {"params": [["cents", "long"]], "returns": "long", "errors": true, "level": 1},
+  "balance": {"params": [], "returns": "long", "level": 1},
+  "owner_name": {"params": [], "returns": "string", "level": 1},
+  "history": {"params": [], "returns": "list<string>", "level": 2},
+  "freeze": {"params": [], "returns": null, "level": 2},
+  "frozen": {"params": [], "returns": "bool", "level": 2}}}},
+ "errors": ["invalid_amount", "insufficient_funds", "invalid_window", "wallet_frozen", "invalid_owner"]
+}

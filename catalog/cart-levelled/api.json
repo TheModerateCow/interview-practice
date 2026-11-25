@@ -1,0 +1,253 @@
+{
+ "module": "shop",
+ "records": {},
+ "functions": {},
+ "classes": {
+  "Shop": {
+   "init": [],
+   "methods": {
+    "add_product": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "sku",
+       "string"
+      ],
+      [
+       "price_cents",
+       "long"
+      ],
+      [
+       "stock",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "add_to_cart": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "cart_id",
+       "string"
+      ],
+      [
+       "sku",
+       "string"
+      ],
+      [
+       "qty",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "remove_from_cart": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "cart_id",
+       "string"
+      ],
+      [
+       "sku",
+       "string"
+      ],
+      [
+       "qty",
+       "int"
+      ]
+     ],
+     "returns": "int",
+     "level": 1
+    },
+    "cart_total": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "cart_id",
+       "string"
+      ]
+     ],
+     "returns": "long",
+     "level": 1
+    },
+    "items": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "cart_id",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 1
+    },
+    "checkout": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "cart_id",
+       "string"
+      ]
+     ],
+     "returns": "long",
+     "level": 2
+    },
+    "stock_of": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "sku",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 2
+    },
+    "top_sellers": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "n",
+       "int"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "add_promo": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "code",
+       "string"
+      ],
+      [
+       "percent_off",
+       "int"
+      ],
+      [
+       "min_total_cents",
+       "long"
+      ],
+      [
+       "ttl",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 3
+    },
+    "apply_promo": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "cart_id",
+       "string"
+      ],
+      [
+       "code",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 3
+    },
+    "active_carts": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ]
+     ],
+     "returns": "int",
+     "level": 3
+    },
+    "merge": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "guest_id",
+       "string"
+      ],
+      [
+       "user_id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    },
+    "order_history": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "cart_id",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 4
+    },
+    "cancel_order": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "cart_id",
+       "string"
+      ],
+      [
+       "order_ts",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    }
+   }
+  }
+ },
+ "errors": []
+}

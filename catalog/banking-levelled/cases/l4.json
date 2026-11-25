@@ -1,0 +1,630 @@
+[
+ {
+  "name": "merge_balances",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     1,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "acc-a",
+     300
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     3,
+     "acc-b"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     4,
+     "acc-b",
+     450
+    ]
+   },
+   {
+    "call": "merge_accounts",
+    "args": [
+     5,
+     "acc-a",
+     "acc-b"
+    ],
+    "expect": true
+   },
+   {
+    "call": "balance",
+    "args": [
+     6,
+     "acc-a"
+    ],
+    "expect": 750
+   },
+   {
+    "call": "balance",
+    "args": [
+     7,
+     "acc-b"
+    ],
+    "expect": null
+   },
+   {
+    "call": "deposit",
+    "args": [
+     8,
+     "acc-b",
+     10
+    ],
+    "expect": null
+   },
+   {
+    "call": "merge_accounts",
+    "args": [
+     9,
+     "acc-a",
+     "acc-b"
+    ],
+    "expect": false
+   },
+   {
+    "call": "merge_accounts",
+    "args": [
+     10,
+     "acc-a",
+     "acc-a"
+    ],
+    "expect": false
+   },
+   {
+    "call": "open_account",
+    "args": [
+     11,
+     "acc-b"
+    ],
+    "expect": true
+   },
+   {
+    "call": "balance",
+    "args": [
+     12,
+     "acc-b"
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "merge_combines_spending",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     1,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "acc-a",
+     1000
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     3,
+     "acc-b"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     4,
+     "acc-b",
+     1000
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     5,
+     "acc-c"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     6,
+     "acc-c",
+     1000
+    ]
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     7,
+     "acc-a",
+     300
+    ]
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     8,
+     "acc-b",
+     250
+    ]
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     9,
+     "acc-c",
+     400
+    ]
+   },
+   {
+    "call": "merge_accounts",
+    "args": [
+     10,
+     "acc-b",
+     "acc-a"
+    ]
+   },
+   {
+    "call": "top_spenders",
+    "args": [
+     11,
+     3
+    ],
+    "expect": [
+     "acc-b:550",
+     "acc-c:400"
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     12,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "top_spenders",
+    "args": [
+     13,
+     3
+    ],
+    "expect": [
+     "acc-b:550",
+     "acc-c:400",
+     "acc-a:0"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "merge_moves_payments",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     1,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "acc-a",
+     100
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     3,
+     "acc-b"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     4,
+     "acc-b",
+     400
+    ]
+   },
+   {
+    "call": "schedule_payment",
+    "args": [
+     10,
+     "acc-b",
+     300,
+     20
+    ]
+   },
+   {
+    "call": "schedule_payment",
+    "args": [
+     11,
+     "acc-b",
+     50,
+     20
+    ]
+   },
+   {
+    "call": "merge_accounts",
+    "args": [
+     12,
+     "acc-a",
+     "acc-b"
+    ]
+   },
+   {
+    "call": "cancel_payment",
+    "args": [
+     13,
+     "acc-b",
+     "pay2"
+    ],
+    "expect": false
+   },
+   {
+    "call": "cancel_payment",
+    "args": [
+     14,
+     "acc-a",
+     "pay2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "balance",
+    "args": [
+     30,
+     "acc-a"
+    ],
+    "expect": 200
+   },
+   {
+    "call": "payment_status",
+    "args": [
+     31,
+     "pay1"
+    ],
+    "expect": "paid"
+   },
+   {
+    "call": "top_spenders",
+    "args": [
+     32,
+     1
+    ],
+    "expect": [
+     "acc-a:300"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "balance_at",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     5,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     10,
+     "acc-a",
+     500
+    ]
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     20,
+     "acc-a",
+     120
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     25,
+     "acc-b"
+    ]
+   },
+   {
+    "call": "transfer",
+    "args": [
+     30,
+     "acc-a",
+     "acc-b",
+     80
+    ]
+   },
+   {
+    "call": "balance_at",
+    "args": [
+     40,
+     "acc-a",
+     4
+    ],
+    "expect": null
+   },
+   {
+    "call": "balance_at",
+    "args": [
+     41,
+     "acc-a",
+     5
+    ],
+    "expect": 0
+   },
+   {
+    "call": "balance_at",
+    "args": [
+     42,
+     "acc-a",
+     10
+    ],
+    "expect": 500
+   },
+   {
+    "call": "balance_at",
+    "args": [
+     43,
+     "acc-a",
+     19
+    ],
+    "expect": 500
+   },
+   {
+    "call": "balance_at",
+    "args": [
+     44,
+     "acc-a",
+     29
+    ],
+    "expect": 380
+   },
+   {
+    "call": "balance_at",
+    "args": [
+     45,
+     "acc-b",
+     30
+    ],
+    "expect": 80
+   },
+   {
+    "call": "balance_at",
+    "args": [
+     46,
+     "acc-a",
+     46
+    ],
+    "expect": 300
+   },
+   {
+    "call": "balance_at",
+    "args": [
+     47,
+     "acc-z",
+     30
+    ],
+    "expect": null
+   }
+  ]
+ },
+ {
+  "name": "balance_at_payment_time",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     1,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "acc-a",
+     200
+    ]
+   },
+   {
+    "call": "schedule_payment",
+    "args": [
+     3,
+     "acc-a",
+     150,
+     12
+    ]
+   },
+   {
+    "call": "schedule_payment",
+    "args": [
+     4,
+     "acc-a",
+     100,
+     16
+    ]
+   },
+   {
+    "call": "balance_at",
+    "args": [
+     50,
+     "acc-a",
+     14
+    ],
+    "expect": 200
+   },
+   {
+    "call": "balance_at",
+    "args": [
+     51,
+     "acc-a",
+     15
+    ],
+    "expect": 50
+   },
+   {
+    "call": "balance_at",
+    "args": [
+     52,
+     "acc-a",
+     20
+    ],
+    "expect": 50
+   }
+  ]
+ },
+ {
+  "name": "balance_at_across_merge",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     1,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "acc-a",
+     300
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     3,
+     "acc-b"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     4,
+     "acc-b",
+     450
+    ]
+   },
+   {
+    "call": "merge_accounts",
+    "args": [
+     10,
+     "acc-a",
+     "acc-b"
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     20,
+     "acc-b"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     21,
+     "acc-b",
+     75
+    ]
+   },
+   {
+    "call": "balance_at",
+    "args": [
+     30,
+     "acc-b",
+     5
+    ],
+    "expect": 450
+   },
+   {
+    "call": "balance_at",
+    "args": [
+     31,
+     "acc-a",
+     9
+    ],
+    "expect": 300
+   },
+   {
+    "call": "balance_at",
+    "args": [
+     32,
+     "acc-a",
+     10
+    ],
+    "expect": 750
+   },
+   {
+    "call": "balance_at",
+    "args": [
+     33,
+     "acc-b",
+     15
+    ],
+    "expect": null
+   },
+   {
+    "call": "balance_at",
+    "args": [
+     34,
+     "acc-b",
+     21
+    ],
+    "expect": 75
+   }
+  ]
+ }
+]

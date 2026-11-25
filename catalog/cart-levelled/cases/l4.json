@@ -1,0 +1,848 @@
+[
+ {
+  "name": "merge_sums_lines",
+  "steps": [
+   {
+    "new": "Shop",
+    "args": []
+   },
+   {
+    "call": "add_product",
+    "args": [
+     1,
+     "tee",
+     1999,
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_product",
+    "args": [
+     2,
+     "cap",
+     1250,
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_product",
+    "args": [
+     3,
+     "mug",
+     800,
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     5,
+     "guest-1",
+     "tee",
+     2
+    ]
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     6,
+     "guest-1",
+     "mug",
+     1
+    ]
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     7,
+     "ana",
+     "tee",
+     1
+    ]
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     8,
+     "ana",
+     "cap",
+     1
+    ]
+   },
+   {
+    "call": "merge",
+    "args": [
+     9,
+     "guest-1",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "items",
+    "args": [
+     10,
+     "ana"
+    ],
+    "expect": [
+     "cap:1",
+     "mug:1",
+     "tee:3"
+    ]
+   },
+   {
+    "call": "items",
+    "args": [
+     11,
+     "guest-1"
+    ],
+    "expect": []
+   },
+   {
+    "call": "merge",
+    "args": [
+     12,
+     "guest-1",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "merge",
+    "args": [
+     13,
+     "ana",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "active_carts",
+    "args": [
+     14
+    ],
+    "expect": 1
+   },
+   {
+    "call": "cart_total",
+    "args": [
+     15,
+     "ana"
+    ],
+    "expect": 8047
+   }
+  ]
+ },
+ {
+  "name": "merge_caps_at_stock",
+  "steps": [
+   {
+    "new": "Shop",
+    "args": []
+   },
+   {
+    "call": "add_product",
+    "args": [
+     1,
+     "lamp",
+     4500,
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_product",
+    "args": [
+     2,
+     "bulb",
+     300,
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     5,
+     "guest",
+     "lamp",
+     2
+    ]
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     6,
+     "guest",
+     "bulb",
+     4
+    ]
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     7,
+     "ana",
+     "lamp",
+     1
+    ]
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     8,
+     "bo",
+     "bulb",
+     8
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     9,
+     "bo"
+    ]
+   },
+   {
+    "call": "merge",
+    "args": [
+     10,
+     "guest",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "items",
+    "args": [
+     11,
+     "ana"
+    ],
+    "expect": [
+     "bulb:2",
+     "lamp:3"
+    ]
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     12,
+     "g2",
+     "lamp",
+     1
+    ]
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     13,
+     "cy",
+     "lamp",
+     1
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     14,
+     "cy"
+    ]
+   },
+   {
+    "call": "merge",
+    "args": [
+     15,
+     "g2",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "items",
+    "args": [
+     16,
+     "ana"
+    ],
+    "expect": [
+     "bulb:2",
+     "lamp:3"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "merge_new_cart_and_promos",
+  "steps": [
+   {
+    "new": "Shop",
+    "args": []
+   },
+   {
+    "call": "add_product",
+    "args": [
+     1,
+     "mug",
+     1000,
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_promo",
+    "args": [
+     5,
+     "TEN",
+     10,
+     0,
+     500
+    ]
+   },
+   {
+    "call": "add_promo",
+    "args": [
+     6,
+     "TWENTY",
+     20,
+     0,
+     50
+    ]
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     7,
+     "guest",
+     "mug",
+     2
+    ]
+   },
+   {
+    "call": "apply_promo",
+    "args": [
+     8,
+     "guest",
+     "TEN"
+    ]
+   },
+   {
+    "call": "merge",
+    "args": [
+     9,
+     "guest",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "cart_total",
+    "args": [
+     10,
+     "ana"
+    ],
+    "expect": 1800
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     11,
+     "g2",
+     "mug",
+     1
+    ]
+   },
+   {
+    "call": "apply_promo",
+    "args": [
+     12,
+     "g2",
+     "TWENTY"
+    ]
+   },
+   {
+    "call": "merge",
+    "args": [
+     13,
+     "g2",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "cart_total",
+    "args": [
+     14,
+     "ana"
+    ],
+    "expect": 2700
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     15,
+     "bo",
+     "mug",
+     2
+    ]
+   },
+   {
+    "call": "apply_promo",
+    "args": [
+     16,
+     "bo",
+     "TWENTY"
+    ]
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     57,
+     "g3",
+     "mug",
+     1
+    ]
+   },
+   {
+    "call": "apply_promo",
+    "args": [
+     58,
+     "g3",
+     "TEN"
+    ]
+   },
+   {
+    "call": "merge",
+    "args": [
+     59,
+     "g3",
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "items",
+    "args": [
+     60,
+     "bo"
+    ],
+    "expect": [
+     "mug:3"
+    ]
+   },
+   {
+    "call": "cart_total",
+    "args": [
+     61,
+     "bo"
+    ],
+    "expect": 2700
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     62,
+     "old",
+     "mug",
+     1
+    ]
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     100,
+     "bo",
+     "mug",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "merge",
+    "args": [
+     122,
+     "old",
+     "bo"
+    ],
+    "expect": false
+   },
+   {
+    "call": "items",
+    "args": [
+     123,
+     "bo"
+    ],
+    "expect": [
+     "mug:4"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "order_history_follows_merge",
+  "steps": [
+   {
+    "new": "Shop",
+    "args": []
+   },
+   {
+    "call": "add_product",
+    "args": [
+     1,
+     "mug",
+     800,
+     50
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_product",
+    "args": [
+     2,
+     "pen",
+     150,
+     50
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     5,
+     "ana",
+     "mug",
+     1
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     6,
+     "ana"
+    ]
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     7,
+     "guest",
+     "pen",
+     2
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     8,
+     "guest"
+    ]
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     9,
+     "ana",
+     "pen",
+     1
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     10,
+     "ana"
+    ]
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     11,
+     "guest",
+     "mug",
+     2
+    ]
+   },
+   {
+    "call": "order_history",
+    "args": [
+     12,
+     "ana"
+    ],
+    "expect": [
+     "6:800",
+     "10:150"
+    ]
+   },
+   {
+    "call": "order_history",
+    "args": [
+     13,
+     "guest"
+    ],
+    "expect": [
+     "8:300"
+    ]
+   },
+   {
+    "call": "merge",
+    "args": [
+     14,
+     "guest",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "order_history",
+    "args": [
+     15,
+     "ana"
+    ],
+    "expect": [
+     "6:800",
+     "8:300",
+     "10:150"
+    ]
+   },
+   {
+    "call": "order_history",
+    "args": [
+     16,
+     "guest"
+    ],
+    "expect": []
+   },
+   {
+    "call": "checkout",
+    "args": [
+     17,
+     "ana"
+    ],
+    "expect": 1600
+   },
+   {
+    "call": "order_history",
+    "args": [
+     18,
+     "ana"
+    ],
+    "expect": [
+     "6:800",
+     "8:300",
+     "10:150",
+     "17:1600"
+    ]
+   },
+   {
+    "call": "order_history",
+    "args": [
+     19,
+     "nobody"
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "cancel_order",
+  "steps": [
+   {
+    "new": "Shop",
+    "args": []
+   },
+   {
+    "call": "add_product",
+    "args": [
+     1,
+     "lamp",
+     4500,
+     5
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_product",
+    "args": [
+     2,
+     "bulb",
+     300,
+     20
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     5,
+     "ana",
+     "lamp",
+     2
+    ]
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     6,
+     "ana",
+     "bulb",
+     4
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     7,
+     "ana"
+    ],
+    "expect": 10200
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     8,
+     "ana",
+     "bulb",
+     3
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     9,
+     "ana"
+    ]
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     10,
+     "bo",
+     "lamp",
+     1
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     11,
+     "bo"
+    ]
+   },
+   {
+    "call": "top_sellers",
+    "args": [
+     12,
+     5
+    ],
+    "expect": [
+     "bulb(7)",
+     "lamp(3)"
+    ]
+   },
+   {
+    "call": "cancel_order",
+    "args": [
+     13,
+     "ana",
+     7
+    ],
+    "expect": true
+   },
+   {
+    "call": "stock_of",
+    "args": [
+     14,
+     "lamp"
+    ],
+    "expect": 4
+   },
+   {
+    "call": "stock_of",
+    "args": [
+     15,
+     "bulb"
+    ],
+    "expect": 17
+   },
+   {
+    "call": "top_sellers",
+    "args": [
+     16,
+     5
+    ],
+    "expect": [
+     "bulb(3)",
+     "lamp(1)"
+    ]
+   },
+   {
+    "call": "order_history",
+    "args": [
+     17,
+     "ana"
+    ],
+    "expect": [
+     "7:cancelled",
+     "9:900"
+    ]
+   },
+   {
+    "call": "cancel_order",
+    "args": [
+     18,
+     "ana",
+     7
+    ],
+    "expect": false
+   },
+   {
+    "call": "cancel_order",
+    "args": [
+     19,
+     "ana",
+     11
+    ],
+    "expect": false
+   },
+   {
+    "call": "cancel_order",
+    "args": [
+     20,
+     "ana",
+     8
+    ],
+    "expect": false
+   },
+   {
+    "call": "cancel_order",
+    "args": [
+     21,
+     "bo",
+     11
+    ],
+    "expect": true
+   },
+   {
+    "call": "top_sellers",
+    "args": [
+     22,
+     5
+    ],
+    "expect": [
+     "bulb(3)"
+    ]
+   },
+   {
+    "call": "add_to_cart",
+    "args": [
+     23,
+     "cy",
+     "lamp",
+     5
+    ],
+    "expect": true
+   }
+  ]
+ }
+]

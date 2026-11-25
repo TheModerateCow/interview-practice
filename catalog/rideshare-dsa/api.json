@@ -1,0 +1,22 @@
+{
+ "module": "dispatch",
+ "functions": {
+  "min_dispatch_radius": {
+   "params": [
+    [
+     "riders",
+     "list<int>"
+    ],
+    [
+     "drivers",
+     "list<int>"
+    ],
+    [
+     "need",
+     "int"
+    ]
+   ],
+   "returns": "int"
+  }
+ }
+}

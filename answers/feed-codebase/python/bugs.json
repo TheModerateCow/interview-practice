@@ -1,0 +1,37 @@
+[
+ {
+  "file": "feed/storage.py",
+  "old": "        if (post_id, user_id) in self._likes:\n            return False\n        self._likes.add((post_id, user_id))",
+  "new": "        self._likes.add((post_id, user_id))",
+  "label": "add_like counts a retried like again: the already-liked check is missing",
+  "k": "test_p1_"
+ },
+ {
+  "file": "feed/utils.py",
+  "old": "raw = f\"{score!r}|{post_id}\"",
+  "new": "raw = f\"{score:.4f}|{post_id}\"",
+  "label": "cursor stores the score to 4 decimals, so pages skip or repeat posts a few seconds apart",
+  "k": "test_p1_"
+ },
+ {
+  "file": "feed/models.py",
+  "old": "return cls(target, now + round(hours * 60 * 60))",
+  "new": "return cls(target, now + round(hours * 60))",
+  "label": "timed mute converts hours to seconds as minutes: a 24-hour mute lasts 24 minutes",
+  "k": "test_p1_"
+ },
+ {
+  "file": "feed/service.py",
+  "old": "        if limit < 1:\n            raise ValueError(\"limit must be at least 1\")\n        self._store.require_user(viewer)\n        start = max(since + 1, now - FEED_WINDOW)\n        picked: list[str] = []\n        per_author: dict[str, int] = {}\n        for _, post in self._ranked(self._sources(viewer, now), start, now):\n            count = per_author.get(post.author, 0)\n            if count < CATCH_UP_PER_AUTHOR:\n                per_author[post.author] = count + 1\n                picked.append(post.id)\n                if len(picked) == limit:\n                    break\n        return picked\n",
+  "new": "        raise NotImplementedError\n",
+  "label": "feature removed: catch_up",
+  "k": "test_p2_"
+ },
+ {
+  "file": "feed/storage.py",
+  "old": "        posts = self._by_author.get(author, [])\n        lo = bisect.bisect_left(posts, start, key=_created)\n        hi = bisect.bisect_right(posts, end, key=_created)\n        return posts[lo:hi]\n",
+  "new": "        return sorted(\n            (p for p in self._posts.values() if p.author == author and start <= p.created_at <= end),\n            key=_post_order,\n        )\n",
+  "label": "slow: posts_by scans every post in the store instead of the per-author index",
+  "k": "test_p3_"
+ }
+]

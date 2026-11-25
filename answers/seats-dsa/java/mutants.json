@@ -1,0 +1,6 @@
+[
+ {"file":"Upgrades.java","old":"Integer.compare(x[1], y[1])","new":"Integer.compare(x[0], y[0])","label":"handles passengers in boarding order","k":"test_p1_"},
+ {"file":"Upgrades.java","old":"Integer.compare(x[1], y[1])","new":"Integer.compare(x[1] - x[0], y[1] - y[0])","label":"handles shortest trips first","k":"test_p1_"},
+ {"file":"Upgrades.java","old":"hi = r[1] - 1;","new":"hi = r[1];","label":"also takes a seat on the leg after the passenger alights","k":"test_p1_"},
+ {"file":"Upgrades.java","old":"mn[x] = lz[x] + Math.min(mn[2 * x], mn[2 * x + 1]);","new":"mn[x] = Math.min(mn[2 * x], mn[2 * x + 1]);","label":"range update loses the node's pending decrement","k":"test_p1_"}
+]

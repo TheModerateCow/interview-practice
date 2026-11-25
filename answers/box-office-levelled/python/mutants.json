@@ -1,0 +1,7 @@
+[
+ {"file": "tickets.py", "old": "e.owned.get(buyer, 0) < qty", "new": "e.owned.get(buyer, 0) <= qty", "label": "refunding every ticket you own is rejected", "k": "test_l1_"},
+ {"file": "tickets.py", "old": "key=lambda b: (-e.owned[b], b)", "new": "key=lambda b: (-e.owned[b], [-ord(c) for c in b])", "label": "top buyers ties broken by name descending", "k": "test_l2_"},
+ {"file": "tickets.py", "old": "not h.confirmed and ts < h.expires_at", "new": "not h.confirmed and ts <= h.expires_at", "label": "hold still blocks seats at its expiry time", "k": "test_l3_"},
+ {"file": "tickets.py", "old": "ts >= h.expires_at", "new": "ts > h.expires_at", "label": "hold can be confirmed at its expiry time", "k": "test_l3_"},
+ {"file": "tickets.py", "old": "if t <= at_ts and b == buyer", "new": "if t < at_ts and b == buyer", "label": "owned_at leaves out changes made exactly at at_ts", "k": "test_l4_"}
+]

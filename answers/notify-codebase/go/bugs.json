@@ -1,0 +1,37 @@
+[
+ {
+  "file": "clock.go",
+  "old": "wall := at + int64(offsetMin)*60",
+  "new": "wall := at + int64(offsetMin)",
+  "label": "localHour adds the UTC offset in minutes as seconds, so quiet hours run on (almost) UTC",
+  "k": "test_p1_"
+ },
+ {
+  "file": "store.go",
+  "old": "\treturn user + \"\\x00\" + key\n",
+  "new": "\treturn key\n",
+  "label": "dedupe index is keyed by the dedupe key alone, so one user's notification blocks everyone's",
+  "k": "test_p1_"
+ },
+ {
+  "file": "store.go",
+  "old": "u.Channels = append([]Channel(nil), chans...)",
+  "new": "u.Channels = chans",
+  "label": "setChannels keeps the caller's slice, so a reused buffer rewrites an earlier user's channels",
+  "k": "test_p1_"
+ },
+ {
+  "file": "digest.go",
+  "old": "import \"sort\"\n\n// Digest builds the user's daily digest of held notifications: those from\n// the user's local day before the one containing now. See problem.md.\nfunc (s *Service) Digest(id string, now int64) ([]DigestLine, error) {\n\tu, ok := s.store.user(id)\n\tif !ok {\n\t\treturn nil, ErrUnknownUser\n\t}\n\tto := localMidnight(now, u.OffsetMin)\n\tfrom := to - daySeconds\n\tout := []DigestLine{}\n\tidx := map[string]int{}\n\tfor _, r := range s.store.log(id) {\n\t\tif r.Status != Held || r.At < from || r.At >= to {\n\t\t\tcontinue\n\t\t}\n\t\ti, ok := idx[r.Topic]\n\t\tif !ok {\n\t\t\ti = len(out)\n\t\t\tidx[r.Topic] = i\n\t\t\tout = append(out, DigestLine{Topic: r.Topic})\n\t\t}\n\t\tout[i].Count++\n\t\tout[i].Latest = r.Title\n\t}\n\tsort.Slice(out, func(i, j int) bool {\n\t\tif out[i].Count != out[j].Count {\n\t\t\treturn out[i].Count > out[j].Count\n\t\t}\n\t\treturn out[i].Topic < out[j].Topic\n\t})\n\treturn out, nil\n}\n",
+  "new": "// Digest builds the user's daily digest of held notifications: those from\n// the user's local day before the one containing now. See problem.md.\nfunc (s *Service) Digest(id string, now int64) ([]DigestLine, error) {\n\tpanic(\"not implemented\")\n}\n",
+  "label": "feature removed: Digest",
+  "k": "test_p2_"
+ },
+ {
+  "file": "store.go",
+  "old": "\t// Sends for one user arrive in time order, so entries this old can go.\n\tk := chanKey{user, ch}\n\tq := st.recent[k]\n\ti := 0\n\tfor i < len(q) && q[i] <= since {\n\t\ti++\n\t}\n\tst.recent[k] = q[i:]\n\treturn len(q) - i\n",
+  "new": "\tn := 0\n\tfor _, r := range st.logs[user] {\n\t\tif r.At <= since {\n\t\t\tcontinue\n\t\t}\n\t\tfor _, c := range r.Channels {\n\t\t\tif c == ch {\n\t\t\t\tn++\n\t\t\t}\n\t\t}\n\t}\n\treturn n\n",
+  "label": "slow: deliveriesSince scans the user's whole log for every channel on every send",
+  "k": "test_p3_"
+ }
+]

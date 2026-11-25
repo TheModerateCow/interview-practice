@@ -1,0 +1,376 @@
+[
+ {
+  "name": "hold_reduces_available",
+  "steps": [
+   {
+    "new": "Office",
+    "args": []
+   },
+   {
+    "call": "create_event",
+    "args": [
+     1,
+     "gig",
+     10
+    ]
+   },
+   {
+    "call": "hold",
+    "args": [
+     10,
+     "gig",
+     "ana",
+     4,
+     5
+    ],
+    "expect": "h1"
+   },
+   {
+    "call": "available",
+    "args": [
+     11,
+     "gig"
+    ],
+    "expect": 6
+   },
+   {
+    "call": "available",
+    "args": [
+     14,
+     "gig"
+    ],
+    "expect": 6
+   },
+   {
+    "call": "available",
+    "args": [
+     15,
+     "gig"
+    ],
+    "expect": 10
+   }
+  ]
+ },
+ {
+  "name": "hold_blocks_buy",
+  "steps": [
+   {
+    "new": "Office",
+    "args": []
+   },
+   {
+    "call": "create_event",
+    "args": [
+     1,
+     "gig",
+     5
+    ]
+   },
+   {
+    "call": "hold",
+    "args": [
+     2,
+     "gig",
+     "ana",
+     4,
+     10
+    ]
+   },
+   {
+    "call": "buy",
+    "args": [
+     3,
+     "gig",
+     "bo",
+     2
+    ],
+    "expect": false
+   },
+   {
+    "call": "buy",
+    "args": [
+     4,
+     "gig",
+     "bo",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "hold",
+    "args": [
+     5,
+     "gig",
+     "cy",
+     1,
+     10
+    ],
+    "expect": ""
+   },
+   {
+    "call": "buy",
+    "args": [
+     12,
+     "gig",
+     "cy",
+     4
+    ],
+    "expect": true
+   }
+  ]
+ },
+ {
+  "name": "confirm",
+  "steps": [
+   {
+    "new": "Office",
+    "args": []
+   },
+   {
+    "call": "create_event",
+    "args": [
+     1,
+     "gig",
+     10
+    ]
+   },
+   {
+    "call": "hold",
+    "args": [
+     2,
+     "gig",
+     "ana",
+     3,
+     10
+    ],
+    "expect": "h1"
+   },
+   {
+    "call": "confirm",
+    "args": [
+     5,
+     "h1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "available",
+    "args": [
+     30,
+     "gig"
+    ],
+    "expect": 7
+   },
+   {
+    "call": "top_buyers",
+    "args": [
+     31,
+     "gig",
+     5
+    ],
+    "expect": [
+     "ana(3)"
+    ]
+   },
+   {
+    "call": "busiest_events",
+    "args": [
+     32,
+     5
+    ],
+    "expect": [
+     "gig(3)"
+    ]
+   },
+   {
+    "call": "confirm",
+    "args": [
+     33,
+     "h1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "refund",
+    "args": [
+     34,
+     "gig",
+     "ana",
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "available",
+    "args": [
+     35,
+     "gig"
+    ],
+    "expect": 10
+   }
+  ]
+ },
+ {
+  "name": "confirm_expired_or_unknown",
+  "steps": [
+   {
+    "new": "Office",
+    "args": []
+   },
+   {
+    "call": "create_event",
+    "args": [
+     1,
+     "gig",
+     10
+    ]
+   },
+   {
+    "call": "hold",
+    "args": [
+     2,
+     "gig",
+     "ana",
+     3,
+     5
+    ],
+    "expect": "h1"
+   },
+   {
+    "call": "confirm",
+    "args": [
+     7,
+     "h1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "confirm",
+    "args": [
+     8,
+     "h9"
+    ],
+    "expect": false
+   },
+   {
+    "call": "top_buyers",
+    "args": [
+     9,
+     "gig",
+     5
+    ],
+    "expect": []
+   },
+   {
+    "call": "available",
+    "args": [
+     10,
+     "gig"
+    ],
+    "expect": 10
+   }
+  ]
+ },
+ {
+  "name": "hold_rules_and_ids",
+  "steps": [
+   {
+    "new": "Office",
+    "args": []
+   },
+   {
+    "call": "create_event",
+    "args": [
+     1,
+     "a",
+     5
+    ]
+   },
+   {
+    "call": "create_event",
+    "args": [
+     2,
+     "b",
+     5
+    ]
+   },
+   {
+    "call": "hold",
+    "args": [
+     3,
+     "zz",
+     "ana",
+     1,
+     5
+    ],
+    "expect": ""
+   },
+   {
+    "call": "hold",
+    "args": [
+     4,
+     "a",
+     "ana",
+     0,
+     5
+    ],
+    "expect": ""
+   },
+   {
+    "call": "hold",
+    "args": [
+     5,
+     "a",
+     "ana",
+     1,
+     0
+    ],
+    "expect": ""
+   },
+   {
+    "call": "hold",
+    "args": [
+     6,
+     "a",
+     "ana",
+     6,
+     5
+    ],
+    "expect": ""
+   },
+   {
+    "call": "hold",
+    "args": [
+     7,
+     "a",
+     "ana",
+     2,
+     5
+    ],
+    "expect": "h1"
+   },
+   {
+    "call": "hold",
+    "args": [
+     8,
+     "b",
+     "bo",
+     2,
+     5
+    ],
+    "expect": "h2"
+   },
+   {
+    "call": "busiest_events",
+    "args": [
+     9,
+     5
+    ],
+    "expect": [
+     "a(0)",
+     "b(0)"
+    ]
+   }
+  ]
+ }
+]

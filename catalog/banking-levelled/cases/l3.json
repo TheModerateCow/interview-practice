@@ -1,0 +1,574 @@
+[
+ {
+  "name": "payment_runs_when_due",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     1,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "acc-a",
+     500
+    ]
+   },
+   {
+    "call": "schedule_payment",
+    "args": [
+     10,
+     "acc-a",
+     120,
+     5
+    ],
+    "expect": "pay1"
+   },
+   {
+    "call": "balance",
+    "args": [
+     13,
+     "acc-a"
+    ],
+    "expect": 500
+   },
+   {
+    "call": "payment_status",
+    "args": [
+     14,
+     "pay1"
+    ],
+    "expect": "pending"
+   },
+   {
+    "call": "balance",
+    "args": [
+     15,
+     "acc-a"
+    ],
+    "expect": 380
+   },
+   {
+    "call": "payment_status",
+    "args": [
+     16,
+     "pay1"
+    ],
+    "expect": "paid"
+   },
+   {
+    "call": "balance",
+    "args": [
+     30,
+     "acc-a"
+    ],
+    "expect": 380
+   }
+  ]
+ },
+ {
+  "name": "payment_before_same_time_call",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     1,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "acc-a",
+     100
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     3,
+     "acc-b"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     4,
+     "acc-b",
+     300
+    ]
+   },
+   {
+    "call": "schedule_payment",
+    "args": [
+     10,
+     "acc-a",
+     150,
+     10
+    ]
+   },
+   {
+    "call": "schedule_payment",
+    "args": [
+     11,
+     "acc-b",
+     200,
+     11
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     20,
+     "acc-a",
+     100
+    ],
+    "expect": 200
+   },
+   {
+    "call": "payment_status",
+    "args": [
+     21,
+     "pay1"
+    ],
+    "expect": "failed"
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     22,
+     "acc-b",
+     150
+    ],
+    "expect": null
+   },
+   {
+    "call": "payment_status",
+    "args": [
+     23,
+     "pay2"
+    ],
+    "expect": "paid"
+   }
+  ]
+ },
+ {
+  "name": "failed_payment_not_retried",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     1,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "acc-a",
+     100
+    ]
+   },
+   {
+    "call": "schedule_payment",
+    "args": [
+     10,
+     "acc-a",
+     250,
+     5
+    ]
+   },
+   {
+    "call": "schedule_payment",
+    "args": [
+     11,
+     "acc-a",
+     80,
+     9
+    ]
+   },
+   {
+    "call": "balance",
+    "args": [
+     16,
+     "acc-a"
+    ],
+    "expect": 100
+   },
+   {
+    "call": "deposit",
+    "args": [
+     17,
+     "acc-a",
+     500
+    ]
+   },
+   {
+    "call": "payment_status",
+    "args": [
+     19,
+     "pay1"
+    ],
+    "expect": "failed"
+   },
+   {
+    "call": "balance",
+    "args": [
+     20,
+     "acc-a"
+    ],
+    "expect": 520
+   },
+   {
+    "call": "payment_status",
+    "args": [
+     21,
+     "pay2"
+    ],
+    "expect": "paid"
+   }
+  ]
+ },
+ {
+  "name": "earliest_due_first",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     1,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "acc-a",
+     100
+    ]
+   },
+   {
+    "call": "schedule_payment",
+    "args": [
+     10,
+     "acc-a",
+     70,
+     20
+    ]
+   },
+   {
+    "call": "schedule_payment",
+    "args": [
+     11,
+     "acc-a",
+     60,
+     4
+    ]
+   },
+   {
+    "call": "schedule_payment",
+    "args": [
+     12,
+     "acc-a",
+     30,
+     3
+    ]
+   },
+   {
+    "call": "schedule_payment",
+    "args": [
+     13,
+     "acc-a",
+     20,
+     2
+    ]
+   },
+   {
+    "call": "balance",
+    "args": [
+     40,
+     "acc-a"
+    ],
+    "expect": 10
+   },
+   {
+    "call": "payment_status",
+    "args": [
+     41,
+     "pay1"
+    ],
+    "expect": "failed"
+   },
+   {
+    "call": "payment_status",
+    "args": [
+     42,
+     "pay2"
+    ],
+    "expect": "paid"
+   },
+   {
+    "call": "payment_status",
+    "args": [
+     43,
+     "pay3"
+    ],
+    "expect": "paid"
+   },
+   {
+    "call": "payment_status",
+    "args": [
+     44,
+     "pay4"
+    ],
+    "expect": "failed"
+   }
+  ]
+ },
+ {
+  "name": "cancel",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     1,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "acc-a",
+     500
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     3,
+     "acc-b"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     4,
+     "acc-b",
+     500
+    ]
+   },
+   {
+    "call": "schedule_payment",
+    "args": [
+     10,
+     "acc-a",
+     100,
+     10
+    ]
+   },
+   {
+    "call": "schedule_payment",
+    "args": [
+     11,
+     "acc-a",
+     100,
+     9
+    ]
+   },
+   {
+    "call": "cancel_payment",
+    "args": [
+     12,
+     "acc-b",
+     "pay1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "cancel_payment",
+    "args": [
+     13,
+     "acc-a",
+     "pay1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "cancel_payment",
+    "args": [
+     14,
+     "acc-a",
+     "pay1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "cancel_payment",
+    "args": [
+     20,
+     "acc-a",
+     "pay2"
+    ],
+    "expect": false
+   },
+   {
+    "call": "payment_status",
+    "args": [
+     21,
+     "pay1"
+    ],
+    "expect": "cancelled"
+   },
+   {
+    "call": "balance",
+    "args": [
+     22,
+     "acc-a"
+    ],
+    "expect": 400
+   },
+   {
+    "call": "payment_status",
+    "args": [
+     23,
+     "pay9"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "cancel_payment",
+    "args": [
+     24,
+     "acc-a",
+     "pay9"
+    ],
+    "expect": false
+   }
+  ]
+ },
+ {
+  "name": "ids_and_spending",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     1,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "acc-a",
+     400
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     3,
+     "acc-b"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     4,
+     "acc-b",
+     400
+    ]
+   },
+   {
+    "call": "schedule_payment",
+    "args": [
+     10,
+     "acc-a",
+     300,
+     5
+    ],
+    "expect": "pay1"
+   },
+   {
+    "call": "schedule_payment",
+    "args": [
+     11,
+     "acc-z",
+     10,
+     5
+    ],
+    "expect": null
+   },
+   {
+    "call": "schedule_payment",
+    "args": [
+     12,
+     "acc-b",
+     50,
+     5
+    ],
+    "expect": "pay2"
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     13,
+     "acc-b",
+     100
+    ]
+   },
+   {
+    "call": "top_spenders",
+    "args": [
+     17,
+     2
+    ],
+    "expect": [
+     "acc-a:300",
+     "acc-b:150"
+    ]
+   },
+   {
+    "call": "accounts_above",
+    "args": [
+     18,
+     0
+    ],
+    "expect": [
+     "acc-b:250",
+     "acc-a:100"
+    ]
+   }
+  ]
+ }
+]

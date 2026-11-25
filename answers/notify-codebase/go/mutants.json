@@ -1,0 +1,107 @@
+[
+ {
+  "file": "service.go",
+  "old": "n.At-last < DedupeWindow",
+  "new": "n.At-last <= DedupeWindow",
+  "label": "a repeat exactly an hour later is still a duplicate",
+  "k": "test_p1_"
+ },
+ {
+  "file": "service.go",
+  "old": "if n.Urgent || !inQuietHours(u, n.At) {",
+  "new": "if !inQuietHours(u, n.At) {",
+  "label": "urgent notifications wait out quiet hours",
+  "k": "test_p1_"
+ },
+ {
+  "file": "service.go",
+  "old": "\ts.store.accept(n.User, n.Key, n.At)\n",
+  "new": "",
+  "label": "dedupe keys are never remembered",
+  "k": "test_p1_"
+ },
+ {
+  "file": "service.go",
+  "old": "< hourlyCap[ch] {",
+  "new": "<= hourlyCap[ch] {",
+  "label": "one delivery over the hourly cap",
+  "k": "test_p1_"
+ },
+ {
+  "file": "service.go",
+  "old": "!known || seen[ch]",
+  "new": "!known",
+  "label": "a repeated channel is accepted",
+  "k": "test_p1_"
+ },
+ {
+  "file": "service.go",
+  "old": "offsetMin > 840",
+  "new": "offsetMin >= 840",
+  "label": "UTC+14 is rejected",
+  "k": "test_p1_"
+ },
+ {
+  "file": "clock.go",
+  "old": "return h >= u.QuietFrom && h < u.QuietTo",
+  "new": "return h >= u.QuietFrom && h <= u.QuietTo",
+  "label": "quiet hours include the end hour",
+  "k": "test_p1_"
+ },
+ {
+  "file": "clock.go",
+  "old": "return h >= u.QuietFrom || h < u.QuietTo",
+  "new": "return h >= u.QuietFrom && h < u.QuietTo",
+  "label": "quiet hours that wrap midnight never apply",
+  "k": "test_p1_"
+ },
+ {
+  "file": "store.go",
+  "old": "q[i] <= since",
+  "new": "q[i] < since",
+  "label": "a delivery exactly an hour ago still counts toward the cap",
+  "k": "test_p1_"
+ },
+ {
+  "file": "store.go",
+  "old": "st.recent[k] = append(st.recent[k], at)",
+  "new": "st.recent[k] = append(st.recent[k], at-capWindow)",
+  "label": "deliveries never count toward the cap",
+  "k": "test_p1_"
+ },
+ {
+  "file": "clock.go",
+  "old": "return at - floorMod(at+shift, daySeconds)",
+  "new": "return at - floorMod(at, daySeconds)",
+  "label": "digest uses the UTC day",
+  "k": "test_p2_"
+ },
+ {
+  "file": "digest.go",
+  "old": "r.At < from || r.At >= to",
+  "new": "r.At <= from || r.At >= to",
+  "label": "digest drops a notification at local midnight",
+  "k": "test_p2_"
+ },
+ {
+  "file": "digest.go",
+  "old": "if r.Status != Held ||",
+  "new": "if r.Status == Sent ||",
+  "label": "digest includes duplicates",
+  "k": "test_p2_"
+ },
+ {
+  "file": "digest.go",
+  "old": "return out[i].Topic < out[j].Topic",
+  "new": "return out[i].Topic > out[j].Topic",
+  "label": "ties in reverse topic order",
+  "k": "test_p2_"
+ },
+ {
+  "file": "digest.go",
+  "old": "out[i].Latest = r.Title",
+  "new": "if out[i].Latest == \"\" {\n\t\t\tout[i].Latest = r.Title\n\t\t}",
+  "label": "Latest is the first title, not the most recent",
+  "k": "test_p2_"
+ }
+]

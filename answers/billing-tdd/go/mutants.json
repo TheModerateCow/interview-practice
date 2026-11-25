@@ -1,0 +1,7 @@
+[
+ {"file":"billing.go","old":"day < s.start || day >= s.end","new":"day < s.start || day > s.end","label":"change on the renewal day (PeriodEnd) accepted","k":"test_p1_"},
+ {"file":"billing.go","old":"return s.pay((diff*left + length/2) / length), nil","new":"return s.pay(diff * left / length), nil","label":"upgrade charge rounded down instead of half up","k":"test_p1_"},
+ {"file":"billing.go","old":"s.credit += (-diff) * left / length","new":"s.credit += ((-diff)*left + length/2) / length","label":"downgrade credit rounded half up instead of down","k":"test_p1_"},
+ {"file":"billing.go","old":"used := min(amount, s.credit)","new":"used := s.credit","label":"credit bigger than the charge is wiped out (charge goes negative)","k":"test_p1_"},
+ {"file":"billing.go","old":"seats < 1 || seats > maxSeats","new":"seats < 0 || seats > maxSeats","label":"zero seats accepted","k":"test_p1_"}
+]

@@ -1,0 +1,2 @@
+{"your_tests": "*Test.java",
+ "rules": "Test-driven: write your tests in a *Test.java file first and run them with My tests, then implement Fares.java and FareCard.java. Submit runs the hidden tests. Java 21, no JUnit: use Expect.eq, Expect.isTrue and Expect.raises. Hints are free: ask in the chat."}

@@ -1,0 +1,506 @@
+[
+ {
+  "name": "add_room_rules",
+  "steps": [
+   {
+    "new": "Hotel",
+    "args": []
+   },
+   {
+    "call": "add_room",
+    "args": [
+     1,
+     "101",
+     "double",
+     12000
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_room",
+    "args": [
+     2,
+     "101",
+     "suite",
+     30000
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_room",
+    "args": [
+     3,
+     "102",
+     "double",
+     0
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_room",
+    "args": [
+     4,
+     "103",
+     "double",
+     -500
+    ],
+    "expect": false
+   },
+   {
+    "call": "book",
+    "args": [
+     5,
+     "maya",
+     "102",
+     10,
+     12
+    ],
+    "expect": ""
+   },
+   {
+    "call": "book",
+    "args": [
+     6,
+     "maya",
+     "101",
+     10,
+     12
+    ],
+    "expect": "b1"
+   }
+  ]
+ },
+ {
+  "name": "ids_count_only_successful_bookings",
+  "steps": [
+   {
+    "new": "Hotel",
+    "args": []
+   },
+   {
+    "call": "add_room",
+    "args": [
+     1,
+     "101",
+     "double",
+     12000
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_room",
+    "args": [
+     1,
+     "102",
+     "double",
+     10000
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_room",
+    "args": [
+     1,
+     "201",
+     "single",
+     8000
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_room",
+    "args": [
+     1,
+     "301",
+     "suite",
+     30000
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     2,
+     "maya",
+     "101",
+     10,
+     13
+    ],
+    "expect": "b1"
+   },
+   {
+    "call": "book",
+    "args": [
+     3,
+     "leo",
+     "999",
+     10,
+     13
+    ],
+    "expect": ""
+   },
+   {
+    "call": "book",
+    "args": [
+     4,
+     "leo",
+     "102",
+     10,
+     13
+    ],
+    "expect": "b2"
+   },
+   {
+    "call": "cost",
+    "args": [
+     5,
+     "b1"
+    ],
+    "expect": 36000
+   },
+   {
+    "call": "cost",
+    "args": [
+     5,
+     "b2"
+    ],
+    "expect": 30000
+   },
+   {
+    "call": "cost",
+    "args": [
+     6,
+     "b3"
+    ],
+    "expect": -1
+   }
+  ]
+ },
+ {
+  "name": "book_rejects_bad_ranges",
+  "steps": [
+   {
+    "new": "Hotel",
+    "args": []
+   },
+   {
+    "call": "add_room",
+    "args": [
+     1,
+     "101",
+     "double",
+     12000
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_room",
+    "args": [
+     1,
+     "102",
+     "double",
+     10000
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_room",
+    "args": [
+     1,
+     "201",
+     "single",
+     8000
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_room",
+    "args": [
+     1,
+     "301",
+     "suite",
+     30000
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     2,
+     "maya",
+     "101",
+     10,
+     10
+    ],
+    "expect": ""
+   },
+   {
+    "call": "book",
+    "args": [
+     2,
+     "maya",
+     "101",
+     12,
+     10
+    ],
+    "expect": ""
+   },
+   {
+    "call": "book",
+    "args": [
+     2,
+     "maya",
+     "101",
+     10,
+     11
+    ],
+    "expect": "b1"
+   },
+   {
+    "call": "cost",
+    "args": [
+     3,
+     "b1"
+    ],
+    "expect": 12000
+   }
+  ]
+ },
+ {
+  "name": "overlaps_and_back_to_back",
+  "steps": [
+   {
+    "new": "Hotel",
+    "args": []
+   },
+   {
+    "call": "add_room",
+    "args": [
+     1,
+     "101",
+     "double",
+     12000
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_room",
+    "args": [
+     1,
+     "102",
+     "double",
+     10000
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_room",
+    "args": [
+     1,
+     "201",
+     "single",
+     8000
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_room",
+    "args": [
+     1,
+     "301",
+     "suite",
+     30000
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     2,
+     "maya",
+     "101",
+     10,
+     13
+    ],
+    "expect": "b1"
+   },
+   {
+    "call": "book",
+    "args": [
+     2,
+     "leo",
+     "101",
+     13,
+     15
+    ],
+    "expect": "b2"
+   },
+   {
+    "call": "book",
+    "args": [
+     2,
+     "ana",
+     "101",
+     8,
+     10
+    ],
+    "expect": "b3"
+   },
+   {
+    "call": "book",
+    "args": [
+     2,
+     "sam",
+     "101",
+     9,
+     11
+    ],
+    "expect": ""
+   },
+   {
+    "call": "book",
+    "args": [
+     2,
+     "sam",
+     "101",
+     12,
+     13
+    ],
+    "expect": ""
+   },
+   {
+    "call": "book",
+    "args": [
+     2,
+     "sam",
+     "101",
+     5,
+     20
+    ],
+    "expect": ""
+   },
+   {
+    "call": "book",
+    "args": [
+     2,
+     "sam",
+     "102",
+     10,
+     13
+    ],
+    "expect": "b4"
+   }
+  ]
+ },
+ {
+  "name": "cancel_frees_nights",
+  "steps": [
+   {
+    "new": "Hotel",
+    "args": []
+   },
+   {
+    "call": "add_room",
+    "args": [
+     1,
+     "101",
+     "double",
+     12000
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_room",
+    "args": [
+     1,
+     "102",
+     "double",
+     10000
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_room",
+    "args": [
+     1,
+     "201",
+     "single",
+     8000
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_room",
+    "args": [
+     1,
+     "301",
+     "suite",
+     30000
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     2,
+     "maya",
+     "301",
+     10,
+     12
+    ],
+    "expect": "b1"
+   },
+   {
+    "call": "cancel",
+    "args": [
+     3,
+     "b1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "cancel",
+    "args": [
+     4,
+     "b1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "cancel",
+    "args": [
+     4,
+     "b9"
+    ],
+    "expect": false
+   },
+   {
+    "call": "cost",
+    "args": [
+     5,
+     "b1"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "book",
+    "args": [
+     6,
+     "leo",
+     "301",
+     11,
+     14
+    ],
+    "expect": "b2"
+   },
+   {
+    "call": "cost",
+    "args": [
+     7,
+     "b2"
+    ],
+    "expect": 90000
+   }
+  ]
+ }
+]

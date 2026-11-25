@@ -1,0 +1,5 @@
+[
+ {"file": "Fixture.java", "old": "k < 1 || k > values.length", "new": "k < 1 || k >= values.length", "label": "window as wide as the list rejected", "k": "test_l1_"},
+ {"file": "Wallet.java", "old": "throw new InsufficientFundsException(String.valueOf(cents))", "new": "throw new InvalidAmountException(String.valueOf(cents))", "label": "wrong error kind on overdraw", "k": "test_l1_"},
+ {"file": "Wallet.java", "old": "public void freeze() { frozen = true; }", "new": "public void freeze() { frozen = false; }", "label": "freeze does nothing", "k": "test_l2_"}
+]

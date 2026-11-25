@@ -1,0 +1,494 @@
+[
+ {
+  "name": "occupant_at",
+  "steps": [
+   {
+    "new": "Garage",
+    "args": []
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     1,
+     "S1",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "park",
+    "args": [
+     10,
+     "A",
+     "small"
+    ]
+   },
+   {
+    "call": "leave",
+    "args": [
+     20,
+     "A"
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     30,
+     "B",
+     "small"
+    ]
+   },
+   {
+    "call": "occupant_at",
+    "args": [
+     200,
+     "S1",
+     9
+    ],
+    "expect": ""
+   },
+   {
+    "call": "occupant_at",
+    "args": [
+     200,
+     "S1",
+     10
+    ],
+    "expect": "A"
+   },
+   {
+    "call": "occupant_at",
+    "args": [
+     200,
+     "S1",
+     19
+    ],
+    "expect": "A"
+   },
+   {
+    "call": "occupant_at",
+    "args": [
+     200,
+     "S1",
+     20
+    ],
+    "expect": ""
+   },
+   {
+    "call": "occupant_at",
+    "args": [
+     200,
+     "S1",
+     29
+    ],
+    "expect": ""
+   },
+   {
+    "call": "occupant_at",
+    "args": [
+     200,
+     "S1",
+     30
+    ],
+    "expect": "B"
+   },
+   {
+    "call": "occupant_at",
+    "args": [
+     200,
+     "S1",
+     100
+    ],
+    "expect": "B"
+   }
+  ]
+ },
+ {
+  "name": "occupant_at_edges",
+  "steps": [
+   {
+    "new": "Garage",
+    "args": []
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     1,
+     "S1",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     2,
+     "S2",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "occupant_at",
+    "args": [
+     10,
+     "Z9",
+     5
+    ],
+    "expect": ""
+   },
+   {
+    "call": "reserve",
+    "args": [
+     11,
+     "R",
+     "small",
+     50
+    ]
+   },
+   {
+    "call": "occupant_at",
+    "args": [
+     12,
+     "S1",
+     11
+    ],
+    "expect": ""
+   },
+   {
+    "call": "park",
+    "args": [
+     13,
+     "R",
+     "small"
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     14,
+     "X",
+     "small"
+    ]
+   },
+   {
+    "call": "occupant_at",
+    "args": [
+     15,
+     "S1",
+     13
+    ],
+    "expect": "R"
+   },
+   {
+    "call": "occupant_at",
+    "args": [
+     16,
+     "S2",
+     14
+    ],
+    "expect": "X"
+   },
+   {
+    "call": "occupant_at",
+    "args": [
+     17,
+     "S2",
+     13
+    ],
+    "expect": ""
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     18,
+     "S3",
+     "small"
+    ]
+   },
+   {
+    "call": "occupant_at",
+    "args": [
+     19,
+     "S3",
+     5
+    ],
+    "expect": ""
+   }
+  ]
+ },
+ {
+  "name": "charges_round_up",
+  "steps": [
+   {
+    "new": "Garage",
+    "args": []
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     1,
+     "S1",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "park",
+    "args": [
+     10,
+     "A",
+     "small"
+    ]
+   },
+   {
+    "call": "leave",
+    "args": [
+     70,
+     "A"
+    ]
+   },
+   {
+    "call": "charges",
+    "args": [
+     71,
+     "A"
+    ],
+    "expect": 200
+   },
+   {
+    "call": "park",
+    "args": [
+     100,
+     "A",
+     "small"
+    ]
+   },
+   {
+    "call": "leave",
+    "args": [
+     161,
+     "A"
+    ]
+   },
+   {
+    "call": "charges",
+    "args": [
+     162,
+     "A"
+    ],
+    "expect": 600
+   },
+   {
+    "call": "park",
+    "args": [
+     200,
+     "A",
+     "small"
+    ]
+   },
+   {
+    "call": "leave",
+    "args": [
+     201,
+     "A"
+    ]
+   },
+   {
+    "call": "charges",
+    "args": [
+     202,
+     "A"
+    ],
+    "expect": 800
+   }
+  ]
+ },
+ {
+  "name": "charges_by_spot_size",
+  "steps": [
+   {
+    "new": "Garage",
+    "args": []
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     1,
+     "M1",
+     "medium"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     2,
+     "L1",
+     "large"
+    ],
+    "expect": true
+   },
+   {
+    "call": "park",
+    "args": [
+     10,
+     "BIKE",
+     "small"
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     11,
+     "CAR",
+     "small"
+    ]
+   },
+   {
+    "call": "leave",
+    "args": [
+     130,
+     "BIKE"
+    ]
+   },
+   {
+    "call": "leave",
+    "args": [
+     131,
+     "CAR"
+    ]
+   },
+   {
+    "call": "charges",
+    "args": [
+     132,
+     "BIKE"
+    ],
+    "expect": 600
+   },
+   {
+    "call": "charges",
+    "args": [
+     133,
+     "CAR"
+    ],
+    "expect": 1000
+   }
+  ]
+ },
+ {
+  "name": "charges_finished_stays_only",
+  "steps": [
+   {
+    "new": "Garage",
+    "args": []
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     1,
+     "S1",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     2,
+     "S2",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "charges",
+    "args": [
+     10,
+     "NOPE"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "reserve",
+    "args": [
+     10,
+     "A",
+     "small",
+     100
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     50,
+     "A",
+     "small"
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     51,
+     "B",
+     "small"
+    ]
+   },
+   {
+    "call": "charges",
+    "args": [
+     52,
+     "A"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "leave",
+    "args": [
+     110,
+     "A"
+    ]
+   },
+   {
+    "call": "charges",
+    "args": [
+     111,
+     "A"
+    ],
+    "expect": 200
+   },
+   {
+    "call": "charges",
+    "args": [
+     112,
+     "B"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "leave",
+    "args": [
+     300,
+     "B"
+    ]
+   },
+   {
+    "call": "charges",
+    "args": [
+     301,
+     "B"
+    ],
+    "expect": 1000
+   },
+   {
+    "call": "charges",
+    "args": [
+     302,
+     "A"
+    ],
+    "expect": 200
+   }
+  ]
+ }
+]

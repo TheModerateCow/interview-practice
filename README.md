@@ -4,7 +4,9 @@ A local, Docker-only app for timed coding-interview practice. Claude (`/intervie
 Drag it onto http://127.0.0.1:8765. The app says "Imported <title> (<name>)" and shows the name under the title; press **Start** only if the name matches. If it says "Not imported", paste the message back to Claude. Run, Submit, Next part, End, then Export.
 Send `export.zip` back to Claude for the debrief.
 
-No set yet? Home's **Library** has ready-made sets (`presets/*.zip`). Click one to open a fresh copy (`<preset>-1`, `-2`, …) on its ready screen; an unstarted copy is reused, so you can retake a preset as often as you like. To add one, pack a gated set into `presets/` with `tools/pack.py` and rebuild; keep its source (with `reference/` and `mutants.json`) out of git, e.g. in `.private/presets/`, for debriefs.
+Home is a **catalog of problems** to pick from: the built-in ones in `catalog/` plus every set you've imported (marked Yours). Each built-in problem comes in Go, Java and/or Python: click the problem to open it in your usual language, or a language chip for another. Filter by round, language and difficulty. Picking opens your round in progress in that language, an unstarted attempt, or a fresh attempt (`<id>-<lang>-1`, `-2`, …) on the ready screen, so you can retake any problem. Past attempts stay listed under Not started / Finished.
+
+To add a built-in problem or a language to one: `docs/rounds/3-language-variants/` (`CONTRACT.md` the format, `CONVERT.md`, `PORT.md`). Check it with `python3 tools/gate_problem.py catalog/<id> answers/<id>` (every language, in the runner images) and rebuild.
 
 ## Install / remove
 ```
@@ -32,17 +34,18 @@ Only nginx publishes a port. The backend and proxy sit on internal networks. `/a
 | `FORMAT.md` | The interview-set/1 zip + manifest spec, the runner images, and what the app writes |
 | `API.md` | The HTTP API |
 | `backend/server.py` | The HTTP layer: routes, the Host/Origin/X-ILab guard, error mapping |
-| `backend/lab/` | `store.py` set files, session, clock and reveals; `importer.py` zip import; `rounds.py` Start/Run/Submit/My tests/Next/End/Export/Delete |
+| `backend/lab/` | `store.py` set files, session, clock and reveals; `catalog.py` problems and attempts; `importer.py` zip import; `rounds.py` Start/Run/Submit/My tests/Next/End/Export/Delete |
 | `backend/sandbox/runner.py` | DockerRunner (Run: verdicts, time, memory) + the pinned runner image list |
 | `backend/sandbox/grade.py` | Hidden-test grading in the runner, with the same CLI/JSON as the skill's grade.py |
 | `backend/sandbox/gate.py` | The skill's gate.py, unchanged |
 | `backend/sandbox/images.py` | `/api/health` and the thread that keeps runner images pulled |
-| `ui/src/` | `App.svelte` the shell; `features/` one folder per screen (`home`, `ready`, `round`, `import`, `health`), `round/round.svelte.js` holds the round's state and actions; `components/` shared pieces; `lib/` API, Monaco and helpers; `styles/` CSS |
-| `presets/` | The Library: packed, gated sets baked into the backend image (`backend/lab/library.py`) |
+| `ui/src/` | `App.svelte` the shell; `features/` one folder per screen (`home`, `catalog`, `ready`, `round`, `import`, `health`), `round/round.svelte.js` holds the round's state and actions; `components/` shared pieces; `lib/` API, Monaco and helpers; `styles/` CSS |
+| `catalog/` | Built-in problems, one language-neutral folder each: `problem.json`, `problem.md`, `api.json` + `cases/` (shared hidden tests, run in every language by `backend/lab/langs/<lang>`), `<lang>/starter/`; Codebase problems keep per-language hidden tests in `<lang>/hidden/`. Rendered into an interview-set/1 set per attempt (`backend/lab/variants.py`) |
+| `answers/` | The answer key per problem and language (`answers/<id>/<lang>/`): `reference/`, `mutants.json` and (Codebase) `bugs.json`. Not in the image; used by `tools/gate_problem.py`, debriefs and TDD scoring |
 | `deploy/` | Everything that builds or runs the app: `docker-compose.yml`, the backend/nginx/runner-python Dockerfiles, `nginx.conf`, install/uninstall. The root `.env` points `docker compose` at it, so compose commands work from the repo root |
 | `tools/pack.py` | Packs a set dir into a zip (refuses reference/, mutants.json, bugs.json) |
 | `tools/status.py` | `python3 tools/status.py data/sets/<name>` → time left, from session.json |
-| `data/` | Your sets, sessions and exports (bind-mounted; never deleted by uninstall). Home's Delete moves a set to `data/deleted/<name>-<stamp>/`; restore by moving it back to `data/sets/` |
+| `data/` | Your attempts (`sets/`), your own problems (`catalog/`) and exports (bind-mounted; never deleted by uninstall). Home's Delete moves a set to `data/deleted/<name>-<stamp>/`; restore by moving it back to `data/sets/` |
 
 ## Building a set by hand
 ```
@@ -61,6 +64,12 @@ Tests never touch the stack you use or `data/`. `run_all.sh` builds a separate s
 and Go cache) and removes it at the end. To run one suite by hand: `tests/stack.sh up`, then `python3 tests/api_test.py`
 or `tests/e2e.sh`, then `tests/stack.sh down`.
 
-CI (GitHub Actions) runs the same on every PR and push to `main`: `.github/workflows/ci.yml` builds the UI and runs
-`tests/run_all.sh`; `.github/workflows/catalog.yml` gates every catalog problem a PR touches (`answers/<id>/` must print
-GATE PASS in the runner images and pack to exactly `catalog/<id>/`), and all of them when the grader or images change.
+CI (GitHub Actions) runs only what a change can affect:
+- `.github/workflows/catalog.yml` gates catalog problems per language in the runner images. `tools/ci_affected.py` maps the changed
+  files to the gates: a problem's `<lang>/` files → that problem in that language; its shared files (`api.json`, `cases/`,
+  statement) → that problem in every language; a language backend (`backend/lab/langs/<lang>*`) → the canaries (`tests/fixture`, which covers every
+  harness feature, and `quota-codebase`) in that language; the grader core (`variants.py`, `backend/sandbox/`, the backend
+  image) → the canaries in all three. One job per language. Re-gating the whole catalog is a manual run (Actions → Catalog).
+- `.github/workflows/ci.yml` builds the UI when `ui/**` changes.
+- `.github/workflows/full.yml` runs `tests/run_all.sh` only on a merge to `main` that touches app code, on demand
+  (Actions → Full suite → Run workflow), or on a PR when you add the `full-suite` label.

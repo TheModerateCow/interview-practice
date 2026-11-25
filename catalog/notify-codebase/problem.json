@@ -1,0 +1,22 @@
+{
+ "title": "Notification fan-out: debug, implement, optimise",
+ "company": "Messaging platform (practice domain)",
+ "round": "codebase",
+ "difficulty": "medium",
+ "minutes": 60,
+ "rules": "Three phases: fix the bugs in the ticket, build Digest, then speed up the hot path (phase 3 opens when phase 2 passes or with 15 minutes left). Standard library only. Hints are free: ask in the chat.",
+ "tags": [
+  "test_p1_",
+  "test_p2_",
+  "test_p3_"
+ ],
+ "reveal": [
+  {
+   "file": ".hidden/p3.md",
+   "after_tag": "test_p2_",
+   "or_minutes_left": 15,
+   "unlocks": "test_p3_"
+  }
+ ],
+ "grade_timeout_s": 45
+}

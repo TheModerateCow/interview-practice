@@ -1,0 +1,749 @@
+[
+ {
+  "name": "new_account",
+  "steps": [
+   {
+    "new": "Account",
+    "args": []
+   },
+   {
+    "call": "tier",
+    "args": [],
+    "expect": "base"
+   },
+   {
+    "call": "balance",
+    "args": [
+     0
+    ],
+    "expect": 0
+   },
+   {
+    "call": "redeem",
+    "args": [
+     0,
+     1
+    ],
+    "error": "insufficient_points"
+   }
+  ]
+ },
+ {
+  "name": "base_points_round_half_up",
+  "steps": [
+   {
+    "new": "Account",
+    "args": []
+   },
+   {
+    "call": "earn",
+    "args": [
+     1,
+     1000
+    ],
+    "expect": 10
+   },
+   {
+    "call": "earn",
+    "args": [
+     1,
+     1049
+    ],
+    "expect": 10
+   },
+   {
+    "call": "earn",
+    "args": [
+     1,
+     1050
+    ],
+    "expect": 11
+   },
+   {
+    "call": "earn",
+    "args": [
+     1,
+     49
+    ],
+    "expect": 0
+   },
+   {
+    "call": "earn",
+    "args": [
+     1,
+     50
+    ],
+    "expect": 1
+   },
+   {
+    "call": "earn",
+    "args": [
+     1,
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "balance",
+    "args": [
+     1
+    ],
+    "expect": 32
+   }
+  ]
+ },
+ {
+  "name": "silver_rate_and_rounding",
+  "steps": [
+   {
+    "new": "Account",
+    "args": []
+   },
+   {
+    "call": "earn",
+    "args": [
+     1,
+     50000
+    ],
+    "expect": 500
+   },
+   {
+    "call": "tier",
+    "args": [],
+    "expect": "silver"
+   },
+   {
+    "call": "earn",
+    "args": [
+     2,
+     1000
+    ],
+    "expect": 13
+   },
+   {
+    "call": "earn",
+    "args": [
+     2,
+     1030
+    ],
+    "expect": 13
+   },
+   {
+    "call": "earn",
+    "args": [
+     2,
+     1080
+    ],
+    "expect": 14
+   },
+   {
+    "call": "earn",
+    "args": [
+     2,
+     1039
+    ],
+    "expect": 13
+   },
+   {
+    "call": "balance",
+    "args": [
+     2
+    ],
+    "expect": 553
+   }
+  ]
+ },
+ {
+  "name": "gold_rate_and_rounding",
+  "steps": [
+   {
+    "new": "Account",
+    "args": []
+   },
+   {
+    "call": "earn",
+    "args": [
+     1,
+     200000
+    ],
+    "expect": 500
+   },
+   {
+    "call": "tier",
+    "args": [],
+    "expect": "gold"
+   },
+   {
+    "call": "earn",
+    "args": [
+     2,
+     1000
+    ],
+    "expect": 15
+   },
+   {
+    "call": "earn",
+    "args": [
+     2,
+     1033
+    ],
+    "expect": 15
+   },
+   {
+    "call": "earn",
+    "args": [
+     2,
+     1034
+    ],
+    "expect": 16
+   }
+  ]
+ },
+ {
+  "name": "tier_thresholds",
+  "steps": [
+   {
+    "new": "Account",
+    "args": []
+   },
+   {
+    "call": "earn",
+    "args": [
+     1,
+     49999
+    ],
+    "expect": 500
+   },
+   {
+    "call": "tier",
+    "args": [],
+    "expect": "base"
+   },
+   {
+    "call": "earn",
+    "args": [
+     1,
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "tier",
+    "args": [],
+    "expect": "silver"
+   },
+   {
+    "call": "earn",
+    "args": [
+     1,
+     149999
+    ],
+    "expect": 500
+   },
+   {
+    "call": "tier",
+    "args": [],
+    "expect": "silver"
+   },
+   {
+    "call": "earn",
+    "args": [
+     1,
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "tier",
+    "args": [],
+    "expect": "gold"
+   }
+  ]
+ },
+ {
+  "name": "crossing_purchase_earns_at_old_tier",
+  "steps": [
+   {
+    "new": "Account",
+    "args": []
+   },
+   {
+    "call": "earn",
+    "args": [
+     1,
+     40000
+    ],
+    "expect": 400
+   },
+   {
+    "call": "earn",
+    "args": [
+     2,
+     20000
+    ],
+    "expect": 200
+   },
+   {
+    "call": "tier",
+    "args": [],
+    "expect": "silver"
+   },
+   {
+    "call": "earn",
+    "args": [
+     3,
+     1000
+    ],
+    "expect": 13
+   },
+   {
+    "call": "earn",
+    "args": [
+     4,
+     139000
+    ],
+    "expect": 500
+   },
+   {
+    "call": "tier",
+    "args": [],
+    "expect": "gold"
+   },
+   {
+    "call": "earn",
+    "args": [
+     5,
+     1000
+    ],
+    "expect": 15
+   }
+  ]
+ },
+ {
+  "name": "cap_per_purchase",
+  "steps": [
+   {
+    "new": "Account",
+    "args": []
+   },
+   {
+    "call": "earn",
+    "args": [
+     1,
+     50000
+    ],
+    "expect": 500
+   },
+   {
+    "call": "earn",
+    "args": [
+     1,
+     60000
+    ],
+    "expect": 500
+   }
+  ]
+ },
+ {
+  "name": "cap_per_purchase_gold",
+  "steps": [
+   {
+    "new": "Account",
+    "args": []
+   },
+   {
+    "call": "earn",
+    "args": [
+     1,
+     200000
+    ],
+    "expect": 500
+   },
+   {
+    "call": "earn",
+    "args": [
+     1,
+     40000
+    ],
+    "expect": 500
+   },
+   {
+    "call": "balance",
+    "args": [
+     1
+    ],
+    "expect": 1000
+   }
+  ]
+ },
+ {
+  "name": "zero_point_purchases_count_towards_tier",
+  "steps": [
+   {
+    "new": "Account",
+    "args": []
+   },
+   {
+    "call": "earn",
+    "args": [
+     1,
+     49990
+    ],
+    "expect": 500
+   },
+   {
+    "call": "earn",
+    "args": [
+     1,
+     10
+    ],
+    "expect": 0
+   },
+   {
+    "call": "tier",
+    "args": [],
+    "expect": "silver"
+   },
+   {
+    "call": "balance",
+    "args": [
+     1
+    ],
+    "expect": 500
+   }
+  ]
+ },
+ {
+  "name": "invalid_spend",
+  "steps": [
+   {
+    "new": "Account",
+    "args": []
+   },
+   {
+    "call": "earn",
+    "args": [
+     1,
+     0
+    ],
+    "error": "invalid_amount"
+   },
+   {
+    "call": "earn",
+    "args": [
+     1,
+     -100
+    ],
+    "error": "invalid_amount"
+   },
+   {
+    "call": "earn",
+    "args": [
+     1,
+     49999
+    ],
+    "expect": 500
+   },
+   {
+    "call": "earn",
+    "args": [
+     1,
+     0
+    ],
+    "error": "invalid_amount"
+   },
+   {
+    "call": "tier",
+    "args": [],
+    "expect": "base"
+   },
+   {
+    "call": "balance",
+    "args": [
+     1
+    ],
+    "expect": 500
+   }
+  ]
+ },
+ {
+  "name": "points_expire_after_365_days",
+  "steps": [
+   {
+    "new": "Account",
+    "args": []
+   },
+   {
+    "call": "earn",
+    "args": [
+     10,
+     1000
+    ],
+    "expect": 10
+   },
+   {
+    "call": "balance",
+    "args": [
+     10
+    ],
+    "expect": 10
+   },
+   {
+    "call": "balance",
+    "args": [
+     374
+    ],
+    "expect": 10
+   },
+   {
+    "call": "balance",
+    "args": [
+     375
+    ],
+    "expect": 0
+   },
+   {
+    "call": "redeem",
+    "args": [
+     375,
+     1
+    ],
+    "error": "insufficient_points"
+   }
+  ]
+ },
+ {
+  "name": "redeem_rules",
+  "steps": [
+   {
+    "new": "Account",
+    "args": []
+   },
+   {
+    "call": "earn",
+    "args": [
+     0,
+     2500
+    ],
+    "expect": 25
+   },
+   {
+    "call": "redeem",
+    "args": [
+     1,
+     0
+    ],
+    "error": "invalid_amount"
+   },
+   {
+    "call": "redeem",
+    "args": [
+     1,
+     -5
+    ],
+    "error": "invalid_amount"
+   },
+   {
+    "call": "redeem",
+    "args": [
+     1,
+     26
+    ],
+    "error": "insufficient_points"
+   },
+   {
+    "call": "balance",
+    "args": [
+     1
+    ],
+    "expect": 25
+   },
+   {
+    "call": "redeem",
+    "args": [
+     1,
+     10
+    ]
+   },
+   {
+    "call": "balance",
+    "args": [
+     1
+    ],
+    "expect": 15
+   },
+   {
+    "call": "redeem",
+    "args": [
+     1,
+     15
+    ]
+   },
+   {
+    "call": "balance",
+    "args": [
+     1
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "redeem_uses_oldest_points_first",
+  "steps": [
+   {
+    "new": "Account",
+    "args": []
+   },
+   {
+    "call": "earn",
+    "args": [
+     0,
+     10000
+    ],
+    "expect": 100
+   },
+   {
+    "call": "earn",
+    "args": [
+     100,
+     5000
+    ],
+    "expect": 50
+   },
+   {
+    "call": "redeem",
+    "args": [
+     200,
+     120
+    ]
+   },
+   {
+    "call": "balance",
+    "args": [
+     200
+    ],
+    "expect": 30
+   },
+   {
+    "call": "balance",
+    "args": [
+     365
+    ],
+    "expect": 30
+   },
+   {
+    "call": "balance",
+    "args": [
+     464
+    ],
+    "expect": 30
+   },
+   {
+    "call": "balance",
+    "args": [
+     465
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "redeem_ignores_expired_points",
+  "steps": [
+   {
+    "new": "Account",
+    "args": []
+   },
+   {
+    "call": "earn",
+    "args": [
+     0,
+     10000
+    ],
+    "expect": 100
+   },
+   {
+    "call": "earn",
+    "args": [
+     300,
+     5000
+    ],
+    "expect": 50
+   },
+   {
+    "call": "balance",
+    "args": [
+     364
+    ],
+    "expect": 150
+   },
+   {
+    "call": "balance",
+    "args": [
+     365
+    ],
+    "expect": 50
+   },
+   {
+    "call": "redeem",
+    "args": [
+     365,
+     60
+    ],
+    "error": "insufficient_points"
+   },
+   {
+    "call": "redeem",
+    "args": [
+     365,
+     50
+    ]
+   },
+   {
+    "call": "balance",
+    "args": [
+     365
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "redeeming_keeps_tier",
+  "steps": [
+   {
+    "new": "Account",
+    "args": []
+   },
+   {
+    "call": "earn",
+    "args": [
+     0,
+     60000
+    ],
+    "expect": 500
+   },
+   {
+    "call": "redeem",
+    "args": [
+     10,
+     500
+    ]
+   },
+   {
+    "call": "tier",
+    "args": [],
+    "expect": "silver"
+   },
+   {
+    "call": "earn",
+    "args": [
+     400,
+     1000
+    ],
+    "expect": 13
+   }
+  ]
+ }
+]

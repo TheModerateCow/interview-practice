@@ -1,0 +1,14 @@
+{
+ "run_entry": "cmd/run/main.go",
+ "testcases": [
+  {
+   "stdin": "merchant m1 250 USD=30\npost 1 merchant:m1:available USD 5000 platform:clearing USD -5000\npayout 2 p1 m1 USD 3000\nfailed 3 p1\nfailed 4 p1\nbalance merchant:m1:available USD\npayout 5 p2 m1 USD 6000\npost 6 ops:suspense USD 100 ops:suspense EUR -100\n",
+   "expected": "ok\nok\nok\nok\nok\n50.00 USD\nerror: insufficient available balance\nerror: entry does not balance: off by 1.00 USD"
+  },
+  {
+   "stdin": "merchant m1 290 USD=30 JPY=40\ncapture 0 c1 m1 USD 10000 card\ncapture 60 c2 m1 JPY 5000 card\ncapture 120 c3 m1 USD 2500 bank\nrefund 180 c1 1000\nsettle 172860 m1\nbalance merchant:m1:pending USD\nbalance merchant:m1:available USD\nbalance merchant:m1:available JPY\nbalance platform:fees USD\n",
+   "expected": "ok\nok\nok\nok\nok\nb1 JPY gross=5000 fees=185 net=4815 charges=c2\nb2 USD gross=9000 fees=320 net=8680 charges=c1\n25.00 USD\n86.80 USD\n4815 JPY\n3.20 USD"
+  }
+ ],
+ "your_tests": "*_test.go"
+}

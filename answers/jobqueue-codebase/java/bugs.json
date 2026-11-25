@@ -1,0 +1,37 @@
+[
+ {
+  "file": "Lifecycle.java",
+  "old": "} else if (job.status == Job.Status.LEASED && job.leaseUntil <= now) {",
+  "new": "} else if (job.status == Job.Status.LEASED) {",
+  "label": "The lease sweep doesn't check the job's current deadline, so a timer left from before an extend (or from an earlier attempt) takes back a live lease",
+  "k": "test_p1_"
+ },
+ {
+  "file": "JobQueue.java",
+  "old": "        job.attempts = 0;\n        store.makeReady(job, now);",
+  "new": "        store.makeReady(job, now);",
+  "label": "redrive keeps the old attempt count, so a redriven job goes straight back to the DLQ on its next failure",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Store.java",
+  "old": "        return queue + \"\\u0000\" + key;",
+  "new": "        return key;",
+  "label": "Idempotency keys are not scoped to their queue, so the same key in two queues drops the second job",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Stats.java",
+  "old": "        Lifecycle.advance(store, now);\n        int ready = 0, scheduled = 0, retrying = 0, inFlight = 0, dead = 0;\n        long oldest = Long.MAX_VALUE, next = Long.MAX_VALUE;\n        for (Job j : store.jobsIn(queue)) {\n            switch (j.status) {\n                case READY -> {\n                    ready++;\n                    oldest = Math.min(oldest, j.readyAt);\n                }\n                case SCHEDULED -> {\n                    if (j.attempts == 0) scheduled++;\n                    else retrying++;\n                    next = Math.min(next, j.availableAt);\n                }\n                case LEASED -> inFlight++;\n                case DEAD -> dead++;\n                default -> { }\n            }\n        }\n        return new Stats(ready, scheduled, retrying, inFlight, dead, store.completedIn(queue),\n                ready == 0 ? 0 : now - oldest, next == Long.MAX_VALUE ? null : next);\n",
+  "new": "        throw new UnsupportedOperationException(\"not implemented\");\n",
+  "label": "stats removed (phase 2 feature)",
+  "k": "test_p2_"
+ },
+ {
+  "file": "ReadyQueue.java",
+  "old": "import java.util.Comparator;\nimport java.util.PriorityQueue;\n\n/**\n * The jobs of one named queue that can be leased now, best first: higher priority, then the\n * job that has been ready longest, then the job enqueued first.\n */\nfinal class ReadyQueue {\n    static final Comparator<Job> ORDER = (a, b) -> {\n        if (a.priority != b.priority) return Integer.compare(b.priority, a.priority);\n        if (a.readyAt != b.readyAt) return Long.compare(a.readyAt, b.readyAt);\n        return Long.compare(a.seq, b.seq);\n    };\n\n    private final PriorityQueue<Job> heap = new PriorityQueue<>(ORDER);\n\n    void add(Job job) {\n        heap.add(job);\n    }\n\n    /**\n     * Removes and returns the best job that is still READY, or null. A job cancelled while it\n     * waits stays in the heap until it reaches the top, and is dropped then.\n     */\n    Job poll() {\n        for (Job j = heap.poll(); j != null; j = heap.poll()) {\n            if (j.status == Job.Status.READY) return j;\n        }\n        return null;\n    }\n}\n",
+  "new": "import java.util.ArrayList;\nimport java.util.Comparator;\nimport java.util.List;\n\n/**\n * The jobs of one named queue that can be leased now, best first: higher priority, then the\n * job that has been ready longest, then the job enqueued first.\n */\nfinal class ReadyQueue {\n    static final Comparator<Job> ORDER = (a, b) -> {\n        if (a.priority != b.priority) return Integer.compare(b.priority, a.priority);\n        if (a.readyAt != b.readyAt) return Long.compare(a.readyAt, b.readyAt);\n        return Long.compare(a.seq, b.seq);\n    };\n\n    private final List<Job> jobs = new ArrayList<>();\n\n    void add(Job job) {\n        jobs.add(job);\n    }\n\n    /** Removes and returns the best job that is still READY, or null. */\n    Job poll() {\n        jobs.removeIf(j -> j.status != Job.Status.READY);\n        Job best = null;\n        for (Job j : jobs) {\n            if (best == null || ORDER.compare(j, best) < 0) best = j;\n        }\n        if (best != null) jobs.remove(best);\n        return best;\n    }\n}\n",
+  "label": "ReadyQueue scans and filters a list on every lease (phase 3 bottleneck)",
+  "k": "test_p3_"
+ }
+]

@@ -1,0 +1,186 @@
+{
+ "module": "hotel",
+ "classes": {
+  "Hotel": {
+   "init": [],
+   "methods": {
+    "add_room": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "room_id",
+       "string"
+      ],
+      [
+       "room_type",
+       "string"
+      ],
+      [
+       "rate",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "book": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "guest",
+       "string"
+      ],
+      [
+       "room_id",
+       "string"
+      ],
+      [
+       "check_in",
+       "int"
+      ],
+      [
+       "check_out",
+       "int"
+      ]
+     ],
+     "returns": "string",
+     "level": 1
+    },
+    "cancel": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "booking_id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "cost": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "booking_id",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 1
+    },
+    "available_rooms": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "room_type",
+       "string"
+      ],
+      [
+       "check_in",
+       "int"
+      ],
+      [
+       "check_out",
+       "int"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "top_guests": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "n",
+       "int"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "check_in": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "booking_id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 3
+    },
+    "check_out": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "booking_id",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 3
+    },
+    "set_rate": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "room_id",
+       "string"
+      ],
+      [
+       "rate",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    },
+    "rate_at": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "room_id",
+       "string"
+      ],
+      [
+       "at_day",
+       "int"
+      ]
+     ],
+     "returns": "int",
+     "level": 4
+    }
+   }
+  }
+ }
+}

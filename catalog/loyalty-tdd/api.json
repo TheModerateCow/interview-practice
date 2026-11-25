@@ -1,0 +1,57 @@
+{
+ "module": "loyalty",
+ "records": {},
+ "functions": {},
+ "classes": {
+  "Account": {
+   "init": [],
+   "methods": {
+    "earn": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "spend_cents",
+       "int"
+      ]
+     ],
+     "returns": "int",
+     "errors": true
+    },
+    "balance": {
+     "params": [
+      [
+       "day",
+       "int"
+      ]
+     ],
+     "returns": "int"
+    },
+    "redeem": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "points",
+       "int"
+      ]
+     ],
+     "returns": null,
+     "errors": true
+    },
+    "tier": {
+     "params": [],
+     "returns": "string"
+    }
+   }
+  }
+ },
+ "errors": [
+  "invalid_amount",
+  "insufficient_points"
+ ]
+}

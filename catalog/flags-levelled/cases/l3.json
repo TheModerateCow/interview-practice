@@ -1,0 +1,505 @@
+[
+ {
+  "name": "cancel",
+  "steps": [
+   {
+    "new": "FlagService",
+    "args": []
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "launch"
+    ],
+    "expect": true
+   },
+   {
+    "call": "schedule_change",
+    "args": [
+     2,
+     "launch",
+     "prod",
+     true,
+     10
+    ],
+    "expect": "s1"
+   },
+   {
+    "call": "schedule_change",
+    "args": [
+     3,
+     "launch",
+     "prod",
+     true,
+     20
+    ],
+    "expect": "s2"
+   },
+   {
+    "call": "cancel_schedule",
+    "args": [
+     4,
+     "s1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "cancel_schedule",
+    "args": [
+     5,
+     "s1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "cancel_schedule",
+    "args": [
+     6,
+     "s9"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     12,
+     "launch",
+     "prod",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "cancel_schedule",
+    "args": [
+     20,
+     "s2"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     21,
+     "launch",
+     "prod",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "schedule_change",
+    "args": [
+     22,
+     "launch",
+     "prod",
+     false,
+     40
+    ],
+    "expect": "s3"
+   }
+  ]
+ },
+ {
+  "name": "order_at_the_same_time",
+  "steps": [
+   {
+    "new": "FlagService",
+    "args": []
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "launch"
+    ],
+    "expect": true
+   },
+   {
+    "call": "schedule_change",
+    "args": [
+     2,
+     "launch",
+     "prod",
+     false,
+     10
+    ],
+    "expect": "s1"
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     3,
+     "launch",
+     "prod",
+     false
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     10,
+     "launch",
+     "prod",
+     true
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     11,
+     "launch",
+     "prod",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "schedule_change",
+    "args": [
+     12,
+     "launch",
+     "prod",
+     false,
+     20
+    ],
+    "expect": "s2"
+   },
+   {
+    "call": "schedule_change",
+    "args": [
+     13,
+     "launch",
+     "prod",
+     true,
+     20
+    ],
+    "expect": "s3"
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     25,
+     "launch",
+     "prod",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "schedule_change",
+    "args": [
+     26,
+     "launch",
+     "prod",
+     true,
+     30
+    ],
+    "expect": "s4"
+   },
+   {
+    "call": "schedule_change",
+    "args": [
+     27,
+     "launch",
+     "prod",
+     false,
+     30
+    ],
+    "expect": "s5"
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     30,
+     "launch",
+     "prod",
+     "ana"
+    ],
+    "expect": false
+   }
+  ]
+ },
+ {
+  "name": "pending_order",
+  "steps": [
+   {
+    "new": "FlagService",
+    "args": []
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "launch"
+    ],
+    "expect": true
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "promo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "schedule_change",
+    "args": [
+     3,
+     "launch",
+     "prod",
+     true,
+     50
+    ],
+    "expect": "s1"
+   },
+   {
+    "call": "schedule_change",
+    "args": [
+     4,
+     "launch",
+     "staging",
+     true,
+     20
+    ],
+    "expect": "s2"
+   },
+   {
+    "call": "schedule_change",
+    "args": [
+     5,
+     "promo",
+     "prod",
+     true,
+     30
+    ],
+    "expect": "s3"
+   },
+   {
+    "call": "schedule_change",
+    "args": [
+     6,
+     "launch",
+     "prod",
+     false,
+     20
+    ],
+    "expect": "s4"
+   },
+   {
+    "call": "schedule_change",
+    "args": [
+     7,
+     "launch",
+     "qa",
+     true,
+     40
+    ],
+    "expect": "s5"
+   },
+   {
+    "call": "pending",
+    "args": [
+     8,
+     "launch"
+    ],
+    "expect": [
+     "s2",
+     "s4",
+     "s5",
+     "s1"
+    ]
+   },
+   {
+    "call": "pending",
+    "args": [
+     9,
+     "promo"
+    ],
+    "expect": [
+     "s3"
+    ]
+   },
+   {
+    "call": "pending",
+    "args": [
+     10,
+     "nope"
+    ],
+    "expect": []
+   },
+   {
+    "call": "pending",
+    "args": [
+     20,
+     "launch"
+    ],
+    "expect": [
+     "s5",
+     "s1"
+    ]
+   },
+   {
+    "call": "pending",
+    "args": [
+     35,
+     "promo"
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "schedule_applies_at_its_time",
+  "steps": [
+   {
+    "new": "FlagService",
+    "args": []
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "launch"
+    ],
+    "expect": true
+   },
+   {
+    "call": "schedule_change",
+    "args": [
+     2,
+     "launch",
+     "prod",
+     true,
+     10
+    ],
+    "expect": "s1"
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     9,
+     "launch",
+     "prod",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     10,
+     "launch",
+     "prod",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     11,
+     "launch",
+     "staging",
+     "ana"
+    ],
+    "expect": false
+   }
+  ]
+ },
+ {
+  "name": "schedule_ids_and_rejects",
+  "steps": [
+   {
+    "new": "FlagService",
+    "args": []
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "launch"
+    ],
+    "expect": true
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "promo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "schedule_change",
+    "args": [
+     3,
+     "nope",
+     "prod",
+     true,
+     10
+    ],
+    "expect": ""
+   },
+   {
+    "call": "schedule_change",
+    "args": [
+     4,
+     "launch",
+     "prod",
+     true,
+     4
+    ],
+    "expect": ""
+   },
+   {
+    "call": "schedule_change",
+    "args": [
+     5,
+     "launch",
+     "prod",
+     true,
+     3
+    ],
+    "expect": ""
+   },
+   {
+    "call": "schedule_change",
+    "args": [
+     6,
+     "launch",
+     "prod",
+     true,
+     20
+    ],
+    "expect": "s1"
+   },
+   {
+    "call": "schedule_change",
+    "args": [
+     7,
+     "promo",
+     "prod",
+     true,
+     20
+    ],
+    "expect": "s2"
+   },
+   {
+    "call": "schedule_change",
+    "args": [
+     8,
+     "launch",
+     "prod",
+     false,
+     30
+    ],
+    "expect": "s3"
+   }
+  ]
+ }
+]

@@ -1,0 +1,581 @@
+[
+ {
+  "name": "top_spenders_order",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     1,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "acc-a",
+     1000
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     3,
+     "acc-b"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     4,
+     "acc-b",
+     1000
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     5,
+     "acc-c"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     6,
+     "acc-c",
+     1000
+    ]
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     7,
+     "acc-a",
+     100
+    ]
+   },
+   {
+    "call": "transfer",
+    "args": [
+     8,
+     "acc-b",
+     "acc-a",
+     400
+    ]
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     9,
+     "acc-c",
+     250
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     10,
+     "acc-c",
+     900
+    ]
+   },
+   {
+    "call": "top_spenders",
+    "args": [
+     11,
+     3
+    ],
+    "expect": [
+     "acc-b:400",
+     "acc-c:250",
+     "acc-a:100"
+    ]
+   },
+   {
+    "call": "top_spenders",
+    "args": [
+     12,
+     2
+    ],
+    "expect": [
+     "acc-b:400",
+     "acc-c:250"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "top_spenders_ties_and_limits",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     1,
+     "acc-d"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "acc-d",
+     500
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     3,
+     "acc-b"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     4,
+     "acc-b",
+     500
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     5,
+     "acc-c"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     6,
+     "acc-c",
+     500
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     7,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     8,
+     "acc-d",
+     200
+    ]
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     9,
+     "acc-b",
+     200
+    ]
+   },
+   {
+    "call": "top_spenders",
+    "args": [
+     10,
+     10
+    ],
+    "expect": [
+     "acc-b:200",
+     "acc-d:200",
+     "acc-a:0",
+     "acc-c:0"
+    ]
+   },
+   {
+    "call": "top_spenders",
+    "args": [
+     11,
+     1
+    ],
+    "expect": [
+     "acc-b:200"
+    ]
+   },
+   {
+    "call": "top_spenders",
+    "args": [
+     12,
+     0
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "failed_moves_dont_count",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     1,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "acc-a",
+     300
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     3,
+     "acc-b"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     4,
+     "acc-b",
+     100
+    ]
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     5,
+     "acc-a",
+     301
+    ]
+   },
+   {
+    "call": "transfer",
+    "args": [
+     6,
+     "acc-a",
+     "acc-z",
+     50
+    ]
+   },
+   {
+    "call": "transfer",
+    "args": [
+     7,
+     "acc-a",
+     "acc-a",
+     50
+    ]
+   },
+   {
+    "call": "transfer",
+    "args": [
+     8,
+     "acc-b",
+     "acc-a",
+     60
+    ]
+   },
+   {
+    "call": "top_spenders",
+    "args": [
+     9,
+     2
+    ],
+    "expect": [
+     "acc-b:60",
+     "acc-a:0"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "spending_accumulates",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     1,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "acc-a",
+     1000
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     3,
+     "acc-b"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     4,
+     "acc-b",
+     1000
+    ]
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     5,
+     "acc-a",
+     300
+    ]
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     6,
+     "acc-b",
+     200
+    ]
+   },
+   {
+    "call": "top_spenders",
+    "args": [
+     7,
+     2
+    ],
+    "expect": [
+     "acc-a:300",
+     "acc-b:200"
+    ]
+   },
+   {
+    "call": "transfer",
+    "args": [
+     8,
+     "acc-b",
+     "acc-a",
+     150
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     9,
+     "acc-b",
+     5000
+    ]
+   },
+   {
+    "call": "top_spenders",
+    "args": [
+     10,
+     2
+    ],
+    "expect": [
+     "acc-b:350",
+     "acc-a:300"
+    ]
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     11,
+     "acc-b",
+     1
+    ]
+   },
+   {
+    "call": "top_spenders",
+    "args": [
+     12,
+     2
+    ],
+    "expect": [
+     "acc-b:351",
+     "acc-a:300"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "accounts_above",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     1,
+     "acc-c"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "acc-c",
+     700
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     3,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     4,
+     "acc-a",
+     300
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     5,
+     "acc-b"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     6,
+     "acc-b",
+     700
+    ]
+   },
+   {
+    "call": "open_account",
+    "args": [
+     7,
+     "acc-d"
+    ]
+   },
+   {
+    "call": "accounts_above",
+    "args": [
+     8,
+     300
+    ],
+    "expect": [
+     "acc-b:700",
+     "acc-c:700",
+     "acc-a:300"
+    ]
+   },
+   {
+    "call": "accounts_above",
+    "args": [
+     9,
+     0
+    ],
+    "expect": [
+     "acc-b:700",
+     "acc-c:700",
+     "acc-a:300",
+     "acc-d:0"
+    ]
+   },
+   {
+    "call": "transfer",
+    "args": [
+     10,
+     "acc-b",
+     "acc-a",
+     500
+    ]
+   },
+   {
+    "call": "accounts_above",
+    "args": [
+     11,
+     500
+    ],
+    "expect": [
+     "acc-a:800",
+     "acc-c:700"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "empty_results",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "top_spenders",
+    "args": [
+     1,
+     3
+    ],
+    "expect": []
+   },
+   {
+    "call": "open_account",
+    "args": [
+     2,
+     "acc-a"
+    ]
+   },
+   {
+    "call": "deposit",
+    "args": [
+     3,
+     "acc-a",
+     50
+    ]
+   },
+   {
+    "call": "accounts_above",
+    "args": [
+     10,
+     51
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "empty_bank_accounts_above",
+  "steps": [
+   {
+    "new": "Bank",
+    "args": []
+   },
+   {
+    "call": "accounts_above",
+    "args": [
+     11,
+     0
+    ],
+    "expect": []
+   }
+  ]
+ }
+]

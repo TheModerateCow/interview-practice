@@ -1,0 +1,5 @@
+[
+ {"file": "fixture.py", "old": "if not 1 <= k <= len(values)", "new": "if not 1 <= k < len(values)", "label": "window as wide as the list rejected", "k": "test_l1_"},
+ {"file": "fixture.py", "old": "if cents > self._bal: raise InsufficientFundsError", "new": "if cents > self._bal: raise InvalidAmountError", "label": "wrong error kind on overdraw", "k": "test_l1_"},
+ {"file": "fixture.py", "old": "def freeze(self) -> None: self._frozen = True", "new": "def freeze(self) -> None: self._frozen = False", "label": "freeze does nothing", "k": "test_l2_"}
+]

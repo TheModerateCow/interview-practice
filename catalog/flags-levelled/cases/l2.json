@@ -1,0 +1,734 @@
+[
+ {
+  "name": "enabled_flags",
+  "steps": [
+   {
+    "new": "FlagService",
+    "args": []
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "search"
+    ],
+    "expect": true
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "beta"
+    ],
+    "expect": true
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "checkout"
+    ],
+    "expect": true
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "dark-mode"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     2,
+     "search",
+     "prod",
+     true
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     3,
+     "checkout",
+     "prod",
+     true
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_rollout",
+    "args": [
+     4,
+     "checkout",
+     "prod",
+     40
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_target",
+    "args": [
+     5,
+     "dark-mode",
+     "prod",
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     6,
+     "beta",
+     "staging",
+     true
+    ],
+    "expect": true
+   },
+   {
+    "call": "enabled_flags",
+    "args": [
+     7,
+     "prod",
+     "ana"
+    ],
+    "expect": [
+     "checkout",
+     "search"
+    ]
+   },
+   {
+    "call": "enabled_flags",
+    "args": [
+     8,
+     "prod",
+     "bo"
+    ],
+    "expect": [
+     "dark-mode",
+     "search"
+    ]
+   },
+   {
+    "call": "enabled_flags",
+    "args": [
+     9,
+     "staging",
+     "ana"
+    ],
+    "expect": [
+     "beta"
+    ]
+   },
+   {
+    "call": "enabled_flags",
+    "args": [
+     10,
+     "qa",
+     "ana"
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "most_evaluated",
+  "steps": [
+   {
+    "new": "FlagService",
+    "args": []
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "search"
+    ],
+    "expect": true
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "beta"
+    ],
+    "expect": true
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "checkout"
+    ],
+    "expect": true
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "dark-mode"
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     2,
+     "search",
+     "prod",
+     "u0"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     3,
+     "search",
+     "prod",
+     "u1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     4,
+     "search",
+     "prod",
+     "u2"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     5,
+     "beta",
+     "prod",
+     "u0"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     6,
+     "beta",
+     "prod",
+     "u1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     7,
+     "checkout",
+     "prod",
+     "u0"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     8,
+     "checkout",
+     "prod",
+     "u1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     9,
+     "dark-mode",
+     "prod",
+     "u0"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     10,
+     "dark-mode",
+     "staging",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     11,
+     "dark-mode",
+     "staging",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     12,
+     "search",
+     "staging",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     13,
+     "search",
+     "staging",
+     "bo"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     14,
+     "ghost",
+     "prod",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "enabled_flags",
+    "args": [
+     15,
+     "prod",
+     "ana"
+    ],
+    "expect": []
+   },
+   {
+    "call": "most_evaluated",
+    "args": [
+     16,
+     "prod",
+     10
+    ],
+    "expect": [
+     "search(3)",
+     "beta(2)",
+     "checkout(2)",
+     "dark-mode(1)"
+    ]
+   },
+   {
+    "call": "most_evaluated",
+    "args": [
+     17,
+     "prod",
+     2
+    ],
+    "expect": [
+     "search(3)",
+     "beta(2)"
+    ]
+   },
+   {
+    "call": "most_evaluated",
+    "args": [
+     18,
+     "staging",
+     5
+    ],
+    "expect": [
+     "dark-mode(2)",
+     "search(2)"
+    ]
+   },
+   {
+    "call": "most_evaluated",
+    "args": [
+     19,
+     "qa",
+     5
+    ],
+    "expect": []
+   },
+   {
+    "call": "most_evaluated",
+    "args": [
+     20,
+     "prod",
+     0
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "rollout_boundary",
+  "steps": [
+   {
+    "new": "FlagService",
+    "args": []
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "checkout"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     2,
+     "checkout",
+     "prod",
+     true
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_rollout",
+    "args": [
+     3,
+     "checkout",
+     "prod",
+     36
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     4,
+     "checkout",
+     "prod",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     5,
+     "checkout",
+     "prod",
+     "eli"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_rollout",
+    "args": [
+     6,
+     "checkout",
+     "prod",
+     37
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     7,
+     "checkout",
+     "prod",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     8,
+     "checkout",
+     "prod",
+     "gus"
+    ],
+    "expect": false
+   }
+  ]
+ },
+ {
+  "name": "rollout_by_bucket",
+  "steps": [
+   {
+    "new": "FlagService",
+    "args": []
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "checkout"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     2,
+     "checkout",
+     "prod",
+     true
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_rollout",
+    "args": [
+     3,
+     "checkout",
+     "prod",
+     40
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     4,
+     "checkout",
+     "prod",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     4,
+     "checkout",
+     "prod",
+     "bo"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     4,
+     "checkout",
+     "prod",
+     "leo"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     4,
+     "checkout",
+     "prod",
+     "eli"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_rollout",
+    "args": [
+     5,
+     "checkout",
+     "prod",
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     6,
+     "checkout",
+     "prod",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     7,
+     "checkout",
+     "prod",
+     "jo"
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_rollout",
+    "args": [
+     8,
+     "checkout",
+     "prod",
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     9,
+     "checkout",
+     "prod",
+     "cy"
+    ],
+    "expect": true
+   }
+  ]
+ },
+ {
+  "name": "rollout_rules",
+  "steps": [
+   {
+    "new": "FlagService",
+    "args": []
+   },
+   {
+    "call": "create_flag",
+    "args": [
+     1,
+     "checkout"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_rollout",
+    "args": [
+     2,
+     "checkout",
+     "prod",
+     -1
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_rollout",
+    "args": [
+     3,
+     "checkout",
+     "prod",
+     101
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_rollout",
+    "args": [
+     5,
+     "nope",
+     "prod",
+     50
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_rollout",
+    "args": [
+     6,
+     "checkout",
+     "prod",
+     90
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     7,
+     "checkout",
+     "prod",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     8,
+     "checkout",
+     "prod",
+     true
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_rollout",
+    "args": [
+     9,
+     "checkout",
+     "prod",
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_target",
+    "args": [
+     10,
+     "checkout",
+     "prod",
+     "cy"
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     11,
+     "checkout",
+     "prod",
+     "cy"
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     12,
+     "checkout",
+     "prod",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_enabled",
+    "args": [
+     13,
+     "checkout",
+     "staging",
+     true
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     14,
+     "checkout",
+     "staging",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "is_enabled",
+    "args": [
+     15,
+     "checkout",
+     "staging",
+     "bo"
+    ],
+    "expect": true
+   }
+  ]
+ }
+]

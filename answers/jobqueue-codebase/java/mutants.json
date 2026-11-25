@@ -1,0 +1,142 @@
+[
+ {
+  "file": "Lifecycle.java",
+  "old": "for (int i = 1; i < attempts && d < o.maxDelay(); i++) d *= 2;",
+  "new": "for (int i = 0; i < attempts && d < o.maxDelay(); i++) d *= 2;",
+  "label": "backoff exponent off by one",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Lifecycle.java",
+  "old": "return Math.min(d, o.maxDelay());",
+  "new": "return d;",
+  "label": "backoff not capped",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Lifecycle.java",
+  "old": "if (job.attempts >= job.maxAttempts) deadLetter(job, job.leaseUntil);",
+  "new": "if (false) deadLetter(job, job.leaseUntil);",
+  "label": "expired leases never dead-letter",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Lifecycle.java",
+  "old": "if (job.attempts >= job.maxAttempts) deadLetter(job, now);",
+  "new": "if (job.attempts > job.maxAttempts) deadLetter(job, now);",
+  "label": "one attempt too many before the DLQ",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Lifecycle.java",
+  "old": "else store.makeReady(job, job.leaseUntil);",
+  "new": "else store.makeReady(job, store.clock);",
+  "label": "reclaimed job ready from sweep time, not its deadline",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Lifecycle.java",
+  "old": "store.makeReady(job, job.availableAt);",
+  "new": "store.makeReady(job, now);",
+  "label": "scheduled job ready from sweep time, not its run time",
+  "k": "test_p2_"
+ },
+ {
+  "file": "JobQueue.java",
+  "old": "if (job.status != Job.Status.LEASED || !job.leaseToken.equals(token)) {",
+  "new": "if (job.status != Job.Status.LEASED) {",
+  "label": "stale lease token accepted",
+  "k": "test_p1_"
+ },
+ {
+  "file": "JobQueue.java",
+  "old": "if (o.runAt != null && o.runAt > now) store.schedule(job, o.runAt);",
+  "new": "if (o.runAt != null) store.schedule(job, o.runAt);",
+  "label": "a runAt in the past still goes through the timers",
+  "k": "test_p1_"
+ },
+ {
+  "file": "JobQueue.java",
+  "old": "if (o.runAt != null && o.runAt > now) store.schedule(job, o.runAt);",
+  "new": "if (false) store.schedule(job, o.runAt);",
+  "label": "runAt ignored",
+  "k": "test_p1_"
+ },
+ {
+  "file": "JobQueue.java",
+  "old": "store.setDeadline(held(jobId, token, now), now + seconds);",
+  "new": "Job j = held(jobId, token, now); store.setDeadline(j, j.leaseUntil + seconds);",
+  "label": "extend adds to the old deadline",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Store.java",
+  "old": "return k != null && now < k.until ? k.jobId : null;",
+  "new": "return k != null && now <= k.until ? k.jobId : null;",
+  "label": "idempotency window one second too long",
+  "k": "test_p1_"
+ },
+ {
+  "file": "ReadyQueue.java",
+  "old": "if (a.priority != b.priority) return Integer.compare(b.priority, a.priority);",
+  "new": "if (a.priority != b.priority) return Integer.compare(a.priority, b.priority);",
+  "label": "priority reversed",
+  "k": "test_p1_"
+ },
+ {
+  "file": "ReadyQueue.java",
+  "old": "if (a.readyAt != b.readyAt) return Long.compare(a.readyAt, b.readyAt);",
+  "new": "if (false) return Long.compare(a.readyAt, b.readyAt);",
+  "label": "ready time ignored in lease order",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Stats.java",
+  "old": "        Lifecycle.advance(store, now);\n        int ready",
+  "new": "        int ready",
+  "label": "stats doesn't move the clock",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Stats.java",
+  "old": "oldest = Math.min(oldest, j.readyAt);",
+  "new": "oldest = Math.min(oldest, j.enqueuedAt);",
+  "label": "age from enqueue time",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Stats.java",
+  "old": "if (j.attempts == 0) scheduled++;",
+  "new": "if (j.attempts >= 0) scheduled++;",
+  "label": "retrying counted as scheduled",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Stats.java",
+  "old": "next = Math.min(next, j.availableAt);",
+  "new": "if (j.attempts == 0) next = Math.min(next, j.availableAt);",
+  "label": "nextRunAt ignores retries",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Stats.java",
+  "old": "case DEAD -> dead++;",
+  "new": "case DEAD -> { }",
+  "label": "dead not counted",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Stats.java",
+  "old": "store.completedIn(queue),",
+  "new": "0,",
+  "label": "completed not reported",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Stats.java",
+  "old": "ready == 0 ? 0 : now - oldest",
+  "new": "ready == 0 ? 0 : now - oldest - 1",
+  "label": "age off by one",
+  "k": "test_p2_"
+ }
+]

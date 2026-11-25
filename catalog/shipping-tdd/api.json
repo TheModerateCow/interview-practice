@@ -1,0 +1,13 @@
+{
+ "module": "shipping",
+ "records": {
+  "Parcel": [["weight_grams","int"],["length_cm","int"],["width_cm","int"],["height_cm","int"]],
+  "Order": [["parcels","list<Parcel>"],["zone","int"],["subtotal_cents","int"],["express","bool"],["promo_code","string"]]
+ },
+ "functions": {
+  "billable_grams": {"params": [["p","Parcel"]], "returns": "int", "errors": true},
+  "quote": {"params": [["o","Order"]], "returns": "int", "errors": true}
+ },
+ "classes": {},
+ "errors": ["no_parcels","unknown_zone","unknown_promo","invalid_parcel","too_heavy"]
+}

@@ -1,0 +1,97 @@
+{
+ "module": "invoice",
+ "records": {},
+ "functions": {},
+ "classes": {
+  "Invoice": {
+   "init": [
+    [
+     "issue_day",
+     "int"
+    ],
+    [
+     "terms",
+     "string"
+    ]
+   ],
+   "methods": {
+    "add_line": {
+     "params": [
+      [
+       "unit_price",
+       "int"
+      ],
+      [
+       "quantity",
+       "int"
+      ],
+      [
+       "category",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "errors": true
+    },
+    "subtotal": {
+     "params": [],
+     "returns": "int"
+    },
+    "tax": {
+     "params": [],
+     "returns": "int"
+    },
+    "total": {
+     "params": [],
+     "returns": "int"
+    },
+    "due_day": {
+     "params": [],
+     "returns": "int"
+    },
+    "pay": {
+     "params": [
+      [
+       "amount",
+       "int"
+      ]
+     ],
+     "returns": null,
+     "errors": true
+    },
+    "credit_note": {
+     "params": [
+      [
+       "amount",
+       "int"
+      ]
+     ],
+     "returns": null,
+     "errors": true
+    },
+    "balance": {
+     "params": [],
+     "returns": "int"
+    },
+    "amount_due": {
+     "params": [
+      [
+       "day",
+       "int"
+      ]
+     ],
+     "returns": "int",
+     "errors": true
+    }
+   }
+  }
+ },
+ "errors": [
+  "invalid_terms",
+  "invalid_category",
+  "invalid_quantity",
+  "invalid_price",
+  "invalid_amount",
+  "invalid_day"
+ ]
+}
