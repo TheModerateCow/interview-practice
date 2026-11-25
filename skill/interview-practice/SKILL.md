@@ -337,13 +337,13 @@ Other languages (C++, Rust, Kotlin, C#…): there's no runner here. Say so, and 
 - `starter/` — what the candidate gets. Hand-written for DSA, Levelled and TDD: signatures whose bodies fail loudly (`raise NotImplementedError`, `panic("not implemented")`, `throw new UnsupportedOperationException()`, `throw new Error("not implemented")`). The gate checks a hand-written starter passes **zero** hidden tests, so a stub returning `False` can't earn a free point.
 - `problem.md` — the statement the candidate sees.
 
-**Gate:** run `python3 $W/gate.py $W/set`. It runs the reference 3 times (to catch flaky timing), checks every mutant and bug is caught by its own phase, and checks each planted bug leaves the other phases passing. Every line must be PASS. If a mutant or bug survives, strengthen the tests (never weaken it). If a bug breaks another phase's tests, replace that bug. Re-run. Don't start the clock until it prints `GATE PASS`. Narrate outcomes only ("Building the repo.", "Fixed a weak test."), never the checks step by step.
+**Gate:** run `python3 $W/gate.py $W/set`. It runs the reference 3 times (to catch flaky timing), checks every mutant and bug is caught by its own phase, and checks each planted bug leaves the other phases passing. Every line must be PASS. If a mutant or bug survives, strengthen the tests (never weaken it). If a bug breaks another phase's tests, replace that bug. Re-run. Don't start the clock until it prints `GATE PASS`. If `pack.py` prints `NOT PACKED`, fix the named field and pack again. Narrate outcomes only ("Building the repo.", "Fixed a weak test."), never the checks step by step.
 
 ### Coding rounds in Interview Lab
 
 Every coding round (Codebase, Levelled, AI-assisted, TDD, DSA) is delivered through the Interview Lab app. Talking rounds stay in chat.
 
-**Delivery:** after `GATE PASS`, write `$W/set/manifest.json`, pack it with `pack.py`, and send `<name>.zip`. Tell the user: drag it into http://127.0.0.1:8765, read the ready screen, press Start. There is no other way to deliver a coding round. Grade only in the cloud workspace, never in their folder.
+**Delivery:** after `GATE PASS`, write `$W/set/manifest.json`, pack it with `pack.py`, and send `<name>.zip`. Tell the user: drag it into http://127.0.0.1:8765. The app confirms "Imported <title> (<name>)" and shows `<name>` under the title; press Start only if the name matches the zip you sent. If it says "Not imported", paste the message back here. There is no other way to deliver a coding round. Grade only in the cloud workspace, never in their folder.
 
 **Clock:** the app keeps time and Claude doesn't start `clock.py`. If Claude can reach the user's files, run `python3 ~/interview-lab/tools/status.py ~/interview-lab/data/sets/<name>`. It prints `left_min`, `used_min`, `ended` and `expired`. `ended` true means the round was closed early and the clock is frozen (say "ended with N min left", not "time is over"); `expired` true means time ran out. Without the script, left = `minutes - ((ended or now) - start)/60`. Otherwise ask the user to read the app. Never guess.
 
