@@ -35,7 +35,7 @@ Only nginx publishes a port. The backend and proxy sit on internal networks. `/a
 | `backend/gate.py` | The skill's gate.py, unchanged |
 | `tools/pack.py` | Packs a set dir into a zip (refuses reference/, mutants.json, bugs.json) |
 | `tools/status.py` | `python3 tools/status.py data/sets/<name>` → time left, from session.json |
-| `data/` | Your sets, sessions and exports (bind-mounted; never deleted by uninstall) |
+| `data/` | Your sets, sessions and exports (bind-mounted; never deleted by uninstall). Home's Delete moves a set to `data/deleted/<name>-<stamp>/`; restore by moving it back to `data/sets/` |
 
 ## Building a set by hand
 ```

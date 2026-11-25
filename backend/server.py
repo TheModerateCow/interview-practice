@@ -511,6 +511,24 @@ def r_action(n, act):
     return ACTIONS[act](n)
 
 
+@app.delete("/api/sets/<n>")
+def r_delete(n):
+    """Soft delete: move the set folder to data/deleted/<name>-<stamp>/. Nothing is erased; exports/ is untouched."""
+    sdir(n)
+    wait = lock(n, _busy)   # a Run/Submit/grade holds this; refuse rather than move the folder under it
+    if not wait.acquire(blocking=False): raise HTTPError(409, "This round is in progress. End it first, then delete it.")
+    try:
+        with lock(n):
+            i = ready_info(n)
+            if i["status"] == "running": raise HTTPError(409, "This round is in progress. End it first, then delete it.")
+            dest = os.path.join(DATA, "deleted", f"{n}-{time.strftime('%Y%m%d-%H%M%S')}")
+            while os.path.exists(dest): dest += "-x"
+            os.makedirs(os.path.dirname(dest), exist_ok=True)
+            os.replace(sdir(n), dest)
+    finally: wait.release()
+    return {"name": n, "title": i["title"], "moved_to": dest}
+
+
 @app.get("/api/sets/<n>/export")
 def r_export(n):
     sdir(n)
