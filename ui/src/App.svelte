@@ -2,6 +2,7 @@
   import { onMount, tick as flush } from 'svelte';
   import Dropdown from './Dropdown.svelte';
   import { api, enc, LS, esc, md, ROUND, LANGNAME, cap, partName, mmss, statusWords, vclass, langOf, darkMQ, monacoTheme, loadMonaco } from './lib.js';
+  import { PANE_DEF, paneLimits, clampSize, parsePanes, splitter } from './panes.js';
 
   const THEMES = [['', 'Auto', 'Follow system'], ['light', 'Light'], ['dark', 'Dark']];
   const unlockedMsg = tag => partName(tag) + ' unlocked. It\'s open in the problem pane.';
@@ -377,6 +378,26 @@
     checkHealth(); setInterval(checkHealth, 15000);
     loadSets().catch(e => { screen('home'); dropErr = e.message; });
   });
+
+  // Pane sizes (drag or arrow keys), remembered in the browser. Stored raw; clamped live so a small window doesn't lose them.
+  let panes = $state(parsePanes(LS.get('ilab.panes')));
+  let winW = $state(window.innerWidth), edH = $state(0);
+  const paneCtx = (files, problem) => ({ w: winW, h: edH, files, problem });
+  const eff = $derived.by(() => {
+    const files = clampSize('files', panes.files, paneCtx(panes.files, panes.problem));
+    const problem = clampSize('problem', panes.problem, paneCtx(files, panes.problem));
+    return { files, problem, bottom: panes.bottom == null || !edH ? panes.bottom : clampSize('bottom', panes.bottom, paneCtx(files, problem)) };
+  });
+  $effect(() => { const f = () => (winW = window.innerWidth); window.addEventListener('resize', f); return () => window.removeEventListener('resize', f); });
+  const bottomPx = $derived(Math.round(eff.bottom ?? 0.36 * edH));
+  const lim = key => paneLimits(key, paneCtx(eff.files, eff.problem)).map(Math.round);
+  const pane = (key, axis, sign) => ({
+    axis, sign,
+    cur: () => (key === 'bottom' ? bottomPx : eff[key]),
+    set: px => { if (key !== 'bottom' || edH) panes[key] = clampSize(key, px, paneCtx(eff.files, eff.problem)); },
+    reset: () => { panes[key] = PANE_DEF[key]; },
+    done: () => LS.set('ilab.panes', JSON.stringify(panes)),
+  });
 </script>
 
 <svelte:window onkeydown={onKey} ondragenter={onDragEnter} ondragover={onDragOver} ondragleave={onDragLeave} ondrop={onDrop}
@@ -474,7 +495,7 @@
   {/if}
 </main>
 
-<main id="round" class:hidden={view !== 'round'}>
+<main id="round" class:hidden={view !== 'round'} style:--files-w="{eff.files}px" style:--problem-w="{eff.problem}px" style:--bottom-h={eff.bottom == null ? null : eff.bottom + 'px'}>
   <div class="toolbar">
     <button id="run-btn" class="btn btn-outline" type="button" aria-label="Run (Ctrl+')" disabled={!!busy} onclick={doRun}>Run <kbd>Ctrl '</kbd></button>
     <button id="mytests-btn" class="btn btn-outline" class:hidden={!st?.has_mytests} type="button" aria-label="Run my tests" disabled={!!busy} onclick={doMyTests}>My tests</button>
@@ -502,11 +523,17 @@
       </div>
       <form id="newfile-form" onsubmit={addFile}><input id="newfile" bind:value={newfile} placeholder="+ New file" aria-label="New file path" autocomplete="off"></form>
     </aside>
-    <section id="editor-wrap">
+    <!-- svelte-ignore a11y_no_noninteractive_tabindex (a focusable separator is the ARIA window splitter) -->
+    <div id="split-files" class="splitter splitter-v" role="separator" aria-orientation="vertical" aria-label="Resize Files" tabindex="0"
+      aria-valuenow={eff.files} aria-valuemin={lim('files')[0]} aria-valuemax={lim('files')[1]} use:splitter={pane('files', 'x', 1)}></div>
+    <section id="editor-wrap" bind:clientHeight={edH}>
       <div class="editor-box">
         {#if !edReady}<div class="loading block cover" role="status">Loading the editor…</div>{/if}
         <div id="editor" bind:this={editorEl}></div>
       </div>
+      <!-- svelte-ignore a11y_no_noninteractive_tabindex (a focusable separator is the ARIA window splitter) -->
+      <div id="split-bottom" class="splitter splitter-h" role="separator" aria-orientation="horizontal" aria-label="Resize stdin and results" tabindex="0"
+        aria-valuenow={bottomPx} aria-valuemin={lim('bottom')[0]} aria-valuemax={lim('bottom')[1]} use:splitter={pane('bottom', 'y', -1)}></div>
       <div id="bottom">
         <div class="stdin-wrap"><label for="stdin" class="label">stdin</label><textarea id="stdin" bind:value={stdin} spellcheck="false" placeholder="Input for Run"></textarea></div>
         <div id="results" aria-live="polite">
@@ -537,6 +564,9 @@
         </div>
       </div>
     </section>
+    <!-- svelte-ignore a11y_no_noninteractive_tabindex (a focusable separator is the ARIA window splitter) -->
+    <div id="split-problem" class="splitter splitter-v" role="separator" aria-orientation="vertical" aria-label="Resize Problem" tabindex="0"
+      aria-valuenow={eff.problem} aria-valuemin={lim('problem')[0]} aria-valuemax={lim('problem')[1]} use:splitter={pane('problem', 'x', -1)}></div>
     <section id="problem" class="md" aria-label="Problem">
       {#if levels.length > 1}
         <div id="level-tabs" role="tablist" aria-label="Levels">
