@@ -55,6 +55,7 @@ body.over:not(:has(#dropzone:not(.hidden)))::after { content: "Release to import
 .ready-card h1 { font-size: var(--t-display); line-height: var(--t-display-lh); letter-spacing: var(--t-display-ls); }
 .ready-card .pills { display: flex; flex-wrap: wrap; gap: var(--s-2); }
 .ready-card .rules { border-top: 1px solid var(--line); padding-top: var(--s-4); display: grid; gap: var(--s-2); max-width: 65ch; color: var(--fg-2); }
+.ready-card .assist { margin: 0; max-width: 65ch; color: var(--fg-3); font-size: var(--t-small); }
 .ready-card .go { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-4); }
 .ready-card .go small { color: var(--fg-3); font-size: var(--t-small); }
 
