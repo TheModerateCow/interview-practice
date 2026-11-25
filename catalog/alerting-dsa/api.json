@@ -1,0 +1,22 @@
+{
+ "module": "alerting",
+ "functions": {
+  "longest_compliant_window": {
+   "params": [
+    [
+     "requests",
+     "list<int>"
+    ],
+    [
+     "errors",
+     "list<int>"
+    ],
+    [
+     "budget_ppm",
+     "int"
+    ]
+   ],
+   "returns": "int"
+  }
+ }
+}

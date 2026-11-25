@@ -43,6 +43,7 @@ as words (`skuId`).
 
 Placeholders in markdown: `{{create_event}}` → the language's name for that function/method/field/error kind;
 `{{Office}}` → the class as written (Go: still `Office`); `{{new Office}}` → `NewOffice` / `new Office` / `Office`.
+A parameter name (`{{spot_id}}`) → Go `spotID`, Java `spotId`, Python `spot_id`. `{{run_entry}}` and `{{your_tests}}` → that language's manifest values (`cmd/run/main.go`, `*_test.go`, …).
 The renderer also appends a `## Your code` section: the language's signatures for everything in api.json (emitter's
 `signatures()`), so statements never hard-code a language.
 

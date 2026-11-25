@@ -15,6 +15,7 @@ def name(kind, x):
     if kind == "class": return x
     if kind == "new": return "New" + x
     if kind == "error": return "Err" + _pascal(x)
+    if kind == "param": return _lower(x)
     return x  # module
 
 

@@ -1,0 +1,443 @@
+[
+ {
+  "name": "owned_at",
+  "steps": [
+   {
+    "new": "Office",
+    "args": []
+   },
+   {
+    "call": "create_event",
+    "args": [
+     1,
+     "gig",
+     20
+    ]
+   },
+   {
+    "call": "buy",
+    "args": [
+     5,
+     "gig",
+     "ana",
+     3
+    ]
+   },
+   {
+    "call": "buy",
+    "args": [
+     8,
+     "gig",
+     "ana",
+     2
+    ]
+   },
+   {
+    "call": "refund",
+    "args": [
+     12,
+     "gig",
+     "ana",
+     1
+    ]
+   },
+   {
+    "call": "owned_at",
+    "args": [
+     20,
+     "gig",
+     "ana",
+     4
+    ],
+    "expect": 0
+   },
+   {
+    "call": "owned_at",
+    "args": [
+     20,
+     "gig",
+     "ana",
+     5
+    ],
+    "expect": 3
+   },
+   {
+    "call": "owned_at",
+    "args": [
+     20,
+     "gig",
+     "ana",
+     7
+    ],
+    "expect": 3
+   },
+   {
+    "call": "owned_at",
+    "args": [
+     20,
+     "gig",
+     "ana",
+     8
+    ],
+    "expect": 5
+   },
+   {
+    "call": "owned_at",
+    "args": [
+     20,
+     "gig",
+     "ana",
+     11
+    ],
+    "expect": 5
+   },
+   {
+    "call": "owned_at",
+    "args": [
+     20,
+     "gig",
+     "ana",
+     12
+    ],
+    "expect": 4
+   },
+   {
+    "call": "owned_at",
+    "args": [
+     20,
+     "gig",
+     "ana",
+     100
+    ],
+    "expect": 4
+   }
+  ]
+ },
+ {
+  "name": "owned_at_edges",
+  "steps": [
+   {
+    "new": "Office",
+    "args": []
+   },
+   {
+    "call": "owned_at",
+    "args": [
+     1,
+     "gig",
+     "ana",
+     1
+    ],
+    "expect": -1
+   },
+   {
+    "call": "create_event",
+    "args": [
+     10,
+     "gig",
+     20
+    ]
+   },
+   {
+    "call": "buy",
+    "args": [
+     11,
+     "gig",
+     "ana",
+     2
+    ]
+   },
+   {
+    "call": "owned_at",
+    "args": [
+     12,
+     "gig",
+     "ana",
+     3
+    ],
+    "expect": 0
+   },
+   {
+    "call": "owned_at",
+    "args": [
+     13,
+     "gig",
+     "bo",
+     11
+    ],
+    "expect": 0
+   },
+   {
+    "call": "owned_at",
+    "args": [
+     14,
+     "nope",
+     "ana",
+     11
+    ],
+    "expect": -1
+   }
+  ]
+ },
+ {
+  "name": "sold_at",
+  "steps": [
+   {
+    "new": "Office",
+    "args": []
+   },
+   {
+    "call": "create_event",
+    "args": [
+     1,
+     "gig",
+     20
+    ]
+   },
+   {
+    "call": "create_event",
+    "args": [
+     2,
+     "other",
+     20
+    ]
+   },
+   {
+    "call": "buy",
+    "args": [
+     3,
+     "gig",
+     "ana",
+     4
+    ]
+   },
+   {
+    "call": "buy",
+    "args": [
+     4,
+     "other",
+     "ana",
+     9
+    ]
+   },
+   {
+    "call": "buy",
+    "args": [
+     6,
+     "gig",
+     "bo",
+     5
+    ]
+   },
+   {
+    "call": "refund",
+    "args": [
+     9,
+     "gig",
+     "ana",
+     4
+    ]
+   },
+   {
+    "call": "sold_at",
+    "args": [
+     10,
+     "gig",
+     2
+    ],
+    "expect": 0
+   },
+   {
+    "call": "sold_at",
+    "args": [
+     10,
+     "gig",
+     3
+    ],
+    "expect": 4
+   },
+   {
+    "call": "sold_at",
+    "args": [
+     10,
+     "gig",
+     5
+    ],
+    "expect": 4
+   },
+   {
+    "call": "sold_at",
+    "args": [
+     10,
+     "gig",
+     6
+    ],
+    "expect": 9
+   },
+   {
+    "call": "sold_at",
+    "args": [
+     10,
+     "gig",
+     8
+    ],
+    "expect": 9
+   },
+   {
+    "call": "sold_at",
+    "args": [
+     10,
+     "gig",
+     9
+    ],
+    "expect": 5
+   },
+   {
+    "call": "sold_at",
+    "args": [
+     11,
+     "nope",
+     5
+    ],
+    "expect": -1
+   }
+  ]
+ },
+ {
+  "name": "confirm_counts_from_confirm_time",
+  "steps": [
+   {
+    "new": "Office",
+    "args": []
+   },
+   {
+    "call": "create_event",
+    "args": [
+     1,
+     "gig",
+     10
+    ]
+   },
+   {
+    "call": "hold",
+    "args": [
+     10,
+     "gig",
+     "ana",
+     3,
+     20
+    ],
+    "expect": "h1"
+   },
+   {
+    "call": "confirm",
+    "args": [
+     15,
+     "h1"
+    ]
+   },
+   {
+    "call": "owned_at",
+    "args": [
+     16,
+     "gig",
+     "ana",
+     12
+    ],
+    "expect": 0
+   },
+   {
+    "call": "owned_at",
+    "args": [
+     17,
+     "gig",
+     "ana",
+     15
+    ],
+    "expect": 3
+   },
+   {
+    "call": "sold_at",
+    "args": [
+     18,
+     "gig",
+     14
+    ],
+    "expect": 0
+   },
+   {
+    "call": "sold_at",
+    "args": [
+     19,
+     "gig",
+     40
+    ],
+    "expect": 3
+   }
+  ]
+ },
+ {
+  "name": "expired_hold_never_owned",
+  "steps": [
+   {
+    "new": "Office",
+    "args": []
+   },
+   {
+    "call": "create_event",
+    "args": [
+     1,
+     "gig",
+     10
+    ]
+   },
+   {
+    "call": "hold",
+    "args": [
+     2,
+     "gig",
+     "ana",
+     3,
+     5
+    ]
+   },
+   {
+    "call": "buy",
+    "args": [
+     3,
+     "gig",
+     "bo",
+     2
+    ]
+   },
+   {
+    "call": "owned_at",
+    "args": [
+     20,
+     "gig",
+     "ana",
+     4
+    ],
+    "expect": 0
+   },
+   {
+    "call": "sold_at",
+    "args": [
+     21,
+     "gig",
+     4
+    ],
+    "expect": 2
+   },
+   {
+    "call": "sold_at",
+    "args": [
+     22,
+     "gig",
+     30
+    ],
+    "expect": 2
+   }
+  ]
+ }
+]

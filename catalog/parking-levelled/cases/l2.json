@@ -1,0 +1,586 @@
+[
+ {
+  "name": "free_spots_exact_size",
+  "steps": [
+   {
+    "new": "Garage",
+    "args": []
+   },
+   {
+    "call": "free_spots",
+    "args": [
+     1,
+     "small"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "free_spots",
+    "args": [
+     2,
+     "huge"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     3,
+     "S1",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     4,
+     "S2",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     5,
+     "M1",
+     "medium"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     6,
+     "L1",
+     "large"
+    ],
+    "expect": true
+   },
+   {
+    "call": "free_spots",
+    "args": [
+     10,
+     "small"
+    ],
+    "expect": 2
+   },
+   {
+    "call": "free_spots",
+    "args": [
+     11,
+     "medium"
+    ],
+    "expect": 1
+   },
+   {
+    "call": "free_spots",
+    "args": [
+     12,
+     "large"
+    ],
+    "expect": 1
+   },
+   {
+    "call": "park",
+    "args": [
+     13,
+     "A",
+     "medium"
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     14,
+     "B",
+     "small"
+    ]
+   },
+   {
+    "call": "free_spots",
+    "args": [
+     15,
+     "medium"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "free_spots",
+    "args": [
+     16,
+     "small"
+    ],
+    "expect": 1
+   },
+   {
+    "call": "free_spots",
+    "args": [
+     17,
+     "large"
+    ],
+    "expect": 1
+   }
+  ]
+ },
+ {
+  "name": "free_spots_after_leave",
+  "steps": [
+   {
+    "new": "Garage",
+    "args": []
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     1,
+     "S1",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     2,
+     "L1",
+     "large"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     3,
+     "L2",
+     "large"
+    ],
+    "expect": true
+   },
+   {
+    "call": "park",
+    "args": [
+     10,
+     "A",
+     "small"
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     11,
+     "B",
+     "small"
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     12,
+     "C",
+     "large"
+    ]
+   },
+   {
+    "call": "free_spots",
+    "args": [
+     13,
+     "small"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "free_spots",
+    "args": [
+     14,
+     "large"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "leave",
+    "args": [
+     15,
+     "B"
+    ]
+   },
+   {
+    "call": "free_spots",
+    "args": [
+     16,
+     "large"
+    ],
+    "expect": 1
+   },
+   {
+    "call": "free_spots",
+    "args": [
+     17,
+     "small"
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "top_visitors_order",
+  "steps": [
+   {
+    "new": "Garage",
+    "args": []
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     1,
+     "A1",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     2,
+     "A2",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "park",
+    "args": [
+     10,
+     "cy",
+     "small"
+    ]
+   },
+   {
+    "call": "leave",
+    "args": [
+     11,
+     "cy"
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     12,
+     "bo",
+     "small"
+    ]
+   },
+   {
+    "call": "leave",
+    "args": [
+     13,
+     "bo"
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     14,
+     "ana",
+     "small"
+    ]
+   },
+   {
+    "call": "leave",
+    "args": [
+     15,
+     "ana"
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     16,
+     "bo",
+     "small"
+    ]
+   },
+   {
+    "call": "leave",
+    "args": [
+     17,
+     "bo"
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     18,
+     "dee",
+     "small"
+    ]
+   },
+   {
+    "call": "leave",
+    "args": [
+     19,
+     "dee"
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     20,
+     "bo",
+     "small"
+    ]
+   },
+   {
+    "call": "leave",
+    "args": [
+     21,
+     "bo"
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     22,
+     "cy",
+     "small"
+    ]
+   },
+   {
+    "call": "leave",
+    "args": [
+     23,
+     "cy"
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     24,
+     "ana",
+     "small"
+    ]
+   },
+   {
+    "call": "leave",
+    "args": [
+     25,
+     "ana"
+    ]
+   },
+   {
+    "call": "top_visitors",
+    "args": [
+     26,
+     3
+    ],
+    "expect": [
+     "bo(3)",
+     "ana(2)",
+     "cy(2)"
+    ]
+   },
+   {
+    "call": "top_visitors",
+    "args": [
+     27,
+     10
+    ],
+    "expect": [
+     "bo(3)",
+     "ana(2)",
+     "cy(2)",
+     "dee(1)"
+    ]
+   },
+   {
+    "call": "top_visitors",
+    "args": [
+     28,
+     0
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "top_visitors_count_only_parks",
+  "steps": [
+   {
+    "new": "Garage",
+    "args": []
+   },
+   {
+    "call": "top_visitors",
+    "args": [
+     1,
+     5
+    ],
+    "expect": []
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     2,
+     "A1",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "park",
+    "args": [
+     10,
+     "ana",
+     "small"
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     11,
+     "ana",
+     "small"
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     12,
+     "bo",
+     "small"
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     13,
+     "cy",
+     "huge"
+    ]
+   },
+   {
+    "call": "top_visitors",
+    "args": [
+     14,
+     5
+    ],
+    "expect": [
+     "ana(1)"
+    ]
+   },
+   {
+    "call": "leave",
+    "args": [
+     15,
+     "ana"
+    ]
+   },
+   {
+    "call": "top_visitors",
+    "args": [
+     16,
+     5
+    ],
+    "expect": [
+     "ana(1)"
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     17,
+     "bo",
+     "small"
+    ]
+   },
+   {
+    "call": "top_visitors",
+    "args": [
+     18,
+     5
+    ],
+    "expect": [
+     "ana(1)",
+     "bo(1)"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "top_visitors_across_spots",
+  "steps": [
+   {
+    "new": "Garage",
+    "args": []
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     1,
+     "S1",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     2,
+     "L1",
+     "large"
+    ],
+    "expect": true
+   },
+   {
+    "call": "park",
+    "args": [
+     10,
+     "van",
+     "large"
+    ]
+   },
+   {
+    "call": "leave",
+    "args": [
+     11,
+     "van"
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     12,
+     "van",
+     "small"
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     13,
+     "car",
+     "small"
+    ]
+   },
+   {
+    "call": "leave",
+    "args": [
+     14,
+     "car"
+    ]
+   },
+   {
+    "call": "top_visitors",
+    "args": [
+     15,
+     5
+    ],
+    "expect": [
+     "van(2)",
+     "car(1)"
+    ]
+   }
+  ]
+ }
+]

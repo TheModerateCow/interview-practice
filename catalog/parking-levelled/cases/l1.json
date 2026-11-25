@@ -1,0 +1,458 @@
+[
+ {
+  "name": "add_spot_rules",
+  "steps": [
+   {
+    "new": "Garage",
+    "args": []
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     1,
+     "A1",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     2,
+     "A1",
+     "large"
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     3,
+     "Z9",
+     "huge"
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     4,
+     "Z8",
+     ""
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     5,
+     "B1",
+     "large"
+    ],
+    "expect": true
+   },
+   {
+    "call": "park",
+    "args": [
+     6,
+     "CAR-1",
+     "small"
+    ],
+    "expect": "A1"
+   },
+   {
+    "call": "park",
+    "args": [
+     7,
+     "CAR-2",
+     "small"
+    ],
+    "expect": "B1"
+   },
+   {
+    "call": "park",
+    "args": [
+     8,
+     "CAR-3",
+     "small"
+    ],
+    "expect": ""
+   }
+  ]
+ },
+ {
+  "name": "park_smallest_fit",
+  "steps": [
+   {
+    "new": "Garage",
+    "args": []
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     1,
+     "L1",
+     "large"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     2,
+     "M1",
+     "medium"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     3,
+     "S1",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "park",
+    "args": [
+     10,
+     "S-A",
+     "small"
+    ],
+    "expect": "S1"
+   },
+   {
+    "call": "park",
+    "args": [
+     11,
+     "S-B",
+     "small"
+    ],
+    "expect": "M1"
+   },
+   {
+    "call": "park",
+    "args": [
+     12,
+     "M-A",
+     "medium"
+    ],
+    "expect": "L1"
+   },
+   {
+    "call": "park",
+    "args": [
+     13,
+     "S-C",
+     "small"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "spot_of",
+    "args": [
+     14,
+     "S-B"
+    ],
+    "expect": "M1"
+   },
+   {
+    "call": "spot_of",
+    "args": [
+     15,
+     "S-C"
+    ],
+    "expect": ""
+   }
+  ]
+ },
+ {
+  "name": "park_lowest_id_on_ties",
+  "steps": [
+   {
+    "new": "Garage",
+    "args": []
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     1,
+     "m2",
+     "medium"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     2,
+     "m10",
+     "medium"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     3,
+     "m1",
+     "medium"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     4,
+     "s1",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "park",
+    "args": [
+     10,
+     "TRUCK",
+     "large"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "park",
+    "args": [
+     11,
+     "A",
+     "medium"
+    ],
+    "expect": "m1"
+   },
+   {
+    "call": "park",
+    "args": [
+     12,
+     "B",
+     "medium"
+    ],
+    "expect": "m10"
+   },
+   {
+    "call": "park",
+    "args": [
+     13,
+     "C",
+     "medium"
+    ],
+    "expect": "m2"
+   },
+   {
+    "call": "park",
+    "args": [
+     14,
+     "D",
+     "medium"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "park",
+    "args": [
+     15,
+     "E",
+     "small"
+    ],
+    "expect": "s1"
+   }
+  ]
+ },
+ {
+  "name": "park_rejects",
+  "steps": [
+   {
+    "new": "Garage",
+    "args": []
+   },
+   {
+    "call": "park",
+    "args": [
+     1,
+     "CAR",
+     "small"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     2,
+     "A1",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     3,
+     "A2",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "park",
+    "args": [
+     10,
+     "CAR",
+     "tiny"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "park",
+    "args": [
+     11,
+     "CAR",
+     "small"
+    ],
+    "expect": "A1"
+   },
+   {
+    "call": "park",
+    "args": [
+     12,
+     "CAR",
+     "small"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "spot_of",
+    "args": [
+     13,
+     "CAR"
+    ],
+    "expect": "A1"
+   },
+   {
+    "call": "park",
+    "args": [
+     14,
+     "BUS",
+     "small"
+    ],
+    "expect": "A2"
+   }
+  ]
+ },
+ {
+  "name": "leave_frees_spot",
+  "steps": [
+   {
+    "new": "Garage",
+    "args": []
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     1,
+     "A1",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_spot",
+    "args": [
+     2,
+     "B1",
+     "large"
+    ],
+    "expect": true
+   },
+   {
+    "call": "park",
+    "args": [
+     10,
+     "CAR",
+     "small"
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     11,
+     "VAN",
+     "small"
+    ]
+   },
+   {
+    "call": "leave",
+    "args": [
+     12,
+     "CAR"
+    ],
+    "expect": true
+   },
+   {
+    "call": "spot_of",
+    "args": [
+     13,
+     "CAR"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "leave",
+    "args": [
+     14,
+     "CAR"
+    ],
+    "expect": false
+   },
+   {
+    "call": "leave",
+    "args": [
+     15,
+     "NOPE"
+    ],
+    "expect": false
+   },
+   {
+    "call": "park",
+    "args": [
+     16,
+     "BIKE",
+     "small"
+    ],
+    "expect": "A1"
+   },
+   {
+    "call": "spot_of",
+    "args": [
+     17,
+     "VAN"
+    ],
+    "expect": "B1"
+   },
+   {
+    "call": "leave",
+    "args": [
+     18,
+     "VAN"
+    ]
+   },
+   {
+    "call": "park",
+    "args": [
+     19,
+     "CAR",
+     "small"
+    ],
+    "expect": "B1"
+   }
+  ]
+ }
+]

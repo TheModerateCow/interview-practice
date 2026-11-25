@@ -51,16 +51,23 @@ def _kind(api, x):
     if any(x == f for fs in api.get("records", {}).values() for f, _ in fs): return "field"
     if x in api.get("errors", []): return "error"
     if x == api.get("module"): return "module"
+    sigs = list(api.get("functions", {}).values()) + [{"params": c.get("init", [])} for c in api.get("classes", {}).values()] \
+        + [m for c in api.get("classes", {}).values() for m in c.get("methods", {}).values()]
+    if any(x == n for sg in sigs for n, _ in sg.get("params", [])): return "param"
     return None
 
 
 PLACEHOLDER = re.compile(r"\{\{(new )?([A-Za-z_][A-Za-z0-9_]*)\}\}")
 
 
-def render_md(text, api, be):
-    if not api: return text
+def render_md(text, api, be, manifest=None):
+    """Replace {{name}} placeholders; {{run_entry}} and {{your_tests}} come from the language's manifest."""
+    specials = {k: str((manifest or {}).get(k, "")) for k in ("run_entry", "your_tests")}
+    if not api and not manifest: return text
     def sub(m):
         new, x = m.group(1), m.group(2)
+        if not new and x in specials and specials[x]: return specials[x]
+        if not api: return m.group(0)
         k = "new" if new else _kind(api, x)
         if k is None: raise ValueError(f"unknown placeholder {{{{{m.group(0)[2:-2]}}}}}")
         return be.name(k, x)
@@ -80,14 +87,14 @@ def render(d, lang, name=None):
     m.setdefault("your_tests", YOUR_TESTS[lang])
     out = {}
     md = open(_pick(d, lang, "problem.md")).read()
-    md = render_md(md, api, be)
+    md = render_md(md, api, be, m)
     if api: md = md.rstrip() + "\n\n## Your code\n\n" + be.signatures(api).rstrip() + "\n"
     out["problem.md"] = md.encode()
     for r in m.get("reveal", []):
         f = r["file"][len(".hidden/"):]
         src = _pick(d, lang, os.path.join("levels", f)) or _pick(d, lang, f)
         if not src: raise ValueError(f"reveal file {f} missing")
-        out[".hidden/" + f] = render_md(open(src).read(), api, be).encode()
+        out[".hidden/" + f] = render_md(open(src).read(), api, be, m).encode()
     if api: out[".hidden/" + tests_file] = be.tests_file(api, cases, data).encode()
     else:
         src = os.path.join(d, lang, "hidden", tests_file)

@@ -1,0 +1,202 @@
+{
+ "module": "tickets",
+ "java_class": "Tickets",
+ "records": {},
+ "functions": {},
+ "classes": {
+  "Office": {
+   "init": [],
+   "methods": {
+    "create_event": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "event_id",
+       "string"
+      ],
+      [
+       "capacity",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "buy": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "event_id",
+       "string"
+      ],
+      [
+       "buyer",
+       "string"
+      ],
+      [
+       "qty",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "refund": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "event_id",
+       "string"
+      ],
+      [
+       "buyer",
+       "string"
+      ],
+      [
+       "qty",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "available": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "event_id",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 1
+    },
+    "top_buyers": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "event_id",
+       "string"
+      ],
+      [
+       "n",
+       "int"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "busiest_events": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "n",
+       "int"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "hold": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "event_id",
+       "string"
+      ],
+      [
+       "buyer",
+       "string"
+      ],
+      [
+       "qty",
+       "int"
+      ],
+      [
+       "ttl",
+       "int"
+      ]
+     ],
+     "returns": "string",
+     "level": 3
+    },
+    "confirm": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "hold_id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 3
+    },
+    "owned_at": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "event_id",
+       "string"
+      ],
+      [
+       "buyer",
+       "string"
+      ],
+      [
+       "at_ts",
+       "int"
+      ]
+     ],
+     "returns": "int",
+     "level": 4
+    },
+    "sold_at": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "event_id",
+       "string"
+      ],
+      [
+       "at_ts",
+       "int"
+      ]
+     ],
+     "returns": "int",
+     "level": 4
+    }
+   }
+  }
+ },
+ "errors": []
+}

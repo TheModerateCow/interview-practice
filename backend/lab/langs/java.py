@@ -17,7 +17,7 @@ def pascal(n):
 
 
 def name(kind, neutral):
-    if kind in ("func", "method", "field"): return camel(neutral)
+    if kind in ("func", "method", "field", "param"): return camel(neutral)
     if kind == "class": return pascal(neutral)
     if kind == "new": return "new " + pascal(neutral)
     if kind == "error": return pascal(neutral) + "Exception"

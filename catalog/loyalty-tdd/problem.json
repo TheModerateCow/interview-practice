@@ -1,0 +1,12 @@
+{
+ "title": "Loyalty points ledger: test first",
+ "company": "Retail loyalty (practice domain)",
+ "round": "tdd",
+ "difficulty": "medium",
+ "minutes": 45,
+ "rules": "Write your tests first and run them with My tests, then implement the ledger. Submit runs the hidden tests. Standard library only. Hints are free: ask in the chat.",
+ "tags": [
+  "test_p1_"
+ ],
+ "grade_timeout_s": 45
+}
