@@ -1,0 +1,719 @@
+[
+ {
+  "name": "backup_restore",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "set",
+    "args": [
+     1,
+     "svc-api",
+     "image",
+     "v1"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     2,
+     "svc-api",
+     "replicas",
+     "3"
+    ]
+   },
+   {
+    "call": "backup",
+    "args": [
+     3
+    ],
+    "expect": "b1"
+   },
+   {
+    "call": "set",
+    "args": [
+     4,
+     "svc-api",
+     "image",
+     "v2"
+    ]
+   },
+   {
+    "call": "delete",
+    "args": [
+     5,
+     "svc-api",
+     "replicas"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     6,
+     "svc-web",
+     "image",
+     "w1"
+    ]
+   },
+   {
+    "call": "restore",
+    "args": [
+     7,
+     "b2"
+    ],
+    "expect": false
+   },
+   {
+    "call": "get",
+    "args": [
+     8,
+     "svc-api",
+     "image"
+    ],
+    "expect": "v2"
+   },
+   {
+    "call": "restore",
+    "args": [
+     9,
+     "b1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "scan",
+    "args": [
+     10,
+     "svc-api"
+    ],
+    "expect": [
+     "image=v1",
+     "replicas=3"
+    ]
+   },
+   {
+    "call": "list_keys",
+    "args": [
+     11,
+     ""
+    ],
+    "expect": [
+     "svc-api"
+    ]
+   },
+   {
+    "call": "backup",
+    "args": [
+     12
+    ],
+    "expect": "b2"
+   }
+  ]
+ },
+ {
+  "name": "restore_recalculates_ttl",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "set_with_ttl",
+    "args": [
+     5,
+     "lock",
+     "owner",
+     "n1",
+     10
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     6,
+     "lock",
+     "region",
+     "eu"
+    ]
+   },
+   {
+    "call": "backup",
+    "args": [
+     8
+    ]
+   },
+   {
+    "call": "get",
+    "args": [
+     20,
+     "lock",
+     "owner"
+    ],
+    "expect": null
+   },
+   {
+    "call": "restore",
+    "args": [
+     50,
+     "b1"
+    ]
+   },
+   {
+    "call": "remaining_ttl",
+    "args": [
+     51,
+     "lock",
+     "owner"
+    ],
+    "expect": 6
+   },
+   {
+    "call": "get",
+    "args": [
+     56,
+     "lock",
+     "owner"
+    ],
+    "expect": "n1"
+   },
+   {
+    "call": "get",
+    "args": [
+     57,
+     "lock",
+     "owner"
+    ],
+    "expect": null
+   },
+   {
+    "call": "remaining_ttl",
+    "args": [
+     58,
+     "lock",
+     "region"
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "backup_skips_expired",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "set_with_ttl",
+    "args": [
+     1,
+     "lock-a",
+     "owner",
+     "n1",
+     3
+    ]
+   },
+   {
+    "call": "set_with_ttl",
+    "args": [
+     2,
+     "lock-b",
+     "owner",
+     "n2",
+     4
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     3,
+     "lock-b",
+     "zone",
+     "z1"
+    ]
+   },
+   {
+    "call": "backup",
+    "args": [
+     4
+    ],
+    "expect": "b1"
+   },
+   {
+    "call": "set",
+    "args": [
+     5,
+     "lock-a",
+     "owner",
+     "n9"
+    ]
+   },
+   {
+    "call": "restore",
+    "args": [
+     6,
+     "b1"
+    ]
+   },
+   {
+    "call": "list_keys",
+    "args": [
+     7,
+     ""
+    ],
+    "expect": [
+     "lock-b"
+    ]
+   },
+   {
+    "call": "remaining_ttl",
+    "args": [
+     7,
+     "lock-b",
+     "owner"
+    ],
+    "expect": 1
+   },
+   {
+    "call": "scan",
+    "args": [
+     8,
+     "lock-b"
+    ],
+    "expect": [
+     "zone=z1"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "backups_are_snapshots",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "backup",
+    "args": [
+     1
+    ],
+    "expect": "b1"
+   },
+   {
+    "call": "set",
+    "args": [
+     2,
+     "svc",
+     "image",
+     "v1"
+    ]
+   },
+   {
+    "call": "backup",
+    "args": [
+     3
+    ],
+    "expect": "b2"
+   },
+   {
+    "call": "restore",
+    "args": [
+     4,
+     "b2"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     5,
+     "svc",
+     "image",
+     "v2"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     6,
+     "svc",
+     "debug",
+     "on"
+    ]
+   },
+   {
+    "call": "restore",
+    "args": [
+     7,
+     "b2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "scan",
+    "args": [
+     8,
+     "svc"
+    ],
+    "expect": [
+     "image=v1"
+    ]
+   },
+   {
+    "call": "restore",
+    "args": [
+     9,
+     "b1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "list_keys",
+    "args": [
+     10,
+     ""
+    ],
+    "expect": []
+   },
+   {
+    "call": "restore",
+    "args": [
+     11,
+     "b2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "get",
+    "args": [
+     12,
+     "svc",
+     "image"
+    ],
+    "expect": "v1"
+   },
+   {
+    "call": "backup",
+    "args": [
+     13
+    ],
+    "expect": "b3"
+   }
+  ]
+ },
+ {
+  "name": "get_at",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "set",
+    "args": [
+     2,
+     "svc",
+     "image",
+     "v1"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     5,
+     "svc",
+     "image",
+     "v2"
+    ]
+   },
+   {
+    "call": "delete",
+    "args": [
+     8,
+     "svc",
+     "image"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     12,
+     "svc",
+     "image",
+     "v3"
+    ]
+   },
+   {
+    "call": "compare_and_set",
+    "args": [
+     14,
+     "svc",
+     "image",
+     "v3",
+     "v4"
+    ]
+   },
+   {
+    "call": "get_at",
+    "args": [
+     20,
+     "svc",
+     "image",
+     1
+    ],
+    "expect": null
+   },
+   {
+    "call": "get_at",
+    "args": [
+     20,
+     "svc",
+     "image",
+     2
+    ],
+    "expect": "v1"
+   },
+   {
+    "call": "get_at",
+    "args": [
+     20,
+     "svc",
+     "image",
+     4
+    ],
+    "expect": "v1"
+   },
+   {
+    "call": "get_at",
+    "args": [
+     20,
+     "svc",
+     "image",
+     5
+    ],
+    "expect": "v2"
+   },
+   {
+    "call": "get_at",
+    "args": [
+     20,
+     "svc",
+     "image",
+     7
+    ],
+    "expect": "v2"
+   },
+   {
+    "call": "get_at",
+    "args": [
+     20,
+     "svc",
+     "image",
+     8
+    ],
+    "expect": null
+   },
+   {
+    "call": "get_at",
+    "args": [
+     20,
+     "svc",
+     "image",
+     11
+    ],
+    "expect": null
+   },
+   {
+    "call": "get_at",
+    "args": [
+     20,
+     "svc",
+     "image",
+     12
+    ],
+    "expect": "v3"
+   },
+   {
+    "call": "get_at",
+    "args": [
+     20,
+     "svc",
+     "image",
+     14
+    ],
+    "expect": "v4"
+   },
+   {
+    "call": "get_at",
+    "args": [
+     20,
+     "svc",
+     "image",
+     20
+    ],
+    "expect": "v4"
+   },
+   {
+    "call": "get_at",
+    "args": [
+     21,
+     "svc",
+     "zone",
+     21
+    ],
+    "expect": null
+   },
+   {
+    "call": "get_at",
+    "args": [
+     22,
+     "db",
+     "image",
+     22
+    ],
+    "expect": null
+   }
+  ]
+ },
+ {
+  "name": "get_at_ttl_and_restore",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "set_with_ttl",
+    "args": [
+     10,
+     "lock",
+     "owner",
+     "n1",
+     5
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     11,
+     "lock",
+     "zone",
+     "z1"
+    ]
+   },
+   {
+    "call": "backup",
+    "args": [
+     12
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     20,
+     "lock",
+     "zone",
+     "z2"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     21,
+     "lock",
+     "extra",
+     "x"
+    ]
+   },
+   {
+    "call": "restore",
+    "args": [
+     30,
+     "b1"
+    ]
+   },
+   {
+    "call": "get_at",
+    "args": [
+     40,
+     "lock",
+     "owner",
+     14
+    ],
+    "expect": "n1"
+   },
+   {
+    "call": "get_at",
+    "args": [
+     40,
+     "lock",
+     "owner",
+     15
+    ],
+    "expect": null
+   },
+   {
+    "call": "get_at",
+    "args": [
+     40,
+     "lock",
+     "owner",
+     30
+    ],
+    "expect": "n1"
+   },
+   {
+    "call": "get_at",
+    "args": [
+     40,
+     "lock",
+     "owner",
+     33
+    ],
+    "expect": null
+   },
+   {
+    "call": "get_at",
+    "args": [
+     40,
+     "lock",
+     "zone",
+     29
+    ],
+    "expect": "z2"
+   },
+   {
+    "call": "get_at",
+    "args": [
+     40,
+     "lock",
+     "zone",
+     30
+    ],
+    "expect": "z1"
+   },
+   {
+    "call": "get_at",
+    "args": [
+     40,
+     "lock",
+     "extra",
+     29
+    ],
+    "expect": "x"
+   },
+   {
+    "call": "get_at",
+    "args": [
+     40,
+     "lock",
+     "extra",
+     30
+    ],
+    "expect": null
+   }
+  ]
+ }
+]

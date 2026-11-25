@@ -1,0 +1,22 @@
+{
+ "module": "meters",
+ "functions": {
+  "best_battery_profit": {
+   "params": [
+    [
+     "prices",
+     "list<int>"
+    ],
+    [
+     "capacity",
+     "int"
+    ],
+    [
+     "wear",
+     "int"
+    ]
+   ],
+   "returns": "int"
+  }
+ }
+}

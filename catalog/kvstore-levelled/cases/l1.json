@@ -1,0 +1,490 @@
+[
+ {
+  "name": "set_get_overwrite",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "set",
+    "args": [
+     1,
+     "svc-api",
+     "replicas",
+     "3"
+    ],
+    "expect": true
+   },
+   {
+    "call": "get",
+    "args": [
+     2,
+     "svc-api",
+     "replicas"
+    ],
+    "expect": "3"
+   },
+   {
+    "call": "set",
+    "args": [
+     3,
+     "svc-api",
+     "replicas",
+     "5"
+    ],
+    "expect": false
+   },
+   {
+    "call": "get",
+    "args": [
+     4,
+     "svc-api",
+     "replicas"
+    ],
+    "expect": "5"
+   },
+   {
+    "call": "get",
+    "args": [
+     5,
+     "svc-api",
+     "image"
+    ],
+    "expect": null
+   },
+   {
+    "call": "get",
+    "args": [
+     6,
+     "svc-web",
+     "replicas"
+    ],
+    "expect": null
+   }
+  ]
+ },
+ {
+  "name": "keys_and_fields_independent",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "set",
+    "args": [
+     1,
+     "svc-api",
+     "region",
+     "eu-west"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     2,
+     "svc-web",
+     "region",
+     "us-east"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     3,
+     "svc-api",
+     "tier",
+     "gold"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     4,
+     "svc-web",
+     "tier",
+     "bronze"
+    ],
+    "expect": true
+   },
+   {
+    "call": "get",
+    "args": [
+     5,
+     "svc-api",
+     "region"
+    ],
+    "expect": "eu-west"
+   },
+   {
+    "call": "get",
+    "args": [
+     6,
+     "svc-web",
+     "region"
+    ],
+    "expect": "us-east"
+   },
+   {
+    "call": "get",
+    "args": [
+     7,
+     "svc-api",
+     "tier"
+    ],
+    "expect": "gold"
+   },
+   {
+    "call": "get",
+    "args": [
+     8,
+     "svc-web",
+     "tier"
+    ],
+    "expect": "bronze"
+   }
+  ]
+ },
+ {
+  "name": "delete",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "set",
+    "args": [
+     1,
+     "db",
+     "region",
+     "eu-west"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     2,
+     "db",
+     "size",
+     "large"
+    ]
+   },
+   {
+    "call": "delete",
+    "args": [
+     3,
+     "db",
+     "region"
+    ],
+    "expect": true
+   },
+   {
+    "call": "get",
+    "args": [
+     4,
+     "db",
+     "region"
+    ],
+    "expect": null
+   },
+   {
+    "call": "get",
+    "args": [
+     5,
+     "db",
+     "size"
+    ],
+    "expect": "large"
+   },
+   {
+    "call": "delete",
+    "args": [
+     6,
+     "db",
+     "region"
+    ],
+    "expect": false
+   },
+   {
+    "call": "delete",
+    "args": [
+     7,
+     "cache",
+     "region"
+    ],
+    "expect": false
+   },
+   {
+    "call": "set",
+    "args": [
+     8,
+     "db",
+     "region",
+     "us-east"
+    ],
+    "expect": true
+   },
+   {
+    "call": "get",
+    "args": [
+     9,
+     "db",
+     "region"
+    ],
+    "expect": "us-east"
+   }
+  ]
+ },
+ {
+  "name": "delete_last_field",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "set",
+    "args": [
+     1,
+     "db",
+     "region",
+     "eu-west"
+    ]
+   },
+   {
+    "call": "delete",
+    "args": [
+     2,
+     "db",
+     "region"
+    ],
+    "expect": true
+   },
+   {
+    "call": "delete",
+    "args": [
+     3,
+     "db",
+     "region"
+    ],
+    "expect": false
+   },
+   {
+    "call": "set",
+    "args": [
+     4,
+     "db",
+     "size",
+     "small"
+    ],
+    "expect": true
+   },
+   {
+    "call": "get",
+    "args": [
+     5,
+     "db",
+     "size"
+    ],
+    "expect": "small"
+   },
+   {
+    "call": "get",
+    "args": [
+     6,
+     "db",
+     "region"
+    ],
+    "expect": null
+   }
+  ]
+ },
+ {
+  "name": "compare_and_set",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "set",
+    "args": [
+     1,
+     "svc-api",
+     "image",
+     "v1"
+    ]
+   },
+   {
+    "call": "compare_and_set",
+    "args": [
+     2,
+     "svc-api",
+     "image",
+     "v0",
+     "v2"
+    ],
+    "expect": false
+   },
+   {
+    "call": "get",
+    "args": [
+     3,
+     "svc-api",
+     "image"
+    ],
+    "expect": "v1"
+   },
+   {
+    "call": "compare_and_set",
+    "args": [
+     4,
+     "svc-api",
+     "image",
+     "v1",
+     "v2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "get",
+    "args": [
+     5,
+     "svc-api",
+     "image"
+    ],
+    "expect": "v2"
+   },
+   {
+    "call": "compare_and_set",
+    "args": [
+     6,
+     "svc-api",
+     "image",
+     "v1",
+     "v3"
+    ],
+    "expect": false
+   },
+   {
+    "call": "get",
+    "args": [
+     7,
+     "svc-api",
+     "image"
+    ],
+    "expect": "v2"
+   }
+  ]
+ },
+ {
+  "name": "compare_and_set_missing_and_empty",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "compare_and_set",
+    "args": [
+     1,
+     "svc-api",
+     "image",
+     "",
+     "v1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "get",
+    "args": [
+     2,
+     "svc-api",
+     "image"
+    ],
+    "expect": null
+   },
+   {
+    "call": "set",
+    "args": [
+     3,
+     "svc-api",
+     "note",
+     ""
+    ]
+   },
+   {
+    "call": "get",
+    "args": [
+     4,
+     "svc-api",
+     "note"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "compare_and_set",
+    "args": [
+     5,
+     "svc-api",
+     "image",
+     "",
+     "v1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "compare_and_set",
+    "args": [
+     6,
+     "svc-api",
+     "note",
+     "",
+     "hi"
+    ],
+    "expect": true
+   },
+   {
+    "call": "delete",
+    "args": [
+     7,
+     "svc-api",
+     "note"
+    ]
+   },
+   {
+    "call": "compare_and_set",
+    "args": [
+     8,
+     "svc-api",
+     "note",
+     "hi",
+     "x"
+    ],
+    "expect": false
+   },
+   {
+    "call": "set",
+    "args": [
+     9,
+     "svc-api",
+     "blank",
+     ""
+    ],
+    "expect": true
+   },
+   {
+    "call": "set",
+    "args": [
+     10,
+     "svc-api",
+     "blank",
+     "y"
+    ],
+    "expect": false
+   }
+  ]
+ }
+]

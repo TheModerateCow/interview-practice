@@ -1,0 +1,14 @@
+{
+ "run_entry": "cmd/run/main.go",
+ "testcases": [
+  {
+   "stdin": "member 1 ana\nmember 2 ana\ncopy 3 D-2 Dune\ncopy 4 D-1 Dune\ncopy 5 E-1 Emma\ncheckout 6 ana Dune\ncheckout 7 ana Dune\ncheckout 8 bo Dune\nborrower 9 D-1\n",
+   "expected": "true\nfalse\ntrue\ntrue\ntrue\n\"D-1\"\n\"\"\n\"\"\n\"ana\""
+  },
+  {
+   "stdin": "member 1 ana\nmember 2 bo\ncopy 3 E-1 Emma\ncheckout 4 ana Emma\ncheckout 5 bo Emma\nreturn 6 E-1\nreturn 7 E-1\ncheckout 8 bo Emma\nborrower 9 E-1\ncheckout 10 bo Ulysses\n",
+   "expected": "true\ntrue\ntrue\n\"E-1\"\n\"\"\ntrue\nfalse\n\"E-1\"\n\"bo\"\n\"\""
+  }
+ ],
+ "your_tests": "*_test.go"
+}

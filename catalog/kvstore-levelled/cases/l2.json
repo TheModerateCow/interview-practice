@@ -1,0 +1,562 @@
+[
+ {
+  "name": "scan_sorted",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "set",
+    "args": [
+     1,
+     "svc-api",
+     "replicas",
+     "3"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     2,
+     "svc-api",
+     "image",
+     "v1"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     3,
+     "svc-api",
+     "env.PORT",
+     "8080"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     4,
+     "svc-api",
+     "tier",
+     "gold"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     5,
+     "svc-web",
+     "image",
+     "w9"
+    ]
+   },
+   {
+    "call": "scan",
+    "args": [
+     6,
+     "svc-api"
+    ],
+    "expect": [
+     "env.PORT=8080",
+     "image=v1",
+     "replicas=3",
+     "tier=gold"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     7,
+     "svc-api",
+     "image",
+     "v2"
+    ]
+   },
+   {
+    "call": "scan",
+    "args": [
+     8,
+     "svc-api"
+    ],
+    "expect": [
+     "env.PORT=8080",
+     "image=v2",
+     "replicas=3",
+     "tier=gold"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "scan_missing_and_after_delete",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "scan",
+    "args": [
+     1,
+     "svc-api"
+    ],
+    "expect": []
+   },
+   {
+    "call": "set",
+    "args": [
+     2,
+     "svc-api",
+     "b",
+     "2"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     3,
+     "svc-api",
+     "a",
+     "1"
+    ]
+   },
+   {
+    "call": "delete",
+    "args": [
+     4,
+     "svc-api",
+     "b"
+    ]
+   },
+   {
+    "call": "scan",
+    "args": [
+     5,
+     "svc-api"
+    ],
+    "expect": [
+     "a=1"
+    ]
+   },
+   {
+    "call": "delete",
+    "args": [
+     6,
+     "svc-api",
+     "a"
+    ]
+   },
+   {
+    "call": "scan",
+    "args": [
+     7,
+     "svc-api"
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "scan_prefix",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "set",
+    "args": [
+     1,
+     "svc-api",
+     "env.PORT",
+     "8080"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     2,
+     "svc-api",
+     "env.HOST",
+     "0.0.0.0"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     3,
+     "svc-api",
+     "envoy",
+     "on"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     4,
+     "svc-api",
+     "image",
+     "v1"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     5,
+     "svc-api",
+     "env",
+     "prod"
+    ]
+   },
+   {
+    "call": "scan_prefix",
+    "args": [
+     6,
+     "svc-api",
+     "env."
+    ],
+    "expect": [
+     "env.HOST=0.0.0.0",
+     "env.PORT=8080"
+    ]
+   },
+   {
+    "call": "scan_prefix",
+    "args": [
+     7,
+     "svc-api",
+     "env"
+    ],
+    "expect": [
+     "env=prod",
+     "env.HOST=0.0.0.0",
+     "env.PORT=8080",
+     "envoy=on"
+    ]
+   },
+   {
+    "call": "scan_prefix",
+    "args": [
+     8,
+     "svc-api",
+     "image"
+    ],
+    "expect": [
+     "image=v1"
+    ]
+   },
+   {
+    "call": "scan_prefix",
+    "args": [
+     9,
+     "svc-api",
+     "zz"
+    ],
+    "expect": []
+   },
+   {
+    "call": "scan_prefix",
+    "args": [
+     10,
+     "svc-api",
+     ""
+    ],
+    "expect": [
+     "env=prod",
+     "env.HOST=0.0.0.0",
+     "env.PORT=8080",
+     "envoy=on",
+     "image=v1"
+    ]
+   },
+   {
+    "call": "scan",
+    "args": [
+     11,
+     "svc-api"
+    ],
+    "expect": [
+     "env=prod",
+     "env.HOST=0.0.0.0",
+     "env.PORT=8080",
+     "envoy=on",
+     "image=v1"
+    ]
+   },
+   {
+    "call": "scan_prefix",
+    "args": [
+     12,
+     "svc-web",
+     "env"
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "prefix_is_not_substring",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "set",
+    "args": [
+     1,
+     "svc-api",
+     "export",
+     "yes"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     2,
+     "svc-api",
+     "port",
+     "80"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     3,
+     "my-svc",
+     "port",
+     "81"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     4,
+     "svc",
+     "port",
+     "82"
+    ]
+   },
+   {
+    "call": "scan_prefix",
+    "args": [
+     5,
+     "svc-api",
+     "port"
+    ],
+    "expect": [
+     "port=80"
+    ]
+   },
+   {
+    "call": "list_keys",
+    "args": [
+     6,
+     "svc"
+    ],
+    "expect": [
+     "svc",
+     "svc-api"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "list_keys",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "list_keys",
+    "args": [
+     1,
+     ""
+    ],
+    "expect": []
+   },
+   {
+    "call": "set",
+    "args": [
+     2,
+     "svc-web",
+     "a",
+     "1"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     3,
+     "db-main",
+     "a",
+     "1"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     4,
+     "svc-api",
+     "a",
+     "1"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     5,
+     "svc-api",
+     "b",
+     "2"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     6,
+     "db-replica",
+     "a",
+     "1"
+    ]
+   },
+   {
+    "call": "list_keys",
+    "args": [
+     7,
+     ""
+    ],
+    "expect": [
+     "db-main",
+     "db-replica",
+     "svc-api",
+     "svc-web"
+    ]
+   },
+   {
+    "call": "list_keys",
+    "args": [
+     8,
+     "svc-"
+    ],
+    "expect": [
+     "svc-api",
+     "svc-web"
+    ]
+   },
+   {
+    "call": "list_keys",
+    "args": [
+     9,
+     "db-r"
+    ],
+    "expect": [
+     "db-replica"
+    ]
+   },
+   {
+    "call": "list_keys",
+    "args": [
+     10,
+     "cache"
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "list_keys_after_delete",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "set",
+    "args": [
+     1,
+     "svc-api",
+     "a",
+     "1"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     2,
+     "svc-api",
+     "b",
+     "2"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     3,
+     "svc-web",
+     "a",
+     "1"
+    ]
+   },
+   {
+    "call": "delete",
+    "args": [
+     4,
+     "svc-api",
+     "a"
+    ]
+   },
+   {
+    "call": "list_keys",
+    "args": [
+     5,
+     "svc"
+    ],
+    "expect": [
+     "svc-api",
+     "svc-web"
+    ]
+   },
+   {
+    "call": "delete",
+    "args": [
+     6,
+     "svc-api",
+     "b"
+    ]
+   },
+   {
+    "call": "list_keys",
+    "args": [
+     7,
+     "svc"
+    ],
+    "expect": [
+     "svc-web"
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     8,
+     "svc-api",
+     "c",
+     "3"
+    ]
+   },
+   {
+    "call": "list_keys",
+    "args": [
+     9,
+     "svc"
+    ],
+    "expect": [
+     "svc-api",
+     "svc-web"
+    ]
+   }
+  ]
+ }
+]

@@ -13,7 +13,10 @@ public final class Fares {
 
     /** Fare in cents for a journey covering {@code zones} zones (1-6), after the peak uplift and the concession discount. */
     public static int journeyFare(int zones, boolean peak, String concession) {
-        Concession c = Concession.parse(concession);
+        return journeyFare(zones, peak, Concession.parse(concession));
+    }
+
+    static int journeyFare(int zones, boolean peak, Concession c) {
         int fare = BASE[zones - 1];
         if (peak) fare = (fare * 130 + 999) / 1000 * 10;
         return fare * c.payPercent / 500 * 5;

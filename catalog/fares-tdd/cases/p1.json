@@ -1237,30 +1237,6 @@
   ]
  },
  {
-  "name": "unknown_concession_null",
-  "steps": [
-   {
-    "new": "FareCard",
-    "args": [
-     null
-    ],
-    "error": "unknown_concession"
-   }
-  ]
- },
- {
-  "name": "unknown_concession_name",
-  "steps": [
-   {
-    "new": "FareCard",
-    "args": [
-     "pensioner"
-    ],
-    "error": "unknown_concession"
-   }
-  ]
- },
- {
   "name": "errors",
   "steps": [
    {
@@ -1349,6 +1325,38 @@
      3
     ],
     "expect": 90
+   }
+  ]
+ },
+ {
+  "name": "unknown_concession",
+  "steps": [
+   {
+    "call": "journey_fare",
+    "args": [
+     1,
+     false,
+     "pensioner"
+    ],
+    "error": "unknown_concession"
+   },
+   {
+    "call": "journey_fare",
+    "args": [
+     1,
+     true,
+     null
+    ],
+    "error": "unknown_concession"
+   },
+   {
+    "call": "journey_fare",
+    "args": [
+     1,
+     false,
+     "adult"
+    ],
+    "expect": 250
    }
   ]
  }

@@ -1,0 +1,1078 @@
+[
+ {
+  "name": "billable_weight_actual_heavier_rounded_up_to_500_g",
+  "call": "billable_grams",
+  "args": [
+   {
+    "weight_grams": 1200,
+    "length_cm": 10,
+    "width_cm": 10,
+    "height_cm": 10
+   }
+  ],
+  "expect": 1500
+ },
+ {
+  "name": "billable_weight_dimensional_heavier",
+  "call": "billable_grams",
+  "args": [
+   {
+    "weight_grams": 300,
+    "length_cm": 40,
+    "width_cm": 30,
+    "height_cm": 20
+   }
+  ],
+  "expect": 5000
+ },
+ {
+  "name": "billable_weight_exact_1000_g_stays_1000",
+  "call": "billable_grams",
+  "args": [
+   {
+    "weight_grams": 1000,
+    "length_cm": 10,
+    "width_cm": 10,
+    "height_cm": 10
+   }
+  ],
+  "expect": 1000
+ },
+ {
+  "name": "billable_weight_exact_500_g_stays_500",
+  "call": "billable_grams",
+  "args": [
+   {
+    "weight_grams": 500,
+    "length_cm": 5,
+    "width_cm": 5,
+    "height_cm": 5
+   }
+  ],
+  "expect": 500
+ },
+ {
+  "name": "billable_weight_1_g_bills_as_500",
+  "call": "billable_grams",
+  "args": [
+   {
+    "weight_grams": 1,
+    "length_cm": 1,
+    "width_cm": 1,
+    "height_cm": 1
+   }
+  ],
+  "expect": 500
+ },
+ {
+  "name": "billable_weight_dimensional_weight_rounds_up_before_banding",
+  "call": "billable_grams",
+  "args": [
+   {
+    "weight_grams": 900,
+    "length_cm": 11,
+    "width_cm": 22,
+    "height_cm": 31
+   }
+  ],
+  "expect": 2000
+ },
+ {
+  "name": "billable_weight_exact_2500_g",
+  "call": "billable_grams",
+  "args": [
+   {
+    "weight_grams": 2500,
+    "length_cm": 10,
+    "width_cm": 10,
+    "height_cm": 10
+   }
+  ],
+  "expect": 2500
+ },
+ {
+  "name": "billable_weight_30_kg_is_allowed",
+  "call": "billable_grams",
+  "args": [
+   {
+    "weight_grams": 30000,
+    "length_cm": 10,
+    "width_cm": 10,
+    "height_cm": 10
+   }
+  ],
+  "expect": 30000
+ },
+ {
+  "name": "billable_weight_dimensional_exactly_30_kg_is_allowed",
+  "call": "billable_grams",
+  "args": [
+   {
+    "weight_grams": 1000,
+    "length_cm": 50,
+    "width_cm": 50,
+    "height_cm": 60
+   }
+  ],
+  "expect": 30000
+ },
+ {
+  "name": "billable_errors_zero_weight",
+  "call": "billable_grams",
+  "args": [
+   {
+    "weight_grams": 0,
+    "length_cm": 1,
+    "width_cm": 1,
+    "height_cm": 1
+   }
+  ],
+  "error": "invalid_parcel"
+ },
+ {
+  "name": "billable_errors_negative_width",
+  "call": "billable_grams",
+  "args": [
+   {
+    "weight_grams": 5,
+    "length_cm": 1,
+    "width_cm": -1,
+    "height_cm": 1
+   }
+  ],
+  "error": "invalid_parcel"
+ },
+ {
+  "name": "billable_errors_zero_height",
+  "call": "billable_grams",
+  "args": [
+   {
+    "weight_grams": 5,
+    "length_cm": 1,
+    "width_cm": 1,
+    "height_cm": 0
+   }
+  ],
+  "error": "invalid_parcel"
+ },
+ {
+  "name": "billable_errors_zero_length",
+  "call": "billable_grams",
+  "args": [
+   {
+    "weight_grams": 5,
+    "length_cm": 0,
+    "width_cm": 1,
+    "height_cm": 1
+   }
+  ],
+  "error": "invalid_parcel"
+ },
+ {
+  "name": "billable_errors_over_30_kg_actual",
+  "call": "billable_grams",
+  "args": [
+   {
+    "weight_grams": 30001,
+    "length_cm": 10,
+    "width_cm": 10,
+    "height_cm": 10
+   }
+  ],
+  "error": "too_heavy"
+ },
+ {
+  "name": "billable_errors_over_30_kg_dimensional",
+  "call": "billable_grams",
+  "args": [
+   {
+    "weight_grams": 1000,
+    "length_cm": 60,
+    "width_cm": 50,
+    "height_cm": 51
+   }
+  ],
+  "error": "too_heavy"
+ },
+ {
+  "name": "zone_rates_zone_1_1_kg",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 1,
+    "subtotal_cents": 0,
+    "express": false,
+    "promo_code": ""
+   }
+  ],
+  "expect": 543
+ },
+ {
+  "name": "zone_rates_zone_2_1_kg",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 2,
+    "subtotal_cents": 0,
+    "express": false,
+    "promo_code": ""
+   }
+  ],
+  "expect": 705
+ },
+ {
+  "name": "zone_rates_zone_3_1_kg",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 3,
+    "subtotal_cents": 0,
+    "express": false,
+    "promo_code": ""
+   }
+  ],
+  "expect": 868
+ },
+ {
+  "name": "zone_rates_zone_4_1_kg",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 4,
+    "subtotal_cents": 0,
+    "express": false,
+    "promo_code": ""
+   }
+  ],
+  "expect": 1194
+ },
+ {
+  "name": "zone_rates_zone_1_1500_g",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1500,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 1,
+    "subtotal_cents": 0,
+    "express": false,
+    "promo_code": ""
+   }
+  ],
+  "expect": 651
+ },
+ {
+  "name": "zone_rates_zone_3_3200_g_bills_3500",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 3200,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 3,
+    "subtotal_cents": 0,
+    "express": false,
+    "promo_code": ""
+   }
+  ],
+  "expect": 1845
+ },
+ {
+  "name": "zone_rates_zone_2_dimensional_2000_g",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 900,
+      "length_cm": 11,
+      "width_cm": 22,
+      "height_cm": 31
+     }
+    ],
+    "zone": 2,
+    "subtotal_cents": 0,
+    "express": false,
+    "promo_code": ""
+   }
+  ],
+  "expect": 1009
+ },
+ {
+  "name": "zone_rates_zone_4_30_kg_express",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 30000,
+      "length_cm": 40,
+      "width_cm": 30,
+      "height_cm": 30
+     }
+    ],
+    "zone": 4,
+    "subtotal_cents": 0,
+    "express": true,
+    "promo_code": ""
+   }
+  ],
+  "expect": 22850
+ },
+ {
+  "name": "express_rounding_zone_1_express",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 1,
+    "subtotal_cents": 0,
+    "express": true,
+    "promo_code": ""
+   }
+  ],
+  "expect": 732
+ },
+ {
+  "name": "express_rounding_zone_2_express_rounds_half_up",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 2,
+    "subtotal_cents": 0,
+    "express": true,
+    "promo_code": ""
+   }
+  ],
+  "expect": 953
+ },
+ {
+  "name": "express_rounding_express_rounds_per_parcel",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     },
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 2,
+    "subtotal_cents": 0,
+    "express": true,
+    "promo_code": ""
+   }
+  ],
+  "expect": 1905
+ },
+ {
+  "name": "express_rounding_express_two_parcels",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 700,
+      "length_cm": 20,
+      "width_cm": 20,
+      "height_cm": 20
+     },
+     {
+      "weight_grams": 2000,
+      "length_cm": 15,
+      "width_cm": 15,
+      "height_cm": 15
+     }
+    ],
+    "zone": 2,
+    "subtotal_cents": 0,
+    "express": true,
+    "promo_code": ""
+   }
+  ],
+  "expect": 2726
+ },
+ {
+  "name": "oversize_101_cm_side",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 101,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 1,
+    "subtotal_cents": 0,
+    "express": false,
+    "promo_code": ""
+   }
+  ],
+  "expect": 2496
+ },
+ {
+  "name": "oversize_100_cm_side_is_not_oversize",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 100,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 1,
+    "subtotal_cents": 0,
+    "express": false,
+    "promo_code": ""
+   }
+  ],
+  "expect": 760
+ },
+ {
+  "name": "oversize_oversize_fee_not_multiplied_by_express",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 101
+     }
+    ],
+    "zone": 2,
+    "subtotal_cents": 0,
+    "express": true,
+    "promo_code": ""
+   }
+  ],
+  "expect": 3195
+ },
+ {
+  "name": "free_shipping_at_threshold",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 1,
+    "subtotal_cents": 7500,
+    "express": false,
+    "promo_code": ""
+   }
+  ],
+  "expect": 0
+ },
+ {
+  "name": "free_shipping_one_cent_under",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 1,
+    "subtotal_cents": 7499,
+    "express": false,
+    "promo_code": ""
+   }
+  ],
+  "expect": 543
+ },
+ {
+  "name": "free_shipping_zone_3_qualifies",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 3,
+    "subtotal_cents": 20000,
+    "express": false,
+    "promo_code": ""
+   }
+  ],
+  "expect": 0
+ },
+ {
+  "name": "free_shipping_zone_4_never_free",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 4,
+    "subtotal_cents": 10000,
+    "express": false,
+    "promo_code": ""
+   }
+  ],
+  "expect": 1194
+ },
+ {
+  "name": "free_shipping_express_never_free",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 1,
+    "subtotal_cents": 10000,
+    "express": true,
+    "promo_code": ""
+   }
+  ],
+  "expect": 732
+ },
+ {
+  "name": "free_shipping_oversize_fee_still_charged",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     },
+     {
+      "weight_grams": 1000,
+      "length_cm": 101,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 1,
+    "subtotal_cents": 7500,
+    "express": false,
+    "promo_code": ""
+   }
+  ],
+  "expect": 1628
+ },
+ {
+  "name": "promos_ship10_zone_1",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 1,
+    "subtotal_cents": 0,
+    "express": false,
+    "promo_code": "SHIP10"
+   }
+  ],
+  "expect": 489
+ },
+ {
+  "name": "promos_ship10_zone_4",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 4,
+    "subtotal_cents": 0,
+    "express": false,
+    "promo_code": "SHIP10"
+   }
+  ],
+  "expect": 1075
+ },
+ {
+  "name": "promos_ship10_discount_rounds_down",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     },
+     {
+      "weight_grams": 1000,
+      "length_cm": 101,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 1,
+    "subtotal_cents": 7500,
+    "express": false,
+    "promo_code": "SHIP10"
+   }
+  ],
+  "expect": 1466
+ },
+ {
+  "name": "promos_flat600_zone_4",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 4,
+    "subtotal_cents": 0,
+    "express": false,
+    "promo_code": "FLAT600"
+   }
+  ],
+  "expect": 594
+ },
+ {
+  "name": "promos_flat600_never_below_zero",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 1,
+    "subtotal_cents": 0,
+    "express": false,
+    "promo_code": "FLAT600"
+   }
+  ],
+  "expect": 0
+ },
+ {
+  "name": "promos_flat600_ignored_with_free_shipping",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     },
+     {
+      "weight_grams": 1000,
+      "length_cm": 101,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 1,
+    "subtotal_cents": 7500,
+    "express": false,
+    "promo_code": "FLAT600"
+   }
+  ],
+  "expect": 1628
+ },
+ {
+  "name": "promos_flat600_applies_when_zone_4_blocks_free_shipping",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 101,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 4,
+    "subtotal_cents": 7500,
+    "express": false,
+    "promo_code": "FLAT600"
+   }
+  ],
+  "expect": 3035
+ },
+ {
+  "name": "mixed_orders_zone_3_express_ship10",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 2600,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     },
+     {
+      "weight_grams": 900,
+      "length_cm": 11,
+      "width_cm": 22,
+      "height_cm": 31
+     },
+     {
+      "weight_grams": 1000,
+      "length_cm": 120,
+      "width_cm": 30,
+      "height_cm": 5
+     }
+    ],
+    "zone": 3,
+    "subtotal_cents": 0,
+    "express": true,
+    "promo_code": "SHIP10"
+   }
+  ],
+  "expect": 7477
+ },
+ {
+  "name": "mixed_orders_zone_3_free_ship10",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 2600,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     },
+     {
+      "weight_grams": 900,
+      "length_cm": 11,
+      "width_cm": 22,
+      "height_cm": 31
+     },
+     {
+      "weight_grams": 1000,
+      "length_cm": 120,
+      "width_cm": 30,
+      "height_cm": 5
+     }
+    ],
+    "zone": 3,
+    "subtotal_cents": 9000,
+    "express": false,
+    "promo_code": "SHIP10"
+   }
+  ],
+  "expect": 1466
+ },
+ {
+  "name": "mixed_orders_zone_2_standard",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1200,
+      "length_cm": 30,
+      "width_cm": 20,
+      "height_cm": 10
+     },
+     {
+      "weight_grams": 4100,
+      "length_cm": 40,
+      "width_cm": 30,
+      "height_cm": 30
+     }
+    ],
+    "zone": 2,
+    "subtotal_cents": 0,
+    "express": false,
+    "promo_code": ""
+   }
+  ],
+  "expect": 3537
+ },
+ {
+  "name": "mixed_orders_zone_2_express_flat600",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1200,
+      "length_cm": 30,
+      "width_cm": 20,
+      "height_cm": 10
+     },
+     {
+      "weight_grams": 4100,
+      "length_cm": 40,
+      "width_cm": 30,
+      "height_cm": 30
+     }
+    ],
+    "zone": 2,
+    "subtotal_cents": 0,
+    "express": true,
+    "promo_code": "FLAT600"
+   }
+  ],
+  "expect": 4176
+ },
+ {
+  "name": "order_errors_no_parcels_beats_bad_zone_and_promo",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [],
+    "zone": 9,
+    "subtotal_cents": 0,
+    "express": false,
+    "promo_code": "X"
+   }
+  ],
+  "error": "no_parcels"
+ },
+ {
+  "name": "order_errors_zone_0_beats_bad_promo",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 0,
+    "subtotal_cents": 0,
+    "express": false,
+    "promo_code": "X"
+   }
+  ],
+  "error": "unknown_zone"
+ },
+ {
+  "name": "order_errors_zone_5",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     }
+    ],
+    "zone": 5,
+    "subtotal_cents": 0,
+    "express": false,
+    "promo_code": ""
+   }
+  ],
+  "error": "unknown_zone"
+ },
+ {
+  "name": "order_errors_promo_is_case_sensitive_and_beats_bad_parcel",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 0,
+      "length_cm": 1,
+      "width_cm": 1,
+      "height_cm": 1
+     }
+    ],
+    "zone": 1,
+    "subtotal_cents": 0,
+    "express": false,
+    "promo_code": "ship10"
+   }
+  ],
+  "error": "unknown_promo"
+ },
+ {
+  "name": "order_errors_first_bad_parcel_wins_too_heavy",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     },
+     {
+      "weight_grams": 30001,
+      "length_cm": 1,
+      "width_cm": 1,
+      "height_cm": 1
+     },
+     {
+      "weight_grams": 0,
+      "length_cm": 1,
+      "width_cm": 1,
+      "height_cm": 1
+     }
+    ],
+    "zone": 1,
+    "subtotal_cents": 0,
+    "express": false,
+    "promo_code": ""
+   }
+  ],
+  "error": "too_heavy"
+ },
+ {
+  "name": "order_errors_first_bad_parcel_wins_invalid",
+  "call": "quote",
+  "args": [
+   {
+    "parcels": [
+     {
+      "weight_grams": 1000,
+      "length_cm": 10,
+      "width_cm": 10,
+      "height_cm": 10
+     },
+     {
+      "weight_grams": 1,
+      "length_cm": 1,
+      "width_cm": 0,
+      "height_cm": 1
+     },
+     {
+      "weight_grams": 30001,
+      "length_cm": 1,
+      "width_cm": 1,
+      "height_cm": 1
+     }
+    ],
+    "zone": 1,
+    "subtotal_cents": 0,
+    "express": false,
+    "promo_code": ""
+   }
+  ],
+  "error": "invalid_parcel"
+ }
+]

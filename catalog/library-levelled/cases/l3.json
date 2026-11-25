@@ -1,0 +1,630 @@
+[
+ {
+  "name": "due_date",
+  "steps": [
+   {
+    "new": "Library",
+    "args": []
+   },
+   {
+    "call": "add_member",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     2,
+     "D-1",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     3,
+     "E-1",
+     "Emma"
+    ],
+    "expect": true
+   },
+   {
+    "call": "due_date",
+    "args": [
+     10,
+     "Z-9"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "due_date",
+    "args": [
+     11,
+     "D-1"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "checkout",
+    "args": [
+     20,
+     "ana",
+     "Dune"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     25,
+     "ana",
+     "Emma"
+    ]
+   },
+   {
+    "call": "due_date",
+    "args": [
+     26,
+     "D-1"
+    ],
+    "expect": 34
+   },
+   {
+    "call": "due_date",
+    "args": [
+     27,
+     "E-1"
+    ],
+    "expect": 39
+   },
+   {
+    "call": "due_date",
+    "args": [
+     50,
+     "D-1"
+    ],
+    "expect": 34
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     51,
+     "D-1"
+    ]
+   },
+   {
+    "call": "due_date",
+    "args": [
+     52,
+     "D-1"
+    ],
+    "expect": -1
+   }
+  ]
+ },
+ {
+  "name": "renew",
+  "steps": [
+   {
+    "new": "Library",
+    "args": []
+   },
+   {
+    "call": "add_member",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_member",
+    "args": [
+     2,
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     3,
+     "D-1",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     4,
+     "E-1",
+     "Emma"
+    ],
+    "expect": true
+   },
+   {
+    "call": "renew",
+    "args": [
+     10,
+     "D-1"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "renew",
+    "args": [
+     11,
+     "Z-9"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "checkout",
+    "args": [
+     20,
+     "ana",
+     "Dune"
+    ]
+   },
+   {
+    "call": "renew",
+    "args": [
+     25,
+     "D-1"
+    ],
+    "expect": 48
+   },
+   {
+    "call": "due_date",
+    "args": [
+     26,
+     "D-1"
+    ],
+    "expect": 48
+   },
+   {
+    "call": "renew",
+    "args": [
+     48,
+     "D-1"
+    ],
+    "expect": 62
+   },
+   {
+    "call": "renew",
+    "args": [
+     50,
+     "D-1"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "due_date",
+    "args": [
+     51,
+     "D-1"
+    ],
+    "expect": 62
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     52,
+     "D-1"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     53,
+     "bo",
+     "Dune"
+    ]
+   },
+   {
+    "call": "renew",
+    "args": [
+     54,
+     "D-1"
+    ],
+    "expect": 81
+   }
+  ]
+ },
+ {
+  "name": "renew_overdue_refused",
+  "steps": [
+   {
+    "new": "Library",
+    "args": []
+   },
+   {
+    "call": "add_member",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     2,
+     "E-1",
+     "Emma"
+    ],
+    "expect": true
+   },
+   {
+    "call": "checkout",
+    "args": [
+     20,
+     "ana",
+     "Emma"
+    ]
+   },
+   {
+    "call": "renew",
+    "args": [
+     35,
+     "E-1"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "due_date",
+    "args": [
+     36,
+     "E-1"
+    ],
+    "expect": 34
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     37,
+     "E-1"
+    ]
+   },
+   {
+    "call": "fines",
+    "args": [
+     38,
+     "ana"
+    ],
+    "expect": 75
+   }
+  ]
+ },
+ {
+  "name": "fines_per_day",
+  "steps": [
+   {
+    "new": "Library",
+    "args": []
+   },
+   {
+    "call": "add_member",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_member",
+    "args": [
+     2,
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     3,
+     "D-1",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     4,
+     "E-1",
+     "Emma"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     5,
+     "H-1",
+     "Hamlet"
+    ],
+    "expect": true
+   },
+   {
+    "call": "fines",
+    "args": [
+     10,
+     "zed"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "checkout",
+    "args": [
+     20,
+     "ana",
+     "Dune"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     21,
+     "ana",
+     "Emma"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     22,
+     "bo",
+     "Hamlet"
+    ]
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     34,
+     "D-1"
+    ]
+   },
+   {
+    "call": "fines",
+    "args": [
+     35,
+     "ana"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "fines",
+    "args": [
+     40,
+     "ana"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     41,
+     "E-1"
+    ]
+   },
+   {
+    "call": "fines",
+    "args": [
+     42,
+     "ana"
+    ],
+    "expect": 150
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     43,
+     "H-1"
+    ]
+   },
+   {
+    "call": "fines",
+    "args": [
+     44,
+     "bo"
+    ],
+    "expect": 175
+   },
+   {
+    "call": "fines",
+    "args": [
+     45,
+     "ana"
+    ],
+    "expect": 150
+   },
+   {
+    "call": "checkout",
+    "args": [
+     46,
+     "ana",
+     "Dune"
+    ]
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     65,
+     "D-1"
+    ]
+   },
+   {
+    "call": "fines",
+    "args": [
+     66,
+     "ana"
+    ],
+    "expect": 275
+   }
+  ]
+ },
+ {
+  "name": "fine_cap_and_renewed_due",
+  "steps": [
+   {
+    "new": "Library",
+    "args": []
+   },
+   {
+    "call": "add_member",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_member",
+    "args": [
+     2,
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_member",
+    "args": [
+     3,
+     "cy"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     4,
+     "D-1",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     5,
+     "E-1",
+     "Emma"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     6,
+     "H-1",
+     "Hamlet"
+    ],
+    "expect": true
+   },
+   {
+    "call": "checkout",
+    "args": [
+     20,
+     "ana",
+     "Dune"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     21,
+     "bo",
+     "Emma"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     22,
+     "cy",
+     "Hamlet"
+    ]
+   },
+   {
+    "call": "renew",
+    "args": [
+     23,
+     "H-1"
+    ]
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     73,
+     "D-1"
+    ]
+   },
+   {
+    "call": "fines",
+    "args": [
+     74,
+     "ana"
+    ],
+    "expect": 975
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     75,
+     "E-1"
+    ]
+   },
+   {
+    "call": "fines",
+    "args": [
+     76,
+     "bo"
+    ],
+    "expect": 1000
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     200,
+     "H-1"
+    ]
+   },
+   {
+    "call": "fines",
+    "args": [
+     201,
+     "cy"
+    ],
+    "expect": 1000
+   },
+   {
+    "call": "checkout",
+    "args": [
+     202,
+     "cy",
+     "Hamlet"
+    ]
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     220,
+     "H-1"
+    ]
+   },
+   {
+    "call": "fines",
+    "args": [
+     221,
+     "cy"
+    ],
+    "expect": 1100
+   }
+  ]
+ }
+]

@@ -1,0 +1,556 @@
+[
+ {
+  "name": "ttl_expiry_boundary",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "set_with_ttl",
+    "args": [
+     10,
+     "lock",
+     "owner",
+     "node-1",
+     5
+    ],
+    "expect": true
+   },
+   {
+    "call": "get",
+    "args": [
+     11,
+     "lock",
+     "owner"
+    ],
+    "expect": "node-1"
+   },
+   {
+    "call": "get",
+    "args": [
+     14,
+     "lock",
+     "owner"
+    ],
+    "expect": "node-1"
+   },
+   {
+    "call": "get",
+    "args": [
+     15,
+     "lock",
+     "owner"
+    ],
+    "expect": null
+   },
+   {
+    "call": "set_with_ttl",
+    "args": [
+     16,
+     "lock",
+     "owner",
+     "node-2",
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_with_ttl",
+    "args": [
+     17,
+     "lock",
+     "owner",
+     "node-3",
+     3
+    ],
+    "expect": false
+   },
+   {
+    "call": "get",
+    "args": [
+     19,
+     "lock",
+     "owner"
+    ],
+    "expect": "node-3"
+   },
+   {
+    "call": "get",
+    "args": [
+     20,
+     "lock",
+     "owner"
+    ],
+    "expect": null
+   }
+  ]
+ },
+ {
+  "name": "remaining_ttl",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "set_with_ttl",
+    "args": [
+     10,
+     "lock",
+     "owner",
+     "node-1",
+     8
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     11,
+     "lock",
+     "region",
+     "eu"
+    ]
+   },
+   {
+    "call": "remaining_ttl",
+    "args": [
+     12,
+     "lock",
+     "owner"
+    ],
+    "expect": 6
+   },
+   {
+    "call": "remaining_ttl",
+    "args": [
+     17,
+     "lock",
+     "owner"
+    ],
+    "expect": 1
+   },
+   {
+    "call": "remaining_ttl",
+    "args": [
+     18,
+     "lock",
+     "owner"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "remaining_ttl",
+    "args": [
+     19,
+     "lock",
+     "region"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "remaining_ttl",
+    "args": [
+     20,
+     "lock",
+     "zone"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "remaining_ttl",
+    "args": [
+     21,
+     "cache",
+     "owner"
+    ],
+    "expect": -1
+   }
+  ]
+ },
+ {
+  "name": "set_and_cas_change_ttl",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "set_with_ttl",
+    "args": [
+     10,
+     "svc",
+     "image",
+     "v1",
+     10
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     12,
+     "svc",
+     "image",
+     "v2"
+    ],
+    "expect": false
+   },
+   {
+    "call": "remaining_ttl",
+    "args": [
+     13,
+     "svc",
+     "image"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "get",
+    "args": [
+     100,
+     "svc",
+     "image"
+    ],
+    "expect": "v2"
+   },
+   {
+    "call": "set_with_ttl",
+    "args": [
+     101,
+     "svc",
+     "image",
+     "v3",
+     10
+    ]
+   },
+   {
+    "call": "remaining_ttl",
+    "args": [
+     102,
+     "svc",
+     "image"
+    ],
+    "expect": 9
+   },
+   {
+    "call": "compare_and_set",
+    "args": [
+     105,
+     "svc",
+     "image",
+     "v3",
+     "v4"
+    ],
+    "expect": true
+   },
+   {
+    "call": "remaining_ttl",
+    "args": [
+     106,
+     "svc",
+     "image"
+    ],
+    "expect": 5
+   },
+   {
+    "call": "get",
+    "args": [
+     110,
+     "svc",
+     "image"
+    ],
+    "expect": "v4"
+   },
+   {
+    "call": "get",
+    "args": [
+     111,
+     "svc",
+     "image"
+    ],
+    "expect": null
+   },
+   {
+    "call": "compare_and_set",
+    "args": [
+     112,
+     "svc",
+     "image",
+     "v4",
+     "v5"
+    ],
+    "expect": false
+   }
+  ]
+ },
+ {
+  "name": "expired_hidden_from_scans",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "set",
+    "args": [
+     1,
+     "svc-api",
+     "image",
+     "v1"
+    ]
+   },
+   {
+    "call": "set_with_ttl",
+    "args": [
+     2,
+     "svc-api",
+     "canary",
+     "on",
+     5
+    ]
+   },
+   {
+    "call": "set_with_ttl",
+    "args": [
+     3,
+     "svc-api",
+     "env.DEBUG",
+     "1",
+     10
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     4,
+     "svc-api",
+     "env.PORT",
+     "80"
+    ]
+   },
+   {
+    "call": "scan",
+    "args": [
+     5,
+     "svc-api"
+    ],
+    "expect": [
+     "canary=on",
+     "env.DEBUG=1",
+     "env.PORT=80",
+     "image=v1"
+    ]
+   },
+   {
+    "call": "scan",
+    "args": [
+     7,
+     "svc-api"
+    ],
+    "expect": [
+     "env.DEBUG=1",
+     "env.PORT=80",
+     "image=v1"
+    ]
+   },
+   {
+    "call": "scan_prefix",
+    "args": [
+     12,
+     "svc-api",
+     "env."
+    ],
+    "expect": [
+     "env.DEBUG=1",
+     "env.PORT=80"
+    ]
+   },
+   {
+    "call": "scan_prefix",
+    "args": [
+     13,
+     "svc-api",
+     "env."
+    ],
+    "expect": [
+     "env.PORT=80"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "expired_keys_not_listed",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "set_with_ttl",
+    "args": [
+     1,
+     "lock-a",
+     "owner",
+     "n1",
+     5
+    ]
+   },
+   {
+    "call": "set_with_ttl",
+    "args": [
+     2,
+     "lock-b",
+     "owner",
+     "n2",
+     10
+    ]
+   },
+   {
+    "call": "set_with_ttl",
+    "args": [
+     3,
+     "lock-b",
+     "since",
+     "2",
+     2
+    ]
+   },
+   {
+    "call": "set",
+    "args": [
+     4,
+     "lock-c",
+     "owner",
+     "n3"
+    ]
+   },
+   {
+    "call": "list_keys",
+    "args": [
+     5,
+     "lock-"
+    ],
+    "expect": [
+     "lock-a",
+     "lock-b",
+     "lock-c"
+    ]
+   },
+   {
+    "call": "list_keys",
+    "args": [
+     6,
+     "lock-"
+    ],
+    "expect": [
+     "lock-b",
+     "lock-c"
+    ]
+   },
+   {
+    "call": "list_keys",
+    "args": [
+     11,
+     "lock-"
+    ],
+    "expect": [
+     "lock-b",
+     "lock-c"
+    ]
+   },
+   {
+    "call": "list_keys",
+    "args": [
+     12,
+     "lock-"
+    ],
+    "expect": [
+     "lock-c"
+    ]
+   },
+   {
+    "call": "scan",
+    "args": [
+     13,
+     "lock-b"
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "delete_and_reset_expired",
+  "steps": [
+   {
+    "new": "Store",
+    "args": []
+   },
+   {
+    "call": "set_with_ttl",
+    "args": [
+     1,
+     "lock",
+     "owner",
+     "n1",
+     4
+    ]
+   },
+   {
+    "call": "delete",
+    "args": [
+     2,
+     "lock",
+     "owner"
+    ],
+    "expect": true
+   },
+   {
+    "call": "get",
+    "args": [
+     3,
+     "lock",
+     "owner"
+    ],
+    "expect": null
+   },
+   {
+    "call": "set_with_ttl",
+    "args": [
+     4,
+     "lock",
+     "owner",
+     "n2",
+     4
+    ]
+   },
+   {
+    "call": "delete",
+    "args": [
+     8,
+     "lock",
+     "owner"
+    ],
+    "expect": false
+   },
+   {
+    "call": "set",
+    "args": [
+     9,
+     "lock",
+     "owner",
+     "n3"
+    ],
+    "expect": true
+   },
+   {
+    "call": "remaining_ttl",
+    "args": [
+     50,
+     "lock",
+     "owner"
+    ],
+    "expect": 0
+   }
+  ]
+ }
+]

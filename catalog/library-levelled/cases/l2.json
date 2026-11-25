@@ -1,0 +1,766 @@
+[
+ {
+  "name": "available",
+  "steps": [
+   {
+    "new": "Library",
+    "args": []
+   },
+   {
+    "call": "add_member",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_member",
+    "args": [
+     2,
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     3,
+     "D-1",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     4,
+     "D-2",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     5,
+     "D-3",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     6,
+     "E-1",
+     "Emma"
+    ],
+    "expect": true
+   },
+   {
+    "call": "available",
+    "args": [
+     10,
+     "Ulysses"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "available",
+    "args": [
+     11,
+     "Dune"
+    ],
+    "expect": 3
+   },
+   {
+    "call": "available",
+    "args": [
+     12,
+     "Emma"
+    ],
+    "expect": 1
+   },
+   {
+    "call": "checkout",
+    "args": [
+     13,
+     "ana",
+     "Dune"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     14,
+     "bo",
+     "Dune"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     15,
+     "ana",
+     "Ulysses"
+    ]
+   },
+   {
+    "call": "available",
+    "args": [
+     16,
+     "Dune"
+    ],
+    "expect": 1
+   },
+   {
+    "call": "available",
+    "args": [
+     17,
+     "Emma"
+    ],
+    "expect": 1
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     18,
+     "D-1"
+    ]
+   },
+   {
+    "call": "available",
+    "args": [
+     19,
+     "Dune"
+    ],
+    "expect": 2
+   }
+  ]
+ },
+ {
+  "name": "loans_of",
+  "steps": [
+   {
+    "new": "Library",
+    "args": []
+   },
+   {
+    "call": "add_member",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_member",
+    "args": [
+     2,
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     3,
+     "H-1",
+     "Hamlet"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     4,
+     "D-9",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     5,
+     "E-1",
+     "Emma"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     6,
+     "A-5",
+     "Aeneid"
+    ],
+    "expect": true
+   },
+   {
+    "call": "loans_of",
+    "args": [
+     10,
+     "zed"
+    ],
+    "expect": []
+   },
+   {
+    "call": "loans_of",
+    "args": [
+     11,
+     "ana"
+    ],
+    "expect": []
+   },
+   {
+    "call": "checkout",
+    "args": [
+     12,
+     "ana",
+     "Hamlet"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     13,
+     "ana",
+     "Dune"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     14,
+     "bo",
+     "Emma"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     15,
+     "ana",
+     "Aeneid"
+    ]
+   },
+   {
+    "call": "loans_of",
+    "args": [
+     16,
+     "ana"
+    ],
+    "expect": [
+     "A-5",
+     "D-9",
+     "H-1"
+    ]
+   },
+   {
+    "call": "loans_of",
+    "args": [
+     17,
+     "bo"
+    ],
+    "expect": [
+     "E-1"
+    ]
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     18,
+     "D-9"
+    ]
+   },
+   {
+    "call": "loans_of",
+    "args": [
+     19,
+     "ana"
+    ],
+    "expect": [
+     "A-5",
+     "H-1"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "popular_order",
+  "steps": [
+   {
+    "new": "Library",
+    "args": []
+   },
+   {
+    "call": "add_member",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     2,
+     "D-1",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     3,
+     "E-1",
+     "Emma"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     4,
+     "H-1",
+     "Hamlet"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     5,
+     "O-1",
+     "Odyssey"
+    ],
+    "expect": true
+   },
+   {
+    "call": "checkout",
+    "args": [
+     10,
+     "ana",
+     "Hamlet"
+    ]
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     11,
+     "H-1"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     12,
+     "ana",
+     "Emma"
+    ]
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     13,
+     "E-1"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     14,
+     "ana",
+     "Dune"
+    ]
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     15,
+     "D-1"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     16,
+     "ana",
+     "Emma"
+    ]
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     17,
+     "E-1"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     18,
+     "ana",
+     "Odyssey"
+    ]
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     19,
+     "O-1"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     20,
+     "ana",
+     "Emma"
+    ]
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     21,
+     "E-1"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     22,
+     "ana",
+     "Hamlet"
+    ]
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     23,
+     "H-1"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     24,
+     "ana",
+     "Dune"
+    ]
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     25,
+     "D-1"
+    ]
+   },
+   {
+    "call": "popular",
+    "args": [
+     26,
+     3
+    ],
+    "expect": [
+     "Emma(3)",
+     "Dune(2)",
+     "Hamlet(2)"
+    ]
+   },
+   {
+    "call": "popular",
+    "args": [
+     27,
+     10
+    ],
+    "expect": [
+     "Emma(3)",
+     "Dune(2)",
+     "Hamlet(2)",
+     "Odyssey(1)"
+    ]
+   },
+   {
+    "call": "popular",
+    "args": [
+     28,
+     0
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "popular_counts_checkouts",
+  "steps": [
+   {
+    "new": "Library",
+    "args": []
+   },
+   {
+    "call": "add_member",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_member",
+    "args": [
+     2,
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_member",
+    "args": [
+     3,
+     "cy"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     4,
+     "D-1",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     5,
+     "D-2",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     6,
+     "E-1",
+     "Emma"
+    ],
+    "expect": true
+   },
+   {
+    "call": "popular",
+    "args": [
+     10,
+     5
+    ],
+    "expect": []
+   },
+   {
+    "call": "checkout",
+    "args": [
+     11,
+     "ana",
+     "Emma"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     12,
+     "bo",
+     "Emma"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     13,
+     "ana",
+     "Emma"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     14,
+     "zed",
+     "Dune"
+    ]
+   },
+   {
+    "call": "popular",
+    "args": [
+     15,
+     5
+    ],
+    "expect": [
+     "Emma(1)"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     16,
+     "bo",
+     "Dune"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     17,
+     "cy",
+     "Dune"
+    ]
+   },
+   {
+    "call": "popular",
+    "args": [
+     18,
+     5
+    ],
+    "expect": [
+     "Dune(2)",
+     "Emma(1)"
+    ]
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     19,
+     "D-1"
+    ]
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     20,
+     "E-1"
+    ]
+   },
+   {
+    "call": "popular",
+    "args": [
+     21,
+     5
+    ],
+    "expect": [
+     "Dune(2)",
+     "Emma(1)"
+    ]
+   },
+   {
+    "call": "available",
+    "args": [
+     22,
+     "Ulysses"
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "popular_ties_by_title",
+  "steps": [
+   {
+    "new": "Library",
+    "args": []
+   },
+   {
+    "call": "add_member",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_member",
+    "args": [
+     2,
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     3,
+     "Z-1",
+     "Zorba"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     4,
+     "A-1",
+     "Aeneid"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     5,
+     "M-1",
+     "Middlemarch"
+    ],
+    "expect": true
+   },
+   {
+    "call": "checkout",
+    "args": [
+     10,
+     "ana",
+     "Zorba"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     11,
+     "bo",
+     "Middlemarch"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     12,
+     "ana",
+     "Aeneid"
+    ]
+   },
+   {
+    "call": "popular",
+    "args": [
+     13,
+     3
+    ],
+    "expect": [
+     "Aeneid(1)",
+     "Middlemarch(1)",
+     "Zorba(1)"
+    ]
+   },
+   {
+    "call": "popular",
+    "args": [
+     14,
+     2
+    ],
+    "expect": [
+     "Aeneid(1)",
+     "Middlemarch(1)"
+    ]
+   }
+  ]
+ }
+]

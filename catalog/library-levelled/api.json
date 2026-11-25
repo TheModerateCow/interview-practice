@@ -1,0 +1,207 @@
+{
+ "module": "library",
+ "records": {},
+ "functions": {},
+ "classes": {
+  "Library": {
+   "init": [],
+   "methods": {
+    "add_member": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "member_id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "add_copy": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "copy_id",
+       "string"
+      ],
+      [
+       "title",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "checkout": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "member_id",
+       "string"
+      ],
+      [
+       "title",
+       "string"
+      ]
+     ],
+     "returns": "string",
+     "level": 1
+    },
+    "return_copy": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "copy_id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "borrower": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "copy_id",
+       "string"
+      ]
+     ],
+     "returns": "string",
+     "level": 1
+    },
+    "available": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "title",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 2
+    },
+    "loans_of": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "member_id",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "popular": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "n",
+       "int"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "due_date": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "copy_id",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 3
+    },
+    "renew": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "copy_id",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 3
+    },
+    "fines": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "member_id",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 3
+    },
+    "history": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "member_id",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 4
+    },
+    "merge": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "keep_id",
+       "string"
+      ],
+      [
+       "drop_id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    }
+   }
+  }
+ },
+ "errors": []
+}

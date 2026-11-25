@@ -15,7 +15,7 @@ Standard library only. Keep the names and signatures as given. Name your helpers
 | Name | Behaviour |
 |---|---|
 | `{{is_peak}}({{time}})` | Whether a ride at `{{time}}` is in a peak window. |
-| `{{journey_fare}}({{zones}}, {{peak}}, {{concession}})` | The fare in cents for a journey. |
+| `{{journey_fare}}({{zones}}, {{peak}}, {{concession}})` | The fare in cents for a journey. An unknown concession fails with `{{unknown_concession}}`. |
 | `{{new FareCard}}({{concession}})` | A travel card. |
 | `{{ride}}({{time}}, {{from_zone}}, {{to_zone}})` | Records a ride and returns the cents charged for it. |
 

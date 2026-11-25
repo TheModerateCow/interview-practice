@@ -1,0 +1,653 @@
+[
+ {
+  "name": "add_rules",
+  "steps": [
+   {
+    "new": "Library",
+    "args": []
+   },
+   {
+    "call": "add_member",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_member",
+    "args": [
+     2,
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     3,
+     "C1",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     4,
+     "C1",
+     "Emma"
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     5,
+     "C2",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "checkout",
+    "args": [
+     6,
+     "ana",
+     "Emma"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "checkout",
+    "args": [
+     7,
+     "ana",
+     "Dune"
+    ],
+    "expect": "C1"
+   },
+   {
+    "call": "borrower",
+    "args": [
+     8,
+     "C1"
+    ],
+    "expect": "ana"
+   }
+  ]
+ },
+ {
+  "name": "checkout_lowest_copy_id",
+  "steps": [
+   {
+    "new": "Library",
+    "args": []
+   },
+   {
+    "call": "add_member",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_member",
+    "args": [
+     2,
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_member",
+    "args": [
+     3,
+     "cy"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_member",
+    "args": [
+     4,
+     "dee"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     5,
+     "D-2",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     6,
+     "D-10",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     7,
+     "D-1",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     8,
+     "E-1",
+     "Emma"
+    ],
+    "expect": true
+   },
+   {
+    "call": "checkout",
+    "args": [
+     10,
+     "ana",
+     "Dune"
+    ],
+    "expect": "D-1"
+   },
+   {
+    "call": "checkout",
+    "args": [
+     11,
+     "bo",
+     "Dune"
+    ],
+    "expect": "D-10"
+   },
+   {
+    "call": "checkout",
+    "args": [
+     12,
+     "cy",
+     "Dune"
+    ],
+    "expect": "D-2"
+   },
+   {
+    "call": "checkout",
+    "args": [
+     13,
+     "dee",
+     "Dune"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "checkout",
+    "args": [
+     14,
+     "dee",
+     "Emma"
+    ],
+    "expect": "E-1"
+   },
+   {
+    "call": "borrower",
+    "args": [
+     15,
+     "D-10"
+    ],
+    "expect": "bo"
+   },
+   {
+    "call": "borrower",
+    "args": [
+     16,
+     "D-2"
+    ],
+    "expect": "cy"
+   }
+  ]
+ },
+ {
+  "name": "checkout_rejects",
+  "steps": [
+   {
+    "new": "Library",
+    "args": []
+   },
+   {
+    "call": "add_member",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_member",
+    "args": [
+     2,
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     3,
+     "D-1",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     4,
+     "D-2",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     5,
+     "E-1",
+     "Emma"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     6,
+     "H-1",
+     "Hamlet"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     7,
+     "O-1",
+     "Odyssey"
+    ],
+    "expect": true
+   },
+   {
+    "call": "checkout",
+    "args": [
+     10,
+     "zed",
+     "Dune"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "checkout",
+    "args": [
+     11,
+     "ana",
+     "Ulysses"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "checkout",
+    "args": [
+     12,
+     "ana",
+     "Dune"
+    ],
+    "expect": "D-1"
+   },
+   {
+    "call": "checkout",
+    "args": [
+     13,
+     "ana",
+     "Dune"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "borrower",
+    "args": [
+     14,
+     "D-2"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "checkout",
+    "args": [
+     15,
+     "ana",
+     "Emma"
+    ],
+    "expect": "E-1"
+   },
+   {
+    "call": "checkout",
+    "args": [
+     16,
+     "ana",
+     "Hamlet"
+    ],
+    "expect": "H-1"
+   },
+   {
+    "call": "checkout",
+    "args": [
+     17,
+     "ana",
+     "Odyssey"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "checkout",
+    "args": [
+     18,
+     "bo",
+     "Odyssey"
+    ],
+    "expect": "O-1"
+   },
+   {
+    "call": "checkout",
+    "args": [
+     19,
+     "bo",
+     "Dune"
+    ],
+    "expect": "D-2"
+   }
+  ]
+ },
+ {
+  "name": "return_frees_copy",
+  "steps": [
+   {
+    "new": "Library",
+    "args": []
+   },
+   {
+    "call": "add_member",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_member",
+    "args": [
+     2,
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     3,
+     "D-1",
+     "Dune"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     4,
+     "E-1",
+     "Emma"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     5,
+     "H-1",
+     "Hamlet"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     6,
+     "O-1",
+     "Odyssey"
+    ],
+    "expect": true
+   },
+   {
+    "call": "checkout",
+    "args": [
+     10,
+     "ana",
+     "Dune"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     11,
+     "ana",
+     "Emma"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     12,
+     "ana",
+     "Hamlet"
+    ]
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     13,
+     "D-1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "borrower",
+    "args": [
+     14,
+     "D-1"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     15,
+     "D-1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     16,
+     "Z-9"
+    ],
+    "expect": false
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     17,
+     "O-1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "checkout",
+    "args": [
+     18,
+     "bo",
+     "Dune"
+    ],
+    "expect": "D-1"
+   },
+   {
+    "call": "checkout",
+    "args": [
+     19,
+     "ana",
+     "Odyssey"
+    ],
+    "expect": "O-1"
+   },
+   {
+    "call": "borrower",
+    "args": [
+     20,
+     "E-1"
+    ],
+    "expect": "ana"
+   }
+  ]
+ },
+ {
+  "name": "borrow_again_after_return",
+  "steps": [
+   {
+    "new": "Library",
+    "args": []
+   },
+   {
+    "call": "add_member",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_member",
+    "args": [
+     2,
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     3,
+     "E-1",
+     "Emma"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_copy",
+    "args": [
+     4,
+     "E-2",
+     "Emma"
+    ],
+    "expect": true
+   },
+   {
+    "call": "borrower",
+    "args": [
+     10,
+     "Z-9"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "borrower",
+    "args": [
+     11,
+     "E-1"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "checkout",
+    "args": [
+     12,
+     "ana",
+     "Emma"
+    ],
+    "expect": "E-1"
+   },
+   {
+    "call": "checkout",
+    "args": [
+     13,
+     "bo",
+     "Emma"
+    ],
+    "expect": "E-2"
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     14,
+     "E-1"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     15,
+     "bo",
+     "Emma"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "checkout",
+    "args": [
+     16,
+     "ana",
+     "Emma"
+    ],
+    "expect": "E-1"
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     17,
+     "E-2"
+    ]
+   },
+   {
+    "call": "return_copy",
+    "args": [
+     18,
+     "E-1"
+    ]
+   },
+   {
+    "call": "checkout",
+    "args": [
+     19,
+     "bo",
+     "Emma"
+    ],
+    "expect": "E-1"
+   }
+  ]
+ }
+]
