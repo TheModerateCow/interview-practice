@@ -1,0 +1,22 @@
+{
+ "title": "Warehouse inventory: debug, implement, optimise",
+ "company": "Warehouse operations (practice domain)",
+ "round": "codebase",
+ "difficulty": "hard",
+ "minutes": 75,
+ "rules": "Three phases: fix the bugs in the ticket, implement replenishment planning, then speed up the slow path (phase 3 opens when phase 2 passes, with 15 minutes left, or on Next part). Go standard library only. Hints are free: ask in the chat.",
+ "tags": [
+  "test_p1_",
+  "test_p2_",
+  "test_p3_"
+ ],
+ "reveal": [
+  {
+   "file": ".hidden/p3.md",
+   "after_tag": "test_p2_",
+   "or_minutes_left": 15,
+   "unlocks": "test_p3_"
+  }
+ ],
+ "grade_timeout_s": 45
+}

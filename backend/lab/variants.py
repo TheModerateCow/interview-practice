@@ -71,7 +71,7 @@ def render(d, lang, name=None):
     """-> {relpath: bytes}: manifest.json, problem.md, .hidden/*, starter/**."""
     meta, api, cases, data = problem(d)
     if lang not in languages(d): raise ValueError(f"{os.path.basename(d)} has no {lang} version")
-    be = backend(lang)
+    be = backend(lang) if api else None
     m = dict(meta)
     m.update(jload(os.path.join(d, lang, "manifest.json"), {}))
     tests_file = be.TESTS_FILE if api else CODEBASE_TESTS[lang]

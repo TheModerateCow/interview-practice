@@ -1,0 +1,14 @@
+{
+ "run_entry": "main.py",
+ "testcases": [
+  {
+   "stdin": "user ana\nuser ben\nuser cy\nfollow ana ben\npost b1 ben 1000 morning run\npost b2 ben 30000 lunch\npost a1 ana 20000 hi\nlike b1 cy\nlike b1 cy\nlike b1 ana\nfeed ana 40000 10\nfollow ana ghost\n",
+   "expected": "ok\nok\nok\nok\nok\nok\nok\n1\n1\n2\n[b1 b2 a1] end\nerror: no such user: ghost"
+  },
+  {
+   "stdin": "user ana\nuser ben\nuser cy\nfollow ana ben\nfollow ana cy\npost b1 ben 100\npost c1 cy 200\npost b2 ben 300\npost c2 cy 400\nfeed ana 1000 3\nmore ana 1000 3\nmute ana cy 1000 24\nfeed ana 5000 3\nmore ana 5000 3\n",
+   "expected": "ok\nok\nok\nok\nok\nok\nok\nok\nok\n[c2 b2 c1] more\n[b1] end\nok\n[b2 b1] end\n[] end"
+  }
+ ],
+ "your_tests": "test_*.py"
+}
