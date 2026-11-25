@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 
-const BASE = 'http://127.0.0.1:8765';
+const BASE = process.env.E2E_BASE || 'http://127.0.0.1:8766';   // the isolated test stack
 const NAME = process.env.E2E_NAME;
 const ZIP = process.env.E2E_ZIP;
 const NAME_1M = process.env.E2E_NAME_1M;
@@ -118,7 +118,8 @@ test('full interview flow', async ({ page, request }) => {
   await page.click('#home-btn');
   await expect(page.locator('#dropzone')).toBeVisible();
   await page.locator('#dropzone summary', { hasText: 'Finished' }).click();
-  await page.locator('.set-row', { hasText: NAME }).click();
+  // exact name: NAME is also a prefix of NAME_1M, whose row exists when the tests run in parallel
+  await page.locator('.set-row').filter({ has: page.locator('.set-name').getByText(NAME, { exact: true }) }).click();
   await expect(page.locator('#final')).toBeVisible({ timeout: 30000 });
   await shot('7-reopened');
   // zip contents are checked on the host by e2e.sh (no unzip in this image)

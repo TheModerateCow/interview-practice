@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Acceptance tests against the running stack (http://127.0.0.1:8765). stdlib only."""
+"""Acceptance tests against the isolated test stack (tests/stack.sh up: http://127.0.0.1:8766). stdlib only."""
 import glob, http.client, io, json, os, random, socket, subprocess, sys, time, traceback, zipfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA = os.path.join(ROOT, "data")
+DATA = os.environ.get("ILAB_TEST_DATA", os.path.join(ROOT, "tests/out/stack-data"))   # the test stack's /data
 ZIPS = os.path.join(ROOT, "tests/sets/_zips")
-HOST, PORT = "127.0.0.1", 8765
+HOST, PORT = "127.0.0.1", int(os.environ.get("ILAB_TEST_PORT", "8766"))
 fails = 0
 
 
@@ -55,6 +55,32 @@ def manifest(name, lang, **kw):
 def imp(zbytes):
     s, j = jreq("POST", "/api/import", zbytes)
     return s, j
+
+
+def clock_set(label, minutes, slow=False):
+    n = uniq(label); ht = ".hidden/test_hidden.py"
+    t = "import time\n\ndef test_ok():\n    time.sleep(4)\n    assert True\n" if slow else "def test_ok():\n    assert True\n"
+    z = {"manifest.json": json.dumps(manifest(n, "python", minutes=minutes, hidden_tests=ht)), "problem.md": "x",
+         "starter/main.py": "print('hi')\n", ht: t}
+    s, j = imp(mkzip(z)); check(f"{label}: import", s == 200, j)
+    if s != 200: raise RuntimeError(f"{label}: import failed")
+    jreq("POST", f"/api/sets/{n}/start")
+    return n
+
+
+def sess(n): return json.load(open(os.path.join(DATA, "sets", n, "session.json")))
+
+
+def closes(n): return [e for e in sess(n)["events"] if e[1].startswith(("end", "time up"))]
+
+# Two 1-minute rounds start now and pass their deadline while the other sections run; "honest clock" (the last
+# section) checks them, so the run waits only for whatever is left of the minute instead of sleeping 70 s.
+try:
+    D, E = clock_set("t-clk-d", 1), clock_set("t-clk-e", 1)      # started together; expire together
+    req("PUT", f"/api/sets/{E}/files/main.py", "print('late edit')\n")   # E: an edit while still in time ...
+except Exception as e:
+    D = E = None; check("deadline sets D/E start", False, e)
+DE_START = time.time()
 
 
 def runfile(n, f, stdin=""):
@@ -145,7 +171,7 @@ def _():
     check("fork bomb finishes in 30s, not Accepted", dt < 30 and r["verdict"] != "Accepted", (dt, r["verdict"]))
     gone = False
     for _ in range(15):
-        if not subprocess.run(["docker", "ps", "-q", "--filter", "label=ilab.runner=1"], capture_output=True, text=True).stdout.strip():
+        if not subprocess.run(["docker", "ps", "-q", "--filter", "label=ilab.runner=test"], capture_output=True, text=True).stdout.strip():
             gone = True; break
         time.sleep(1)
     check("no runner containers left after fork bomb", gone)
@@ -299,58 +325,6 @@ def _():
 
 
 # ------------------------------------------------------------------ honest clock
-def clock_set(label, minutes, slow=False):
-    n = uniq(label); ht = ".hidden/test_hidden.py"
-    t = "import time\n\ndef test_ok():\n    time.sleep(4)\n    assert True\n" if slow else "def test_ok():\n    assert True\n"
-    z = {"manifest.json": json.dumps(manifest(n, "python", minutes=minutes, hidden_tests=ht)), "problem.md": "x",
-         "starter/main.py": "print('hi')\n", ht: t}
-    s, j = imp(mkzip(z)); check(f"{label}: import", s == 200, j)
-    if s != 200: raise RuntimeError(f"{label}: import failed")
-    jreq("POST", f"/api/sets/{n}/start")
-    return n
-
-
-def sess(n): return json.load(open(os.path.join(DATA, "sets", n, "session.json")))
-
-
-def closes(n): return [e for e in sess(n)["events"] if e[1].startswith(("end", "time up"))]
-
-
-@sec("honest clock")
-def _():
-    import threading
-    A, B, C = clock_set("t-clk-a", 1), clock_set("t-clk-b", 1), clock_set("t-clk-c", 1, slow=True)
-    D, E = clock_set("t-clk-d", 1), clock_set("t-clk-e", 1)      # started together; expire together
-    s, sub = jreq("POST", f"/api/sets/{A}/submit")
-    check("A: early Submit is in time", s == 200 and not sub["results"]["test_"]["after_time"], sub)
-    time.sleep(5)
-    s, fin = jreq("POST", f"/api/sets/{A}/end"); final = fin.get("final") or {}
-    ev = [e[1] for e in sess(A)["events"]]
-    check("A: End logs 'end' without suffix", "end" in ev and "end (after time)" not in ev, ev)
-    check("A: final on time, at ~ close minute", final and all(not g["after_time"] and g["at"] <= 0.2 for g in final.values()), final)
-    l1 = jreq("GET", f"/api/sets/{A}/state")[1]["left_s"]; time.sleep(3)
-    check("A: left_s frozen after End", jreq("GET", f"/api/sets/{A}/state")[1]["left_s"] == l1, l1)
-    s, sub = jreq("POST", f"/api/sets/{A}/submit")
-    check("A: Submit after End is after time", sub["results"]["test_"]["after_time"] and "(after time)" in sess(A)["events"][-1][1], sess(A)["events"][-1])
-    out = []
-    ts = [threading.Thread(target=lambda: out.append(req("POST", f"/api/sets/{B}/end")[0])) for _ in range(2)]
-    [t.start() for t in ts]; [t.join() for t in ts]
-    check("B: two parallel Ends both 200, one close event", out == [200, 200] and len(closes(B)) == 1, (out, closes(B)))
-    th = threading.Thread(target=lambda: out.append(("sub", jreq("POST", f"/api/sets/{C}/submit")[0]))); th.start(); time.sleep(1)
-    s, fin = jreq("POST", f"/api/sets/{C}/end"); th.join()
-    res = json.load(open(os.path.join(DATA, "sets", C, "results.json")))
-    check("C: End during Submit waits and writes final", s == 200 and fin.get("final") and not res["test_"]["after_time"], (s, res))
-    req("PUT", f"/api/sets/{E}/files/main.py", "print('late edit')\n")   # edit while still in time ...
-    time.sleep(70)
-    req("PUT", f"/api/sets/{E}/files/main.py", "print('later edit')\n")  # ... and after the deadline
-    s, fin = jreq("POST", f"/api/sets/{D}/end")
-    d = sess(D)
-    check("D: close after deadline = 'time up' at 1.0, ended = deadline", any(e == [1.0, "time up"] for e in d["events"]) and abs(d["ended"] - (d["start"] + 60)) < 0.01, d["events"])
-    check("D: no edits -> final on time", all(not g["after_time"] for g in (fin.get("final") or {"x": {"after_time": True}}).values()), fin.get("final"))
-    s, fin = jreq("POST", f"/api/sets/{E}/end")
-    check("E: edit after deadline -> final after_time", fin.get("final") and all(g["after_time"] for g in fin["final"].values()), fin.get("final"))
-
-
 @sec("final snapshot")
 def _():
     n = clock_set("t-snap", 30)
@@ -407,7 +381,7 @@ def _():
     check("no X-ILab -> 403", req("GET", "/api/health", hdr=False)[0] == 403)
     check("Host evil.com -> 403", req("GET", "/api/health", host="evil.com")[0] == 403)
     check("Origin evil -> 403", req("GET", "/api/health", headers={"Origin": "http://evil.com"})[0] == 403)
-    check("good Origin ok", req("GET", "/api/health", headers={"Origin": "http://127.0.0.1:8765"})[0] == 200)
+    check("good Origin ok", req("GET", "/api/health", headers={"Origin": f"http://127.0.0.1:{PORT}"})[0] == 200)
     n = LEAK
     if n:
         mpath = os.path.join(DATA, "sets", n, "manifest.json")
@@ -423,16 +397,50 @@ def _():
         if mb is not None: check("manifest.json untouched", open(mpath, "rb").read() == mb)
     out = subprocess.run(["ss", "-ltnH"], capture_output=True, text=True).stdout.splitlines()
     ls = [l.split()[3] for l in out if len(l.split()) > 3]
-    p8765 = [a for a in ls if a.endswith(":8765")]
-    check("8765 listens on 127.0.0.1 only", p8765 and all(a.startswith("127.0.0.1:") for a in p8765), p8765)
+    mine = [a for a in ls if a.endswith(f":{PORT}")]
+    check(f"{PORT} listens on 127.0.0.1 only", mine and all(a.startswith("127.0.0.1:") for a in mine), mine)
     check("nothing listens on 2375/8000", not [a for a in ls if a.endswith((":2375", ":8000"))], ls)
     for port in (2375, 8000):
         try: socket.create_connection(("127.0.0.1", port), timeout=2).close(); ok = False
         except OSError: ok = True
         check(f"connect 127.0.0.1:{port} fails", ok)
     for svc, port in (("backend", 8000), ("docker-proxy", 2375)):
-        r = subprocess.run(["docker", "compose", "port", svc, str(port)], cwd=ROOT, capture_output=True, text=True)
+        r = subprocess.run([os.path.join(ROOT, "tests/stack.sh"), "compose", "port", svc, str(port)], cwd=ROOT, capture_output=True, text=True)
         check(f"compose port {svc} {port} publishes nothing", r.stdout.strip() in ("", ":0"), r.stdout + r.stderr)
+
+
+@sec("honest clock")
+def _():
+    import threading
+    A, B, C = clock_set("t-clk-a", 1), clock_set("t-clk-b", 1), clock_set("t-clk-c", 1, slow=True)
+    s, sub = jreq("POST", f"/api/sets/{A}/submit")
+    check("A: early Submit is in time", s == 200 and not sub["results"]["test_"]["after_time"], sub)
+    time.sleep(5)
+    s, fin = jreq("POST", f"/api/sets/{A}/end"); final = fin.get("final") or {}
+    ev = [e[1] for e in sess(A)["events"]]
+    check("A: End logs 'end' without suffix", "end" in ev and "end (after time)" not in ev, ev)
+    check("A: final on time, at ~ close minute", final and all(not g["after_time"] and g["at"] <= 0.2 for g in final.values()), final)
+    l1 = jreq("GET", f"/api/sets/{A}/state")[1]["left_s"]; time.sleep(3)
+    check("A: left_s frozen after End", jreq("GET", f"/api/sets/{A}/state")[1]["left_s"] == l1, l1)
+    s, sub = jreq("POST", f"/api/sets/{A}/submit")
+    check("A: Submit after End is after time", sub["results"]["test_"]["after_time"] and "(after time)" in sess(A)["events"][-1][1], sess(A)["events"][-1])
+    out = []
+    ts = [threading.Thread(target=lambda: out.append(req("POST", f"/api/sets/{B}/end")[0])) for _ in range(2)]
+    [t.start() for t in ts]; [t.join() for t in ts]
+    check("B: two parallel Ends both 200, one close event", out == [200, 200] and len(closes(B)) == 1, (out, closes(B)))
+    th = threading.Thread(target=lambda: out.append(("sub", jreq("POST", f"/api/sets/{C}/submit")[0]))); th.start(); time.sleep(1)
+    s, fin = jreq("POST", f"/api/sets/{C}/end"); th.join()
+    res = json.load(open(os.path.join(DATA, "sets", C, "results.json")))
+    check("C: End during Submit waits and writes final", s == 200 and fin.get("final") and not res["test_"]["after_time"], (s, res))
+    if not (D and E): raise RuntimeError("deadline sets D/E were not started")
+    time.sleep(max(0, DE_START + 70 - time.time()))   # 10 s past their deadline; the earlier sections used most of it
+    req("PUT", f"/api/sets/{E}/files/main.py", "print('later edit')\n")  # ... and after the deadline
+    s, fin = jreq("POST", f"/api/sets/{D}/end")
+    d = sess(D)
+    check("D: close after deadline = 'time up' at 1.0, ended = deadline", any(e == [1.0, "time up"] for e in d["events"]) and abs(d["ended"] - (d["start"] + 60)) < 0.01, d["events"])
+    check("D: no edits -> final on time", all(not g["after_time"] for g in (fin.get("final") or {"x": {"after_time": True}}).values()), fin.get("final"))
+    s, fin = jreq("POST", f"/api/sets/{E}/end")
+    check("E: edit after deadline -> final after_time", fin.get("final") and all(g["after_time"] for g in fin["final"].values()), fin.get("final"))
 
 
 print(f"\n{'ALL PASSED' if not fails else f'{fails} FAILED'}")

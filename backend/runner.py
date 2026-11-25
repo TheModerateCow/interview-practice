@@ -26,6 +26,9 @@ CASE_TL = 5      # seconds per Run case
 BOOT = ('mkdir -p /tmp/w /tmp/out && cd /tmp/w && head -c "$ILAB_N" | tar xz && '
         'timeout -k 2 "$ILAB_LIMIT" sh /tmp/w/_harness.sh >/tmp/out/_harness.log 2>&1; '
         'echo $? >/tmp/out/_rc; cd /tmp/out && tar cz .')
+# One stack's runners and Go cache, kept apart from any other stack on the same Docker daemon (the test stack sets these).
+INSTANCE = os.environ.get("ILAB_INSTANCE", "1")
+GO_CACHE = os.environ.get("ILAB_GO_CACHE", "ilab-go-cache")
 _sem = threading.Semaphore(int(os.environ.get("ILAB_PARALLEL", "3")))
 
 
@@ -68,7 +71,7 @@ def pull(img):
 
 def sweep():
     """Remove runner containers left over from a crash."""
-    for c in api("GET", '/containers/json?all=1&filters={"label":["ilab.runner=1"]}') or []:
+    for c in api("GET", '/containers/json?all=1&filters={"label":["ilab.runner=%s"]}' % INSTANCE) or []:
         try: api("DELETE", f"/containers/{c['Id']}?force=1")
         except DockerError: pass
 
@@ -124,11 +127,11 @@ def container(lang, files, harness, limit, env=()):
           "NanoCpus": 2_000_000_000, "PidsLimit": 256, "CapDrop": ["ALL"], "SecurityOpt": ["no-new-privileges"]}
     envs = BASE_ENV + [f"ILAB_N={len(payload)}", f"ILAB_LIMIT={int(limit)}"] + list(env)
     if lang == "go":
-        hc["Mounts"] = [{"Type": "volume", "Source": "ilab-go-cache", "Target": "/gocache"}]
+        hc["Mounts"] = [{"Type": "volume", "Source": GO_CACHE, "Target": "/gocache"}]
         envs += GO_ENV
     body = {"Image": IMAGES[lang], "Entrypoint": ["sh", "-c", BOOT], "Cmd": [], "Env": envs, "WorkingDir": "/tmp",
             "OpenStdin": True, "StdinOnce": True, "AttachStdin": True, "AttachStdout": True, "AttachStderr": True,
-            "Tty": False, "Labels": {"ilab.runner": "1"}, "HostConfig": hc}
+            "Tty": False, "Labels": {"ilab.runner": INSTANCE}, "HostConfig": hc}
     with _sem:
         try:
             cid = api("POST", "/containers/create", body)["Id"]
