@@ -1,0 +1,37 @@
+[
+ {
+  "file": "quota/window.py",
+  "old": "unused = max(p.limit - prev_used, 0)",
+  "new": "unused = p.limit - prev_used",
+  "label": "rollover goes negative after a burst window, so the next window gets less than the plan's limit",
+  "k": "test_p1_"
+ },
+ {
+  "file": "quota/store.py",
+  "old": " if e.allowed)",
+  "new": ")",
+  "label": "units_between counts denied requests as spent",
+  "k": "test_p1_"
+ },
+ {
+  "file": "quota/store.py",
+  "old": "self._keys[id] = Key(k.id, k.org, plan, k.revoked)",
+  "new": "self._keys[id] = Key(k.id, k.org, plan)",
+  "label": "set_plan rebuilds the key and drops revoked",
+  "k": "test_p1_"
+ },
+ {
+  "file": "quota/service.py",
+  "old": "        if end <= start:\n            raise BadRange\n        out: list[UsageLine] = []\n        for id in self._store.keys_of(org):\n            events = self._store.events_between(id, start, end)\n            if not events:\n                continue\n            allowed = [e for e in events if e.allowed]\n            out.append(\n                UsageLine(\n                    id,\n                    self._store.key(id).plan,\n                    len(allowed),\n                    sum(e.cost for e in allowed),\n                    len(events) - len(allowed),\n                )\n            )\n        out.sort(key=lambda l: (-l.units, l.key_id))\n        return out\n\n",
+  "new": "        raise NotImplementedError\n\n",
+  "label": "feature removed: report",
+  "k": "test_p2_"
+ },
+ {
+  "file": "quota/store.py",
+  "old": "        times = self._times.get(id, [])\n        lo = bisect.bisect_left(times, start)\n        hi = bisect.bisect_left(times, end)\n        return self._events.get(id, [])[lo:hi]\n",
+  "new": "        return [e for e in self._events.get(id, []) if start <= e.at < end]\n",
+  "label": "slow: events_between filters the key's whole log on every call",
+  "k": "test_p3_"
+ }
+]

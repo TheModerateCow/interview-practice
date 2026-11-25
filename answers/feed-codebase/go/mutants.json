@@ -1,0 +1,18 @@
+[
+ {"file":"utils.go","old":"math.Log2(float64(1+likes))","new":"math.Log(float64(1+likes))","label":"likes weighted with a natural log","k":"test_p1_"},
+ {"file":"utils.go","old":"return idA < idB","new":"return idA > idB","label":"equal scores tie on highest id","k":"test_p1_"},
+ {"file":"utils.go","old":"const FeedWindow = 7 * 24 * 60 * 60","new":"const FeedWindow = 6 * 24 * 60 * 60","label":"feed window is 6 days","k":"test_p1_"},
+ {"file":"storage.go","old":"posts[i].CreatedAt >= start","new":"posts[i].CreatedAt > start","label":"window start excludes its boundary","k":"test_p1_"},
+ {"file":"storage.go","old":"posts[i].CreatedAt > end","new":"posts[i].CreatedAt >= end","label":"posts published at now are left out","k":"test_p1_"},
+ {"file":"models.go","old":"return m.until == nil || now < *m.until","new":"return m.until == nil || now <= *m.until","label":"mute still active at its end second","k":"test_p1_"},
+ {"file":"service.go","old":"\tauthors[viewer] = true\n","new":"","label":"home feed drops the viewer's own posts","k":"test_p1_"},
+ {"file":"service.go","old":"return ranksBefore(cs, cid, ranked[i].score, ranked[i].post.ID)","new":"return !ranksBefore(ranked[i].score, ranked[i].post.ID, cs, cid)","label":"next page repeats the cursor's post","k":"test_p1_"},
+ {"file":"service.go","old":"\tif len(ranked) > limit {\n\t\tlast","new":"\tif len(ranked) >= limit {\n\t\tlast","label":"exactly-full last page still returns a cursor","k":"test_p1_"},
+ {"file":"service.go","old":"\t\tif m.active(now) {\n\t\t\tdelete(out, m.target)\n\t\t}\n","new":"\t\tdelete(out, m.target)\n","label":"expired mutes still hide posts","k":"test_p1_"},
+ {"file":"storage.go","old":"\tif _, dup := st.posts[p.ID]; dup {\n\t\treturn fmt.Errorf(\"%w: %s\", ErrDuplicatePost, p.ID)\n\t}\n","new":"","label":"republishing an id replaces the post","k":"test_p1_"},
+ {"file":"service.go","old":"start := max(since+1, now-FeedWindow)","new":"start := max(since, now-FeedWindow)","label":"CatchUp includes posts published exactly at since","k":"test_p2_"},
+ {"file":"service.go","old":"start := max(since+1, now-FeedWindow)","new":"start := since + 1","label":"CatchUp ignores the feed window","k":"test_p2_"},
+ {"file":"service.go","old":"perAuthor[r.post.Author] < CatchUpPerAuthor","new":"perAuthor[r.post.Author] <= CatchUpPerAuthor","label":"CatchUp allows three posts per account","k":"test_p2_"},
+ {"file":"service.go","old":"for _, r := range s.ranked(s.sources(viewer, now), start, now) {","new":"own := s.sources(viewer, now)\n\town[viewer] = true\n\tfor _, r := range s.ranked(own, start, now) {","label":"CatchUp includes the viewer's own posts","k":"test_p2_"},
+ {"file":"service.go","old":"\t\t\tif len(picked) == limit {\n\t\t\t\tbreak\n\t\t\t}\n","new":"","label":"CatchUp ignores limit","k":"test_p2_"}
+]

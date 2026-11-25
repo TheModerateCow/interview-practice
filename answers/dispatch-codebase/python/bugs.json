@@ -1,0 +1,37 @@
+[
+ {
+  "file": "dispatch/geo.py",
+  "old": "return (metres + COURIER_SPEED - 1) // COURIER_SPEED",
+  "new": "return metres // COURIER_SPEED",
+  "label": "travel_minutes rounds down, so every ETA leg can be a minute early",
+  "k": "test_p1_"
+ },
+ {
+  "file": "dispatch/models.py",
+  "old": "return self in (State.DELIVERED, State.CANCELLED)",
+  "new": "return self is State.DELIVERED",
+  "label": "CANCELLED is not terminal: cancelling never frees the courier",
+  "k": "test_p1_"
+ },
+ {
+  "file": "dispatch/store.py",
+  "old": "        if o.id in self._orders:\n            raise DuplicateOrder(\"order already exists\")\n        self._orders[o.id] = o",
+  "new": "        self._orders[o.id] = o",
+  "label": "add_order overwrites an existing order on a retried checkout",
+  "k": "test_p1_"
+ },
+ {
+  "file": "dispatch/batch.py",
+  "old": "    due = [o for o in d.store.pending_orders() if o.ready_at - now <= DISPATCH_WINDOW]\n    due.sort(key=lambda o: (o.ready_at, o.id))\n    out: list[Assignment] = []\n    for o in due:\n        c = d.nearest_courier(o.restaurant)\n        if c is not None:\n            d.assign_to(o, c)\n            out.append(Assignment(o.id, c.id))\n    return out",
+  "new": "    raise NotImplementedError",
+  "label": "feature removed: dispatch_pending",
+  "k": "test_p2_"
+ },
+ {
+  "file": "dispatch/service.py",
+  "old": "if c.active >= c.capacity:",
+  "new": "if len(self.store.active_orders_of(c.id)) >= c.capacity:",
+  "label": "slow: nearest_courier counts each courier's load by scanning every order",
+  "k": "test_p3_"
+ }
+]

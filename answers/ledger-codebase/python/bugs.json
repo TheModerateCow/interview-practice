@@ -1,0 +1,37 @@
+[
+ {
+  "file": "ledger/store.py",
+  "old": "        return list(self.lines.get(b, []))\n",
+  "new": "        return self.lines.setdefault(b, [])\n",
+  "label": "history hands out the store's own list; statement reverses it in place",
+  "k": "test_p1_"
+ },
+ {
+  "file": "ledger/store.py",
+  "old": "        self.payouts[payout_id] = nxt\n",
+  "new": "        p = nxt\n",
+  "label": "update_payout never stores the updated copy, so webhook retries re-post",
+  "k": "test_p1_"
+ },
+ {
+  "file": "ledger/journal.py",
+  "old": "        sums: dict[str, int] = {}\n        for p in self.postings:\n            if not p.account or p.amount == 0:\n                raise Invalid(\"empty account or zero amount\")\n            if not valid_currency(p.currency):\n                raise UnknownCurrency(repr(p.currency))\n            sums[p.currency] = sums.get(p.currency, 0) + p.amount\n        for p in self.postings:\n            if sums[p.currency] != 0:\n                raise Unbalanced(f\"entry does not balance: off by {format_amount(sums[p.currency], p.currency)}\")\n",
+  "new": "        total = 0\n        for p in self.postings:\n            if not p.account or p.amount == 0:\n                raise Invalid(\"empty account or zero amount\")\n            if not valid_currency(p.currency):\n                raise UnknownCurrency(repr(p.currency))\n            total += p.amount\n        if total != 0:\n            raise Unbalanced(f\"entry does not balance: off by {total} minor units\")\n",
+  "label": "validate nets amounts across currencies instead of per currency",
+  "k": "test_p1_"
+ },
+ {
+  "file": "ledger/settlement.py",
+  "old": "        pricing = self.merchants.get(merchant)\n        if pricing is None:\n            raise UnknownMerchant(repr(merchant))\n        if ts < self.store.head_ts:\n            raise Backdated(f\"settle at {ts}\")\n        due = self.charges.due(merchant, ts)\n        groups: dict[str, list] = {}\n        for c in due:\n            groups.setdefault(c.currency, []).append(c)\n        out: list[Batch] = []\n        for cur in sorted(groups):\n            self.batch_seq += 1\n            b = Batch(f\"b{self.batch_seq}\", merchant, cur, ts)\n            for c in groups[cur]:\n                b.charges.append(c.id)\n                b.gross += c.amount - c.refunded\n                b.fees += pricing.fee(c.amount, cur)\n                c.batch = b.id\n            b.net = b.gross - b.fees\n            ps = [p for p in (\n                Posting(pending_account(merchant), cur, -b.gross),\n                Posting(available_account(merchant), cur, b.net),\n                Posting(FEES_ACCOUNT, cur, b.fees),\n            ) if p.amount != 0]\n            if ps:\n                self.post(Entry(ts, ps, \"settlement \" + b.id))\n            out.append(b)\n        return out\n",
+  "new": "        raise NotImplementedError\n",
+  "label": "Settle removed (phase 2 feature)",
+  "k": "test_p2_"
+ },
+ {
+  "file": "ledger/charges.py",
+  "old": "    def add(self, c: Charge) -> None:\n        c.seq = len(self.by_id)\n        self.by_id[c.id] = c\n        heapq.heappush(self.pending.setdefault(c.merchant, []), (c.available_on, c.seq, c))\n\n    def get(self, charge_id: str) -> Charge | None:\n        return self.by_id.get(charge_id)\n\n    def due(self, merchant: str, ts: int) -> list[Charge]:\n        \"\"\"The merchant's unsettled charges whose funds are available at ts, earliest\n        available_on first (capture order breaks ties). Takes them off the pending set.\"\"\"\n        q = self.pending.get(merchant)\n        out: list[Charge] = []\n        while q and q[0][0] <= ts:\n            out.append(heapq.heappop(q)[2])\n        return out\n",
+  "new": "    def add(self, c: Charge) -> None:\n        c.seq = len(self.by_id)\n        self.by_id[c.id] = c\n        self.pending.setdefault(c.merchant, []).append(c)\n\n    def get(self, charge_id: str) -> Charge | None:\n        return self.by_id.get(charge_id)\n\n    def due(self, merchant: str, ts: int) -> list[Charge]:\n        \"\"\"The merchant's unsettled charges whose funds are available at ts, earliest\n        available_on first (capture order breaks ties). A charge counts as settled once\n        its batch is set.\"\"\"\n        out = [c for c in self.pending.get(merchant, []) if c.batch == \"\" and c.available_on <= ts]\n        out.sort(key=lambda c: (c.available_on, c.seq))\n        return out\n",
+  "label": "due scans every charge the merchant ever had, then sorts (phase 3 bottleneck)",
+  "k": "test_p3_"
+ }
+]

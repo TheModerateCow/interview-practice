@@ -1,0 +1,14 @@
+{
+ "run_entry": "main.py",
+ "testcases": [
+  {
+   "stdin": "warehouse east\nreceive 10 east A-01 LAMP 6\nreserve 20 o1 east LAMP 4 600\ncommit 30 o1\nreceive 40 east A-02 LAMP 10\nreserve 50 o2 east LAMP 8 600\nrelease 700 o2\navailable 700 east LAMP\ncommit 710 o2\nreserve 720 o3 east LAMP 9 600\ncommit 730 o3\nbin east A-02 LAMP\nonhand east LAMP\n",
+   "expected": "ok\nok\nok\nok\nok\nok\nok\n12\nerror: reservation is not active: expired\nok\nok\n3\n3"
+  },
+  {
+   "stdin": "warehouse east\nwarehouse west\nreceive 0 east A-01 BOOT 4\nreceive 0 west W-01 BOOT 45\nrule east BOOT 10 30 1\nrule west BOOT 15 60 0\nrule east SOCK 20 100 25\nreserve 5 o1 east BOOT 2 600\nreplenish 10 east\ntransfer 20 t1 west east BOOT 5\nreplenish 30 east\nreplenish 605 east\narrive 610 t1 A-02\nreplenish 620 west\n",
+   "expected": "ok\nok\nok\nok\nok\nok\nok\nok\nBOOT position=2 qty=28 from=west\nSOCK position=0 qty=100 from=supplier\nok\nBOOT position=7 qty=23 from=west\nSOCK position=0 qty=100 from=supplier\nBOOT position=9 qty=21 from=west\nSOCK position=0 qty=100 from=supplier\nok\nnothing to replenish"
+  }
+ ],
+ "your_tests": "test_*.py"
+}

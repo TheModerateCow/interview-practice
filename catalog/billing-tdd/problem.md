@@ -37,7 +37,7 @@ The four errors are `{{unknown_plan}}`, `{{unknown_cycle}}`, `{{invalid_seats}}`
 | `"team"` | 2,499 (24.99) | 24,990 (249.90) |
 | `"business"` | 5,999 (59.99) | 59,990 (599.90) |
 
-A period that starts on day `d` runs from `d` to `d + 29` (monthly) or `d + 359` (annual); `{{period_end}}()` is `d + 30` or `d + 360`. The cycle never changes after `New`.
+A period that starts on day `d` runs from `d` to `d + 29` (monthly) or `d + 359` (annual); `{{period_end}}()` is `d + 30` or `d + 360`. The cycle never changes after `{{start}}`.
 
 **Validation.** `seats` must be 1 to 500 inclusive. `{{start}}` checks in this order and returns the first error: cycle (`{{unknown_cycle}}`), plan (`{{unknown_plan}}`), seats (`{{invalid_seats}}`). `{{change}}` checks in this order: `day` must be in the current period, so period start ≤ `day` < `{{period_end}}()` (`{{outside_period}}`); then plan; then seats. A `{{change}}` that fails charges 0 and changes nothing.
 

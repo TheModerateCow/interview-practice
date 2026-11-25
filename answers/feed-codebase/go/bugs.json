@@ -1,0 +1,37 @@
+[
+ {
+  "file": "storage.go",
+  "old": "\tif st.likes[k] {\n\t\treturn false, nil\n\t}\n",
+  "new": "",
+  "label": "addLike counts a retried like again: the already-liked check is missing",
+  "k": "test_p1_"
+ },
+ {
+  "file": "utils.go",
+  "old": "strconv.FormatFloat(score, 'g', -1, 64)",
+  "new": "strconv.FormatFloat(score, 'f', 4, 64)",
+  "label": "cursor stores the score to 4 decimals, so pages skip or repeat posts a few seconds apart",
+  "k": "test_p1_"
+ },
+ {
+  "file": "models.go",
+  "old": "math.Round(hours*60*60)",
+  "new": "math.Round(hours*60)",
+  "label": "timed mute converts hours to seconds as minutes: a 24-hour mute lasts 24 minutes",
+  "k": "test_p1_"
+ },
+ {
+  "file": "service.go",
+  "old": "\tif limit < 1 {\n\t\treturn nil, ErrBadLimit\n\t}\n\tif err := s.store.requireUser(viewer); err != nil {\n\t\treturn nil, err\n\t}\n\tstart := max(since+1, now-FeedWindow)\n\tpicked := []string{}\n\tperAuthor := map[string]int{}\n\tfor _, r := range s.ranked(s.sources(viewer, now), start, now) {\n\t\tif perAuthor[r.post.Author] < CatchUpPerAuthor {\n\t\t\tperAuthor[r.post.Author]++\n\t\t\tpicked = append(picked, r.post.ID)\n\t\t\tif len(picked) == limit {\n\t\t\t\tbreak\n\t\t\t}\n\t\t}\n\t}\n\treturn picked, nil\n",
+  "new": "\tpanic(\"not implemented\")\n",
+  "label": "feature removed: CatchUp",
+  "k": "test_p2_"
+ },
+ {
+  "file": "storage.go",
+  "old": "\tposts := st.byAuthor[author]\n\tlo := sort.Search(len(posts), func(i int) bool { return posts[i].CreatedAt >= start })\n\thi := sort.Search(len(posts), func(i int) bool { return posts[i].CreatedAt > end })\n\treturn posts[lo:hi]\n",
+  "new": "\tvar out []*Post\n\tfor _, p := range st.posts {\n\t\tif p.Author == author && p.CreatedAt >= start && p.CreatedAt <= end {\n\t\t\tout = append(out, p)\n\t\t}\n\t}\n\tsort.Slice(out, func(i, j int) bool {\n\t\tif out[i].CreatedAt != out[j].CreatedAt {\n\t\t\treturn out[i].CreatedAt < out[j].CreatedAt\n\t\t}\n\t\treturn out[i].ID < out[j].ID\n\t})\n\treturn out\n",
+  "label": "slow: postsBy scans every post in the store instead of the per-author index",
+  "k": "test_p3_"
+ }
+]

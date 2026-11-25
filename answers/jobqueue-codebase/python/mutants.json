@@ -1,0 +1,142 @@
+[
+ {
+  "file": "jobqueue/lifecycle.py",
+  "old": "for _ in range(1, attempts):",
+  "new": "for _ in range(0, attempts):",
+  "label": "backoff exponent off by one",
+  "k": "test_p1_"
+ },
+ {
+  "file": "jobqueue/lifecycle.py",
+  "old": "return min(d, max_delay)",
+  "new": "return d",
+  "label": "backoff not capped",
+  "k": "test_p1_"
+ },
+ {
+  "file": "jobqueue/lifecycle.py",
+  "old": "if job.attempts >= job.max_attempts:\n        dead_letter(job, job.lease_until)",
+  "new": "if False:\n        dead_letter(job, job.lease_until)",
+  "label": "expired leases never dead-letter",
+  "k": "test_p1_"
+ },
+ {
+  "file": "jobqueue/lifecycle.py",
+  "old": "if job.attempts >= job.max_attempts:\n        dead_letter(job, now)",
+  "new": "if job.attempts > job.max_attempts:\n        dead_letter(job, now)",
+  "label": "one attempt too many before the DLQ",
+  "k": "test_p1_"
+ },
+ {
+  "file": "jobqueue/lifecycle.py",
+  "old": "store.make_ready(job, job.lease_until)",
+  "new": "store.make_ready(job, store.clock)",
+  "label": "reclaimed job ready from sweep time, not its deadline",
+  "k": "test_p2_"
+ },
+ {
+  "file": "jobqueue/lifecycle.py",
+  "old": "store.make_ready(job, job.available_at)",
+  "new": "store.make_ready(job, now)",
+  "label": "scheduled job ready from sweep time, not its run time",
+  "k": "test_p2_"
+ },
+ {
+  "file": "jobqueue/service.py",
+  "old": " or job.lease_token != token",
+  "new": "",
+  "label": "stale lease token accepted",
+  "k": "test_p1_"
+ },
+ {
+  "file": "jobqueue/service.py",
+  "old": "if run_at is not None and run_at > now:",
+  "new": "if run_at is not None:",
+  "label": "a run_at in the past still goes through the timers",
+  "k": "test_p1_"
+ },
+ {
+  "file": "jobqueue/service.py",
+  "old": "if run_at is not None and run_at > now:",
+  "new": "if False:",
+  "label": "run_at ignored",
+  "k": "test_p1_"
+ },
+ {
+  "file": "jobqueue/service.py",
+  "old": "self._store.set_deadline(self._held(job_id, token, now), now + seconds)",
+  "new": "job = self._held(job_id, token, now)\n        self._store.set_deadline(job, job.lease_until + seconds)",
+  "label": "extend adds to the old deadline",
+  "k": "test_p1_"
+ },
+ {
+  "file": "jobqueue/store.py",
+  "old": "now < k[1]",
+  "new": "now <= k[1]",
+  "label": "idempotency window one second too long",
+  "k": "test_p1_"
+ },
+ {
+  "file": "jobqueue/ready.py",
+  "old": "(-job.priority, job.ready_at, job.seq)",
+  "new": "(job.priority, job.ready_at, job.seq)",
+  "label": "priority reversed",
+  "k": "test_p1_"
+ },
+ {
+  "file": "jobqueue/ready.py",
+  "old": "(-job.priority, job.ready_at, job.seq)",
+  "new": "(-job.priority, 0, job.seq)",
+  "label": "ready time ignored in lease order",
+  "k": "test_p1_"
+ },
+ {
+  "file": "jobqueue/stats.py",
+  "old": "    lifecycle.advance(store, now)\n    ready =",
+  "new": "    ready =",
+  "label": "stats doesn't move the clock",
+  "k": "test_p2_"
+ },
+ {
+  "file": "jobqueue/stats.py",
+  "old": "min(oldest, j.ready_at)",
+  "new": "min(oldest, j.enqueued_at)",
+  "label": "age from enqueue time",
+  "k": "test_p2_"
+ },
+ {
+  "file": "jobqueue/stats.py",
+  "old": "if j.attempts == 0:",
+  "new": "if j.attempts >= 0:",
+  "label": "retrying counted as scheduled",
+  "k": "test_p2_"
+ },
+ {
+  "file": "jobqueue/stats.py",
+  "old": "nxt = j.available_at if nxt is None else min(nxt, j.available_at)",
+  "new": "if j.attempts == 0:\n                nxt = j.available_at if nxt is None else min(nxt, j.available_at)",
+  "label": "nextRunAt ignores retries",
+  "k": "test_p2_"
+ },
+ {
+  "file": "jobqueue/stats.py",
+  "old": "dead += 1",
+  "new": "pass",
+  "label": "dead not counted",
+  "k": "test_p2_"
+ },
+ {
+  "file": "jobqueue/stats.py",
+  "old": "store.completed_in(queue),",
+  "new": "0,",
+  "label": "completed not reported",
+  "k": "test_p2_"
+ },
+ {
+  "file": "jobqueue/stats.py",
+  "old": "0 if oldest is None else now - oldest",
+  "new": "0 if oldest is None else now - oldest - 1",
+  "label": "age off by one",
+  "k": "test_p2_"
+ }
+]

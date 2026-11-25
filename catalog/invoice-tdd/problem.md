@@ -28,7 +28,7 @@ The class is `{{Invoice}}`. All money is an integer number of **cents**. A day i
 | `{{balance}}()` | `{{total}}()` less every payment and credit note so far. |
 | `{{amount_due}}({{day}})` | What the customer owes on `{{day}}`: `{{balance}}()` plus any late fee. |
 
-**Errors.** Each failure is its own kind: `{{invalid_terms}}` (unknown payment terms), `{{invalid_category}}` (unknown tax category), `{{invalid_quantity}}` (quantity below 1), `{{invalid_price}}` (negative unit price), `{{invalid_amount}}` (a payment or credit note below 1 or above the balance) and `{{invalid_day}}` (a day before the issue day). A line with several faults fails with the first of `{{invalid_category}}`, `{{invalid_quantity}}`, `{{invalid_price}}` in that order. In Python each kind is a subclass of `ValueError`.
+**Errors.** Each failure is its own kind: `{{invalid_terms}}` (unknown payment terms), `{{invalid_category}}` (unknown tax category), `{{invalid_quantity}}` (quantity below 1), `{{invalid_price}}` (negative unit price), `{{invalid_amount}}` (a payment or credit note below 1 or above the balance) and `{{invalid_day}}` (a day before the issue day). A line with several faults fails with the first of `{{invalid_category}}`, `{{invalid_quantity}}`, `{{invalid_price}}` in that order.
 
 ## Rules
 
