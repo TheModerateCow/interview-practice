@@ -7,6 +7,7 @@ class InvalidAmountError(Exception): pass
 class InsufficientFundsError(Exception): pass
 class InvalidWindowError(Exception): pass
 class WalletFrozenError(Exception): pass
+class InvalidOwnerError(Exception): pass
 
 
 @dataclass
@@ -40,6 +41,7 @@ def grid(n: int) -> List[List[int]]:
 
 class Wallet:
     def __init__(self, owner: str):
+        if owner == "": raise InvalidOwnerError()
         self._owner, self._bal, self._hist, self._frozen = owner, 0, [], False
 
     def _check(self, cents):

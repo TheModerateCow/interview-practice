@@ -65,7 +65,7 @@ def signatures(api):
         o.append("}")
     for c, cd in api.get("classes", {}).items():
         o.append(f"public class {c} {{")
-        o.append(f"    public {c}({params(cd['init'])});")
+        o.append(f"    public {c}({params(cd['init'])});" + ("   // throws on invalid input" if cd.get("init_errors") else ""))
         for m, d in cd["methods"].items():
             lv = f"   // level {d['level']}" if d.get("level", 1) > 1 else ""
             o.append(f"    public {jtype(d['returns']) if d['returns'] else 'void'} {camel(m)}({params(d['params'])});{lv}")

@@ -6,7 +6,7 @@
     "is_peak": {"params": [["time", "int"]], "returns": "bool"},
     "journey_fare": {"params": [["zones", "int"], ["peak", "bool"], ["concession", "string"]], "returns": "int", "errors": true}
   },
-  "classes": {"FareCard": {"init": [["concession", "string"]], "methods": {
+  "classes": {"FareCard": {"init": [["concession", "string"]], "init_errors": true, "methods": {
     "ride": {"params": [["time", "int"], ["from_zone", "int"], ["to_zone", "int"]], "returns": "int", "errors": true}}}},
   "errors": ["unknown_concession", "invalid_time", "invalid_zone"]
 }

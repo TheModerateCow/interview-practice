@@ -12,6 +12,7 @@ var (
 	ErrInsufficientFunds = errors.New("insufficient funds")
 	ErrInvalidWindow     = errors.New("invalid window")
 	ErrWalletFrozen      = errors.New("wallet frozen")
+	ErrInvalidOwner      = errors.New("invalid owner")
 )
 
 type Entry struct {
@@ -75,7 +76,12 @@ type Wallet struct {
 	frozen bool
 }
 
-func NewWallet(owner string) *Wallet { return &Wallet{owner: owner} }
+func NewWallet(owner string) (*Wallet, error) {
+	if owner == "" {
+		return nil, ErrInvalidOwner
+	}
+	return &Wallet{owner: owner}, nil
+}
 
 func (w *Wallet) check(cents int) error {
 	if w.frozen {

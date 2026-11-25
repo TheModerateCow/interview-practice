@@ -41,6 +41,9 @@ def _lower(n):
 def _params(sig): return ", ".join(f"{_lower(n)} {gtype(t)}" for n, t in sig["params"])
 
 
+def _ctor(c, d): return f"(*{c}, error)" if d.get("init_errors") else f"*{c}"
+
+
 def _recv(c): return f"({c[0].lower()} *{c})"
 
 
@@ -72,7 +75,7 @@ def signatures(api):
     for f, s in _funcs(api): parts.append(_decl(name("func", f), s))
     for c, d in api.get("classes", {}).items():
         init = {"params": d.get("init", [])}
-        parts.append(f"type {c} struct{{ /* your fields */ }}\n\nfunc New{c}({_params(init)}) *{c}")
+        parts.append(f"type {c} struct{{ /* your fields */ }}\n\nfunc New{c}({_params(init)}) {_ctor(c, d)}")
         ms = []
         for m, s in d["methods"].items():
             doc = f"// level {s['level']}\n" if s.get("level", 1) > 1 else ""
@@ -105,14 +108,25 @@ def _example(api, case):
     steps = case.get("steps") or [case]
     body, n, uses = [], 0, set()
     funcs, cls = api.get("functions", {}), None
+
+    def errcheck(n, err, ok):
+        if err is True: return [f"\tif err{n} == nil {{", f'\t\tt.Fatal("expected an error")', "\t}"]
+        if err:
+            uses.add("errors")
+            return [f"\tif !errors.Is(err{n}, {name('error', err)}) {{", f'\t\tt.Fatalf("expected {name("error", err)}, got %v", err{n})', "\t}"]
+        return [f"\tif err{n} != nil {{", f"\t\tt.Fatal(err{n})", "\t}"]
     for s in steps:
+        n += 1
         if "new" in s:
             cls = s["new"]
-            init = {"params": api["classes"][cls].get("init", [])}
-            args = ", ".join(_rlit(api, a, t) for a, (_, t) in zip(s["args"], init["params"]))
-            body.append(f"\t{cls[0].lower()} := New{cls}({args})")
+            cd = api["classes"][cls]
+            args = ", ".join(_rlit(api, a, t) for a, (_, t) in zip(s["args"], cd.get("init", [])))
+            if cd.get("init_errors"):
+                v = "_" if s.get("error") else cls[0].lower()
+                body.append(f"\t{v}, err{n} := New{cls}({args})")
+                body += errcheck(n, s.get("error"), True)
+            else: body.append(f"\t{cls[0].lower()} := New{cls}({args})")
             continue
-        n += 1
         c = s["call"]
         sig = funcs[c] if c in funcs else api["classes"][cls]["methods"][c]
         args = ", ".join(_rlit(api, a, t) for a, (_, t) in zip(s["args"], sig["params"]))
@@ -127,11 +141,7 @@ def _example(api, case):
         if not lhs: body.append("\t" + call); continue
         body.append(f"\t{', '.join(lhs)} := {call}" if lhs != ["_"] else f"\t{call}")
         if sig.get("errors"):
-            if err is True: body += [f"\tif err{n} == nil {{", f'\t\tt.Fatal("expected an error")', "\t}"]
-            elif err:
-                uses.add("errors")
-                body += [f"\tif !errors.Is(err{n}, {name('error', err)}) {{", f'\t\tt.Fatalf("expected {name("error", err)}, got %v", err{n})', "\t}"]
-            else: body += [f"\tif err{n} != nil {{", f"\t\tt.Fatal(err{n})", "\t}"]
+            body += errcheck(n, err, True)
         if "expect" in s and not err:
             rt = ret[9:-1] if opt else ret
             if opt and want is None: body += [f"\tif ok{n} {{", f'\t\tt.Fatalf("expected nothing, got %v", got{n})', "\t}"]; continue
@@ -152,7 +162,7 @@ def scaffold(api, example=None):
     for f, s in _funcs(api): parts.append(_decl(name("func", f), s) + " {\n" + stub[0] + "\n}")
     for c, d in api.get("classes", {}).items():
         init = {"params": d.get("init", [])}
-        parts.append(f"type {c} struct{{}}\n\nfunc New{c}({_params(init)}) *{c} {{\n{stub[0]}\n}}")
+        parts.append(f"type {c} struct{{}}\n\nfunc New{c}({_params(init)}) {_ctor(c, d)} {{\n{stub[0]}\n}}")
         for m, s in d["methods"].items():
             if s.get("level", 1) == 1: parts.append(_decl(name("method", m), s, _recv(c) + " ") + " {\n" + stub[0] + "\n}")
     head = f"package {mod}\n\n" + ('import "errors"\n\n' if api.get("errors") else "")

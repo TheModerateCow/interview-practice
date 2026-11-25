@@ -7,7 +7,10 @@ public class Wallet {
     private final List<String> hist = new ArrayList<>();
     private boolean frozen;
 
-    public Wallet(String owner) { this.owner = owner; }
+    public Wallet(String owner) {
+        if (owner.isEmpty()) throw new InvalidOwnerException();
+        this.owner = owner;
+    }
 
     private void check(long cents) {
         if (frozen) throw new WalletFrozenException();

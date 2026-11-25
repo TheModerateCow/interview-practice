@@ -17,6 +17,10 @@ class WalletFrozenError(Exception):
     pass
 
 
+class InvalidOwnerError(Exception):
+    pass
+
+
 @dataclass
 class Entry:
     account_id: str

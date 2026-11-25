@@ -217,5 +217,29 @@
    "java": 3000,
    "python": 20000
   }
+ },
+ {
+  "name": "wallet_empty_owner",
+  "steps": [
+   {
+    "new": "Wallet",
+    "args": [
+     ""
+    ],
+    "error": "invalid_owner"
+   }
+  ]
+ },
+ {
+  "name": "wallet_any_error_owner",
+  "steps": [
+   {
+    "new": "Wallet",
+    "args": [
+     ""
+    ],
+    "error": true
+   }
+  ]
  }
 ]

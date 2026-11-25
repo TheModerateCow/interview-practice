@@ -77,6 +77,9 @@ Types and their mapping:
 
 `"errors": true` on a function/method: Go adds an `error` result (`(T, error)` or `error`); Java/Python throw. `optional`
 and `errors` can't be combined. `level` (Levelled only) says which level adds the method; starters stub level 1 only.
+`"init_errors": true` on a class: its constructor can fail. Go: `NewX(...) (*X, error)` (stub panics "not implemented");
+Java: the constructor throws (unchecked); Python: `__init__` raises. Error kinds work as for methods. Without it, Go's
+constructor is `NewX(...) *X`.
 Free functions have no `level`: they are all in the starter from the start (Go needs them at compile time).
 
 Any shared file (`problem.md`, `levels/<f>`) can be overridden per language by the same path under `<lang>/` — Codebase
@@ -99,6 +102,9 @@ rounds use this for their code-specific statement.
 - `expect`: the JSON form of the result, compared exactly (records as objects with neutral field names; Go `nil` slice =
   `[]`; optional absent = `null`). Missing `expect` = not checked. `error`: an error kind name, or `true` for any error;
   the call must fail and its result is not checked.
+- A `new` step may carry `error` (same forms) when the class has `init_errors`: construction must fail. A failed `new`
+  leaves no object, so a case whose `new` is expected to fail must end there (it has no later steps). A stub's
+  not-implemented error never counts as an expected error.
 - `data`: a file under `cases/` holding `{"args": [...]}` (and `expect` if not given inline).
 - `budget_ms`: per-language wall-time limit for that call (or the whole `steps` case), measured by the harness.
   Set from each language's reference time × 10, at least 500.

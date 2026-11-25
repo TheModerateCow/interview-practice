@@ -21,6 +21,7 @@ type hiddenAPIDef struct {
 	Records   map[string][][2]string `json:"records"`
 	Functions map[string]hiddenSig   `json:"functions"`
 	Classes   map[string]struct {
+		InitErrors bool `json:"init_errors"`
 		Methods map[string]hiddenSig `json:"methods"`
 	} `json:"classes"`
 }
@@ -363,8 +364,26 @@ func hiddenExec(c hiddenCase) string {
 			if msg != "" {
 				return text + ": " + msg
 			}
-			if len(outs) == 0 {
-				return text + ": constructor returns nothing"
+			wantN := 1
+			if hiddenAPI.Classes[s.New].InitErrors {
+				wantN = 2
+			}
+			if len(outs) != wantN {
+				return fmt.Sprintf("%s: expected %d results, got %d", text, wantN, len(outs))
+			}
+			if wantN == 2 {
+				var r hiddenResult
+				if e, _ := outs[1].Interface().(error); e != nil {
+					r.err = e
+				}
+				if m := hiddenCompare(s, nil, r, hiddenSig{Errors: true}); m != "" {
+					return text + ": " + m
+				}
+				if r.err != nil {
+					break // a failed new leaves no object: the case ends here
+				}
+			} else if len(s.Error) > 0 && string(s.Error) != "false" {
+				return text + ": the class does not declare init_errors in api.json"
 			}
 			obj, class = outs[0], s.New
 			continue

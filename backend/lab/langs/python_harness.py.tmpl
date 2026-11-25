@@ -98,6 +98,7 @@ def _hidden_label(c, i, st):
 
 def _hidden_got(kind, v):
     if kind == "err": return "error %s: %s" % (type(v).__name__, v)
+    if kind == "new": return "no error"
     return _hidden_cut(json.dumps(v, default=repr))
 
 

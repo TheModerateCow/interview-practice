@@ -1359,5 +1359,17 @@
     "expect": 250
    }
   ]
+ },
+ {
+  "name": "card_unknown_concession",
+  "steps": [
+   {
+    "new": "FareCard",
+    "args": [
+     "pensioner"
+    ],
+    "error": "unknown_concession"
+   }
+  ]
  }
 ]

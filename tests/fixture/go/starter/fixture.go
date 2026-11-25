@@ -12,6 +12,7 @@ var (
 	ErrInsufficientFunds = errors.New("insufficient funds")
 	ErrInvalidWindow     = errors.New("invalid window")
 	ErrWalletFrozen      = errors.New("wallet frozen")
+	ErrInvalidOwner      = errors.New("invalid owner")
 )
 
 func NetByAccount(entries []Entry) []Entry {
@@ -32,7 +33,7 @@ func Grid(n int) [][]int {
 
 type Wallet struct{}
 
-func NewWallet(owner string) *Wallet {
+func NewWallet(owner string) (*Wallet, error) {
 	panic("not implemented")
 }
 

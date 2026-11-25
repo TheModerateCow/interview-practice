@@ -252,11 +252,11 @@ public class HiddenTest {
             try { res = isNew ? ((Constructor<?>) ex).newInstance(vals) : ((Method) ex).invoke(target, vals); }
             catch (InvocationTargetException e) { thrown = e.getCause(); }
             long ms = (System.nanoTime() - t0) / 1_000_000;
-            if (isNew) {
+            Object err = exp.get("error");
+            if (isNew && err == null) {
                 if (thrown != null) throw new HiddenErr("got " + hiddenExc(thrown));
                 hiddenObj = res; hiddenObjCls = call; return;
-            }
-            Object err = exp.get("error"); boolean hasExp = exp.containsKey("expect");
+            } boolean hasExp = exp.containsKey("expect");
             String rt = (String) def.get("returns");
             Object norm = (thrown == null && rt != null) ? hiddenNorm(res, rt) : null;
             if (err != null) {
