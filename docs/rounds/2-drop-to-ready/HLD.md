@@ -319,3 +319,48 @@ Files more than one PR edits (each PR edits different functions or adds its own 
 - **Acceptance:**
   1. The words quoted in SKILL.md and README match the toast text on the test stack exactly.
   2. Following "Delivery" with two same-title sets in the app, a reader can tell which one to start.
+
+### PR 6 (added by the owner, 2026-11-25; parallel): Drag the panes to the size you want
+- **Example** (owner request):
+  1. Open any set and press Start (or open a started set).
+  2. Drag the border between the Files list and the editor to the right; drag the border between the editor and the
+     Problem pane to the left; drag the top border of the stdin/results area up.
+  3. Reload the page.
+  - **Expected:** each border follows the pointer, the editor reflows as you drag, and after the reload the three sizes
+    are as you left them.
+  - **Got today:** nothing moves. Files is fixed at 190 px, Problem at 280–400 px, the stdin/results area at 36% of the
+    editor column (`ui/style.css` `#panes`, `#bottom`).
+- **Files:** `ui/src/App.svelte` (the `#panes` markup only: three splitter elements), `ui/src/lib.js` (one small
+  `splitter` Svelte action plus a pure `clampSize` helper), `ui/style.css` (`#panes`, `#bottom`, a `.splitter` rule),
+  `tests/e2e.spec.mjs` (one new test).
+- **Design:**
+  - Sizes live in three CSS custom properties on `#round`: `--files-w` (default 190px), `--problem-w` (default 360px),
+    `--bottom-h` (default 36%). `#panes` becomes `grid-template-columns: var(--files-w) 6px minmax(0,1fr) 6px
+    var(--problem-w)`; `#bottom` takes `height: var(--bottom-h)`.
+  - Splitters: `<div class="splitter" role="separator" aria-orientation="vertical|horizontal" aria-label="Resize
+    Files|Problem|stdin and results" aria-valuenow aria-valuemin aria-valuemax tabindex="0">`, ids `#split-files`,
+    `#split-problem`, `#split-bottom`. Pointer drag with `setPointerCapture`; ArrowLeft/Right (Up/Down for the bottom)
+    move 16 px, Shift 64 px; Home/End to min/max; double-click resets to the default.
+  - Limits: Files 120–480 px; Problem 220 px – 60% of the window; editor column keeps at least 320 px; bottom 80 px –
+    70% of the editor column. `clampSize` applies them and also on window resize.
+  - Saved with the existing `LS` helper under `ilab.panes` as one JSON value; a bad or missing value falls back to the
+    defaults.
+  - Monaco already uses `automaticLayout: true`; while dragging, set `pointer-events: none` on the editor so the drag
+    isn't swallowed.
+  - The splitter is a 6 px hit area with a 1 px `var(--line)` rule in the middle; on hover and keyboard focus the rule
+    becomes `var(--line-strong)` and the cursor `col-resize` / `row-resize`; focus shows the standard `--focus` outline.
+    No new tokens, no shadows, no accent.
+  - At the narrow layout (`max-width: 900px`, panes stacked) the splitters are hidden and the saved sizes are ignored.
+- **Interface changes:** none. **Data changes:** none (browser storage only).
+- **Tests:** e2e "panes resize and remember": in a started round, drag each splitter with the mouse by a set distance,
+  check the pane's bounding box changed by about that distance; press ArrowRight on `#split-files` and check +16 px;
+  reload and check the three sizes held; double-click `#split-problem` resets it. A tiny assert-based check for
+  `clampSize` if it is kept pure (run with `node`).
+- **Acceptance:**
+  1. The example, at 1440×900, light and dark: each border drags smoothly, the editor and the problem text reflow,
+     nothing overlaps, no horizontal scroll.
+  2. The limits hold: Files can't go under 120 px, the editor never goes under 320 px, the bottom area can't cover the
+     editor.
+  3. Keyboard: Tab reaches each splitter, the arrows move it, the focus outline shows.
+  4. At 400 px wide no splitter shows and the stacked layout is unchanged.
+  5. `tests/run_all.sh` ends with every step PASS.
