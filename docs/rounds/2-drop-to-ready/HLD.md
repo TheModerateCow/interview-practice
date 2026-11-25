@@ -406,3 +406,37 @@ Files more than one PR edits (each PR edits different functions or adds its own 
   4. 1440×900 and 400 px, light and dark: the Delete button lines up on every row, no horizontal scroll, keyboard
      reachable with a visible focus.
   5. `tests/run_all.sh` ends with every step PASS.
+
+### PR 9 (added by the owner, 2026-11-25; parallel): Switch between unlocked levels
+- **Example** (owner request, during a live Levelled round):
+  1. Import a set with reveals (`tests/sets/rate-limiter-py`: part 2 unlocks when part 1 passes), Start, make part 1
+     pass so part 2 unlocks.
+  - **Expected:** the Problem pane gets a tab row at its top, "Part 1 · Part 2" (`partName()` of each level's tag).
+    The newly unlocked tab is selected and shows only its own text. Clicking "Part 1" shows only part 1. With one
+    unlocked level there is no tab row.
+  - **Got today:** part 2 is appended under part 1 in one long scroll after a divider reading "New part · 1.1 min"
+    (finding 14 found that label confusing).
+- **Files:** `ui/src/App.svelte` (`problemHtml` replaced by `levels`, the `#problem` inner markup, the unlock toast,
+  three bits of state), `ui/style.css` (`#level-tabs`, `.level-tab`, `.level-at`; `.part-divider` removed),
+  `tests/e2e.spec.mjs` (main flow assertions).
+- **Design:**
+  - Levels = `problem.md` (first tag) plus each `st.parts` entry in order; tab labels from `partName(st.unlocked[i])`.
+    Locked levels get no tab. The header chips row `#parts` is unchanged.
+  - WAI-ARIA tabs: `#level-tabs` (`role="tablist"`, aria-label "Levels"), `.level-tab[data-level=i]` (`role="tab"`,
+    `aria-selected`, `aria-controls="level-panel"`, roving tabindex), `#level-panel` (`role="tabpanel"`) inside
+    `#problem`, which keeps its id, class and place in the grid. Left/Right (wrapping), Home, End move the selection.
+  - Look: bordered tab, selected = `--line-strong` border + weight 600 + `aria-selected`; no accent, no shadow, tokens
+    only. Under the row, for levels after the first, a muted "Unlocked at mm:ss" (from the reveal event, `mmss`).
+  - Selection: `levelSel` (-1 = newest). A new unlock selects its tab; a manual pick is stored per set in `LS` under
+    `ilab.level.<set name>` and restored on load. Toast: "<Part n> unlocked. It's open in the problem pane."
+  - Narrow layout: the row wraps inside the pane.
+- **Interface changes:** none. **Data changes:** none (browser storage only).
+- **Tests:** e2e main flow: one level shows no `#level-tabs`; after the reveal `#level-tabs` has 2 tabs, the second
+  `aria-selected="true"`, `#problem` has part 2's snippet and not part 1's first sentence; click tab 1 shows part 1;
+  ArrowRight on the focused first tab selects the second.
+- **Acceptance:**
+  1. The example at 1440x900, light and dark: tab row, part 2 selected, then part 1 on click.
+  2. Keyboard: Tab lands on the selected tab, arrows/Home/End move, focus outline shows.
+  3. At 400 px the row wraps and nothing scrolls horizontally.
+  4. A reload keeps the manual choice; a later unlock switches to the newest.
+  5. `tests/run_all.sh` ends with every step PASS.

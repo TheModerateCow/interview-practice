@@ -119,8 +119,11 @@ td.mono { font-family: var(--font-mono); white-space: pre-wrap; }
 .md pre code { background: none; padding: 0; }
 .md a { color: var(--link); }
 .md table { font-size: inherit; }
-.part-divider { display: flex; align-items: center; gap: var(--s-2); margin-top: var(--s-6) !important; color: var(--fg-3); font-size: var(--t-label); letter-spacing: var(--t-label-ls); text-transform: uppercase; }
-.part-divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.level-at { margin-top: 0; color: var(--fg-3); font-size: var(--t-label); }
+#level-tabs { display: flex; flex-wrap: wrap; gap: var(--s-1); margin-bottom: var(--s-3); border-bottom: 1px solid var(--line); }
+.level-tab { border: 1px solid transparent; border-bottom: 0; border-radius: var(--r-sm) var(--r-sm) 0 0; margin-bottom: -1px; background: none; color: var(--fg-2); font: 400 var(--t-small)/1 var(--font-sans); padding: 8px 12px; cursor: pointer; }
+.level-tab[aria-selected="true"] { border-color: var(--line-strong); background: var(--bg); color: var(--fg); font-weight: 600; }
+.level-tab:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
 
 /* ---------- final overlay, toast ---------- */
 #final { position: fixed; inset: 0; z-index: 30; overflow: auto; background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(2px);

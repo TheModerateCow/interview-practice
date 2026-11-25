@@ -63,7 +63,8 @@ test('full interview flow', async ({ page, request }) => {
   const t2 = await page.locator('#timer').textContent();
   expect(t2).not.toBe(t1);
   await expect(page.locator('#problem')).not.toHaveText('');
-  const p1len = (await page.locator('#problem').textContent()).length;
+  const p1first = (await page.locator('#problem').textContent()).replace(/\s+/g, ' ').trim().split(/(?<=[.!?])\s/)[0].slice(0, 40);
+  await expect(page.locator('#level-tabs')).toHaveCount(0);
   await shot('2-round');
 
   // Run (button, then Ctrl+')
@@ -99,7 +100,19 @@ test('full interview flow', async ({ page, request }) => {
   const st2 = await api(`/api/sets/${NAME}/state`);
   const snippet = st2.parts[0].md.split('\n').map(l => l.replace(/[#*`_>]/g, '').trim()).find(Boolean).split(/\s+/).slice(0, 3).join(' ');
   await expect(page.locator('#problem')).toContainText(snippet, { timeout: 15000 });
-  expect((await page.locator('#problem').textContent()).length).toBeGreaterThan(p1len);
+  // part 2 opens in its own tab; part 1 is one click away
+  const tabs = page.locator('#level-tabs .level-tab');
+  await expect(page.locator('#level-tabs')).toBeVisible();
+  await expect(tabs).toHaveCount(2);
+  await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true');
+  await expect(page.locator('#problem')).not.toContainText(p1first);
+  await tabs.nth(0).click();
+  await expect(page.locator('#problem')).toContainText(p1first);
+  await expect(page.locator('#level-panel')).not.toContainText(snippet);  // scoped: the tab itself says "Part 2"
+  await tabs.nth(0).focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true');
+  await expect(page.locator('#problem')).toContainText(snippet);
   await shot('5-p2-revealed');
 
   // End
