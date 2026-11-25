@@ -1,0 +1,283 @@
+import java.lang.reflect.*;
+import java.util.*;
+
+public class HiddenTest {
+/*@@TESTS@@*/
+    static final String[] hiddenChunks = {
+/*@@CHUNKS@@*/
+    };
+    static Map<String, Object> hiddenDocCache;
+    static Object hiddenObj;
+    static String hiddenObjCls;
+
+    // ---- JSON (the JDK has none) ----
+    static final class HiddenJson {
+        final String s; int p;
+        HiddenJson(String s) { this.s = s; }
+        void ws() { while (p < s.length() && s.charAt(p) <= ' ') p++; }
+        Object val() {
+            ws(); char c = s.charAt(p);
+            if (c == '{') {
+                p++; Map<String, Object> m = new LinkedHashMap<>(); ws();
+                if (s.charAt(p) == '}') { p++; return m; }
+                while (true) { ws(); String k = str(); ws(); p++; m.put(k, val()); ws(); if (s.charAt(p++) == '}') return m; }
+            }
+            if (c == '[') {
+                p++; List<Object> l = new ArrayList<>(); ws();
+                if (s.charAt(p) == ']') { p++; return l; }
+                while (true) { l.add(val()); ws(); if (s.charAt(p++) == ']') return l; }
+            }
+            if (c == '"') return str();
+            if (s.startsWith("true", p)) { p += 4; return Boolean.TRUE; }
+            if (s.startsWith("false", p)) { p += 5; return Boolean.FALSE; }
+            if (s.startsWith("null", p)) { p += 4; return null; }
+            int q = p;
+            while (p < s.length() && "+-0123456789.eE".indexOf(s.charAt(p)) >= 0) p++;
+            String n = s.substring(q, p);
+            if (n.indexOf('.') >= 0 || n.indexOf('e') >= 0 || n.indexOf('E') >= 0) return Double.valueOf(n);
+            try { return Long.valueOf(n); } catch (NumberFormatException e) { return Double.valueOf(n); }
+        }
+        String str() {
+            p++; StringBuilder b = new StringBuilder();
+            while (true) {
+                char c = s.charAt(p++);
+                if (c == '"') return b.toString();
+                if (c != '\\') { b.append(c); continue; }
+                char e = s.charAt(p++);
+                switch (e) {
+                    case 'n': b.append('\n'); break;
+                    case 't': b.append('\t'); break;
+                    case 'r': b.append('\r'); break;
+                    case 'b': b.append('\b'); break;
+                    case 'f': b.append('\f'); break;
+                    case 'u': b.append((char) Integer.parseInt(s.substring(p, p + 4), 16)); p += 4; break;
+                    default: b.append(e);
+                }
+            }
+        }
+    }
+
+    static final class HiddenErr extends RuntimeException { HiddenErr(String m) { super(m); } }
+
+    @SuppressWarnings("unchecked")
+    static Map<String, Object> hiddenDoc() {
+        if (hiddenDocCache == null) hiddenDocCache = (Map<String, Object>) new HiddenJson(String.join("", hiddenChunks)).val();
+        return hiddenDocCache;
+    }
+    @SuppressWarnings("unchecked")
+    static Map<String, Object> hiddenMap(Object o) { return (Map<String, Object>) o; }
+    @SuppressWarnings("unchecked")
+    static List<Object> hiddenList(Object o) { return (List<Object>) o; }
+
+    // ---- names and types ----
+    static String hiddenCamel(String n) {
+        StringBuilder b = new StringBuilder(); boolean up = false;
+        for (char c : n.toCharArray()) { if (c == '_') up = true; else { b.append(up ? Character.toUpperCase(c) : c); up = false; } }
+        return b.toString();
+    }
+    static String hiddenPascal(String n) { String c = hiddenCamel(n); return c.isEmpty() ? c : Character.toUpperCase(c.charAt(0)) + c.substring(1); }
+    static boolean hiddenIsList(String t) { return t.startsWith("list<"); }
+    static String hiddenInner(String t) { return t.substring(t.indexOf('<') + 1, t.length() - 1); }
+    static boolean hiddenPrimArr(String t) {
+        if (!hiddenIsList(t)) return false;
+        String e = hiddenInner(t);
+        return e.equals("int") || e.equals("long") || e.equals("bool") || hiddenPrimArr(e);
+    }
+    static Class<?> hiddenClass(String name) {
+        try { return Class.forName(name); } catch (ClassNotFoundException e) { throw new HiddenErr("class " + name + " not found"); }
+    }
+    static Class<?> hiddenBoxed(Class<?> c) {
+        if (c == int.class) return Integer.class;
+        if (c == long.class) return Long.class;
+        if (c == boolean.class) return Boolean.class;
+        return c;
+    }
+    static Class<?> hiddenCls(String t) {
+        switch (t) {
+            case "int": return int.class;
+            case "long": return long.class;
+            case "bool": return boolean.class;
+            case "string": return String.class;
+        }
+        if (hiddenIsList(t)) return hiddenPrimArr(t) ? Array.newInstance(hiddenCls(hiddenInner(t)), 0).getClass() : List.class;
+        if (t.startsWith("optional<")) return hiddenBoxed(hiddenCls(hiddenInner(t)));
+        return hiddenClass(t);
+    }
+    static List<Object> hiddenFields(String rec) { return hiddenList(hiddenMap(hiddenMap(hiddenDoc().get("api")).get("records")).get(rec)); }
+
+    // ---- JSON -> Java values, driven by api.json types ----
+    static Object hiddenConv(Object j, String t) throws Exception {
+        if (j == null) return null;
+        switch (t) {
+            case "int": return Integer.valueOf(((Number) j).intValue());
+            case "long": return Long.valueOf(((Number) j).longValue());
+            case "bool": case "string": return j;
+        }
+        if (t.startsWith("optional<")) return hiddenConv(j, hiddenInner(t));
+        if (hiddenIsList(t)) {
+            String e = hiddenInner(t); List<Object> l = hiddenList(j);
+            if (hiddenPrimArr(t)) {
+                Object a = Array.newInstance(hiddenCls(e), l.size());
+                for (int i = 0; i < l.size(); i++) Array.set(a, i, hiddenConv(l.get(i), e));
+                return a;
+            }
+            List<Object> r = new ArrayList<>(l.size());
+            for (Object x : l) r.add(hiddenConv(x, e));
+            return r;
+        }
+        Class<?> c = hiddenClass(t);
+        RecordComponent[] rc = c.getRecordComponents();
+        if (rc == null) throw new HiddenErr(t + " must be a record");
+        Map<String, Object> m = hiddenMap(j); List<Object> fs = hiddenFields(t);
+        Object[] vals = new Object[rc.length]; Class<?>[] types = new Class<?>[rc.length];
+        for (int i = 0; i < rc.length; i++) {
+            types[i] = rc[i].getType(); String neutral = null, ft = null;
+            for (Object f : fs) { List<Object> fl = hiddenList(f); if (hiddenCamel((String) fl.get(0)).equals(rc[i].getName())) { neutral = (String) fl.get(0); ft = (String) fl.get(1); } }
+            if (neutral == null) throw new HiddenErr("record " + t + " has an unexpected component " + rc[i].getName());
+            vals[i] = hiddenConv(m.get(neutral), ft);
+        }
+        Constructor<?> k = c.getDeclaredConstructor(types); k.setAccessible(true);
+        return k.newInstance(vals);
+    }
+
+    // ---- Java results -> JSON-like values ----
+    static Object hiddenNorm(Object v, String t) throws Exception {
+        if (v == null) return null;
+        switch (t) {
+            case "int": case "long": return Long.valueOf(((Number) v).longValue());
+            case "bool": case "string": return v;
+        }
+        if (t.startsWith("optional<")) return hiddenNorm(v, hiddenInner(t));
+        if (hiddenIsList(t)) {
+            String e = hiddenInner(t); List<Object> r = new ArrayList<>();
+            if (v.getClass().isArray()) for (int i = 0; i < Array.getLength(v); i++) r.add(hiddenNorm(Array.get(v, i), e));
+            else for (Object x : (Iterable<?>) v) r.add(hiddenNorm(x, e));
+            return r;
+        }
+        Map<String, Object> m = new LinkedHashMap<>();
+        for (Object f : hiddenFields(t)) {
+            List<Object> fl = hiddenList(f);
+            Method a = v.getClass().getDeclaredMethod(hiddenCamel((String) fl.get(0))); a.setAccessible(true);
+            m.put((String) fl.get(0), hiddenNorm(a.invoke(v), (String) fl.get(1)));
+        }
+        return m;
+    }
+
+    static String hiddenShow(Object v) {
+        if (v == null) return "null";
+        if (v instanceof String) {
+            StringBuilder b = new StringBuilder("\"");
+            for (char c : ((String) v).toCharArray()) {
+                if (c == '"' || c == '\\') b.append('\\').append(c);
+                else if (c == '\n') b.append("\\n");
+                else if (c < ' ') b.append(String.format("\\u%04x", (int) c));
+                else b.append(c);
+            }
+            return b.append('"').toString();
+        }
+        if (v instanceof Map) {
+            StringBuilder b = new StringBuilder("{"); boolean first = true;
+            for (Map.Entry<?, ?> e : ((Map<?, ?>) v).entrySet()) { if (!first) b.append(", "); first = false; b.append(hiddenShow(e.getKey())).append(": ").append(hiddenShow(e.getValue())); }
+            return b.append('}').toString();
+        }
+        if (v instanceof List) {
+            StringBuilder b = new StringBuilder("["); boolean first = true;
+            for (Object x : (List<?>) v) { if (!first) b.append(", "); first = false; b.append(hiddenShow(x)); }
+            return b.append(']').toString();
+        }
+        return String.valueOf(v);
+    }
+    static String hiddenElide(String s) { return s.length() > 200 ? s.substring(0, 200) + "..." : s; }
+    static String hiddenExc(Throwable t) { return t.getClass().getSimpleName() + (t.getMessage() == null ? "" : ": " + t.getMessage()); }
+
+    // ---- running a case ----
+    static void hiddenRun(String name) {
+        Map<String, Object> c = hiddenMap(hiddenMap(hiddenDoc().get("cases")).get(name));
+        hiddenObj = null; hiddenObjCls = null;
+        long budget = -1;
+        if (c.get("budget_ms") != null) { Object b = hiddenMap(c.get("budget_ms")).get("java"); if (b != null) budget = ((Number) b).longValue(); }
+        if (c.get("steps") == null) { hiddenStep("", c, budget); return; }
+        List<Object> ss = hiddenList(c.get("steps")); long t0 = System.nanoTime();
+        for (int i = 0; i < ss.size(); i++) hiddenStep("step " + (i + 1) + " ", hiddenMap(ss.get(i)), -1);
+        long ms = (System.nanoTime() - t0) / 1_000_000;
+        if (budget >= 0 && ms > budget) throw new AssertionError("the steps took " + ms + " ms, over the " + budget + " ms budget");
+    }
+
+    static void hiddenStep(String label, Map<String, Object> st, long budget) {
+        String shown = "";
+        try {
+            Map<String, Object> exp = st; List<Object> args;
+            if (st.get("data") != null) {
+                Map<String, Object> d = hiddenMap(hiddenMap(hiddenDoc().get("data")).get(st.get("data")));
+                args = hiddenList(d.get("args"));
+                if (!st.containsKey("expect") && !st.containsKey("error") && d.containsKey("expect")) exp = d;
+            } else args = hiddenList(st.get("args"));
+            Map<String, Object> api = hiddenMap(hiddenDoc().get("api"));
+            boolean isNew = st.containsKey("new");
+            String call = (String) (isNew ? st.get("new") : st.get("call"));
+            List<String> shownArgs = new ArrayList<>();
+            for (Object a : args) shownArgs.add(hiddenElide(hiddenShow(a)));
+            shown = (isNew ? "new " + call : hiddenCamel(call)) + "(" + String.join(", ", shownArgs) + ")";
+            Map<String, Object> def; Class<?> cls; Object target = null;
+            if (isNew) { def = hiddenMap(hiddenMap(api.get("classes")).get(call)); cls = hiddenClass(call); }
+            else if (api.get("functions") != null && hiddenMap(api.get("functions")).containsKey(call)) {
+                def = hiddenMap(hiddenMap(api.get("functions")).get(call));
+                Object jc = api.get("java_class");
+                cls = hiddenClass(jc != null ? (String) jc : hiddenPascal((String) api.get("module")));
+            } else {
+                if (hiddenObj == null) throw new HiddenErr("no object yet (the first step must create one)");
+                def = hiddenMap(hiddenMap(hiddenMap(hiddenMap(api.get("classes")).get(hiddenObjCls)).get("methods")).get(call));
+                cls = hiddenObj.getClass(); target = hiddenObj;
+            }
+            List<Object> params = hiddenList(isNew ? def.get("init") : def.get("params"));
+            Class<?>[] pt = new Class<?>[params.size()]; Object[] vals = new Object[params.size()];
+            for (int i = 0; i < pt.length; i++) {
+                String ty = (String) hiddenList(params.get(i)).get(1);
+                pt[i] = hiddenCls(ty); vals[i] = hiddenConv(args.get(i), ty);
+            }
+            Executable ex = null;
+            if (isNew) { try { ex = cls.getDeclaredConstructor(pt); } catch (NoSuchMethodException e) { } }
+            else {
+                String jn = hiddenCamel(call);
+                for (Class<?> k = cls; k != null && ex == null; k = k.getSuperclass())
+                    for (Method m : k.getDeclaredMethods()) if (m.getName().equals(jn) && Arrays.equals(m.getParameterTypes(), pt)) { ex = m; break; }
+            }
+            if (ex == null) {
+                List<String> ns = new ArrayList<>();
+                for (Class<?> p : pt) ns.add(p.getSimpleName());
+                throw new HiddenErr((isNew ? "constructor " : "method ") + (isNew ? call : hiddenCamel(call)) + "(" + String.join(", ", ns) + ") not found in class " + cls.getSimpleName());
+            }
+            ex.setAccessible(true);
+            long t0 = System.nanoTime(); Object res = null; Throwable thrown = null;
+            try { res = isNew ? ((Constructor<?>) ex).newInstance(vals) : ((Method) ex).invoke(target, vals); }
+            catch (InvocationTargetException e) { thrown = e.getCause(); }
+            long ms = (System.nanoTime() - t0) / 1_000_000;
+            if (isNew) {
+                if (thrown != null) throw new HiddenErr("got " + hiddenExc(thrown));
+                hiddenObj = res; hiddenObjCls = call; return;
+            }
+            Object err = exp.get("error"); boolean hasExp = exp.containsKey("expect");
+            String rt = (String) def.get("returns");
+            Object norm = (thrown == null && rt != null) ? hiddenNorm(res, rt) : null;
+            if (err != null) {
+                String want = err instanceof String ? "error " + err : "an error";
+                if (thrown == null) throw new HiddenErr("expected " + want + ", got " + (rt == null ? "no error" : hiddenShow(norm)));
+                if (thrown instanceof UnsupportedOperationException && "not implemented".equals(thrown.getMessage()))   // an unfinished stub is not an answer
+                    throw new HiddenErr("expected " + want + ", got " + hiddenExc(thrown));
+                if (err instanceof String && !thrown.getClass().getSimpleName().equals(hiddenPascal((String) err) + "Exception"))
+                    throw new HiddenErr("expected " + want + ", got " + hiddenExc(thrown));
+            } else {
+                if (thrown != null) throw new HiddenErr("expected " + (hasExp ? hiddenShow(exp.get("expect")) : "no error") + ", got " + hiddenExc(thrown));
+                if (hasExp && rt != null && !Objects.equals(exp.get("expect"), norm))
+                    throw new HiddenErr("expected " + hiddenElide(hiddenShow(exp.get("expect"))) + ", got " + hiddenElide(hiddenShow(norm)));
+            }
+            if (budget >= 0 && ms > budget) throw new HiddenErr("took " + ms + " ms, over the " + budget + " ms budget");
+        } catch (HiddenErr e) {
+            throw new AssertionError(label + shown + (shown.isEmpty() ? "" : ": ") + e.getMessage());
+        } catch (AssertionError e) {
+            throw e;
+        } catch (Throwable e) {
+            throw new AssertionError(label + shown + ": could not run the case (" + hiddenExc(e) + ")");
+        }
+    }
+}
