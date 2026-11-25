@@ -142,3 +142,23 @@ code, kbd, pre, .mono { font-family: var(--font-mono); font-variant-numeric: tab
   color: var(--fg-3); font-size: var(--t-small); animation: loading-in var(--dur) var(--ease) 300ms both; }
 @keyframes loading-turn { to { transform: rotate(360deg); } }
 @keyframes loading-in { from { opacity: 0; } }
+
+/* ---------- dropdown: a button that opens a listbox; replaces the browser's select ---------- */
+.dropdown { position: relative; display: inline-block; min-width: 0; }
+.dropdown-btn { position: relative; display: inline-flex; align-items: center; gap: var(--s-2); height: 32px; max-width: 320px;
+  padding: 0 calc(var(--s-3) + 18px) 0 var(--s-3); border: 1px solid var(--line-strong); border-radius: var(--r-md);
+  background: var(--bg); color: var(--fg); font: 400 var(--t-small)/1 var(--font-sans); cursor: pointer;
+  transition: background var(--dur) var(--ease); }
+.dropdown-btn:hover { background: var(--surface-2); }
+.dropdown-btn::after { content: ""; position: absolute; right: var(--s-3); top: 50%; width: 6px; height: 6px; margin-top: -5px;
+  border: solid var(--fg-2); border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); }   /* chevron: a border, not a glyph */
+.dropdown-btn[aria-expanded="true"]::after { margin-top: -1px; transform: rotate(-135deg); }
+.dropdown-value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dropdown-meta { color: var(--fg-3); white-space: nowrap; }
+.dropdown-list { position: absolute; z-index: 25; top: calc(100% + 4px); left: 0; min-width: 100%; width: max-content;
+  max-width: min(480px, calc(100vw - 32px)); max-height: min(360px, 60vh); overflow: auto; margin: 0; padding: var(--s-1);
+  list-style: none; background: var(--bg); border: 1px solid var(--line-strong); border-radius: var(--r-md); }
+.dropdown-list li { display: flex; align-items: center; justify-content: space-between; gap: var(--s-4); padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-sm); color: var(--fg-2); font-size: var(--t-small); cursor: pointer; }
+.dropdown-list li.active { background: var(--surface-2); color: var(--fg); }
+.dropdown-list li[aria-selected="true"] { color: var(--fg); font-weight: 500; }

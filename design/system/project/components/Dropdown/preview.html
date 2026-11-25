@@ -1,0 +1,22 @@
+<!-- @dsCard group="Actions" height=230 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><style>body{display:block;height:auto;padding:16px} .row{display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start}</style></head>
+<body>
+<div id="root" class="row">
+<div class="dropdown">
+  <button type="button" class="dropdown-btn" role="combobox" aria-label="Interview set" aria-haspopup="listbox" aria-expanded="false">
+    <span class="dropdown-value">Rate limiter</span><span class="dropdown-meta">running</span></button>
+</div>
+<div class="dropdown">
+  <button type="button" class="dropdown-btn" role="combobox" aria-label="Interview set" aria-haspopup="listbox" aria-expanded="true" aria-controls="dd-list" aria-activedescendant="dd-1">
+    <span class="dropdown-value">Rate limiter</span><span class="dropdown-meta">running</span></button>
+  <ul class="dropdown-list" id="dd-list" role="listbox" aria-label="Interview set">
+    <li id="dd-0" role="option" aria-selected="true"><span>Rate limiter</span><span class="dropdown-meta">running</span></li>
+    <li id="dd-1" role="option" aria-selected="false" class="active"><span>Fleet manager (Levelled, 4 levels)</span><span class="dropdown-meta">ready</span></li>
+    <li id="dd-2" role="option" aria-selected="false"><span>Turnaround rooms (DSA)</span><span class="dropdown-meta">ended</span></li>
+  </ul>
+</div>
+</div>
+</body>
+</html>

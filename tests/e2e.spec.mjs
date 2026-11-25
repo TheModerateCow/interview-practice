@@ -12,6 +12,12 @@ const OUT = '/work/tests/out';
 const REF = '/work/tests/sets/rate-limiter-py/reference';
 const H = { 'X-ILab': '1' };
 
+// The set picker is a custom dropdown: open it, then click the option for this set name.
+async function pickSet(page, name) {
+  await page.click('#set-picker');
+  await page.click(`#set-picker-list [data-value="${name}"]`);
+}
+
 function walk(d, base = d) {
   return fs.readdirSync(d, { withFileTypes: true }).flatMap(e =>
     e.isDirectory() ? walk(path.join(d, e.name), base) : [path.relative(base, path.join(d, e.name))]);
@@ -39,7 +45,7 @@ test('full interview flow', async ({ page, request }) => {
   await expect.poll(async () => (await api('/api/sets')).sets.some(s => s.name === NAME), { timeout: 30000 }).toBe(true);
   const info = await api(`/api/sets/${NAME}`);
   try { await expect(page.locator('#ready')).toContainText(info.title, { timeout: 8000 }); }
-  catch { await page.locator('#set-picker').selectOption(NAME).catch(() => page.getByText(info.title).first().click());
+  catch { await pickSet(page, NAME).catch(() => page.getByText(info.title).first().click());
           await expect(page.locator('#ready')).toContainText(info.title); }
   await shot('1-ready');
 
@@ -137,7 +143,7 @@ test('time up closes the round', async ({ page, request }) => {
   }, bytes);
   for (const t of ['dragenter', 'dragover', 'drop']) await page.dispatchEvent('body', t, { dataTransfer: dt });
   await expect.poll(async () => (await api('/api/sets')).sets.some(s => s.name === NAME_1M), { timeout: 30000 }).toBe(true);
-  await page.locator('#set-picker').selectOption(NAME_1M);
+  await pickSet(page, NAME_1M);
   await page.click('#start-btn');
   await expect(page.locator('#round')).toBeVisible();
 
