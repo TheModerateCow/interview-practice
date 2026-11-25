@@ -113,6 +113,14 @@ test('full interview flow', async ({ page, request }) => {
   // Close the card: the closed bar stays
   await page.click('#final-close');
   await expect(page.locator('#closed-bar')).toBeVisible();
+
+  // All sets: home lists this set under Finished; opening it shows its final card again
+  await page.click('#home-btn');
+  await expect(page.locator('#dropzone')).toBeVisible();
+  await page.locator('#dropzone summary', { hasText: 'Finished' }).click();
+  await page.locator('.set-row', { hasText: NAME }).click();
+  await expect(page.locator('#final')).toBeVisible({ timeout: 30000 });
+  await shot('7-reopened');
   // zip contents are checked on the host by e2e.sh (no unzip in this image)
 });
 

@@ -4,9 +4,10 @@
 
   const THEMES = [['', 'Auto', 'Follow system'], ['light', 'Light'], ['dark', 'Dark']];
   const UNLOCKED = 'New part unlocked. The problem pane has it.';
+  const GROUPS = [['running', 'In progress'], ['ready', 'Not started'], ['ended', 'Finished']];
 
   // ---------- state shown on the page
-  let view = $state('');            // '' (loading) | 'drop' | 'ready' | 'round'
+  let view = $state('');            // '' (loading) | 'home' | 'ready' | 'round'
   let sets = $state([]);            // the picker
   let cur = $state(null);           // current set name
   let info = $state(null);          // ready screen
@@ -110,17 +111,31 @@
 
   async function loadSets(select) {
     sets = (await api('/sets')).sets;
-    if (!sets.length) { cur = null; screen('drop'); return; }
-    const want = [select, cur, LS.get('ilab-last')].find(n => n && sets.some(s => s.name === n)) || sets[0].name;
-    await openSet(want);
+    if (select && sets.some(s => s.name === select)) return openSet(select);   // just imported
+    // A round in progress resumes (a reload mid-round lands back in it); otherwise start at home.
+    const running = sets.filter(s => s.status === 'running').map(s => s.name);
+    const resume = running.includes(LS.get('ilab-last')) ? LS.get('ilab-last') : running[0];
+    if (resume) return openSet(resume);
+    goHome();
+  }
+
+  // Save, then drop everything that belongs to the current set.
+  async function leaveSet() {
+    await save();
+    finalOpen = false; askNext = false; askEnd = false;
+    Object.values(models).forEach(m => m.dispose()); models = {}; curFile = null; st = null;
+    results = null; info = null; readyErr = '';
+  }
+
+  async function goHome() {
+    await leaveSet();
+    cur = null; screen('home');
+    try { sets = (await api('/sets')).sets; } catch (e) {}   // fresh statuses: rounds may have timed out
   }
 
   async function openSet(name) {
-    await save();
+    await leaveSet();
     cur = name; LS.set('ilab-last', name);
-    finalOpen = false; askNext = false; askEnd = false;
-    Object.values(models).forEach(m => m.dispose()); models = {}; curFile = null; st = null;
-    results = null; info = null; readyErr = '';   // no stale content from the previous set
     try {
       const i = await api('/sets/' + name);
       if (i.status === 'ready') { info = i; starting = false; startErr = ''; screen('ready'); return; }
@@ -290,7 +305,7 @@
   onMount(() => {
     darkMQ.addEventListener('change', () => { if (!theme) monacoTheme(); });
     checkHealth(); setInterval(checkHealth, 15000);
-    loadSets().catch(e => { screen('drop'); dropErr = e.message; });
+    loadSets().catch(e => { screen('home'); dropErr = e.message; });
   });
 </script>
 
@@ -320,8 +335,9 @@
 
 <header id="top">
   <strong class="brand">Interview Lab</strong>
+  <button id="home-btn" class="btn btn-ghost" class:hidden={!view || view === 'home'} type="button" onclick={goHome}>All sets</button>
   <label for="set-picker" class="sr">Interview set</label>
-  <select id="set-picker" aria-label="Choose interview set" class:hidden={!sets.length} value={cur} onchange={e => openSet(e.currentTarget.value)}>
+  <select id="set-picker" aria-label="Choose interview set" class:hidden={!sets.length || view === 'home'} value={cur} onchange={e => openSet(e.currentTarget.value)}>
     {#each sets as s (s.name)}<option value={s.name}>{s.title} · {s.status}</option>{/each}
   </select>
   <span class="spacer"></span>
@@ -337,11 +353,28 @@
 </header>
 <div id="health" class="health" class:hidden={!healthMsg} role="alert">{healthMsg}</div>
 
-<main id="dropzone" class:hidden={view !== 'drop'} class:over>
-  <div class="drop">
-    <h1 class="drop-big">Drop a set .zip here</h1>
-    <p>Sets come from Claude's interview-practice skill. Drag the .zip anywhere onto this page.</p>
-    <p id="drop-error" class="err" role="alert">{dropErr}</p>
+<main id="dropzone" class:hidden={view !== 'home'} class:over>
+  <div class="home">
+    <div class="drop">
+      <h1 class="drop-big">Drop a set .zip here</h1>
+      <p>Sets come from Claude's interview-practice skill. Drag the .zip anywhere onto this page.</p>
+      <p id="drop-error" class="err" role="alert">{dropErr}</p>
+    </div>
+    {#each GROUPS as [status, label]}
+      {@const list = sets.filter(s => s.status === status)}
+      {#if list.length}
+        <details class="sets" open={status !== 'ended'}>
+          <summary class="label">{label} · {list.length}</summary>
+          {#each list as s (s.name)}
+            <button type="button" class="set-row" onclick={() => openSet(s.name)}>
+              <span class="set-title">{s.title}</span>
+              <span class="set-meta">{[ROUND[s.round] || s.round, LANGNAME[s.language] || s.language].filter(Boolean).join(' · ')}</span>
+              <span class="set-name">{s.name}</span>
+            </button>
+          {/each}
+        </details>
+      {/if}
+    {/each}
   </div>
 </main>
 
