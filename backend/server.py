@@ -433,7 +433,7 @@ def err(code, msg): return jsonify(error=msg), code
 
 
 @app.errorhandler(HTTPError)
-def _http_error(e): return err(e.code, str(e))
+def _app_error(e): return err(e.code, str(e))
 
 
 @app.errorhandler(HTTPException)
