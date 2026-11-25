@@ -19,7 +19,7 @@ Limits: 2000 files, 50 MB unpacked, no absolute paths, no `..`, no symlinks.
 | Field | Req | Meaning |
 |---|---|---|
 | `format` | yes | `"interview-set/1"` |
-| `name` | yes | `[a-z0-9-]`, max 64. This is the folder name under `data/sets/`. Re-importing replaces a set that hasn't started; a started set refuses |
+| `name` | yes | `[a-z0-9-]`, max 64. This is the folder name under `data/sets/`. Re-importing replaces a set that hasn't started (the app says it replaced it); a started set refuses |
 | `title` | yes | Shown on the ready screen |
 | `company`, `role` | no | Ready screen |
 | `round` | yes | `codebase` · `levelled` · `ai-assisted` · `tdd` · `dsa` |
