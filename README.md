@@ -4,9 +4,9 @@ A local, Docker-only app for timed coding-interview practice. Claude (`/intervie
 Drag it onto http://127.0.0.1:8765. The app says "Imported <title> (<name>)" and shows the name under the title; press **Start** only if the name matches. If it says "Not imported", paste the message back to Claude. Run, Submit, Next part, End, then Export.
 Send `export.zip` back to Claude for the debrief.
 
-Home is a **catalog of problems** to pick from: the built-in ones in `catalog/` plus every set you've imported (marked Yours). Filter by round, language and difficulty, and click one. That opens its round in progress, an unstarted attempt, or a fresh attempt (`<id>-1`, `-2`, …) on the ready screen, so you can retake any problem. Past attempts stay listed under Not started / Finished.
+Home is a **catalog of problems** to pick from: the built-in ones in `catalog/` plus every set you've imported (marked Yours). Each built-in problem comes in Go, Java and/or Python: click the problem to open it in your usual language, or a language chip for another. Filter by round, language and difficulty. Picking opens your round in progress in that language, an unstarted attempt, or a fresh attempt (`<id>-<lang>-1`, `-2`, …) on the ready screen, so you can retake any problem. Past attempts stay listed under Not started / Finished.
 
-To add a built-in problem: gate its source in `answers/<id>/` (`docker compose run --rm -T -v "$PWD/answers/<id>:/set:ro" backend python3 gate.py /set`), pack it with `tools/pack.py answers/<id> <id>.zip`, unzip the zip into `catalog/<id>/`, and rebuild.
+To add a built-in problem or a language to one: `docs/rounds/3-language-variants/` (`CONTRACT.md` the format, `CONVERT.md`, `PORT.md`). Check it with `python3 tools/gate_problem.py catalog/<id> answers/<id>` (every language, in the runner images) and rebuild.
 
 ## Install / remove
 ```
@@ -40,8 +40,8 @@ Only nginx publishes a port. The backend and proxy sit on internal networks. `/a
 | `backend/sandbox/gate.py` | The skill's gate.py, unchanged |
 | `backend/sandbox/images.py` | `/api/health` and the thread that keeps runner images pulled |
 | `ui/src/` | `App.svelte` the shell; `features/` one folder per screen (`home`, `catalog`, `ready`, `round`, `import`, `health`), `round/round.svelte.js` holds the round's state and actions; `components/` shared pieces; `lib/` API, Monaco and helpers; `styles/` CSS |
-| `catalog/` | Built-in problems, one folder each (interview-set/1, unpacked), baked into the backend image (`backend/lab/catalog.py`) |
-| `answers/` | The answer key for every catalog problem: its full gate-ready source with `reference/`, `mutants.json` and (Codebase) `bugs.json`. Not in the image; used for debriefs, TDD scoring and re-gating |
+| `catalog/` | Built-in problems, one language-neutral folder each: `problem.json`, `problem.md`, `api.json` + `cases/` (shared hidden tests, run in every language by `backend/lab/langs/<lang>`), `<lang>/starter/`; Codebase problems keep per-language hidden tests in `<lang>/hidden/`. Rendered into an interview-set/1 set per attempt (`backend/lab/variants.py`) |
+| `answers/` | The answer key per problem and language (`answers/<id>/<lang>/`): `reference/`, `mutants.json` and (Codebase) `bugs.json`. Not in the image; used by `tools/gate_problem.py`, debriefs and TDD scoring |
 | `deploy/` | Everything that builds or runs the app: `docker-compose.yml`, the backend/nginx/runner-python Dockerfiles, `nginx.conf`, install/uninstall. The root `.env` points `docker compose` at it, so compose commands work from the repo root |
 | `tools/pack.py` | Packs a set dir into a zip (refuses reference/, mutants.json, bugs.json) |
 | `tools/status.py` | `python3 tools/status.py data/sets/<name>` → time left, from session.json |
