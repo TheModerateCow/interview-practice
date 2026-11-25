@@ -23,14 +23,14 @@
   let importing = $state('');       // file name of a zip being imported
   let edReady = $state(false);      // Monaco has loaded
   let saveStatus = $state('');
-  let askNext = $state(false), askEnd = $state(false);
+  let askNext = $state(false), askEnd = $state(false), askDrop = $state(null);
   let starting = $state(false), startErr = $state('');
   let dropErr = $state(''), healthMsg = $state('');
   let flash = $state({ text: '', bad: false, on: false, n: 0 });
   let theme = $state(LS.get('ilab-theme') || '');
   let over = $state(false);         // a file is being dragged over the page
   let stdin = $state(''), newfile = $state('');
-  let editorEl, nextNoEl, endNoEl;
+  let editorEl, nextNoEl, endNoEl, dropStayEl;
 
   // ---------- plain variables: not shown, or Monaco objects that must not be wrapped in $state
   let ed = null, models = {}, dirty = false, saveT, pollT, tickT, flashT, dragN = 0;
@@ -75,8 +75,10 @@
 
   async function openFile(p) {
     await save();
-    const text = await (await api('/sets/' + cur + '/files/' + enc(p), {}, true)).text();
+    const set = cur;
+    const text = await (await api('/sets/' + set + '/files/' + enc(p), {}, true)).text();
     await editor();
+    if (set !== cur) return;   // the user went elsewhere while this loaded
     const monaco = window.monaco;
     if (models[p]) models[p].dispose();
     models[p] = monaco.editor.createModel(text, langOf(p), monaco.Uri.parse('inmemory:///' + enc(p)));
@@ -113,14 +115,18 @@
     if (v !== 'round') { clearInterval(pollT); clearInterval(tickT); }
   }
 
-  async function loadSets(select) {
+  // Every navigation bumps `nav`; an older async step that sees a newer value stops, so the latest one wins.
+  let nav = 0;
+
+  async function loadSets(select, my = nav) {   // first load, and after an import
     sets = (await api('/sets')).sets;
+    if (my !== nav) return;
     if (select && sets.some(s => s.name === select)) return openSet(select);   // just imported
     // A round in progress resumes (a reload mid-round lands back in it); otherwise start at home.
     const running = sets.filter(s => s.status === 'running').map(s => s.name);
     const resume = running.includes(LS.get('ilab-last')) ? LS.get('ilab-last') : running[0];
     if (resume) return openSet(resume);
-    goHome();
+    return goHome();
   }
 
   // Save, then drop everything that belongs to the current set.
@@ -132,36 +138,39 @@
   }
 
   async function goHome() {
-    await leaveSet();
+    const my = ++nav;
+    await leaveSet(); if (my !== nav) return;
     cur = null; loading = ''; screen('home');
-    try { sets = (await api('/sets')).sets; } catch (e) {}   // fresh statuses: rounds may have timed out
+    try { const fresh = (await api('/sets')).sets; if (my === nav) sets = fresh; } catch (e) {}   // fresh statuses: rounds may have timed out
   }
 
-  async function openSet(name) {
-    await leaveSet();
+  async function openSet(name, my = ++nav) {
+    await leaveSet(); if (my !== nav) return;
     cur = name; LS.set('ilab-last', name);
     screen(''); loading = 'Opening ' + (sets.find(s => s.name === name)?.title || name);
     try {
-      const i = await api('/sets/' + name);
+      const i = await api('/sets/' + name); if (my !== nav) return;
       if (i.status === 'ready') { info = i; starting = false; startErr = ''; screen('ready'); return; }
-      await enterRound(await api('/sets/' + name + '/state'));
-    } catch (e) { screen('ready'); readyErr = e.message; }
-    finally { loading = ''; }
+      const s = await api('/sets/' + name + '/state'); if (my !== nav) return;
+      await enterRound(s, my);
+    } catch (e) { if (my === nav) { screen('ready'); readyErr = e.message; } }
+    finally { if (my === nav) loading = ''; }
   }
 
   async function startRound() {
     starting = true;
-    try { await enterRound(await api('/sets/' + cur + '/start', { method: 'POST' })); }
+    try { await enterRound(await api('/sets/' + cur + '/start', { method: 'POST' }), ++nav); }
     catch (e) { startErr = e.message; starting = false; }
   }
 
-  async function enterRound(s) {
+  async function enterRound(s, my) {
     screen('round'); st = null; results = { kind: 'empty' };
     setState(s);
     await flush();   // the round screen is visible before Monaco measures its box
-    await editor();
+    await editor(); if (my !== nav) return;
     const first = st.files.find(f => f === st.run_entry) || st.files[0];
     if (first) await openFile(first);
+    if (my !== nav) return;
     clearInterval(pollT); clearInterval(tickT);
     pollT = setInterval(poll, 5000); tickT = setInterval(clockTick, 250); clockTick();
     if (st.ended) openFinal();
@@ -275,6 +284,7 @@
   }
 
   function onKey(e) {
+    if (e.key === 'Escape' && askDrop) { askDrop = null; return; }
     if (e.key === 'Escape' && finalOpen) { closeFinal(); return; }
     if (!(e.ctrlKey || e.metaKey) || !st || view !== 'round') return;
     if (e.key === "'") { e.preventDefault(); doRun(); }
@@ -286,15 +296,32 @@
   function onDragEnter(e) { if (hasFiles(e)) { e.preventDefault(); dragN++; over = true; } }
   function onDragOver(e) { if (hasFiles(e)) e.preventDefault(); }
   function onDragLeave(e) { if (hasFiles(e) && --dragN <= 0) { dragN = 0; over = false; } }
+  // A round in progress: the open (or still opening) set is started and not closed. Anything else needs no question.
+  async function roundRunning() {
+    if (view === 'round' && st) return !st.ended;
+    if (view === 'ready' || view === 'home') return false;
+    try {   // still opening: the page's first load may not know yet, so ask the server
+      const running = (await api('/sets')).sets.filter(s => s.status === 'running').map(s => s.name);
+      const last = LS.get('ilab-last');
+      return running.includes(cur || (running.includes(last) ? last : running[0]));
+    } catch (e) { return false; }
+  }
   async function onDrop(e) {
     e.preventDefault(); dragN = 0; over = false;
     const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
     if (!f) return;
+    if (await roundRunning()) { askDrop = f; await flush(); dropStayEl.focus(); return; }
+    return doImport(f);
+  }
+  const dropOpen = () => { const f = askDrop; askDrop = null; return doImport(f); };
+
+  async function doImport(f) {
     dropErr = ''; importing = f.name;
+    const my = ++nav;   // a first load still in flight never lands on top of the drop
     try {
       const { name } = await api('/import', { method: 'POST', body: await f.arrayBuffer() });
       importing = '';
-      await loadSets(name);
+      await loadSets(name, my);
     } catch (err) {
       importing = ''; dropErr = err.message;
       if (cur) showFlash('Import failed: ' + err.message, true);
@@ -362,6 +389,10 @@
     {#each THEMES as [t, label, title]}<button type="button" data-t={t} aria-pressed={String(theme === t)} {title} onclick={() => (theme = t)}>{label}</button>{/each}
   </div>
 </header>
+<div id="drop-confirm" class="health" class:hidden={!askDrop} role="alertdialog" aria-label="Leave the round?">
+  <span class="confirm-inline"><span>Open {askDrop?.name}? Your round keeps running while you're away. You can come back to it from the picker.</span>
+    <button id="drop-confirm-open" class="btn btn-solid" type="button" onclick={dropOpen}>Open {askDrop?.name}</button><button id="drop-confirm-stay" bind:this={dropStayEl} class="btn btn-ghost" type="button" onclick={() => (askDrop = null)}>Stay in the round</button></span>
+</div>
 <div id="health" class="health" class:hidden={!healthMsg} role="alert">{healthMsg}</div>
 {#if !view && loading}<div class="loading block" role="status">{loading}…</div>{/if}
 

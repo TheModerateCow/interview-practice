@@ -8,18 +8,10 @@ SRC=tests/sets/_zips/rate-limiter-py.zip
 [ -f "$SRC" ] || { echo "SKIP e2e: $SRC missing"; exit 0; }
 export E2E_NAME="e2e-$(date +%s)"
 export E2E_NAME_1M="$E2E_NAME-1m"
-python3 - "$SRC" "tests/out/e2e-set.zip" "$E2E_NAME" <<'PY'
-import sys, zipfile, json
-src, dst, name = sys.argv[1:]
-zi = zipfile.ZipFile(src)
-with zipfile.ZipFile(dst, "w", zipfile.ZIP_DEFLATED) as zo:
-    for i in zi.infolist():
-        d = zi.read(i)
-        if i.filename.split("/")[-1] == "manifest.json" and i.filename.count("/") <= 1:
-            m = json.loads(d); m["name"] = name; d = json.dumps(m).encode()
-        zo.writestr(i.filename, d)
-PY
-python3 - "$SRC" "tests/out/e2e-set-1m.zip" "$E2E_NAME_1M" 1 <<'PY'
+export E2E_NAME_RUN="$E2E_NAME-run" E2E_NAME_RACE="$E2E_NAME-race"
+# one zip per (name, minutes) pair: main, 1 minute, and two for the "drop during page load" test
+for pair in "$E2E_NAME:" "$E2E_NAME_1M:1" "$E2E_NAME_RUN:" "$E2E_NAME_RACE:"; do
+python3 - "$SRC" "tests/out/${pair%%:*}.zip" "${pair%%:*}" "${pair##*:}" <<'PY'
 import sys, zipfile, json
 src, dst, name, minutes = sys.argv[1:]
 zi = zipfile.ZipFile(src)
@@ -27,11 +19,14 @@ with zipfile.ZipFile(dst, "w", zipfile.ZIP_DEFLATED) as zo:
     for i in zi.infolist():
         d = zi.read(i)
         if i.filename.split("/")[-1] == "manifest.json" and i.filename.count("/") <= 1:
-            m = json.loads(d); m["name"] = name; m["minutes"] = int(minutes); d = json.dumps(m).encode()
+            m = json.loads(d); m["name"] = name
+            if minutes: m["minutes"] = int(minutes)
+            d = json.dumps(m).encode()
         zo.writestr(i.filename, d)
 PY
+done
 docker run --rm --network host --ipc=host --user "$(id -u):$(id -g)" -e HOME=/tmp \
-  -e E2E_BASE="http://127.0.0.1:${ILAB_TEST_PORT:-8766}" -e E2E_NAME -e E2E_NAME_1M -e E2E_ZIP=/work/tests/out/e2e-set.zip -e E2E_ZIP_1M=/work/tests/out/e2e-set-1m.zip -v "$ROOT":/work \
+  -e E2E_BASE="http://127.0.0.1:${ILAB_TEST_PORT:-8766}" -e E2E_NAME -e E2E_NAME_1M -e E2E_NAME_RUN -e E2E_NAME_RACE -e E2E_ZIP=/work/tests/out/$E2E_NAME.zip -e E2E_ZIP_1M=/work/tests/out/$E2E_NAME_1M.zip -e E2E_ZIP_RUN=/work/tests/out/$E2E_NAME_RUN.zip -e E2E_ZIP_RACE=/work/tests/out/$E2E_NAME_RACE.zip -v "$ROOT":/work \
   mcr.microsoft.com/playwright:v1.56.0-noble bash -ec '
 mkdir -p /tmp/pw && cd /tmp/pw
 npm init -y >/dev/null && npm i @playwright/test@1.56.0 >/dev/null
