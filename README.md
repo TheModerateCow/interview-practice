@@ -67,8 +67,9 @@ or `tests/e2e.sh`, then `tests/stack.sh down`.
 CI (GitHub Actions) runs only what a change can affect:
 - `.github/workflows/catalog.yml` gates catalog problems per language in the runner images. `tools/ci_affected.py` maps the changed
   files to the gates: a problem's `<lang>/` files → that problem in that language; its shared files (`api.json`, `cases/`,
-  statement) → that problem in every language; a language backend (`backend/lab/langs/<lang>*`) → every problem in that
-  language; the grader core (`variants.py`, `backend/sandbox/`, the backend image) → everything. One job per language.
+  statement) → that problem in every language; a language backend (`backend/lab/langs/<lang>*`) → the canaries (`tests/fixture`, which covers every
+  harness feature, and `quota-codebase`) in that language; the grader core (`variants.py`, `backend/sandbox/`, the backend
+  image) → the canaries in all three. One job per language. Re-gating the whole catalog is a manual run (Actions → Catalog).
 - `.github/workflows/ci.yml` builds the UI when `ui/**` changes.
 - `.github/workflows/full.yml` runs `tests/run_all.sh` only on a merge to `main` that touches app code, on demand
   (Actions → Full suite → Run workflow), or on a PR when you add the `full-suite` label.
