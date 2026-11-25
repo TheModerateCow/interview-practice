@@ -93,7 +93,7 @@ body { background: var(--bg); color: var(--fg); font: 400 var(--t-body)/var(--t-
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 code, kbd, pre, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 .label { font-size: var(--t-label); letter-spacing: var(--t-label-ls); text-transform: uppercase; color: var(--fg-3); font-weight: 500; }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { *, ::before, ::after { transition: none !important; animation: none !important; } }
 
 /* ---------- buttons: accent (Submit only) · outline · ghost · danger ---------- */
 .btn { display: inline-flex; align-items: center; gap: var(--s-2); height: 34px; padding: 0 var(--s-4);
@@ -131,3 +131,14 @@ code, kbd, pre, .mono { font-family: var(--font-mono); font-variant-numeric: tab
 .timer { font: 400 var(--t-timer)/1 var(--font-mono); letter-spacing: -.04em; font-variant-numeric: tabular-nums; color: var(--fg); }
 .timer.low { color: var(--timer-low-fg); background: var(--timer-low-bg); border-radius: var(--r-sm); box-shadow: 0 0 0 .12em var(--timer-low-bg); }
 .timer.over { color: var(--fail); }
+
+/* ---------- loading: a turning ring and words for what is happening ---------- */
+/* Shown only once a wait passes 300 ms. The ring takes the text colour, so it works on bg, buttons and toasts. */
+.loading { display: inline-flex; align-items: center; gap: var(--s-2); }
+.loading::before { content: ""; flex: none; width: .85em; height: .85em; border-radius: 50%;
+  border: 1.5px solid color-mix(in srgb, currentColor 25%, transparent); border-top-color: currentColor;
+  animation: loading-in var(--dur) var(--ease) 300ms both, loading-turn 800ms linear infinite; }
+.loading.block { display: flex; flex: 1; align-items: center; justify-content: center; padding: var(--s-5);
+  color: var(--fg-3); font-size: var(--t-small); animation: loading-in var(--dur) var(--ease) 300ms both; }
+@keyframes loading-turn { to { transform: rotate(360deg); } }
+@keyframes loading-in { from { opacity: 0; } }

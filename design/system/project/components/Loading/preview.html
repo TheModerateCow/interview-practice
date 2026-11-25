@@ -1,0 +1,15 @@
+<!-- @dsCard group="Feedback" height=200 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><style>body{display:block;height:auto;padding:16px} .row{display:flex;flex-wrap:wrap;gap:16px;align-items:center} .col{display:grid;gap:12px} .pane{display:grid;height:72px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm)}</style></head>
+<body>
+<div id="root" class="col">
+<div class="row">
+  <span class="busy loading" role="status">Ending: running hidden tests one last time…</span>
+  <button class="btn btn-solid btn-lg" type="button" disabled><span class="loading">Starting…</span></button>
+  <div class="toast" style="position:static" role="status"><span class="loading">Importing rate-limiter.zip…</span></div>
+</div>
+<div class="pane"><div class="loading block" role="status">Running hidden tests…</div></div>
+</div>
+</body>
+</html>

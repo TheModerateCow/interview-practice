@@ -29,7 +29,7 @@ Interview Lab is a local, timed coding-interview simulator. Everything on screen
 
 ## Layout
 
-- Three screens. **Drop**: one dashed drop zone filling the page, the only way to import a set. **Ready**: eyebrow (company · role · round), the title in `display`, pills for language, difficulty and minutes, the rules, then **Start interview**; the problem is never shown here. **Round**: header (wordmark, set picker, part chips, clock, theme switch), toolbar, then three panes: files (`surface`), editor over stdin and results, problem (`bg`).
+- Three screens. **Home**: the dashed drop zone, the only way to import a set, above the sets grouped In progress / Not started / Finished; the app opens here unless a round is in progress. **Ready**: eyebrow (company · role · round), the title in `display`, pills for language, difficulty and minutes, the rules, then **Start interview**; the problem is never shown here. **Round**: header (wordmark, set picker, part chips, clock, theme switch), toolbar, then three panes: files (`surface`), editor over stdin and results, problem (`bg`).
 - Spacing is a 4px grid: `s-1` … `s-8`. Toolbar gaps `s-2`, panel padding `s-3`–`s-5`, page sections `s-7`–`s-8`.
 - Radii are small: `r-md` (6px) for controls, `r-sm` for badges and rows, `r-xl` only for the drop zone and the ready and end cards; pills and part chips are `r-pill`.
 - Borders, not shadows. The one translucent layer is the end-of-round overlay.
@@ -40,6 +40,7 @@ Interview Lab is a local, timed coding-interview simulator. Everything on screen
 - Focus: a 2px solid `focus` ring with 2px offset on every interactive element.
 - Destructive or irreversible actions confirm inline, in the page, never with a browser dialog: End shows a `fail`-tinted bar with **End interview** and **Keep going**; Next part shows a neutral bar.
 - Motion is limited to `dur` (160ms) color transitions on `ease`. Nothing slides or bounces. `prefers-reduced-motion` turns transitions off.
+- Loading: a wait longer than 300 ms shows a small turning ring with words for what is happening ("Running hidden tests…"), in the one place the answer will appear. The ring is the only continuous motion; with `prefers-reduced-motion` it stands still.
 
 ## Iconography
 
@@ -48,4 +49,4 @@ Interview Lab is a local, timed coding-interview simulator. Everything on screen
 
 ## Components
 
-Buttons (accent · outline · ghost · danger · solid), confirm bars, the clock, verdict badges, part chips, pills, grade rows, the testcase table, the event log, the drop zone, the ready card, the code editor theme and the toast. Each has a guideline and a live preview under Components. All are plain HTML with the classes in `components/bundle.css`; there is no script bundle.
+Buttons (accent · outline · ghost · danger · solid), confirm bars, the clock, verdict badges, part chips, pills, grade rows, the testcase table, the event log, the drop zone, the ready card, the code editor theme, the toast and the loading ring. Each has a guideline and a live preview under Components. All are plain HTML with the classes in `components/bundle.css`; there is no script bundle.
