@@ -5,6 +5,7 @@ body { display: flex; flex-direction: column; }
 h1, h2, h3, h4 { font-weight: 400; margin: 0; text-wrap: balance; }
 .hidden { display: none !important; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+#dropzone, #ready, #problem, #results, #files { scrollbar-gutter: stable; }   /* the scrollbar coming and going never shifts content */
 .spacer { flex: 1; }
 .err { color: var(--fail); white-space: pre-wrap; margin: 0; }
 .muted { color: var(--fg-3); }
