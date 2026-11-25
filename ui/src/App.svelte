@@ -24,6 +24,7 @@
   let edReady = $state(false);      // Monaco has loaded
   let saveStatus = $state('');
   let askNext = $state(false), askEnd = $state(false), askDrop = $state(null);
+  let delSet = $state(null), delNoEl;   // the Home row whose Delete confirm is open
   let starting = $state(false), startErr = $state('');
   let dropErr = $state(''), healthMsg = $state('');
   let flash = $state({ text: '', bad: false, on: false, n: 0 });
@@ -283,8 +284,20 @@
     guarded('Ending: running hidden tests one last time', async () => { setState(await api('/sets/' + cur + '/end', { method: 'POST' })); openFinal(); });
   }
 
+  async function askDelete(s) { delSet = s; await flush(); delNoEl.focus(); }
+  async function doDelete() {
+    const s = delSet, my = nav; delSet = null;
+    try {
+      await api('/sets/' + s.name, { method: 'DELETE' });
+      if (LS.get('ilab-last') === s.name) LS.set('ilab-last', '');
+      const fresh = (await api('/sets')).sets; if (my === nav) sets = fresh;
+      showFlash(`Deleted ${s.title} (${s.name})`);
+    } catch (e) { showFlash(e.message, true); }
+  }
+
   function onKey(e) {
     if (e.key === 'Escape' && askDrop) { askDrop = null; return; }
+    if (e.key === 'Escape' && delSet) { delSet = null; return; }
     if (e.key === 'Escape' && finalOpen) { closeFinal(); return; }
     if (!(e.ctrlKey || e.metaKey) || !st || view !== 'round') return;
     if (e.key === "'") { e.preventDefault(); doRun(); }
@@ -413,11 +426,14 @@
         <details class="sets" open={status !== 'ended'}>
           <summary class="label">{label} · {list.length}</summary>
           {#each list as s (s.name)}
-            <button type="button" class="set-row" onclick={() => openSet(s.name)}>
-              <span class="set-title">{s.title}</span>
-              <span class="set-meta">{[ROUND[s.round] || s.round, LANGNAME[s.language] || s.language, status === 'running' && statusWords(s)].filter(Boolean).join(' · ')}</span>
-              <span class="set-name">{s.name}</span>
-            </button>
+            <div class="set-item">
+              <button type="button" class="set-row" onclick={() => openSet(s.name)}>
+                <span class="set-title">{s.title}</span>
+                <span class="set-meta">{[ROUND[s.round] || s.round, LANGNAME[s.language] || s.language, status === 'running' && statusWords(s)].filter(Boolean).join(' · ')}</span>
+                <span class="set-name">{s.name}</span>
+              </button>
+              {#if status !== 'running'}<button type="button" class="set-del" aria-label="Delete {s.title} ({s.name})" onclick={() => askDelete(s)}>Delete</button>{/if}
+            </div>
           {/each}
         </details>
       {/if}
@@ -527,6 +543,15 @@
       </div></div>
       <div class="actions"><button id="final-export" class="btn btn-solid" type="button" aria-label="Export" onclick={() => doExport().catch(e => showFlash(e.message, true))}>Export</button>
         <button id="final-close" class="btn btn-ghost" type="button" onclick={closeFinal}>Close</button></div>
+    </div>
+  {/if}
+</div>
+<div id="delete-confirm" class="overlay" class:hidden={!delSet} role="dialog" aria-modal="true" aria-label="Delete set">
+  {#if delSet}
+    <div class="final-card">
+      <p>Delete {delSet.title} ({delSet.name})? It leaves the app. Its folder moves to data/deleted/, and your exports stay in data/exports/.</p>
+      <div class="actions"><button id="delete-confirm-yes" class="btn btn-danger strong" type="button" onclick={doDelete}>Delete</button>
+        <button id="delete-confirm-no" bind:this={delNoEl} class="btn btn-ghost" type="button" onclick={() => (delSet = null)}>Keep</button></div>
     </div>
   {/if}
 </div>

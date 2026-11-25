@@ -9,8 +9,8 @@ SRC=tests/sets/_zips/rate-limiter-py.zip
 export E2E_NAME="e2e-$(date +%s)"
 export E2E_NAME_1M="$E2E_NAME-1m"
 export E2E_NAME_RUN="$E2E_NAME-run" E2E_NAME_RACE="$E2E_NAME-race"
-# one zip per (name, minutes) pair: main, 1 minute, and two for the "drop during page load" test
-for pair in "$E2E_NAME:" "$E2E_NAME_1M:1" "$E2E_NAME_RUN:" "$E2E_NAME_RACE:"; do
+# one zip per (name, minutes) pair: main, 1 minute, and two for the "drop during page load" test, two for the Home delete test
+for pair in "$E2E_NAME:" "$E2E_NAME_1M:1" "$E2E_NAME_RUN:" "$E2E_NAME_RACE:" "$E2E_NAME-del-a:" "$E2E_NAME-del-b:"; do
 python3 - "$SRC" "tests/out/${pair%%:*}.zip" "${pair%%:*}" "${pair##*:}" <<'PY'
 import sys, zipfile, json
 src, dst, name, minutes = sys.argv[1:]

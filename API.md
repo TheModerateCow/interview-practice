@@ -20,6 +20,7 @@ with a 4xx/5xx status. If Docker or the proxy is unreachable, the response is **
 | POST `/api/sets/<n>/submit` | | `{"results": {tag: grade JSON}, "revealed": ["l2.md", …], "state": state}` |
 | POST `/api/sets/<n>/next` | | state (reveals the next locked part, logged "asked to move on") |
 | POST `/api/sets/<n>/end` | | state (with `final`). Idempotent: waits for an in-flight Run/Submit, closes once and grades the unlocked tags once. After the deadline it closes as "time up" (`ended` = deadline) |
+| DELETE `/api/sets/<n>` | | Soft delete: moves the folder to `data/deleted/<name>-<YYYYmmdd-HHMMSS>/` and returns `{"name","title","moved_to"}`. Nothing is erased; `data/exports/` is untouched. 409 `{"error":"This round is in progress. End it first, then delete it."}` while the set is running or a Run/Submit/grade is busy; 404 for an unknown name |
 | GET `/api/sets/<n>/export` | | `application/zip` export.zip: submission/ (code now), final/ (code at the close, only if the round closed under this version), session.json, results.json, manifest.json |
 
 **grade JSON**: `{"status": "graded"|"did not finish"|"could not be graded"|"no tests selected", "passed", "total",

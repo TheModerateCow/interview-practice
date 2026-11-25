@@ -251,3 +251,44 @@ test('a drop during page load wins, and a round in progress is asked first', asy
   await expect(page.locator('#ready')).toContainText(title, { timeout: 30000 });
   await expect(page.locator('#drop-confirm')).toBeHidden();
 });
+
+test('Home: delete a finished and an unstarted set', async ({ page, request }) => {
+  const A = `${NAME}-del-a`, B = `${NAME}-del-b`;   // A is finished, B is not started
+  const api = async (p, o = {}) => request.fetch(BASE + p, { headers: H, ...o });
+  for (const n of [A, B]) {
+    const r = await api('/api/import', { method: 'POST', data: fs.readFileSync(`${OUT}/${n}.zip`) });
+    expect(r.status()).toBe(200);
+  }
+  await api(`/api/sets/${A}/start`, { method: 'POST' });
+  await api(`/api/sets/${A}/end`, { method: 'POST' });
+
+  await page.goto(BASE);
+  await page.waitForLoadState('networkidle');
+  if (await page.locator('#home-btn').isVisible()) await page.click('#home-btn');
+  const del = n => page.getByRole('button', { name: new RegExp(`^Delete .* \\(${n}\\)$`) });
+  const row = n => page.locator('.set-name', { hasText: new RegExp(`^${n}$`) });
+  await page.locator('summary', { hasText: 'Finished' }).click();   // Finished starts collapsed
+  await expect(del(A)).toBeVisible();
+  await expect(del(B)).toBeVisible();
+
+  // Keep and Esc leave the row
+  await del(A).click();
+  await expect(page.locator('#delete-confirm')).toContainText(`(${A})? It leaves the app. Its folder moves to data/deleted/, and your exports stay in data/exports/.`);
+  await expect(page.locator('#delete-confirm-no')).toBeFocused();
+  await page.click('#delete-confirm-no');
+  await expect(page.locator('#delete-confirm')).toBeHidden();
+  await del(A).click(); await page.keyboard.press('Escape');
+  await expect(page.locator('#delete-confirm')).toBeHidden();
+  await expect(row(A)).toHaveCount(1);
+
+  for (const n of [A, B]) {
+    await del(n).click();
+    await page.click('#delete-confirm-yes');
+    await expect(page.locator('#flash')).toContainText(`Deleted `);
+    await expect(page.locator('#flash')).toContainText(`(${n})`);
+    await expect(row(n)).toHaveCount(0);
+    expect((await api(`/api/sets/${n}`)).status()).toBe(404);
+  }
+  expect((await api('/api/import', { method: 'POST', data: fs.readFileSync(`${OUT}/${A}.zip`) })).status()).toBe(200);   // same zip imports again
+  await api(`/api/sets/${A}`, { method: 'DELETE' });
+});

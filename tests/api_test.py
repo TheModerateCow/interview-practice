@@ -502,5 +502,26 @@ def _():
     check("E: edit after deadline -> final after_time", fin.get("final") and all(g["after_time"] for g in fin["final"].values()), fin.get("final"))
 
 
+@sec("delete a set")
+def _():
+    n = uniq("t-del"); ht = ".hidden/test_hidden.py"
+    zb = mkzip({"manifest.json": json.dumps(manifest(n, "python", minutes=5, hidden_tests=ht)), "problem.md": "x",
+                "starter/main.py": "print('hi')\n", ht: "def test_ok():\n    assert True\n"})
+    names = lambda: [r["name"] for r in jreq("GET", "/api/sets")[1]["sets"]]
+    deleted = lambda: [d for d in os.listdir(os.path.join(DATA, "deleted")) if d.startswith(n + "-")] if os.path.isdir(os.path.join(DATA, "deleted")) else []
+    check("import", imp(zb)[0] == 200)
+    check("DELETE without X-ILab is refused", req("DELETE", f"/api/sets/{n}", hdr=False)[0] == 403 and n in names())
+    s, j = jreq("DELETE", f"/api/sets/{n}")
+    check("DELETE: 200 with name, title, moved_to", s == 200 and j.get("name") == n and j.get("title") == "T " + n and "/deleted/" in j.get("moved_to", ""), j)
+    check("gone from the list, folder under deleted/", n not in names() and len(deleted()) == 1 and not os.path.exists(os.path.join(DATA, "sets", n)) and os.path.isfile(os.path.join(DATA, "deleted", deleted()[0], "manifest.json")), deleted())
+    check("re-import the same zip", imp(zb)[0] == 200 and n in names())
+    jreq("POST", f"/api/sets/{n}/start")
+    s, j = jreq("DELETE", f"/api/sets/{n}")
+    check("running set: 409 with the message", s == 409 and j.get("error") == "This round is in progress. End it first, then delete it." and n in names(), (s, j))
+    jreq("POST", f"/api/sets/{n}/end")
+    check("ended set can be deleted; second copy kept too", jreq("DELETE", f"/api/sets/{n}")[0] == 200 and n not in names() and len(deleted()) == 2, deleted())
+    check("unknown name: 404", jreq("DELETE", "/api/sets/no-such-set")[0] == 404)
+
+
 print(f"\n{'ALL PASSED' if not fails else f'{fails} FAILED'}")
 sys.exit(1 if fails else 0)
