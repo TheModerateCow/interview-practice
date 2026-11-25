@@ -75,6 +75,8 @@ body.over:not(:has(#dropzone:not(.hidden)))::after { content: "Release to import
 #newfile:focus { border-color: var(--line-strong); background: var(--bg); }
 #editor-wrap { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 #editor { flex: 1; min-height: 120px; }
+.editor-box { position: relative; flex: 1; display: flex; flex-direction: column; min-height: 120px; }
+.loading.cover { position: absolute; inset: 0; z-index: 1; background: var(--bg); }   /* over the editor until Monaco loads */
 #bottom { display: grid; grid-template-columns: minmax(160px, 30%) minmax(0, 1fr); height: 36%; min-height: 120px; border-top: 1px solid var(--line); background: var(--surface); }
 .stdin-wrap { display: grid; grid-template-rows: auto 1fr; gap: var(--s-1); padding: var(--s-3); border-right: 1px solid var(--line); min-height: 0; }
 #stdin { resize: none; padding: var(--s-2); font: var(--t-code)/var(--t-code-lh) var(--font-mono); min-height: 0; }

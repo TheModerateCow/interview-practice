@@ -18,6 +18,9 @@
   let results = $state(null);       // results pane: null | {kind: 'empty' | 'err' | 'run' | 'grades', ...}
   let finalOpen = $state(false);
   let busy = $state('');            // label of the running action; '' when idle
+  let loading = $state('Loading sets');   // page-level wait while no screen is shown
+  let importing = $state('');       // file name of a zip being imported
+  let edReady = $state(false);      // Monaco has loaded
   let saveStatus = $state('');
   let askNext = $state(false), askEnd = $state(false);
   let starting = $state(false), startErr = $state('');
@@ -67,7 +70,7 @@
     change: () => { dirty = true; saveStatus = 'Unsaved'; clearTimeout(saveT); saveT = setTimeout(save, 800); },
     run: () => doRun(),
     submit: () => doSubmit(),
-  }).then(e => (ed = e));
+  }).then(e => { ed = e; edReady = true; });
 
   async function openFile(p) {
     await save();
@@ -129,18 +132,20 @@
 
   async function goHome() {
     await leaveSet();
-    cur = null; screen('home');
+    cur = null; loading = ''; screen('home');
     try { sets = (await api('/sets')).sets; } catch (e) {}   // fresh statuses: rounds may have timed out
   }
 
   async function openSet(name) {
     await leaveSet();
     cur = name; LS.set('ilab-last', name);
+    screen(''); loading = 'Opening ' + (sets.find(s => s.name === name)?.title || name);
     try {
       const i = await api('/sets/' + name);
       if (i.status === 'ready') { info = i; starting = false; startErr = ''; screen('ready'); return; }
       await enterRound(await api('/sets/' + name + '/state'));
     } catch (e) { screen('ready'); readyErr = e.message; }
+    finally { loading = ''; }
   }
 
   async function startRound() {
@@ -186,6 +191,7 @@
   async function autoClose() {
     if (closing || busy || Date.now() - closeTry < 5000) return;
     closing = true; closeTry = Date.now(); const name = cur;
+    busy = 'Time is up: running hidden tests one last time';
     try {
       await save();
       const s = await api('/sets/' + name + '/end', { method: 'POST' });
@@ -193,7 +199,7 @@
       closeErr = false; setState(s); openFinal();
     } catch (e) {
       if (name === cur && !closeErr) { closeErr = true; results = { kind: 'err', msg: 'Time is up but the round could not be closed: ' + e.message + ' Retrying.' }; }
-    } finally { closing = false; }
+    } finally { closing = false; busy = ''; }
   }
 
   const openFinal = () => { if (st) finalOpen = true; };
@@ -215,6 +221,7 @@
 
   function doRun() {
     guarded('Running', async () => {
+      results = { kind: 'loading', msg: 'Running ' + (curFile || 'your code') };
       const r = await api('/sets/' + cur + '/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ file: curFile, stdin }) });
       results = { kind: 'run', r, late: !!st.ended };
     });
@@ -222,6 +229,7 @@
 
   function doMyTests() {
     guarded('Running your tests', async () => {
+      results = { kind: 'loading', msg: 'Running your tests' };
       const g = await api('/sets/' + cur + '/mytests', { method: 'POST' });
       results = { kind: 'grades', title: 'My tests', rows: { 'my tests': g }, names: true };
     });
@@ -231,6 +239,7 @@
     if (!st || !st.has_submit) return;
     guarded('Submitting', async () => {
       const was = st.ended;
+      results = { kind: 'loading', msg: 'Running hidden tests' };
       const r = await api('/sets/' + cur + '/submit', { method: 'POST' });
       results = { kind: 'grades', title: 'Hidden tests', rows: r.results, names: false };
       setState(r.state);
@@ -251,7 +260,7 @@
   async function askNextPart() { askNext = true; await flush(); nextNoEl.focus(); }
   function nextPart() {
     askNext = false;
-    guarded('Revealing', async () => {
+    guarded('Revealing the next part', async () => {
       const before = (st.parts || []).length;
       setState(await api('/sets/' + cur + '/next', { method: 'POST' }));
       if (st.parts.length > before) showFlash(UNLOCKED);
@@ -261,7 +270,7 @@
   async function askEndRound() { askEnd = true; await flush(); endNoEl.focus(); }
   function endRound() {
     askEnd = false;
-    guarded('Ending', async () => { setState(await api('/sets/' + cur + '/end', { method: 'POST' })); openFinal(); });
+    guarded('Ending: running hidden tests one last time', async () => { setState(await api('/sets/' + cur + '/end', { method: 'POST' })); openFinal(); });
   }
 
   function onKey(e) {
@@ -280,12 +289,13 @@
     e.preventDefault(); dragN = 0; over = false;
     const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
     if (!f) return;
-    dropErr = '';
+    dropErr = ''; importing = f.name;
     try {
       const { name } = await api('/import', { method: 'POST', body: await f.arrayBuffer() });
+      importing = '';
       await loadSets(name);
     } catch (err) {
-      dropErr = err.message;
+      importing = ''; dropErr = err.message;
       if (cur) showFlash('Import failed: ' + err.message, true);
     }
   }
@@ -352,6 +362,7 @@
   </div>
 </header>
 <div id="health" class="health" class:hidden={!healthMsg} role="alert">{healthMsg}</div>
+{#if !view && loading}<div class="loading block" role="status">{loading}…</div>{/if}
 
 <main id="dropzone" class:hidden={view !== 'home'} class:over>
   <div class="home">
@@ -388,7 +399,7 @@
       <h1>{info.title}</h1>
       <div class="pills"><span class="pill">{LANGNAME[info.language] || info.language}</span><span class="pill">{cap(info.difficulty)}</span><span class="pill mono">{info.minutes} min</span></div>
       {#if info.rules}<div class="rules md"><div class="label">Before you start</div>{@html md(info.rules)}</div>{/if}
-      <div class="go"><button id="start-btn" class="btn btn-solid btn-lg" type="button" aria-label="Start interview" disabled={starting} onclick={startRound}>{starting ? 'Starting…' : 'Start interview'}</button>
+      <div class="go"><button id="start-btn" class="btn btn-solid btn-lg" type="button" aria-label="Start interview" disabled={starting} onclick={startRound}>{#if starting}<span class="loading">Starting…</span>{:else}Start interview{/if}</button>
         <small>The clock starts when you press Start. The problem appears then.</small></div>
       <p id="start-err" class="err" role="alert">{startErr}</p>
     </div>
@@ -407,7 +418,7 @@
     <span id="end-bar" class="confirm-inline danger" class:hidden={!askEnd}>End now? Hidden tests run one last time and the clock stops.
       <button id="end-confirm" class="btn btn-danger strong" type="button" onclick={endRound}>End interview</button><button id="end-no" bind:this={endNoEl} class="btn btn-ghost" type="button" onclick={() => (askEnd = false)}>Keep going</button></span>
     <span class="spacer"></span>
-    <span id="busy" class="busy" aria-live="polite">{busy ? busy + '…' : ''}</span>
+    <span id="busy" class="busy" aria-live="polite">{#if busy && results?.kind !== 'loading'}<span class="loading">{busy}…</span>{/if}</span>
     <span id="save-status" class="saved">{saveStatus}</span>
     <button id="export-btn" class="btn btn-ghost" type="button" aria-label="Export" disabled={!!busy} onclick={() => guarded('Exporting', doExport)}>Export</button>
   </div>
@@ -424,12 +435,17 @@
       <form id="newfile-form" onsubmit={addFile}><input id="newfile" bind:value={newfile} placeholder="+ New file" aria-label="New file path" autocomplete="off"></form>
     </aside>
     <section id="editor-wrap">
-      <div id="editor" bind:this={editorEl}></div>
+      <div class="editor-box">
+        {#if !edReady}<div class="loading block cover" role="status">Loading the editor…</div>{/if}
+        <div id="editor" bind:this={editorEl}></div>
+      </div>
       <div id="bottom">
         <div class="stdin-wrap"><label for="stdin" class="label">stdin</label><textarea id="stdin" bind:value={stdin} spellcheck="false" placeholder="Input for Run"></textarea></div>
         <div id="results" aria-live="polite">
           {#if results?.kind === 'empty'}
             <p class="empty">Run your code with <kbd>Ctrl '</kbd> or submit with <kbd>Ctrl ↵</kbd>. Results show here.</p>
+          {:else if results?.kind === 'loading'}
+            <div class="loading block" role="status">{results.msg}…</div>
           {:else if results?.kind === 'err'}
             <p class="err">{results.msg}</p>
           {:else if results?.kind === 'run'}
@@ -477,4 +493,5 @@
     </div>
   {/if}
 </div>
+{#if importing}<div class="toast" role="status"><span class="loading">Importing {importing}…</span></div>{/if}
 {#key flash.n}<div id="flash" class="toast" class:hidden={!flash.on} class:bad={flash.bad} role="status">{flash.text}</div>{/key}
