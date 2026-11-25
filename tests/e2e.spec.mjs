@@ -70,6 +70,7 @@ test('full interview flow', async ({ page, request }) => {
   await expect(page.locator('#start-btn')).toBeVisible();
   await shot('1-ready');
   await expect(page.locator('#ready-name')).toHaveText(NAME);
+  await expect(page.locator('#ready-assist')).toContainText('words already in your files');   // the e2e set is Python
   await page.click('#set-picker');
   await expect(page.locator(`#set-picker-list [data-value="${NAME}"]`)).toContainText(`${NAME} · not started`);
   await page.keyboard.press('Escape');

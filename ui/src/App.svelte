@@ -488,6 +488,8 @@
       <div id="ready-name" class="mono muted">{info.name}</div>
       <div class="pills"><span class="pill">{LANGNAME[info.language] || info.language}</span><span class="pill">{cap(info.difficulty)}</span><span class="pill mono">{info.minutes} min</span></div>
       {#if info.rules}<div class="rules md"><div class="label">Before you start</div>{@html md(info.rules)}</div>{/if}
+      <!-- the editor's built-in language services cover JS/TS only; other languages get word-based suggestions -->
+      <p id="ready-assist" class="assist">Autocomplete: {['javascript', 'typescript'].includes(info.language) ? 'suggests methods and types as you type.' : 'suggests only words already in your files, not library functions or methods.'}</p>
       <div class="go"><button id="start-btn" class="btn btn-solid btn-lg" type="button" aria-label="Start interview" disabled={starting} onclick={startRound}>{#if starting}<span class="loading">Starting…</span>{:else}Start interview{/if}</button>
         <small>The clock starts when you press Start. The problem appears then.</small></div>
       <p id="start-err" class="err" role="alert">{startErr}</p>
