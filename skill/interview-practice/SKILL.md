@@ -353,13 +353,13 @@ Other languages (C++, Rust, Kotlin, C#…): there's no runner here. Say so, and 
 - `starter/` — what the candidate gets. Hand-written for DSA, Levelled and TDD: signatures whose bodies fail loudly (`raise NotImplementedError`, `panic("not implemented")`, `throw new UnsupportedOperationException()`, `throw new Error("not implemented")`). The gate checks a hand-written starter passes **zero** hidden tests, so a stub returning `False` can't earn a free point.
 - `problem.md` — the statement the candidate sees.
 
-**Gate:** run `python3 $W/gate.py $W/set`. It runs the reference 3 times (to catch flaky timing), checks every mutant and bug is caught by its own phase, and checks each planted bug leaves the other phases passing. Every line must be PASS. If a mutant or bug survives, strengthen the tests (never weaken it). If a bug breaks another phase's tests, replace that bug. Re-run. Don't start the clock until it prints `GATE PASS`. Narrate outcomes only ("Building the repo.", "Fixed a weak test."), never the checks step by step.
+**Gate:** run `python3 $W/gate.py $W/set`. It runs the reference 3 times (to catch flaky timing), checks every mutant and bug is caught by its own phase, and checks each planted bug leaves the other phases passing. Every line must be PASS. If a mutant or bug survives, strengthen the tests (never weaken it). If a bug breaks another phase's tests, replace that bug. Re-run. Don't start the clock until it prints `GATE PASS`. If `pack.py` prints `NOT PACKED`, fix the named field and pack again. Narrate outcomes only ("Building the repo.", "Fixed a weak test."), never the checks step by step.
 
 ### Coding rounds in Interview Lab
 
 Every coding round (Codebase, Levelled, AI-assisted, TDD, DSA) is delivered through the Interview Lab app. Talking rounds stay in chat.
 
-**Delivery:** after `GATE PASS`, write `$W/set/manifest.json`, pack it with `pack.py`, and send `<name>.zip`. Tell the user: drag it into http://127.0.0.1:8765, read the ready screen, press Start. There is no other way to deliver a coding round. Grade only in the cloud workspace, never in their folder.
+**Delivery:** after `GATE PASS`, write `$W/set/manifest.json`, pack it with `pack.py`, and send `<name>.zip`. Tell the user: drag it into http://127.0.0.1:8765. The app confirms "Imported <title> (<name>)" and shows `<name>` under the title; press Start only if the name matches the zip you sent. If it says "Not imported", paste the message back here. There is no other way to deliver a coding round. Grade only in the cloud workspace, never in their folder.
 
 **Clock:** the app keeps time and Claude doesn't start `clock.py`. If Claude can reach the user's files, run `python3 ~/interview-lab/tools/status.py ~/interview-lab/data/sets/<name>`. It prints `left_min`, `used_min`, `ended` and `expired`. `ended` true means the round was closed early and the clock is frozen (say "ended with N min left", not "time is over"); `expired` true means time ran out. Without the script, left = `minutes - ((ended or now) - start)/60`. Otherwise ask the user to read the app. Never guess.
 
@@ -389,6 +389,7 @@ Every coding round (Codebase, Levelled, AI-assisted, TDD, DSA) is delivered thro
 - **Codebase pattern:** `tags ["test_p1_","test_p2_","test_p3_"]`. `problem.md` holds the overview, bug report and phase 2 spec; `p3.md` is revealed after `test_p2_` passes or 15 minutes are left: `reveal [{"file":".hidden/p3.md","after_tag":"test_p2_","or_minutes_left":15,"unlocks":"test_p3_"}]`.
 - **Levelled pattern:** `tags ["test_l1_",…,"test_l4_"]`. `problem.md` holds L1 only; `l2.md`–`l4.md` each reveal after the previous level's tag with `or_minutes_left` null, unlocking the next.
 - **DSA / TDD:** usually one tag and no `reveal`. Add `run_entry` + `testcases` for stdin/stdout practice.
+- **Every set gives the candidate a way to check their code besides Submit.** Always set `your_tests` to the language's convention (table above) and put one small example test in `starter/` for them to copy; it must not reveal hidden test names or cases. For Levelled and Codebase rounds also add a thin `run_entry` program that drives the class from stdin (Go: `cmd/run/main.go` in `package main` importing the module; Java: `Main.java`; Python/JS/TS: `main.py` / `main.js` / `main.ts`), with 1-2 `testcases` for L1 only.
 
 Example (Codebase, Python):
 ```json
@@ -462,7 +463,7 @@ Simulates working in code you didn't write.
    - **L2:** queries or ranking
    - **L3:** time-based behaviour (timestamps, scheduled or expiring operations)
    - **L4:** history, rollback or merging
-3. `starter/` stubs only the **L1** methods. Each later level's text (kept in `$W/set/levels/`, revealed one at a time) names the new methods the candidate adds to the same class. `problem.md` holds L1 only.
+3. `starter/` stubs only the **L1** methods. Each later level's text (kept in `$W/set/levels/`, revealed one at a time) names the new methods the candidate adds to the same class. `problem.md` holds L1 only. The starter also holds the `run_entry` program and the example test.
 4. About 5 tests per level (about 6 at Hard) (`test_l1_` … `test_l4_`) and one mutant per level with its `k`.
 5. Exact quantities (money, counts, stock) use integers or the language's decimal type. Timestamps are integers passed in by the caller (never the system clock), so tests are deterministic.
 

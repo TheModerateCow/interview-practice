@@ -1,7 +1,7 @@
 # Interview Lab
 
 A local, Docker-only app for timed coding-interview practice. Claude (`/interview-practice`) sends you a set `.zip`.
-Drag it onto http://127.0.0.1:8765, read the ready screen, press **Start**. Run, Submit, Next part, End, then Export.
+Drag it onto http://127.0.0.1:8765. The app says "Imported <title> (<name>)" and shows the name under the title; press **Start** only if the name matches. If it says "Not imported", paste the message back to Claude. Run, Submit, Next part, End, then Export.
 Send `export.zip` back to Claude for the debrief.
 
 ## Install / remove
