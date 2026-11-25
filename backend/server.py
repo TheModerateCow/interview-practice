@@ -252,6 +252,8 @@ def run(n, body):
     try: r = runner.run(lang, files, f, stdins)
     finally: lk.release()
     if r["compile"] and not r["compile"]["ok"]:
+        if r["compile"]["log"].startswith("Nothing to run") and not m.get("your_tests"):   # no My tests button: don't point at it
+            r["compile"]["log"] = r["compile"]["log"].split(" Test it with")[0] + " Check it with Submit.\n"
         out = {"compile": r["compile"], "stdin_case": None, "testcases": [], "memory_kb": None, "verdict": "Compile Error"}
     else:
         cases = r["cases"]
