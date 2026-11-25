@@ -324,7 +324,7 @@ test('Catalog: filter, then pick a problem to open an attempt', async ({ page, r
   await page.click(`#catalog [data-problem="${p.id}"]`);
   await expect(page.locator('#ready')).toBeVisible();
   await expect(page.locator('#ready h1')).toHaveText(p.title);
-  await expect(page.locator('#ready-name')).toHaveText(new RegExp(`^${p.id}-\\d+$`));
+  await expect(page.locator('#ready-name')).toHaveText(new RegExp(`^${p.id}-([a-z]+-)?\\d+$`));
   await page.click('#home-btn');
   await page.click('#f-round');
   await page.click('#f-round-list [data-value=""]');   // back to all

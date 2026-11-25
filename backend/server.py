@@ -75,7 +75,7 @@ def r_catalog(): return catalog.listing()
 
 
 @app.post("/api/catalog/<n>/attempt")
-def r_attempt(n): return catalog.start_attempt(n)
+def r_attempt(n): return catalog.start_attempt(n, json.loads(body(MAX_FILE) or b"{}").get("language"))
 
 
 @app.get("/api/sets")

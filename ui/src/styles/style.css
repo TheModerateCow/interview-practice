@@ -33,6 +33,12 @@ input { height: 32px; padding: 0 var(--s-3); }
 .filters { display: flex; gap: var(--s-2); flex-wrap: wrap; }
 .set-title .pill { margin-left: var(--s-2); vertical-align: middle; }
 .set-row:disabled { cursor: progress; }
+.langs { display: flex; gap: var(--s-1); padding-right: var(--s-2); }
+.lang-chip { font: inherit; font-size: var(--t-small); padding: 2px var(--s-2); border: 1px solid var(--line-strong); border-radius: var(--r-pill, 999px); background: transparent; color: var(--fg-2); cursor: pointer; }
+.lang-chip.usual { border-color: var(--fg); color: var(--fg); }
+.lang-chip:hover { background: var(--surface); }
+.lang-chip:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+.lang-chip:disabled { cursor: progress; }
 .sets summary { padding: var(--s-2) 0; cursor: pointer; }
 .set-row { display: grid; grid-template-columns: 1fr auto; gap: 2px var(--s-4); width: 100%; padding: var(--s-3) var(--s-2);
   border: 0; border-bottom: 1px solid var(--line); background: none; color: var(--fg); font: inherit; text-align: left; cursor: pointer; }

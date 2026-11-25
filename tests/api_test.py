@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Acceptance tests against the isolated test stack (tests/stack.sh up: http://127.0.0.1:8766). stdlib only."""
-import glob, http.client, io, json, os, random, socket, subprocess, sys, time, traceback, zipfile
+import glob, http.client, io, json, os, random, shutil, socket, subprocess, sys, time, traceback, zipfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.environ.get("ILAB_TEST_DATA", os.path.join(ROOT, "tests/out/stack-data"))   # the test stack's /data
@@ -567,27 +567,47 @@ def _():
     s, j = jreq("GET", "/api/catalog"); ps = j.get("problems", [])
     built = [p for p in ps if p.get("source") == "builtin"]
     check("catalog lists the built-in problems with ready-screen fields", s == 200 and len(built) >= 10 and all(p.get("id") and p.get("title") and p.get("round") and p.get("language") and "attempts" in p for p in ps), j)
+    sys.path.insert(0, os.path.join(ROOT, "backend")); from lab import variants
+    for d in sorted(glob.glob(os.path.join(ROOT, "catalog", "*", "problem.json"))):
+        d = os.path.dirname(d); pid = os.path.basename(d)
+        for lang in variants.languages(d):
+            t = f"/tmp/_cat/{pid}/{lang}"; shutil.rmtree(t, ignore_errors=True); variants.write(variants.render(d, lang), t)
+            for f in os.listdir(os.path.join(t, ".hidden")): shutil.copy(os.path.join(t, ".hidden", f), os.path.join(t, f))
+            r = subprocess.run([sys.executable, os.path.join(ROOT, "tools", "pack.py"), t, "/tmp/_cat.zip"], capture_output=True, text=True)
+            check(f"sanity: catalog/{pid} renders a valid {lang} set", r.returncode == 0 and "packed" in r.stdout, r.stdout + r.stderr)
+            check(f"sanity: answers/{pid}/{lang} has the reference", os.path.isdir(os.path.join(ROOT, "answers", pid, lang, "reference")))
     for d in sorted(glob.glob(os.path.join(ROOT, "catalog", "*", "manifest.json"))):
         d = os.path.dirname(d); r = subprocess.run([sys.executable, os.path.join(ROOT, "tools", "pack.py"), d, "/tmp/_cat.zip"], capture_output=True, text=True)
         check(f"sanity: catalog/{os.path.basename(d)} is a valid set", r.returncode == 0 and "packed" in r.stdout, r.stdout + r.stderr)
-    for d in sorted(glob.glob(os.path.join(ROOT, "catalog", "*", "manifest.json"))):
+    for d in sorted(glob.glob(os.path.join(ROOT, "catalog", "*", "manifest.json"))):   # old-layout problems
         pid = os.path.basename(os.path.dirname(d)); ans = os.path.join(ROOT, "answers", pid)
         check(f"sanity: answers/{pid} has the reference and the same hidden tests", os.path.isdir(os.path.join(ans, "reference"))
               and all(open(os.path.join(ROOT, "catalog", pid, ".hidden", f), "rb").read() == open(next(p for p in (os.path.join(ans, f), os.path.join(ans, "levels", f)) if os.path.exists(p)), "rb").read()
                       for f in os.listdir(os.path.join(ROOT, "catalog", pid, ".hidden"))))
+    multi = next((x for x in built if len(x.get("languages", [])) > 1), None)
+    if multi:
+        q = multi["id"]; l1, l2 = multi["languages"][:2]
+        s1, x1 = jreq("POST", f"/api/catalog/{q}/attempt", {"language": l1}); s2, x2 = jreq("POST", f"/api/catalog/{q}/attempt", {"language": l2})
+        check("a problem in two languages: one attempt per language, named <id>-<lang>-<k>", s1 == s2 == 200 and x1["name"] == f"{q}-{l1}-1"
+              and x2["name"] == f"{q}-{l2}-1" and x1["language"] == l1 and x2["language"] == l2, (x1, x2))
+        m2 = json.load(open(os.path.join(DATA, "sets", x2["name"], "manifest.json")))
+        check("the attempt is a set in that language", m2.get("language") == l2 and m2.get("problem") == q, m2)
+        check("several languages need a language", jreq("POST", f"/api/catalog/{q}/attempt")[0] == 400)
+        check("an unknown language is refused", jreq("POST", f"/api/catalog/{q}/attempt", {"language": "cobol"})[0] == 400)
+    else: skip("problem in two languages", "no catalog problem has two languages yet")
     p = built[0]["id"] if built else "none"
     row = lambda: next((x for x in jreq("GET", "/api/catalog")[1]["problems"] if x["id"] == p), {})
-    s, a = jreq("POST", f"/api/catalog/{p}/attempt")
+    s, a = jreq("POST", f"/api/catalog/{p}/attempt", {"language": built[0]["languages"][0]} if built else {})
     check("attempt: a copy named <id>-<k>, not reused", s == 200 and a.get("name", "").startswith(p + "-") and a.get("reused") is False, a)
     m = json.load(open(os.path.join(DATA, "sets", a["name"], "manifest.json"))) if s == 200 else {}
     check("the attempt's manifest has its own name and the problem it came from", m.get("name") == a.get("name") and m.get("problem") == p, m)
     check("the attempt opens on the ready screen and lists its problem", jreq("GET", f"/api/sets/{a.get('name')}")[1].get("status") == "ready"
           and any(x["name"] == a.get("name") and x.get("problem") == p for x in jreq("GET", "/api/sets")[1]["sets"]))
-    check("picking again while unstarted: the same attempt", jreq("POST", f"/api/catalog/{p}/attempt")[1] == {"name": a["name"], "title": a["title"], "reused": True})
+    check("picking again while unstarted: the same attempt", jreq("POST", f"/api/catalog/{p}/attempt", {"language": a.get("language")})[1] == a | {"reused": True})
     jreq("POST", f"/api/sets/{a['name']}/start")
-    check("picking while it runs: back to the running attempt", jreq("POST", f"/api/catalog/{p}/attempt")[1].get("name") == a["name"])
+    check("picking while it runs: back to the running attempt", jreq("POST", f"/api/catalog/{p}/attempt", {"language": a.get("language")})[1].get("name") == a["name"])
     jreq("POST", f"/api/sets/{a['name']}/end")
-    s, c = jreq("POST", f"/api/catalog/{p}/attempt")
+    s, c = jreq("POST", f"/api/catalog/{p}/attempt", {"language": a.get("language")})
     check("after it finished: a new attempt", s == 200 and c.get("name") not in (None, a["name"]) and c.get("reused") is False, c)
     check("the catalog counts the finished attempt", row().get("attempts", 0) >= 1 and row().get("last") == "ended", row())
     n = uniq("t-cat"); ht = ".hidden/test_hidden.py"
