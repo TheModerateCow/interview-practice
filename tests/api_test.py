@@ -437,6 +437,21 @@ def _():
         check(f"compose port {svc} {port} publishes nothing", r.stdout.strip() in ("", ":0"), r.stdout + r.stderr)
 
 
+@sec("sets say which is which")
+def _():
+    n = uniq("t-names"); ht = ".hidden/test_hidden.py"
+    z = {"manifest.json": json.dumps(manifest(n, "python", minutes=5, hidden_tests=ht)), "problem.md": "x",
+         "starter/main.py": "print('hi')\n", ht: "def test_ok():\n    assert True\n"}
+    check("import", imp(mkzip(z))[0] == 200)
+    row = lambda: next(r for r in jreq("GET", "/api/sets")[1]["sets"] if r["name"] == n)
+    r = row()
+    check("ready: minutes, left_s null", r["minutes"] == 5 and r["left_s"] is None and r["status"] == "ready", r)
+    jreq("POST", f"/api/sets/{n}/start"); r = row()
+    check("running: 0 < left_s <= minutes*60", r["status"] == "running" and 0 < r["left_s"] <= 300, r)
+    jreq("POST", f"/api/sets/{n}/end"); r = row()
+    check("ended: status ended, left_s null", r["status"] == "ended" and r["left_s"] is None, r)
+
+
 @sec("honest clock")
 def _():
     import threading

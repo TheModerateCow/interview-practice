@@ -470,7 +470,9 @@ def r_sets():
     out = []
     for n in sorted(os.listdir(SETS)):
         if NAME_RE.fullmatch(n) and os.path.isfile(os.path.join(SETS, n, "manifest.json")):
-            i = ready_info(n); out.append({k: i[k] for k in ("name", "title", "language", "round", "status")})
+            i = ready_info(n)
+            left = round(clock(session(n))[1] * 60) if i["status"] == "running" else None   # same rule as state.left_s
+            out.append({k: i[k] for k in ("name", "title", "language", "round", "minutes", "status")} | {"left_s": left})
     return {"sets": out}
 
 

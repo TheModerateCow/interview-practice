@@ -1,7 +1,7 @@
 <script>
   import { onMount, tick as flush } from 'svelte';
   import Dropdown from './Dropdown.svelte';
-  import { api, enc, LS, esc, md, ROUND, LANGNAME, cap, partName, mmss, vclass, langOf, darkMQ, monacoTheme, loadMonaco } from './lib.js';
+  import { api, enc, LS, esc, md, ROUND, LANGNAME, cap, partName, mmss, statusWords, vclass, langOf, darkMQ, monacoTheme, loadMonaco } from './lib.js';
 
   const THEMES = [['', 'Auto', 'Follow system'], ['light', 'Light'], ['dark', 'Dark']];
   const UNLOCKED = 'New part unlocked. The problem pane has it.';
@@ -180,7 +180,7 @@
     st = s;
     deadline = Date.now() + s.left_s * 1000;   // server "now" cancels out: left_s is relative to it
     const o = sets.find(x => x.name === cur);
-    if (o) { o.title = s.title; o.status = s.status; }
+    if (o) { o.title = s.title; o.status = s.status; o.left_s = s.left_s; }
   }
 
   async function poll() {
@@ -376,7 +376,7 @@
   <button id="home-btn" class="btn btn-ghost" class:hidden={!view || view === 'home'} type="button" onclick={goHome}>All sets</button>
   {#if sets.length && view !== 'home'}
     <Dropdown id="set-picker" label="Interview set" value={cur} onchange={openSet}
-      options={sets.map(s => ({ value: s.name, label: s.title, meta: s.status }))} />
+      options={sets.map(s => ({ value: s.name, label: s.title, meta: s.name + ' · ' + statusWords(s) }))} />
   {/if}
   <span class="spacer"></span>
   <div id="parts" class="parts" class:hidden={view !== 'round'} aria-label="Parts">
@@ -411,7 +411,7 @@
           {#each list as s (s.name)}
             <button type="button" class="set-row" onclick={() => openSet(s.name)}>
               <span class="set-title">{s.title}</span>
-              <span class="set-meta">{[ROUND[s.round] || s.round, LANGNAME[s.language] || s.language].filter(Boolean).join(' · ')}</span>
+              <span class="set-meta">{[ROUND[s.round] || s.round, LANGNAME[s.language] || s.language, status === 'running' && statusWords(s)].filter(Boolean).join(' · ')}</span>
               <span class="set-name">{s.name}</span>
             </button>
           {/each}
@@ -429,6 +429,7 @@
     <div class="ready-card">
       {#if eyebrow}<div class="eyebrow">{eyebrow}</div>{/if}
       <h1>{info.title}</h1>
+      <div id="ready-name" class="mono muted">{info.name}</div>
       <div class="pills"><span class="pill">{LANGNAME[info.language] || info.language}</span><span class="pill">{cap(info.difficulty)}</span><span class="pill mono">{info.minutes} min</span></div>
       {#if info.rules}<div class="rules md"><div class="label">Before you start</div>{@html md(info.rules)}</div>{/if}
       <div class="go"><button id="start-btn" class="btn btn-solid btn-lg" type="button" aria-label="Start interview" disabled={starting} onclick={startRound}>{#if starting}<span class="loading">Starting…</span>{:else}Start interview{/if}</button>
