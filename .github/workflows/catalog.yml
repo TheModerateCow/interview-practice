@@ -1,0 +1,61 @@
+# Gate catalog problems in the app's runner images: each answers/<id>/ must print GATE PASS, and packing it must give
+# exactly catalog/<id>/. PRs gate only the problems they touch (all of them when the grader or images change);
+# a manual run or a push to main gates everything.
+name: Catalog
+on:
+  pull_request:
+    paths: ["answers/**", "catalog/**", "backend/sandbox/**", "deploy/backend/**", "deploy/runner-python/**", "tools/pack.py"]
+  push:
+    branches: [main]
+    paths: ["answers/**", "catalog/**", "backend/sandbox/**", "deploy/backend/**", "deploy/runner-python/**", "tools/pack.py"]
+  workflow_dispatch:
+permissions: {contents: read}
+
+jobs:
+  list:
+    runs-on: ubuntu-latest
+    outputs: {ids: "${{ steps.ids.outputs.ids }}"}
+    steps:
+      - uses: actions/checkout@v7
+        with: {fetch-depth: 0}
+      - id: ids
+        env: {EVENT: "${{ github.event_name }}", BASE: "${{ github.base_ref }}"}
+        run: |
+          all=$(find answers -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | sort)
+          if [ "$EVENT" = pull_request ]; then
+            changed=$(git diff --name-only "origin/$BASE...HEAD")
+            if ! echo "$changed" | grep -qE '^(backend/sandbox|deploy|tools)/'; then   # only problems changed: gate those
+              all=$(comm -12 <(echo "$all") <(echo "$changed" | sed -nE 's#^(answers|catalog)/([^/]+)/.*#\2#p' | sort -u))
+            fi
+          fi
+          echo "ids=$(echo "$all" | jq -Rnc '[inputs | select(length > 0)]')" | tee -a "$GITHUB_OUTPUT"
+
+  gate:
+    needs: list
+    if: needs.list.outputs.ids != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix: {id: "${{ fromJSON(needs.list.outputs.ids) }}"}
+    env: {ID: "${{ matrix.id }}"}
+    steps:
+      - uses: actions/checkout@v7
+      - run: echo "ILAB_UID=$(id -u)" >> "$GITHUB_ENV" && echo "ILAB_GID=$(id -g)" >> "$GITHUB_ENV"
+      - name: Runner image for this problem's language
+        run: |
+          lang=$(jq -r .language "answers/$ID/manifest.json")
+          if [ "$lang" = python ]; then docker compose build -q ilab-python; exit; fi
+          img=$(sed -n "s/.*\"$lang\": os\.environ\.get(\"ILAB_IMG_[A-Z]*\", *\"\([^\"]*\)\").*/\1/p" backend/sandbox/runner.py)
+          docker pull -q "$img"
+      - name: Gate
+        run: |
+          out=$(docker compose run --rm -T -v "$PWD/answers/$ID:/set:ro" backend python3 gate.py /set 2>&1) || true
+          echo "$out" | grep -E '^(PASS|FAIL|GATE)' || echo "$out" | tail -30
+          echo "$out" | grep -q '^GATE PASS'
+      - name: Packing it gives exactly catalog/<id>/
+        run: |
+          python3 tools/pack.py "answers/$ID" "$RUNNER_TEMP/$ID.zip"
+          mkdir "$RUNNER_TEMP/packed" && unzip -q "$RUNNER_TEMP/$ID.zip" -d "$RUNNER_TEMP/packed"
+          diff -r "$RUNNER_TEMP/packed" "catalog/$ID"
