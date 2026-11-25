@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Acceptance tests against the running stack (http://127.0.0.1:8765). stdlib only."""
-import glob, http.client, io, json, os, random, socket, subprocess, sys, time, traceback, zipfile
+import atexit, glob, http.client, io, json, os, random, re, shutil, socket, subprocess, sys, time, traceback, zipfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data")
@@ -43,7 +43,21 @@ def mkzip(files):
     return b.getvalue()
 
 
-def uniq(p): return f"{p}-{random.randrange(16**6):06x}"
+MADE = []   # every set name this run creates; removed at exit
+
+
+def uniq(p):
+    n = f"{p}-{random.randrange(16**6):06x}"; MADE.append(n); return n
+
+
+@atexit.register
+def cleanup():
+    """Remove this run's sets and their exports, and nothing else: pass, fail or crash."""
+    for n in MADE:
+        if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", n): continue
+        shutil.rmtree(os.path.join(DATA, "sets", n), ignore_errors=True)
+        for z in glob.glob(os.path.join(DATA, "exports", glob.escape(n) + "-????????-??????.zip")): os.remove(z)
+    print(f"cleanup: removed this run's {len(MADE)} test sets and their exports", flush=True)
 
 
 def manifest(name, lang, **kw):

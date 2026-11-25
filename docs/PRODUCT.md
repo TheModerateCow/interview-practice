@@ -294,6 +294,6 @@ human typist).
 **Still open:**
 - Every action answers (F5, F9): repeated My tests clicks with no test files still look identical (the owner's round logged 10); imports have no success confirmation; the picker shows titles, not set names.
 - Debrief kit (F7): the export has no hidden tests, so a debrief needs the kept set folder.
-- Found during verification: dropping a zip within ~1 s of page load can be overridden by the app's own first load of the last-used set; `tests/api_test.py` leaves `t-*` sets started and unended in the user's picker.
+- Found during verification: dropping a zip within ~1 s of page load can be overridden by the app's own first load of the last-used set. (`tests/api_test.py` and `tests/e2e.sh` now remove the sets and exports they create on exit.)
 - 400 px layout: the editor is very short (pre-existing).
 - The synced copy of the skill under `~/.claude/skills/synced/` needs refreshing by the owner.

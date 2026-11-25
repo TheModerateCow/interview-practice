@@ -8,6 +8,15 @@ SRC=tests/sets/_zips/rate-limiter-py.zip
 [ -f "$SRC" ] || { echo "SKIP e2e: $SRC missing"; exit 0; }
 export E2E_NAME="e2e-$(date +%s)"
 export E2E_NAME_1M="$E2E_NAME-1m"
+# Remove this run's two sets and their exports on exit (pass or fail); nothing else in data/ is touched.
+cleanup() {
+  for n in "$E2E_NAME" "$E2E_NAME_1M"; do
+    rm -rf -- "data/sets/$n"
+    rm -f -- data/exports/"$n"-????????-??????.zip
+  done
+  echo "cleanup: removed $E2E_NAME and $E2E_NAME_1M"
+}
+trap cleanup EXIT
 python3 - "$SRC" "tests/out/e2e-set.zip" "$E2E_NAME" <<'PY'
 import sys, zipfile, json
 src, dst, name = sys.argv[1:]
