@@ -8,6 +8,10 @@ const NAME = process.env.E2E_NAME;
 const ZIP = process.env.E2E_ZIP;
 const NAME_1M = process.env.E2E_NAME_1M;
 const ZIP_1M = process.env.E2E_ZIP_1M;
+const NAME_RUN = process.env.E2E_NAME_RUN;
+const NAME_RACE = process.env.E2E_NAME_RACE;
+const ZIP_RUN = process.env.E2E_ZIP_RUN;
+const ZIP_RACE = process.env.E2E_ZIP_RACE;
 const OUT = '/work/tests/out';
 const REF = '/work/tests/sets/rate-limiter-py/reference';
 const H = { 'X-ILab': '1' };
@@ -16,6 +20,11 @@ const H = { 'X-ILab': '1' };
 async function pickSet(page, name) {
   await page.click('#set-picker');
   await page.click(`#set-picker-list [data-value="${name}"]`);
+}
+
+// Other tests share this stack, so a round may be running when a page loads: if the app asks before leaving it, say Open.
+async function openIfAsked(page) {
+  await page.locator('#drop-confirm-open').click({ timeout: 4000 }).catch(() => {});
 }
 
 function walk(d, base = d) {
@@ -40,13 +49,12 @@ test('full interview flow', async ({ page, request }) => {
   const dz = page.locator('#dropzone');
   const target = (await dz.count()) && (await dz.isVisible()) ? '#dropzone' : 'body';
   for (const t of ['dragenter', 'dragover', 'drop']) await page.dispatchEvent(target, t, { dataTransfer: dt });
+  await openIfAsked(page);
 
   // wait for the import to land, then make sure the ready screen shows this set
   await expect.poll(async () => (await api('/api/sets')).sets.some(s => s.name === NAME), { timeout: 30000 }).toBe(true);
   const info = await api(`/api/sets/${NAME}`);
-  try { await expect(page.locator('#ready')).toContainText(info.title, { timeout: 8000 }); }
-  catch { await pickSet(page, NAME).catch(() => page.getByText(info.title).first().click());
-          await expect(page.locator('#ready')).toContainText(info.title); }
+  await expect(page.locator('#ready')).toContainText(info.title);
   await shot('1-ready');
 
   // nothing leaks before Start
@@ -142,6 +150,7 @@ test('time up closes the round', async ({ page, request }) => {
     return d;
   }, bytes);
   for (const t of ['dragenter', 'dragover', 'drop']) await page.dispatchEvent('body', t, { dataTransfer: dt });
+  await openIfAsked(page);
   await expect.poll(async () => (await api('/api/sets')).sets.some(s => s.name === NAME_1M), { timeout: 30000 }).toBe(true);
   await pickSet(page, NAME_1M);
   await page.click('#start-btn');
@@ -165,4 +174,60 @@ test('time up closes the round', async ({ page, request }) => {
   const ev = s.events.map(e => e[1]).join(' | ');
   expect(ev).toContain('time up');
   expect(ev).not.toContain('end (after time)');
+});
+
+test('a drop during page load wins, and a round in progress is asked first', async ({ page, request }) => {
+  // a round in progress, so the page's own first load wants to reopen it
+  const imp = await request.post(`${BASE}/api/import`, { headers: H, data: fs.readFileSync(ZIP_RUN) });
+  expect(imp.ok()).toBeTruthy();
+  expect((await request.post(`${BASE}/api/sets/${NAME_RUN}/start`, { headers: H })).ok()).toBeTruthy();
+  const title = (await (await request.get(`${BASE}/api/sets/${NAME_RUN}/state`, { headers: H })).json()).title;
+  const bytes = Array.from(fs.readFileSync(ZIP_RACE));
+  const drop = async () => {
+    const dt = await page.evaluateHandle(b => {
+      const d = new DataTransfer();
+      d.items.add(new File([new Uint8Array(b)], 'race.zip', { type: 'application/zip' }));
+      return d;
+    }, bytes);
+    for (const t of ['dragenter', 'dragover', 'drop']) await page.dispatchEvent('body', t, { dataTransfer: dt });
+  };
+  const raceSet = async () => (await (await request.get(`${BASE}/api/sets`, { headers: H })).json()).sets.some(s => s.name === NAME_RACE);
+
+  // Stay (during page load, no waiting): nothing is imported, the round comes back and stays
+  await page.goto(BASE, { waitUntil: 'commit' });
+  await page.waitForFunction(() => document.body);
+  await drop();
+  await expect(page.locator('#drop-confirm')).toBeVisible({ timeout: 30000 });
+  await expect(page.locator('#drop-confirm-stay')).toBeFocused();
+  await page.screenshot({ path: `${OUT}/e2e-drop-confirm.png` });
+  await page.click('#drop-confirm-stay');
+  await expect(page.locator('#round')).toBeVisible({ timeout: 30000 });
+  await expect(page.locator('#drop-confirm')).toBeHidden();
+  expect(await raceSet()).toBe(false);
+
+  // Esc is Stay too
+  await drop();
+  await expect(page.locator('#drop-confirm')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#drop-confirm')).toBeHidden();
+  await expect(page.locator('#round')).toBeVisible();
+  expect(await raceSet()).toBe(false);
+
+  // Open, during page load: the dropped set's ready screen wins and stays
+  await page.goto(BASE, { waitUntil: 'commit' });
+  await page.waitForFunction(() => document.body);
+  await drop();
+  await expect(page.locator('#drop-confirm')).toBeVisible({ timeout: 30000 });
+  await page.click('#drop-confirm-open');
+  await expect(page.locator('#ready')).toContainText(title, { timeout: 30000 });
+  await expect(page.locator('#start-btn')).toBeVisible();
+  await page.waitForTimeout(3000);
+  await expect(page.locator('#ready')).toBeVisible();
+  await expect(page.locator('#round')).toBeHidden();
+  await expect(page.locator('#ready .err', { hasText: /\S/ })).toHaveCount(0);
+
+  // on a ready screen a drop needs no question
+  await drop();
+  await expect(page.locator('#ready')).toContainText(title, { timeout: 30000 });
+  await expect(page.locator('#drop-confirm')).toBeHidden();
 });
