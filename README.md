@@ -4,6 +4,8 @@ A local, Docker-only app for timed coding-interview practice. Claude (`/intervie
 Drag it onto http://127.0.0.1:8765. The app says "Imported <title> (<name>)" and shows the name under the title; press **Start** only if the name matches. If it says "Not imported", paste the message back to Claude. Run, Submit, Next part, End, then Export.
 Send `export.zip` back to Claude for the debrief.
 
+No set yet? Home's **Library** has ready-made sets (`presets/*.zip`). Click one to open a fresh copy (`<preset>-1`, `-2`, …) on its ready screen; an unstarted copy is reused, so you can retake a preset as often as you like. To add one, pack a gated set into `presets/` with `tools/pack.py` and rebuild; keep its source (with `reference/` and `mutants.json`) out of git, e.g. in `.private/presets/`, for debriefs.
+
 ## Install / remove
 ```
 deploy/install.sh      # docker compose up -d --build, pre-pulls runner images, adds an "Interview Lab" launcher
@@ -36,6 +38,7 @@ Only nginx publishes a port. The backend and proxy sit on internal networks. `/a
 | `backend/sandbox/gate.py` | The skill's gate.py, unchanged |
 | `backend/sandbox/images.py` | `/api/health` and the thread that keeps runner images pulled |
 | `ui/src/` | `App.svelte` the shell; `features/` one folder per screen (`home`, `ready`, `round`, `import`, `health`), `round/round.svelte.js` holds the round's state and actions; `components/` shared pieces; `lib/` API, Monaco and helpers; `styles/` CSS |
+| `presets/` | The Library: packed, gated sets baked into the backend image (`backend/lab/library.py`) |
 | `deploy/` | Everything that builds or runs the app: `docker-compose.yml`, the backend/nginx/runner-python Dockerfiles, `nginx.conf`, install/uninstall. The root `.env` points `docker compose` at it, so compose commands work from the repo root |
 | `tools/pack.py` | Packs a set dir into a zip (refuses reference/, mutants.json, bugs.json) |
 | `tools/status.py` | `python3 tools/status.py data/sets/<name>` → time left, from session.json |

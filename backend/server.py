@@ -4,7 +4,7 @@ from flask import Flask, Response, jsonify, request
 from waitress import serve
 from werkzeug.exceptions import HTTPException
 
-from lab import importer, rounds
+from lab import importer, library, rounds
 from sandbox import images, runner
 from lab.store import EXPORTS, NAME_RE, SETS, HTTPError, clock, ready_info, require_started, sdir, session, state, work_path
 
@@ -68,6 +68,14 @@ def r_health(): return images.health()
 
 @app.post("/api/import")
 def r_import(): return importer.do_import(body(importer.MAX_ZIP))
+
+
+@app.get("/api/library")
+def r_library(): return library.listing()
+
+
+@app.post("/api/library/<n>")
+def r_take(n): return library.take(n)
 
 
 @app.get("/api/sets")

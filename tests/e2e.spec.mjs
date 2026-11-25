@@ -307,6 +307,20 @@ test('Home: delete a finished and an unstarted set', async ({ page, request }) =
   await api(`/api/sets/${A}`, { method: 'DELETE' });
 });
 
+test('Library: a preset opens a copy on the ready screen', async ({ page, request }) => {
+  const lib = await (await request.get(`${BASE}/api/library`, { headers: H })).json();
+  const p = lib.presets[0];
+  await page.goto(BASE);
+  await page.waitForLoadState('networkidle');
+  await openIfAsked(page);
+  if (await page.locator('#home-btn').isVisible()) await page.click('#home-btn');
+  await expect(page.locator('#library summary')).toContainText('Library');
+  await page.click(`#library [data-preset="${p.name}"]`);
+  await expect(page.locator('#ready')).toBeVisible();
+  await expect(page.locator('#ready h1')).toHaveText(p.title);
+  await expect(page.locator('#ready-name')).toHaveText(new RegExp(`^${p.name}-\\d+$`));
+});
+
 test('panes resize and remember', async ({ page, request }) => {
   const api = async p => (await request.get(BASE + p, { headers: H })).json();
   await page.goto(BASE);

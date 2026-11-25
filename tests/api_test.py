@@ -562,5 +562,26 @@ def _():
     check("goiso: the failure is the panic, not 'did not run'", "did not run" not in json.dumps(r) and "panic" in r.get("last_error", ""), r)
 
 
+@sec("preset library")
+def _():
+    s, j = jreq("GET", "/api/library"); ps = j.get("presets", [])
+    check("library lists the shipped presets with ready-screen fields", s == 200 and ps and all(p.get("name") and p.get("title") and p.get("round") for p in ps), j)
+    p = ps[0]["name"] if ps else "none"
+    pdir = lambda n: os.path.join(DATA, "sets", n)
+    s, a = jreq("POST", f"/api/library/{p}")
+    check("take: a copy named <preset>-<k>, not reused", s == 200 and a.get("name", "").startswith(p + "-") and a.get("reused") is False, a)
+    m = json.load(open(os.path.join(pdir(a["name"]), "manifest.json"))) if s == 200 else {}
+    check("the copy's manifest has its own name and the preset it came from", m.get("name") == a.get("name") and m.get("preset") == p, m)
+    check("the copy opens on the ready screen", jreq("GET", f"/api/sets/{a.get('name')}")[1].get("status") == "ready")
+    s, b = jreq("POST", f"/api/library/{p}")
+    check("take again while unstarted: the same copy, reused", s == 200 and b.get("name") == a.get("name") and b.get("reused") is True, b)
+    jreq("POST", f"/api/sets/{a['name']}/start")
+    s, c = jreq("POST", f"/api/library/{p}")
+    check("after Start: a new copy", s == 200 and c.get("name") not in (None, a["name"]) and c.get("name", "").startswith(p + "-") and c.get("reused") is False, c)
+    check("unknown preset: 404", jreq("POST", "/api/library/no-such-preset")[0] == 404)
+    check("library needs X-ILab", req("GET", "/api/library", hdr=False)[0] == 403)
+    jreq("POST", f"/api/sets/{a['name']}/end")
+
+
 print(f"\n{'ALL PASSED' if not fails else f'{fails} FAILED'}")
 sys.exit(1 if fails else 0)

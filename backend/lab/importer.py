@@ -2,13 +2,14 @@
 import io, json, os, re, shutil, uuid, zipfile
 
 from lab import pack   # tools/pack.py, copied in by deploy/backend/Dockerfile
-from lab.store import SETS, HTTPError, jload, lock
+from lab.store import SETS, HTTPError, jload, jsave, lock
 
 MAX_ZIP, MAX_FILES, MAX_UNPACKED = 50 << 20, 2000, 50 << 20
 DROP = ("reference/", "mutants.json", "bugs.json")   # never unpacked: the answers stay with Claude
 
 
-def do_import(body):
+def do_import(body, name=None, preset=None):
+    """name/preset: a Library copy, saved under its own name with the preset it came from."""
     if len(body) > MAX_ZIP: raise HTTPError(400, "zip is larger than 50 MB")
     try: z = zipfile.ZipFile(io.BytesIO(body))
     except zipfile.BadZipFile: raise HTTPError(400, "not a zip file")
@@ -38,6 +39,8 @@ def do_import(body):
     errs = pack.validate(m, lambda p: p in keep or (p.endswith("/") and any(k.startswith(p) for k in keep)),
                         read=lambda p: z.read(keep[p]))
     if errs: raise HTTPError(400, "This zip is not a valid Interview Lab set. Ask Claude to pack it again. Details: " + "; ".join(errs))
+    if name: m["name"] = name
+    if preset: m["preset"] = preset
     n = m["name"]
     dest = os.path.join(SETS, n)
     with lock(n):
@@ -57,6 +60,7 @@ def do_import(body):
                         total += len(chunk)
                         if total > MAX_UNPACKED: raise HTTPError(400, "zip unpacks to more than 50 MB")
                         out.write(chunk)
+            if name or preset: jsave(os.path.join(tmp, "manifest.json"), m)
             shutil.copytree(os.path.join(tmp, "starter"), os.path.join(tmp, "work"))
             shutil.rmtree(dest, ignore_errors=True)
             os.replace(tmp, dest)
