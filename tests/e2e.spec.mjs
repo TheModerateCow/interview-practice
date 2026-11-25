@@ -254,6 +254,7 @@ test('Home: delete a finished and an unstarted set', async ({ page, request }) =
   if (await page.locator('#home-btn').isVisible()) await page.click('#home-btn');
   const del = n => page.getByRole('button', { name: new RegExp(`^Delete .* \\(${n}\\)$`) });
   const row = n => page.locator('.set-name', { hasText: new RegExp(`^${n}$`) });
+  await page.locator('summary', { hasText: 'Finished' }).click();   // Finished starts collapsed
   await expect(del(A)).toBeVisible();
   await expect(del(B)).toBeVisible();
 
