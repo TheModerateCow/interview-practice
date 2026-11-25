@@ -84,7 +84,7 @@
 <Health />
 {#if !app.view && loading}<div class="loading block" role="status">{loading}…</div>{/if}
 
-<Home onopen={openSet} />
+<Home onopen={openSet} ontake={name => loadSets(name)} />
 <Ready shown={app.view === 'ready'} {info} err={readyErr} onstart={startRound} />
 <Round />
 

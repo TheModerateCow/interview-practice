@@ -9,6 +9,8 @@ with a 4xx/5xx status. If Docker or the proxy is unreachable, the response is **
 |---|---|---|
 | GET `/api/health` | | `{"ok": true, "docker": bool, "error": str\|null, "images": {"python": "ready"\|"pulling"\|"missing", "go":…, "java":…, "c":…, "javascript":…}}` |
 | POST `/api/import` | raw zip bytes | `{"name": n, "title": t, "replaced": bool}` (`replaced`: an unstarted copy of that name was replaced), or 400 `{"error": "clear message"}`. A zip that fails the manifest checks gets "This zip is not a valid Interview Lab set. Ask Claude to pack it again. Details: …"; a started set gets 409 "You already started <n>, so it can't be replaced. Ask Claude for a copy with a new name." |
+| GET `/api/library` | | `{"presets": [{"name","title","company","round","language","difficulty","minutes"}]}`: the preset sets shipped in `presets/*.zip` |
+| POST `/api/library/<preset>` | | `{"name": n, "title": t, "reused": bool}`. Opens a copy of the preset: an unstarted copy if one is waiting (`reused`), else imports a new `<preset>-<k>` whose manifest carries `"preset": "<preset>"`. 404 for an unknown preset |
 | GET `/api/sets` | | `{"sets": [{"name","title","language","round","minutes","left_s","status": "ready"\|"running"\|"ended"}]}`; `left_s` is seconds left, `null` unless running |
 | GET `/api/sets/<n>` | | Ready info **only**: `{"name","title","company","role","round","language","difficulty","minutes","rules","status"}`. Never the problem, tags, parts or files |
 | POST `/api/sets/<n>/start` | | state (below). The only thing that starts the clock. Starting again returns the existing state |

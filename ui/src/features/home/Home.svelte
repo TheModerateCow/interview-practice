@@ -1,10 +1,11 @@
 <script>
-  // Home: the drop zone and the sets grouped In progress / Not started / Finished, with Delete.
+  // Home: the drop zone, the sets grouped In progress / Not started / Finished with Delete, then the preset Library.
   import { tick as flush } from 'svelte';
   import { api } from '../../lib/api.js';
   import { LS, ROUND, LANGNAME, statusWords } from '../../lib/util.js';
   import { app, fetchSets, showFlash } from '../../app.svelte.js';
-  let { onopen } = $props();
+  import Library from '../library/Library.svelte';
+  let { onopen, ontake } = $props();
 
   const GROUPS = [['running', 'In progress'], ['ready', 'Not started'], ['ended', 'Finished']];
   let delSet = $state(null), delNoEl = $state();   // the row whose Delete confirm is open, and its Keep button
@@ -48,6 +49,7 @@
         </details>
       {/if}
     {/each}
+    <Library {ontake} />
   </div>
 </main>
 

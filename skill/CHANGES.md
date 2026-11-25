@@ -15,3 +15,4 @@
 - Languages: pinned runner image versions listed; Levelled Go/Java authoring rule (helpers use only the L1 API, imports used outside level tests) so the app can compile one level at a time.
 - When Claude runs on your machine (Claude Code): gate in the app's runner images (`docker compose run … backend python3 gate.py /set`) and save the zip to `~/Downloads/<name>.zip`.
 - Debrief: for Go/Java Levelled rounds that stopped early, re-grade each level against a copy of the hidden tests with other levels' test functions removed (otherwise the skill's unchanged grade.py can't compile them).
+- Languages: the per-tag compile rule now covers Codebase as well as Levelled sets (imports used outside phase tests, e.g. `var _ = time.Second`), and Go hidden-test helpers are prefixed `hidden` so they can't clash with the candidate's own test files.
