@@ -42,8 +42,7 @@ def run(n, body):
     files = work_files(n)
     if f not in files: raise HTTPError(404, f"{f} not found")
     tcs = m.get("testcases", []) if f == m.get("run_entry") else []
-    with_stdin = bool(stdin) or not tcs
-    stdins = ([stdin] if with_stdin else []) + [t.get("stdin", "") for t in tcs]
+    stdins = [stdin] + [t.get("stdin", "") for t in tcs]   # always one run with the stdin box, so Run always shows stdout
     lk = busy(n)
     try: r = runner.run(lang, files, f, stdins)
     finally: lk.release()
@@ -53,11 +52,13 @@ def run(n, body):
         out = {"compile": r["compile"], "stdin_case": None, "testcases": [], "memory_kb": None, "verdict": "Compile Error"}
     else:
         cases = r["cases"]
-        sc = cases[0] if with_stdin else None
+        sc = cases[0]
         tc = [c | {"expected": t["expected"], "stdin": t.get("stdin", ""),
                    "pass": c["verdict"] == "Accepted" and norm(c["stdout"]) == norm(t["expected"])}
-              for c, t in zip(cases[1 if with_stdin else 0:], tcs)]
-        bad = next((c["verdict"] for c in cases if c["verdict"] != "Accepted"), None)
+              for c, t in zip(cases[1:], tcs)]
+        # an empty stdin box next to testcases is only there to show stdout: the testcases decide the verdict
+        judged = cases[1:] if tcs and not stdin else cases
+        bad = next((c["verdict"] for c in judged if c["verdict"] != "Accepted"), None)
         verdict = bad or ("Wrong Answer" if any(not c["pass"] for c in tc) else "Accepted")
         out = {"compile": r["compile"], "stdin_case": sc, "testcases": tc, "memory_kb": r["memory_kb"], "verdict": verdict}
     mutate(n, lambda s, _: log(s, f"run {f}: {out['verdict']}" + (f", {sum(c['pass'] for c in out['testcases'])}/{len(tcs)} cases" if tcs else ""), t0))
