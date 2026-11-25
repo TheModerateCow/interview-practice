@@ -541,5 +541,26 @@ def _():
           c.get("ok") is False and "Nothing to run" in log and "flagstore" in log and "Check it with Submit." in log and "My tests" not in log, r)
 
 
+@sec("go: one panicking test doesn't stop the others")
+def _():
+    n = uniq("t-goiso"); ht = ".hidden/hidden_test.go"
+    z = {"manifest.json": json.dumps(manifest(n, "go", tags=["test_p1_"], hidden_tests=ht)), "problem.md": "x",
+         "starter/go.mod": "module flagstore\n\ngo 1.22\n",
+         "starter/store.go": ("package flagstore\n\ntype Store struct{ m map[string]bool }\n\n"
+                              "func NewStore() *Store { return &Store{m: map[string]bool{}} }\n\n"
+                              "func (s *Store) Create(k string) bool { if _, ok := s.m[k]; ok { return false }; s.m[k] = true; return true }\n\n"
+                              "func (s *Store) Get(k string) bool { panic(\"not implemented\") }\n"),
+         # the Get test runs first and panics; Create is finished and its test must still count
+         ht: ("package flagstore\n\nimport \"testing\"\n\n"
+              "func Test_p1_get(t *testing.T) { s := NewStore(); s.Create(\"a\"); if !s.Get(\"a\") { t.Fatal(\"get\") } }\n\n"
+              "func Test_p1_create_twice(t *testing.T) { s := NewStore(); if !s.Create(\"a\") || s.Create(\"a\") { t.Fatal(\"create\") } }\n")}
+    s, j = imp(mkzip(z)); check("goiso: import", s == 200, j)
+    jreq("POST", f"/api/sets/{n}/start")
+    s, sub = jreq("POST", f"/api/sets/{n}/submit")
+    r = sub.get("results", {}).get("test_p1_", {})
+    check("goiso: the finished function's test passes although another test panics", s == 200 and r.get("passed") == 1 and r.get("total") == 2, r)
+    check("goiso: the failure is the panic, not 'did not run'", "did not run" not in json.dumps(r) and "panic" in r.get("last_error", ""), r)
+
+
 print(f"\n{'ALL PASSED' if not fails else f'{fails} FAILED'}")
 sys.exit(1 if fails else 0)

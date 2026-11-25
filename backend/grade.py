@@ -84,10 +84,14 @@ def grade(files, tests, lang, k=None, limit=45, names=False):
         sh = (f"node --disable-warning=ExperimentalWarning --test --test-reporter=junit "
               f"--test-reporter-destination=/tmp/out/_r.xml{flt} {tq} > /tmp/out/log 2>&1; echo $? > /tmp/out/rc\n")
     elif lang == "go":
-        flt = f" {'-skip' if neg else '-run'} {q('(?i)' + re.escape(pat))}" if pat else ""
+        # One process per test: a panic in one test (e.g. a stub's panic("not implemented")) can't stop the others.
+        # Compiled once; test2json keeps the `go test -json` event format the parser below reads.
+        sel = f" | grep {'-viF' if neg else '-iF'} -- {q(pat)}" if pat else ""
         sh = ("[ -f go.mod ] || go mod init ilab >/dev/null 2>&1\n"
               "go test -list '.*' . > /tmp/out/list 2>&1; echo $? > /tmp/out/list.rc\n"
-              f"go test -json -count=1{flt} . > /tmp/out/log 2>/tmp/out/err; echo $? > /tmp/out/rc\n")
+              "go test -c -o /tmp/t.test . 2>/tmp/out/err\n"
+              f"for n in $(grep '^Test' /tmp/out/list{sel}); do go tool test2json -p ilab -t /tmp/t.test -test.v=test2json "
+              "-test.run \"^$n\\$\" >> /tmp/out/log 2>>/tmp/out/err; done\necho 0 > /tmp/out/rc\n")
     elif lang == "java":
         files["Runner.java"] = JAVA_RUNNER; files["Expect.java"] = runner.JAVA_EXPECT
         arg = (f" {q(pat)}" + (" not" if neg else "")) if pat else ""
