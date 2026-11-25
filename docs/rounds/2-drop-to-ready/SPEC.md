@@ -125,9 +125,9 @@ All references are to `main` at 6003d09.
 2. The tag check is a text match against the hidden-tests file, not a test run. A tag that only appears in a comment
    passes; the gate's run of the reference still catches a part with no real tests.
 3. The picker always shows the name, not only when two titles collide.
-4. A good drop during a round opens the new set's ready screen, as today. The round in progress keeps its clock.
-5. Error toasts stay 10 s instead of 5 s.
+4. Error toasts stay 10 s instead of 5 s.
 
-## Open questions for the owner
-1. Should a drop during a round in progress ask before leaving the round screen ("Leave the round? The clock keeps
-   running.")? Today it switches straight away, and this round keeps that.
+## Decided by the owner (2026-11-25)
+1. A drop during a round in progress asks first: "Open <file name>? Your round keeps running while you're away."
+   Stay (the default, and Esc) imports nothing and keeps the round; Open carries on with the drop. The round keeps its
+   clock either way. Built in PR 1 (HLD, PR 1 "Owner decision").

@@ -200,6 +200,18 @@ Files more than one PR edits (each PR edits different functions or adds its own 
   1. The example above, five times in a row: each time the second copy's ready screen with Start, and it stays.
   2. Open the picker and choose two sets quickly one after the other: the second one's screen shows.
   3. `tests/run_all.sh` ends with every step PASS.
+- **Owner decision (2026-11-25): a drop during a round in progress asks first.**
+  - "A round in progress" means the set that is open or opening is started and not closed. On Home, a ready set or an
+    ended set, a drop goes ahead with no question.
+  - Before importing anything, an in-page dialog built like the End confirm asks: "Open <file name>? Your round keeps
+    running while you're away. You can come back to it from the picker." Buttons "Open <file name>"
+    (`#drop-confirm-open`) and "Stay in the round" (`#drop-confirm-stay`); dialog `#drop-confirm`. Stay has the focus
+    and Esc means Stay: nothing is imported and the round screen is unchanged. Open carries on as above.
+  - During page load, the question is decided from the opening set's status (asked from the server if not known yet).
+  - This changes the example: after the drop during load the dialog shows; Open → the second copy's ready screen, and
+    it stays; Stay → the round in progress, unchanged. The e2e test clicks `#drop-confirm-open` before its asserts and
+    adds a Stay case (no `-race` set in `GET /api/sets`). Acceptance adds: Esc keeps the round; a drop on a ready or
+    ended set shows no dialog.
 
 ### PR 2 (stacked on PR 1): Every drop says what happened
 - **Example** (A-report finding 6 and shot A-31; B-report finding 5 and shot B-E-e2a-error; A-28 for the wording):
