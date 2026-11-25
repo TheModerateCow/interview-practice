@@ -364,3 +364,45 @@ Files more than one PR edits (each PR edits different functions or adds its own 
   3. Keyboard: Tab reaches each splitter, the arrows move it, the focus outline shows.
   4. At 400 px wide no splitter shows and the stacked layout is unchanged.
   5. `tests/run_all.sh` ends with every step PASS.
+
+### PR 7 (added by the owner, 2026-11-25; stacked on PR 3): Delete old sets from Home
+- **Example** (owner request):
+  1. Import two sets and finish one (End). Leave one not started.
+  2. Go to Home and try to remove the finished one and the unstarted one.
+  - **Expected:** each row under "Not started" and "Finished" has a small "Delete" button. Pressing it asks "Delete
+    <title> (<name>)? It leaves the app. Its folder moves to data/deleted/, and your exports stay in data/exports/."
+    with "Delete" and "Keep". Delete → the row disappears, toast "Deleted <title> (<name>)". The same zip can be
+    imported again afterwards.
+  - **Got today:** there is no way to remove a set from the app; the only way is moving folders in `data/sets/` by hand.
+- **Owner decision (defaulted by the lead, owner can override):** soft delete. The folder moves to
+  `data/deleted/<name>-<YYYYmmdd-HHMMSS>/`; nothing is erased; `data/exports/` is untouched. Restore = move it back.
+- **Files:** `backend/server.py` (new route), `ui/src/App.svelte` (Home rows and a confirm dialog), `ui/style.css`
+  (a `.set-del` rule if needed), `API.md` (one row), `README.md` (one line on `data/deleted/`), `tests/api_test.py`,
+  `tests/e2e.spec.mjs`.
+- **Design:**
+  - `DELETE /api/sets/<n>`: same `/api` guards (`X-ILab`, Host, Origin), `sdir(n)` for the name check. Refuses with
+    409 `{"error": "This round is in progress. End it first, then delete it."}` when the set is started and not closed,
+    or while a Run/Submit/grade holds its busy lock. Otherwise `os.replace` the folder into
+    `os.path.join(DATA, "deleted", f"{n}-{stamp}")` (make the folder first) and return `{"name", "title",
+    "moved_to"}`. Never `rmtree`. A set that doesn't exist → 404.
+  - Home: each row in "Not started" and "Finished" gets a sibling `<button class="set-del" aria-label="Delete <title>
+    (<name>)">Delete</button>` (text button, `--fg-2`, no accent, beside the row button, never nested in it).
+    "In progress" rows get none.
+  - Confirm: in-page dialog built like the End confirm, id `#delete-confirm`, buttons `#delete-confirm-yes`
+    ("Delete") and `#delete-confirm-no` ("Keep", default focus, Esc). Text as in the example.
+  - After a delete: reload the list; if the deleted set was the remembered last-opened one, clear that so first load
+    doesn't try to open it; toast "Deleted <title> (<name>)". On error: red toast with the server's message.
+- **Interface changes:** new `DELETE /api/sets/<n>`. **Data changes:** new folder `data/deleted/` (created on first
+  delete); `data/sets/` loses the deleted set's folder.
+- **Tests:** `api_test.py` section "delete a set": import → DELETE → 200 and gone from `GET /api/sets` and the folder
+  is under `deleted/`; re-import the same zip → 200; start a set → DELETE → 409; DELETE an unknown name → 404; DELETE
+  without `X-ILab` → refused. e2e: on Home, delete a finished set through the dialog; Keep leaves it; Delete removes
+  the row and shows the toast.
+- **Acceptance:**
+  1. The example: both rows deleted through the dialog, toasts shown, folders under `data/deleted/` on the test stack,
+     exports untouched.
+  2. An in-progress row has no Delete button; the API refuses it with the message above.
+  3. Keep and Esc leave everything as it was.
+  4. 1440×900 and 400 px, light and dark: the Delete button lines up on every row, no horizontal scroll, keyboard
+     reachable with a visible focus.
+  5. `tests/run_all.sh` ends with every step PASS.
