@@ -6,9 +6,9 @@ Send `export.zip` back to Claude for the debrief.
 
 ## Install / remove
 ```
-./install.sh      # docker compose up -d --build, pre-pulls runner images, adds an "Interview Lab" launcher
-./uninstall.sh    # removes containers, built images, the Go cache volume and the launcher; KEEPS data/
-                  # --images also removes the pinned base images
+deploy/install.sh      # docker compose up -d --build, pre-pulls runner images, adds an "Interview Lab" launcher
+deploy/uninstall.sh    # removes containers, built images, the Go cache volume and the launcher; KEEPS data/
+                       # --images also removes the pinned base images
 ```
 The services restart by themselves after a reboot or a Docker restart (`restart: unless-stopped`).
 
@@ -29,10 +29,14 @@ Only nginx publishes a port. The backend and proxy sit on internal networks. `/a
 |---|---|
 | `FORMAT.md` | The interview-set/1 zip + manifest spec, the runner images, and what the app writes |
 | `API.md` | The HTTP API |
-| `backend/server.py` | API, import, session/clock, reveal logic, export |
-| `backend/runner.py` | DockerRunner (Run: verdicts, time, memory) + the pinned runner image list |
-| `backend/grade.py` | Hidden-test grading in the runner, with the same CLI/JSON as the skill's grade.py |
-| `backend/gate.py` | The skill's gate.py, unchanged |
+| `backend/server.py` | The HTTP layer: routes, the Host/Origin/X-ILab guard, error mapping |
+| `backend/lab/` | `store.py` set files, session, clock and reveals; `importer.py` zip import; `rounds.py` Start/Run/Submit/My tests/Next/End/Export/Delete |
+| `backend/sandbox/runner.py` | DockerRunner (Run: verdicts, time, memory) + the pinned runner image list |
+| `backend/sandbox/grade.py` | Hidden-test grading in the runner, with the same CLI/JSON as the skill's grade.py |
+| `backend/sandbox/gate.py` | The skill's gate.py, unchanged |
+| `backend/sandbox/images.py` | `/api/health` and the thread that keeps runner images pulled |
+| `ui/src/` | `App.svelte` the shell; `features/` one folder per screen (`home`, `ready`, `round`, `import`, `health`), `round/round.svelte.js` holds the round's state and actions; `components/` shared pieces; `lib/` API, Monaco and helpers; `styles/` CSS |
+| `deploy/` | Everything that builds or runs the app: `docker-compose.yml`, the backend/nginx/runner-python Dockerfiles, `nginx.conf`, install/uninstall. The root `.env` points `docker compose` at it, so compose commands work from the repo root |
 | `tools/pack.py` | Packs a set dir into a zip (refuses reference/, mutants.json, bugs.json) |
 | `tools/status.py` | `python3 tools/status.py data/sets/<name>` → time left, from session.json |
 | `data/` | Your sets, sessions and exports (bind-mounted; never deleted by uninstall). Home's Delete moves a set to `data/deleted/<name>-<stamp>/`; restore by moving it back to `data/sets/` |

@@ -2,9 +2,9 @@
 # Remove Interview Lab containers, images built here, go cache volume and launcher. Keeps data/.
 # --images also removes the shared base images (golang, temurin, gcc, node).
 set -euo pipefail
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/.."   # repo root; compose finds deploy/docker-compose.yml through .env
 
-base_images=$(sed -n 's/.*os\.environ\.get("ILAB_IMG_[A-Z]*", *"\([^"]*\)").*/\1/p' backend/runner.py | sort -u | grep -v '^ilab-' || true)
+base_images=$(sed -n 's/.*os\.environ\.get("ILAB_IMG_[A-Z]*", *"\([^"]*\)").*/\1/p' backend/sandbox/runner.py | sort -u | grep -v '^ilab-' || true)
 
 docker compose down --remove-orphans --rmi local || true
 docker rmi ilab-python:3.15.2-pytest9.2.0 2>/dev/null || true

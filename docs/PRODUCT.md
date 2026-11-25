@@ -230,7 +230,7 @@ past results across conversations. A local round history should let Claude cite 
 
 ## 5. What exists today (bottom-up)
 
-**Runner and grading** (`backend/runner.py`, `backend/grade.py`). One container per Run/Submit with the full lock-down
+**Runner and grading** (`backend/sandbox/runner.py`, `backend/sandbox/grade.py`). One container per Run/Submit with the full lock-down
 (no network, read-only root, tmpfs, 512 MB, 2 CPUs, 256 pids, cap-drop ALL). Verdicts Accepted / Wrong Answer / Compile /
 Runtime / TLE / MLE with time and peak memory. Grading for Python (pytest), Go, Java (mini-runner), TS/JS (`node:test`),
 per tag, with `last_error`/`last_line` and Go/Java pruning of later levels. Fast (Run ~50 ms, grade ~1.2 s per B).
@@ -239,14 +239,14 @@ per tag, with `last_error`/`last_line` and Go/Java pruning of later levels. Fast
 `reference/`, `mutants.json`, `bugs.json`. Does not check reveal chains (duplicate `unlocks`, same file twice) or that
 tags match any test.
 
-**Backend API** (`backend/server.py`). Import (drag-and-drop only, zip safety checks, replaces an unstarted set
+**Backend API** (`backend/server.py` routes; `backend/lab/` import, storage and round actions). Import (drag-and-drop only, zip safety checks, replaces an unstarted set
 silently, refuses a started one with a clear message); ready info without the problem; Start; state; files GET/PUT;
 Run; My tests; Submit (per unlocked tag, reveals on pass); Next part; End (one last grade into `results.json` `final`);
 Export (`submission/` = `work/` now, plus `session.json`, `results.json`, `manifest.json`; a copy kept in
 `data/exports/`). Clock: `clock()` uses wall time from `start`; `over()` = `ended` **or** time expired; `log()` appends
 `" (after time)"` when `over()`; `stamp()` sets `after_time: over()`.
 
-**UI** (`ui/src/App.svelte`, `ui/src/lib.js`, `ui/style.css`, `ui/tokens.css`; Svelte, built by Vite in `nginx/Dockerfile`). Home (first load, or "All sets"): drop zone + sets grouped In progress / Not started / Finished
+**UI** (`ui/src/App.svelte` shell, `ui/src/features/<screen>/`, `ui/src/components/`, `ui/src/lib/`, `ui/src/styles/`; Svelte, built by Vite in `deploy/nginx/Dockerfile`). Home (first load, or "All sets"): drop zone + sets grouped In progress / Not started / Finished
 (title, name, round, language); first load resumes a round in progress, else stays home. Header picker of `title · status`; ready
 card; round screen with Monaco, file tree, new-file input, stdin, results pane, problem pane, part chips, timer (yellow
 at ≤5 min, red at 0); inline confirm bars for Next part and End; final card with grade rows, "Where the time went" and

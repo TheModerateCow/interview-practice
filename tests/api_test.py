@@ -369,7 +369,7 @@ def _():
         r = subprocess.run([sys.executable, os.path.join(ROOT, "tools", "pack.py"), d, "/tmp/_san.zip"], capture_output=True, text=True)
         check(f"sanity: pack.py packs {os.path.basename(d.rstrip('/'))}", r.returncode == 0 and "packed" in r.stdout, r.stdout + r.stderr)
     sk = open(os.path.join(ROOT, "skill", "interview-practice", "SKILL.md")).read()
-    for f in ("tools/pack.py", "backend/gate.py"):
+    for f in ("tools/pack.py", "backend/sandbox/gate.py"):
         src = open(os.path.join(ROOT, f)).read()
         check(f"sanity: SKILL.md embeds {f} unchanged", src in sk)
 

@@ -7,7 +7,7 @@ Interview Lab is a local, timed coding-interview simulator. Everything on screen
 - A control says exactly what happens: **Start interview**, **Run**, **My tests**, **Submit**, **Next part**, **End interview**, **Export**. The confirmation that follows uses the same verb ("End interview" / "Keep going").
 - Results are facts, never praise or scores: `4/5`, "did not finish in 45 s", the last failing line. Never "Great job" or a percentage presented as a grade.
 - During the round never show hidden test names or test code. Names appear only after End or time up.
-- Errors say what went wrong and what to do: "The go runner image is missing. Run ./install.sh." No apologies.
+- Errors say what went wrong and what to do: "The go runner image is missing. Run deploy/install.sh." No apologies.
 - Verdicts use the judge's words exactly: Accepted, Wrong Answer, Compile Error, Runtime Error, Time Limit Exceeded, Memory Limit Exceeded.
 
 ## Color

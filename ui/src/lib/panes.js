@@ -1,4 +1,4 @@
-// Resizable panes: pure limits + the `splitter` action. Kept apart from lib.js so node can test it.
+// Resizable panes: pure limits + the `splitter` action. Kept apart from the DOM helpers so node can test it.
 export const PANE_DEF = { files: 190, problem: 360, bottom: null };   // bottom null = 36% of the editor column
 const GAP = 12, EDITOR_MIN = 320;
 

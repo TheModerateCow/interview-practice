@@ -1,0 +1,65 @@
+"""POST /api/import: validate an interview-set/1 zip and unpack it into data/sets/<name>/ (spec: FORMAT.md)."""
+import io, json, os, re, shutil, uuid, zipfile
+
+from lab import pack   # tools/pack.py, copied in by deploy/backend/Dockerfile
+from lab.store import SETS, HTTPError, jload, lock
+
+MAX_ZIP, MAX_FILES, MAX_UNPACKED = 50 << 20, 2000, 50 << 20
+DROP = ("reference/", "mutants.json", "bugs.json")   # never unpacked: the answers stay with Claude
+
+
+def do_import(body):
+    if len(body) > MAX_ZIP: raise HTTPError(400, "zip is larger than 50 MB")
+    try: z = zipfile.ZipFile(io.BytesIO(body))
+    except zipfile.BadZipFile: raise HTTPError(400, "not a zip file")
+    infos = z.infolist()
+    if len(infos) > MAX_FILES: raise HTTPError(400, f"zip has more than {MAX_FILES} entries")
+    if sum(i.file_size for i in infos) > MAX_UNPACKED: raise HTTPError(400, "zip unpacks to more than 50 MB")
+    for i in infos:
+        nm = i.filename
+        parts = nm.split("/")
+        if nm.startswith("/") or "\\" in nm or ".." in parts or re.match(r"^[A-Za-z]:", nm) or "\x00" in nm:
+            raise HTTPError(400, f"unsafe path in zip: {nm!r}")
+        if (i.external_attr >> 16) & 0o170000 == 0o120000: raise HTTPError(400, f"symlink in zip: {nm!r}")
+    names = [i.filename for i in infos if not i.is_dir()]
+    prefix = ""
+    if "manifest.json" not in names:
+        tops = {x.split("/")[0] for x in names}
+        if len(tops) == 1 and f"{next(iter(tops))}/manifest.json" in names: prefix = next(iter(tops)) + "/"
+        else: raise HTTPError(400, "manifest.json not found at the top of the zip")
+    keep = {}
+    for i in infos:
+        if i.is_dir(): continue
+        rel = i.filename[len(prefix):]
+        if rel.startswith(DROP) or rel in DROP: continue   # reference/, mutants.json, bugs.json are deleted
+        if rel in ("manifest.json", "problem.md") or rel.startswith(("starter/", ".hidden/")): keep[rel] = i
+    try: m = json.loads(z.read(keep["manifest.json"]))
+    except (ValueError, KeyError): raise HTTPError(400, "manifest.json is not valid JSON")
+    errs = pack.validate(m, lambda p: p in keep or (p.endswith("/") and any(k.startswith(p) for k in keep)),
+                        read=lambda p: z.read(keep[p]))
+    if errs: raise HTTPError(400, "This zip is not a valid Interview Lab set. Ask Claude to pack it again. Details: " + "; ".join(errs))
+    n = m["name"]
+    dest = os.path.join(SETS, n)
+    with lock(n):
+        s = jload(os.path.join(dest, "session.json"))
+        if s and s.get("start"):
+            raise HTTPError(409, f"You already started {n}, so it can't be replaced. Ask Claude for a copy with a new name.")
+        replaced = os.path.isdir(dest)   # an unstarted copy is about to be replaced
+        tmp = os.path.join(SETS, f".import-{uuid.uuid4().hex}")
+        try:
+            total = 0
+            for rel, i in keep.items():
+                p = os.path.realpath(os.path.join(tmp, rel))
+                if not p.startswith(os.path.realpath(tmp) + os.sep): raise HTTPError(400, f"unsafe path in zip: {rel!r}")
+                os.makedirs(os.path.dirname(p), exist_ok=True)
+                with z.open(i) as src, open(p, "wb") as out:
+                    while chunk := src.read(1 << 16):
+                        total += len(chunk)
+                        if total > MAX_UNPACKED: raise HTTPError(400, "zip unpacks to more than 50 MB")
+                        out.write(chunk)
+            shutil.copytree(os.path.join(tmp, "starter"), os.path.join(tmp, "work"))
+            shutil.rmtree(dest, ignore_errors=True)
+            os.replace(tmp, dest)
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+    return {"name": n, "title": m["title"], "replaced": replaced}
