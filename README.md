@@ -14,7 +14,7 @@ The services restart by themselves after a reboot or a Docker restart (`restart:
 
 ## How it fits together
 ```
-browser ──127.0.0.1:8765──> nginx (UI: Monaco + marked, offline; CSP) ──/api──> backend (Python stdlib)
+browser ──127.0.0.1:8765──> nginx (UI: Monaco + marked, offline; CSP) ──/api──> backend (Python, Flask on Waitress)
                                                                             │ DOCKER_HOST=tcp://docker-proxy:2375
                                                        docker-socket-proxy (CONTAINERS, IMAGES, POST only)
                                                                             │

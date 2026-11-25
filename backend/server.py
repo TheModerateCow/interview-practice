@@ -1,7 +1,8 @@
-"""Interview Lab API. Stdlib only. Contract: API.md. Data layout: FORMAT.md."""
+"""Interview Lab API on Flask, served by Waitress. Contract: API.md. Data layout: FORMAT.md."""
 import fnmatch, io, json, os, re, shutil, sys, threading, time, traceback, uuid, zipfile
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import unquote, urlsplit
+from flask import Flask, Response, jsonify, request
+from waitress import serve
+from werkzeug.exceptions import HTTPException
 
 import grade, pack, runner
 
@@ -404,82 +405,117 @@ def image_keeper():
 
 # ---------------------------------------------------------------- HTTP
 
-class H(BaseHTTPRequestHandler):
-    protocol_version = "HTTP/1.1"
+app = Flask(__name__)
+app.json.sort_keys = False
 
-    def log_message(self, fmt, *a): sys.stderr.write("%s %s\n" % (self.command, self.path))
 
-    def send(self, code, body, ctype="application/json", extra=()):
-        data = body if isinstance(body, bytes) else (json.dumps(body).encode() if ctype == "application/json" else body.encode())
-        self.send_response(code)
-        self.send_header("Content-Type", ctype); self.send_header("Content-Length", str(len(data)))
-        self.send_header("Cache-Control", "no-store")
-        for k, v in extra: self.send_header(k, v)
-        self.end_headers(); self.wfile.write(data)
+def body(limit):
+    request.max_content_length = limit   # 413 for oversized bodies, chunked ones included
+    return request.get_data(cache=False)
 
-    def body(self, limit):
-        n = int(self.headers.get("Content-Length") or 0)
-        if n > limit: raise HTTPError(413, "request too large")
-        return self.rfile.read(n) if n else b""
 
-    def handle_any(self):
-        try:
-            if self.headers.get("Host") not in HOSTS: raise HTTPError(403, "forbidden host")
-            if self.headers.get("X-ILab") != "1": raise HTTPError(403, "missing X-ILab header")
-            o = self.headers.get("Origin")
-            if o is not None and o not in ORIGINS: raise HTTPError(403, "forbidden origin")
-            path = urlsplit(self.path).path
-            if not path.startswith("/api/"): raise HTTPError(404, "not found")
-            seg = path[len("/api/"):].split("/")
-            M = self.command
-            if seg == ["health"] and M == "GET": return self.send(200, health())
-            if seg == ["import"] and M == "POST": return self.send(200, do_import(self.body(MAX_ZIP)))
-            if seg == ["sets"] and M == "GET":
-                os.makedirs(SETS, exist_ok=True)
-                out = []
-                for n in sorted(os.listdir(SETS)):
-                    if NAME_RE.fullmatch(n) and os.path.isfile(os.path.join(SETS, n, "manifest.json")):
-                        i = ready_info(n); out.append({k: i[k] for k in ("name", "title", "language", "round", "status")})
-                return self.send(200, {"sets": out})
-            if len(seg) < 2 or seg[0] != "sets": raise HTTPError(404, "not found")
-            n = unquote(seg[1]); sdir(n)
-            act = seg[2] if len(seg) > 2 else ""
-            if act == "" and M == "GET": return self.send(200, ready_info(n))
-            if act == "start" and M == "POST": return self.send(200, start(n))
-            if act == "state" and M == "GET": require_started(n); return self.send(200, state(n))
-            if act == "files":
-                require_started(n)
-                p = work_path(n, unquote("/".join(seg[3:])))
-                if M == "GET":
-                    if not os.path.isfile(p): raise HTTPError(404, "no such file")
-                    return self.send(200, open(p, "rb").read(), "text/plain; charset=utf-8")
-                if M == "PUT":
-                    data = self.body(MAX_FILE)
-                    os.makedirs(os.path.dirname(p), exist_ok=True)
-                    with open(p, "wb") as f: f.write(data)
-                    return self.send(200, {"ok": True})
-            if act == "run" and M == "POST": return self.send(200, run(n, json.loads(self.body(MAX_FILE) or b"{}")))
-            if act == "mytests" and M == "POST": return self.send(200, mytests(n))
-            if act == "submit" and M == "POST": return self.send(200, submit(n))
-            if act == "next" and M == "POST": return self.send(200, next_part(n))
-            if act == "end" and M == "POST": return self.send(200, end(n))
-            if act == "export" and M == "GET":
-                return self.send(200, export(n), "application/zip", [("Content-Disposition", 'attachment; filename="export.zip"')])
-            raise HTTPError(404, "not found")
-        except HTTPError as e:
-            self.send(e.code, {"error": str(e)})
-        except runner.DockerError as e:
-            self.send(503, {"error": str(e)})
-        except (ValueError, KeyError) as e:
-            traceback.print_exc(); self.send(400, {"error": f"bad request: {e}"})
-        except Exception as e:
-            traceback.print_exc(); self.send(500, {"error": f"internal error: {e}"})
+@app.before_request
+def guard():
+    if request.headers.get("Host") not in HOSTS: raise HTTPError(403, "forbidden host")
+    if request.headers.get("X-ILab") != "1": raise HTTPError(403, "missing X-ILab header")
+    o = request.headers.get("Origin")
+    if o is not None and o not in ORIGINS: raise HTTPError(403, "forbidden origin")
 
-    do_GET = do_POST = do_PUT = do_DELETE = handle_any
+
+@app.after_request
+def no_store(r):
+    r.headers["Cache-Control"] = "no-store"
+    print(request.method, request.full_path.rstrip("?"), file=sys.stderr)
+    return r
+
+
+def err(code, msg): return jsonify(error=msg), code
+
+
+@app.errorhandler(HTTPError)
+def _app_error(e): return err(e.code, str(e))
+
+
+@app.errorhandler(HTTPException)
+def _http_errors(e):   # unknown route or wrong method: 404 as before; 413 etc. keep their code
+    return err(404, "not found") if e.code in (404, 405) else err(e.code, e.description)
+
+
+@app.errorhandler(runner.DockerError)
+def _docker(e): return err(503, str(e))
+
+
+@app.errorhandler(ValueError)
+@app.errorhandler(KeyError)
+def _bad(e): traceback.print_exc(); return err(400, f"bad request: {e}")
+
+
+@app.errorhandler(Exception)
+def _internal(e): traceback.print_exc(); return err(500, f"internal error: {e}")
+
+
+@app.get("/api/health")
+def r_health(): return health()
+
+
+@app.post("/api/import")
+def r_import(): return do_import(body(MAX_ZIP))
+
+
+@app.get("/api/sets")
+def r_sets():
+    os.makedirs(SETS, exist_ok=True)
+    out = []
+    for n in sorted(os.listdir(SETS)):
+        if NAME_RE.fullmatch(n) and os.path.isfile(os.path.join(SETS, n, "manifest.json")):
+            i = ready_info(n); out.append({k: i[k] for k in ("name", "title", "language", "round", "status")})
+    return {"sets": out}
+
+
+@app.get("/api/sets/<n>")
+def r_set(n): sdir(n); return ready_info(n)
+
+
+@app.route("/api/sets/<n>/files/<path:rel>", methods=["GET", "PUT"])
+def r_files(n, rel):
+    sdir(n); require_started(n)
+    p = work_path(n, rel)
+    if request.method == "GET":
+        if not os.path.isfile(p): raise HTTPError(404, "no such file")
+        return Response(open(p, "rb").read(), mimetype="text/plain; charset=utf-8")
+    data = body(MAX_FILE)
+    os.makedirs(os.path.dirname(p), exist_ok=True)
+    with open(p, "wb") as f: f.write(data)
+    return {"ok": True}
+
+
+@app.get("/api/sets/<n>/state")
+def r_state(n): sdir(n); require_started(n); return state(n)
+
+
+@app.post("/api/sets/<n>/run")
+def r_run(n): sdir(n); return run(n, json.loads(body(MAX_FILE) or b"{}"))
+
+
+ACTIONS = {"start": start, "mytests": mytests, "submit": submit, "next": next_part, "end": end}
+
+
+@app.post("/api/sets/<n>/<act>")
+def r_action(n, act):
+    sdir(n)
+    if act not in ACTIONS: raise HTTPError(404, "not found")
+    return ACTIONS[act](n)
+
+
+@app.get("/api/sets/<n>/export")
+def r_export(n):
+    sdir(n)
+    return Response(export(n), mimetype="application/zip", headers={"Content-Disposition": 'attachment; filename="export.zip"'})
 
 
 if __name__ == "__main__":
     os.makedirs(SETS, exist_ok=True); os.makedirs(EXPORTS, exist_ok=True)
     threading.Thread(target=image_keeper, daemon=True).start()
     print("Interview Lab backend on :8000", flush=True)
-    ThreadingHTTPServer(("0.0.0.0", 8000), H).serve_forever()
+    # ponytail: one process, 32 threads; the per-set locks and IMG_STATE live in memory, so never add workers.
+    serve(app, host="0.0.0.0", port=8000, threads=32, channel_timeout=900)
