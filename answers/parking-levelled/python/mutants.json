@@ -1,0 +1,11 @@
+[
+ {"file":"parking.py","old":"(s.size, s.id) < (best.size, best.id)","new":"(-s.size, s.id) < (-best.size, best.id)","label":"park prefers the largest fitting spot","k":"test_l1_"},
+ {"file":"parking.py","old":"(s.size, s.id) < (best.size, best.id)","new":"(s.size, best.id) < (best.size, s.id)","label":"ties go to the highest spot id","k":"test_l1_"},
+ {"file":"parking.py","old":"s.size == _SIZES[size] and self._free(ts, s)","new":"s.size >= _SIZES[size] and self._free(ts, s)","label":"free spots counts larger sizes too","k":"test_l2_"},
+ {"file":"parking.py","old":"key=lambda p: (-self._visits[p], p))","new":"key=lambda p: (-self._visits[p], [-ord(c) for c in p]))","label":"top visitors ties broken by plate descending","k":"test_l2_"},
+ {"file":"parking.py","old":"sid == s.id and ts < exp","new":"sid == s.id and ts <= exp","label":"reservation still blocks its spot at the expiry time","k":"test_l3_"},
+ {"file":"parking.py","old":"if r is None or ts >= r[1]:","new":"if r is None or ts > r[1]:","label":"reservation can be cancelled at its expiry time","k":"test_l3_"},
+ {"file":"parking.py","old":"        self._reserved.pop(plate, None)\n        s.plate = plate","new":"        s.plate = plate","label":"parking doesn't use up the reservation","k":"test_l3_"},
+ {"file":"parking.py","old":"at_ts < st.to)","new":"at_ts <= st.to)","label":"occupant_at still shows the plate at the time it left","k":"test_l4_"},
+ {"file":"parking.py","old":"((st.to - st.from_ + 59) // 60)","new":"((st.to - st.from_) // 60)","label":"charges round hours down","k":"test_l4_"}
+]

@@ -1,0 +1,7 @@
+[
+ {"file":"billing.py","old":"day < self.start_day or day >= self.end","new":"day < self.start_day or day > self.end","label":"change on the renewal day (PeriodEnd) accepted","k":"test_p1_"},
+ {"file":"billing.py","old":"return self._pay((diff * left + length // 2) // length)","new":"return self._pay(diff * left // length)","label":"upgrade charge rounded down instead of half up","k":"test_p1_"},
+ {"file":"billing.py","old":"self._credit += (-diff) * left // length","new":"self._credit += ((-diff) * left + length // 2) // length","label":"downgrade credit rounded half up instead of down","k":"test_p1_"},
+ {"file":"billing.py","old":"used = min(amount, self._credit)","new":"used = self._credit","label":"credit bigger than the charge is wiped out (charge goes negative)","k":"test_p1_"},
+ {"file":"billing.py","old":"seats < 1 or seats > MAX_SEATS","new":"seats < 0 or seats > MAX_SEATS","label":"zero seats accepted","k":"test_p1_"}
+]

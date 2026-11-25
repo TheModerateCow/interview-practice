@@ -1,0 +1,16 @@
+[
+ {"file": "Library.java", "old": "(best == null || c.id.compareTo(best.id) < 0)", "new": "(best == null || c.id.compareTo(best.id) > 0)", "label": "checkout lends the highest copy id", "k": "test_l1_"},
+ {"file": "Library.java", "old": "m.onLoan().size() >= MAX_LOANS", "new": "m.onLoan().size() > MAX_LOANS", "label": "members can have four copies on loan", "k": "test_l1_"},
+ {"file": "Library.java", "old": " || m.hasTitle(title)) return \"\";", "new": ") return \"\";", "label": "a member can borrow two copies of one title", "k": "test_l1_"},
+ {"file": "Library.java", "old": "c.title.equals(title) && c.current == null) {\n                n++", "new": "c.title.equals(title)) {\n                n++", "label": "available counts copies on loan too", "k": "test_l2_"},
+ {"file": "Library.java", "old": "return a.compareTo(b);\n        });", "new": "return b.compareTo(a);\n        });", "label": "popular ties broken by title descending", "k": "test_l2_"},
+ {"file": "Library.java", "old": "        Collections.sort(out);\n", "new": "\n", "label": "loans listed unsorted", "k": "test_l2_"},
+ {"file": "Library.java", "old": "if (ts > l.due || l.renewals >= 2)", "new": "if (ts >= l.due || l.renewals >= 2)", "label": "no renewing on the due date", "k": "test_l3_"},
+ {"file": "Library.java", "old": "l.renewals >= 2)", "new": "l.renewals >= 3)", "label": "three renewals allowed", "k": "test_l3_"},
+ {"file": "Library.java", "old": "l.due += LOAN_DAYS;", "new": "l.due = ts + LOAN_DAYS;", "label": "renewal counts from today, not the due date", "k": "test_l3_"},
+ {"file": "Library.java", "old": "total += Math.min(FINE_CAP, FINE_PER_DAY * (l.back - l.due));", "new": "total += FINE_PER_DAY * (l.back - l.due);", "label": "fines aren't capped", "k": "test_l3_"},
+ {"file": "Library.java", "old": "        k.loans.sort((a, b) -> Integer.compare(a.out, b.out)); // stable\n", "new": "\n", "label": "merged history isn't in checkout order", "k": "test_l4_"},
+ {"file": "Library.java", "old": "if (k.hasTitle(l.title)) return", "new": "if (false) return", "label": "merge allows the same title twice", "k": "test_l4_"},
+ {"file": "Library.java", "old": "d.onLoan().size() > MAX_LOANS", "new": "d.onLoan().size() > MAX_LOANS + 1", "label": "merge can go over the loan limit", "k": "test_l4_"},
+ {"file": "Library.java", "old": "            l.member = keepId;\n", "new": "\n", "label": "moved loans still name the dropped member", "k": "test_l4_"}
+]

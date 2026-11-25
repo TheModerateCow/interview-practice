@@ -1,0 +1,7 @@
+[
+ {"file":"Invoice.java","old":"if (quantity >= 50) return 500;","new":"if (quantity > 50) return 500;","label":"exactly 50 units gets no discount (tier starts at 51)","k":"test_p1_"},
+ {"file":"Invoice.java","old":"for (Map.Entry<String, Long> e : byCategory.entrySet()) {\n            sum += halfUp(e.getValue() * TAX_BP.get(e.getKey()), 10000);\n        }","new":"for (Line l : lines) {\n            sum += halfUp(l.net * TAX_BP.get(l.category), 10000);\n        }","label":"tax rounded per line instead of once per category","k":"test_p1_"},
+ {"file":"Invoice.java","old":"if (day > dueDay() && owed > 0) {","new":"if (day >= dueDay() && owed > 0) {","label":"late fee charged on the due day itself","k":"test_p1_"},
+ {"file":"Invoice.java","old":"if (amount < 1 || amount > balanceL()) throw","new":"if (amount < 1) throw","label":"payment or credit note bigger than the balance accepted","k":"test_p1_"},
+ {"file":"Invoice.java","old":"return (int) (owed + halfUp(owed * LATE_FEE_BP, 10000));","new":"return (int) (owed + halfUp(total() * LATE_FEE_BP, 10000));","label":"late fee on the invoice total, ignoring payments and credit notes","k":"test_p1_"}
+]

@@ -1,0 +1,100 @@
+[
+ {
+  "file": "Store.java",
+  "old": "if (e == null || !e.value().equals(expected)) return false;",
+  "new": "if (e == null) e = new Entry(\"\", 0);\n        if (!e.value().equals(expected)) return false;",
+  "label": "compare-and-set on a missing field matches an empty expected value",
+  "k": "test_l1_"
+ },
+ {
+  "file": "Store.java",
+  "old": "put(ts, key, field, new Entry(value, 0));\n        return !had;",
+  "new": "put(ts, key, field, new Entry(value, 0));\n        return true;",
+  "label": "Set reports every write as new",
+  "k": "test_l1_"
+ },
+ {
+  "file": "Store.java",
+  "old": "if (me.getKey().startsWith(prefix) && me.getValue().live(ts))",
+  "new": "if (me.getKey().contains(prefix) && me.getValue().live(ts))",
+  "label": "field prefix matched as a substring",
+  "k": "test_l2_"
+ },
+ {
+  "file": "Store.java",
+  "old": "if (k.startsWith(prefix) && !scanPrefix",
+  "new": "if (k.contains(prefix) && !scanPrefix",
+  "label": "key prefix matched as a substring",
+  "k": "test_l2_"
+ },
+ {
+  "file": "Store.java",
+  "old": "boolean live(int ts) { return expiresAt == 0 || ts < expiresAt; }",
+  "new": "boolean live(int ts) { return expiresAt == 0 || ts <= expiresAt; }",
+  "label": "field still live at its expiry time",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Store.java",
+  "old": "return e != null && e.live(ts) ? e : null;",
+  "new": "return e;",
+  "label": "Get, Delete and compare-and-set ignore expiry",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Store.java",
+  "old": "put(ts, key, field, new Entry(value, e.expiresAt()));",
+  "new": "put(ts, key, field, new Entry(value, 0));",
+  "label": "compare-and-set drops the TTL",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Store.java",
+  "old": "!scanPrefix(ts, k, \"\").isEmpty()) keys.add(k)",
+  "new": "!records.get(k).isEmpty()) keys.add(k)",
+  "label": "ListKeys lists records whose fields all expired",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Store.java",
+  "old": "return e.expiresAt() - ts;\n    }\n\n    // ---- level 4",
+  "new": "return e.expiresAt() - ts + 1;\n    }\n\n    // ---- level 4",
+  "label": "RemainingTTL off by one",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Store.java",
+  "old": "new Entry(sv.value(), sv.remaining() != 0 ? ts + sv.remaining() : 0)",
+  "new": "new Entry(sv.value(), sv.remaining())",
+  "label": "restore does not restart TTLs from the restore time",
+  "k": "test_l4_"
+ },
+ {
+  "file": "Store.java",
+  "old": "if (!e.live(ts)) continue;\n                int rem",
+  "new": "int rem",
+  "label": "backup keeps fields that already expired",
+  "k": "test_l4_"
+ },
+ {
+  "file": "Store.java",
+  "old": "if (!b.getOrDefault(k, Map.of()).containsKey(f)) remove(ts, k, f);",
+  "new": "if (false) remove(ts, k, f);",
+  "label": "restore keeps fields the backup did not have",
+  "k": "test_l4_"
+ },
+ {
+  "file": "Store.java",
+  "old": "if (c.ts() <= atTs) last = c;",
+  "new": "if (c.ts() < atTs) last = c;",
+  "label": "GetAt leaves out changes made exactly at atTs",
+  "k": "test_l4_"
+ },
+ {
+  "file": "Store.java",
+  "old": "!last.e().live(atTs)",
+  "new": "!last.e().live(ts)",
+  "label": "GetAt checks expiry against now instead of atTs",
+  "k": "test_l4_"
+ }
+]

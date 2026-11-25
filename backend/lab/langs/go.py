@@ -15,7 +15,7 @@ def name(kind, x):
     if kind == "class": return x
     if kind == "new": return "New" + x
     if kind == "error": return "Err" + _pascal(x)
-    if kind == "param": return _lower(x)
+    if kind == "param": return _pname(x)
     return x  # module
 
 
@@ -38,7 +38,15 @@ def _lower(n):
     return p[0] + "".join(_pascal(x) for x in p[1:])
 
 
-def _params(sig): return ", ".join(f"{_lower(n)} {gtype(t)}" for n, t in sig["params"])
+GO_KEYWORDS = set("break default func interface select case defer go map struct chan else goto package switch const fallthrough if range type continue for import return var".split())
+
+
+def _pname(n):
+    x = _lower(n)
+    return x + "_" if x in GO_KEYWORDS else x
+
+
+def _params(sig): return ", ".join(f"{_pname(n)} {gtype(t)}" for n, t in sig["params"])
 
 
 def _ctor(c, d): return f"(*{c}, error)" if d.get("init_errors") else f"*{c}"
