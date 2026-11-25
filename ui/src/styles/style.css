@@ -36,7 +36,7 @@ input { height: 32px; padding: 0 var(--s-3); }
 .langs { display: flex; gap: var(--s-1); padding-right: var(--s-2); }
 .lang-chip { font: inherit; font-size: var(--t-small); padding: 2px var(--s-2); border: 1px solid var(--line-strong); border-radius: var(--r-pill, 999px); background: transparent; color: var(--fg-2); cursor: pointer; }
 .lang-chip.usual { border-color: var(--fg); color: var(--fg); }
-.lang-chip:hover { background: var(--surface); }
+.lang-chip:hover { background: var(--surface-2); }
 .lang-chip:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
 .lang-chip:disabled { cursor: progress; }
 .sets summary { padding: var(--s-2) 0; cursor: pointer; }
@@ -47,7 +47,7 @@ input { height: 32px; padding: 0 var(--s-3); }
 .set-del { flex: none; margin: 0 var(--s-2); padding: var(--s-2); border: 0; background: none; color: var(--fg-2); font: inherit; font-size: var(--t-small); text-decoration: underline; cursor: pointer; }
 .set-del:hover { color: var(--fg); }
 .set-del:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
-.set-row:hover { background: var(--surface); }
+.set-row:hover, .set-item:hover { background: var(--surface); }   /* the whole row, chips included */
 .set-row:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
 .set-meta { color: var(--fg-2); font-size: var(--t-small); }
 .set-name { grid-column: 2; grid-row: 1 / span 2; align-self: center; color: var(--fg-3); font: var(--t-small)/1.3 var(--font-mono); }
