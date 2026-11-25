@@ -1,0 +1,114 @@
+[
+ {
+  "file": "bank.py",
+  "old": "a is None or a.balance < amount:\n            return None\n        a.balance -= amount\n        a.spent",
+  "new": "a is None or a.balance <= amount:\n            return None\n        a.balance -= amount\n        a.spent",
+  "label": "withdrawing the whole balance is refused",
+  "k": "test_l1_"
+ },
+ {
+  "file": "bank.py",
+  "old": "or from_ == to or src.balance",
+  "new": "or src.balance",
+  "label": "transfer to the same account allowed",
+  "k": "test_l1_"
+ },
+ {
+  "file": "bank.py",
+  "old": "        if id in self._accounts:\n            return False\n        self._accounts[id] = _Account()",
+  "new": "        if id in self._accounts and False:\n            return False\n        self._accounts[id] = _Account()",
+  "label": "opening an open id resets it",
+  "k": "test_l1_"
+ },
+ {
+  "file": "bank.py",
+  "old": "key=lambda i: (-self._accounts[i].spent, i)",
+  "new": "key=lambda i: (self._accounts[i].spent, i)",
+  "label": "top spenders ranked smallest first",
+  "k": "test_l2_"
+ },
+ {
+  "file": "bank.py",
+  "old": "        src.spent += amount",
+  "new": "        src.spent += 0",
+  "label": "transfers sent don't count as spending",
+  "k": "test_l2_"
+ },
+ {
+  "file": "bank.py",
+  "old": "a.balance >= min",
+  "new": "a.balance > min",
+  "label": "AccountsAbove threshold exclusive",
+  "k": "test_l2_"
+ },
+ {
+  "file": "bank.py",
+  "old": "p.status == \"pending\" and p.due <= ts",
+  "new": "p.status == \"pending\" and p.due < ts",
+  "label": "payment due now runs after the call instead of before",
+  "k": "test_l3_"
+ },
+ {
+  "file": "bank.py",
+  "old": "due.sort(key=lambda p: p.due)  # stable",
+  "new": "pass",
+  "label": "due payments run in schedule order, not due order",
+  "k": "test_l3_"
+ },
+ {
+  "file": "bank.py",
+  "old": "a is None or a.balance < p.amount",
+  "new": "a is None or a.balance < 0",
+  "label": "scheduled payment overdraws the account",
+  "k": "test_l3_"
+ },
+ {
+  "file": "bank.py",
+  "old": "or p.account != id:",
+  "new": "or False:",
+  "label": "any account can cancel any payment",
+  "k": "test_l3_"
+ },
+ {
+  "file": "bank.py",
+  "old": "            a.spent += p.amount",
+  "new": "            a.spent += 0",
+  "label": "scheduled payments don't count as spending",
+  "k": "test_l3_"
+ },
+ {
+  "file": "bank.py",
+  "old": "        k.spent += a.spent",
+  "new": "        k.spent += 0",
+  "label": "merge drops the absorbed account's spending",
+  "k": "test_l4_"
+ },
+ {
+  "file": "bank.py",
+  "old": "                p.account = keep",
+  "new": "                p.account = absorb",
+  "label": "merge leaves pending payments on the closed account",
+  "k": "test_l4_"
+ },
+ {
+  "file": "bank.py",
+  "old": "self._record(p.due, p.account)",
+  "new": "self._record(ts, p.account)",
+  "label": "history dates a payment at the call that settled it",
+  "k": "test_l4_"
+ },
+ {
+  "file": "bank.py",
+  "old": "bisect.bisect_right(h, at_ts,",
+  "new": "bisect.bisect_left(h, at_ts,",
+  "label": "BalanceAt leaves out changes made exactly at atTs",
+  "k": "test_l4_"
+ },
+ {
+  "file": "bank.py",
+  "old": "        self._record(ts, absorb)\n",
+  "new": "",
+  "label": "history never marks the absorbed account closed",
+  "k": "test_l4_"
+ }
+]

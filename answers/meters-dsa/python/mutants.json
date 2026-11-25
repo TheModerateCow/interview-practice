@@ -1,0 +1,6 @@
+[
+ {"file":"meters.py","old":"    best = [unreachable] * (capacity + 1)\n    best[0] = 0","new":"    best = [0] * (capacity + 1)","label":"the battery starts full of free energy","k":"test_p1_"},
+ {"file":"meters.py","old":"v = max(v, best[c - 1] - p)","new":"v = max(v, nxt[c - 1] - p)","label":"several kWh can be charged in one half-hour","k":"test_p1_"},
+ {"file":"meters.py","old":"v = max(v, best[c + 1] + p - wear)","new":"v = max(v, best[c + 1] + p)","label":"wear is never charged on discharge","k":"test_p1_"},
+ {"file":"meters.py","old":"    return max(best)","new":"    return best[0]","label":"the battery is forced to end the day empty","k":"test_p1_"}
+]

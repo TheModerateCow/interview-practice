@@ -1,0 +1,14 @@
+{
+ "run_entry": "main.py",
+ "testcases": [
+  {
+   "stdin": "courier ana 0 0 2\ncourier ben 800 0 1\norder o1 100 0 100 900 0 5\nassign o1\norder o2 700 0 700 500 1 5\nassign o2\nbag ana\nadvance o1 delivered\nadvance o1 picked_up\n",
+   "expected": "ok\nok\nok\nana\nok\nben\n[o1]\nerror: order cannot move to that state\nok"
+  },
+  {
+   "stdin": "courier solo 0 0 1\norder o1 600 0 600 1100 0 0\nassign o1\neta o1 0\nadvance o1 cancelled\norder o2 100 100 900 900 2 5\nassign o2\n",
+   "expected": "ok\nok\nsolo\n8\nok\nok\nsolo"
+  }
+ ],
+ "your_tests": "test_*.py"
+}

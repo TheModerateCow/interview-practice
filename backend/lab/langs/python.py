@@ -1,4 +1,5 @@
 """Python backend for shared-case problems. Contract: docs/rounds/3-language-variants/CONTRACT.md. Pure stdlib."""
+import keyword
 import json, os, re
 
 TESTS_FILE = "tests_hidden.py"
@@ -8,6 +9,7 @@ def _pascal(x): return "".join(w.capitalize() for w in x.split("_"))
 
 
 def name(kind, neutral):
+    if kind == "param": return _p(neutral)
     return _pascal(neutral) + "Error" if kind == "error" else neutral
 
 
@@ -17,7 +19,10 @@ def _t(t):
     return {"int": "int", "long": "int", "bool": "bool", "string": "str"}.get(t, t)
 
 
-def _sig(ps): return "".join(", %s: %s" % (n, _t(t)) for n, t in ps)
+def _p(n): return n + "_" if keyword.iskeyword(n) else n   # a parameter named like a keyword (from → from_)
+
+
+def _sig(ps): return "".join(", %s: %s" % (_p(n), _t(t)) for n, t in ps)
 
 
 def _decls(api, stub):

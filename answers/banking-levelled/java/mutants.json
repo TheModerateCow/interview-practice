@@ -1,0 +1,114 @@
+[
+ {
+  "file": "Bank.java",
+  "old": "a.balance < amount) return null;\n        a.balance -= amount;\n        a.spent",
+  "new": "a.balance <= amount) return null;\n        a.balance -= amount;\n        a.spent",
+  "label": "withdrawing the whole balance is refused",
+  "k": "test_l1_"
+ },
+ {
+  "file": "Bank.java",
+  "old": "dst == null || from.equals(to) || src.balance",
+  "new": "dst == null || src.balance",
+  "label": "transfer to the same account allowed",
+  "k": "test_l1_"
+ },
+ {
+  "file": "Bank.java",
+  "old": "if (accounts.containsKey(id)) return false;\n        accounts.put(id, new Account());",
+  "new": "if (accounts.containsKey(id) && false) return false;\n        accounts.put(id, new Account());",
+  "label": "opening an open id resets it",
+  "k": "test_l1_"
+ },
+ {
+  "file": "Bank.java",
+  "old": "if (sx != sy) return sy - sx;",
+  "new": "if (sx != sy) return sx - sy;",
+  "label": "top spenders ranked smallest first",
+  "k": "test_l2_"
+ },
+ {
+  "file": "Bank.java",
+  "old": "        src.spent += amount;",
+  "new": "        src.spent += 0;",
+  "label": "transfers sent don't count as spending",
+  "k": "test_l2_"
+ },
+ {
+  "file": "Bank.java",
+  "old": "e.getValue().balance >= min",
+  "new": "e.getValue().balance > min",
+  "label": "AccountsAbove threshold exclusive",
+  "k": "test_l2_"
+ },
+ {
+  "file": "Bank.java",
+  "old": "p.status.equals(\"pending\") && p.due <= ts",
+  "new": "p.status.equals(\"pending\") && p.due < ts",
+  "label": "payment due now runs after the call instead of before",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Bank.java",
+  "old": "due.sort((x, y) -> Integer.compare(x.due, y.due)); // stable",
+  "new": "due.sort((x, y) -> 0);",
+  "label": "due payments run in schedule order, not due order",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Bank.java",
+  "old": "a == null || a.balance < p.amount",
+  "new": "a == null || a.balance < 0",
+  "label": "scheduled payment overdraws the account",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Bank.java",
+  "old": "|| !p.account.equals(id)) return false;",
+  "new": ") return false;",
+  "label": "any account can cancel any payment",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Bank.java",
+  "old": "            a.spent += p.amount;",
+  "new": "            a.spent += 0;",
+  "label": "scheduled payments don't count as spending",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Bank.java",
+  "old": "        k.spent += a.spent;",
+  "new": "        k.spent += 0;",
+  "label": "merge drops the absorbed account's spending",
+  "k": "test_l4_"
+ },
+ {
+  "file": "Bank.java",
+  "old": "                p.account = keep;",
+  "new": "                p.account = absorb;",
+  "label": "merge leaves pending payments on the closed account",
+  "k": "test_l4_"
+ },
+ {
+  "file": "Bank.java",
+  "old": "record(p.due, p.account);",
+  "new": "record(ts, p.account);",
+  "label": "history dates a payment at the call that settled it",
+  "k": "test_l4_"
+ },
+ {
+  "file": "Bank.java",
+  "old": "if (h.get(mid).ts() > atTs) hi",
+  "new": "if (h.get(mid).ts() >= atTs) hi",
+  "label": "BalanceAt leaves out changes made exactly at atTs",
+  "k": "test_l4_"
+ },
+ {
+  "file": "Bank.java",
+  "old": "        record(ts, absorb);\n",
+  "new": "",
+  "label": "history never marks the absorbed account closed",
+  "k": "test_l4_"
+ }
+]

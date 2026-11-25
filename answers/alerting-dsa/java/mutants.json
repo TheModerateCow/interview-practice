@@ -1,0 +1,30 @@
+[
+ {
+  "file": "Alerting.java",
+  "old": "prefix[starts[top - 1]] >= prefix[j]",
+  "new": "prefix[starts[top - 1]] > prefix[j]",
+  "label": "a window exactly on budget is treated as over budget",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Alerting.java",
+  "old": "for (int i = 0; i <= n; i++) {",
+  "new": "for (int i = 1; i <= n; i++) {",
+  "label": "windows starting at minute 0 are never considered",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Alerting.java",
+  "old": "while (top > 0 && prefix[starts[top - 1]] >= prefix[j]) {",
+  "new": "if (top > 0 && prefix[starts[top - 1]] >= prefix[j]) {",
+  "label": "each window end is matched with only one candidate start",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Alerting.java",
+  "old": "best = Math.max(best, j - starts[--top]);",
+  "new": "best = j - starts[--top];",
+  "label": "a later, shorter match overwrites the longest window found",
+  "k": "test_p1_"
+ }
+]

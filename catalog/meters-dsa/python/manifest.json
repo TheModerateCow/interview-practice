@@ -1,0 +1,14 @@
+{
+ "run_entry": "main.py",
+ "testcases": [
+  {
+   "stdin": "8 2 3\n12 9 25 14 30 8 11 27\n",
+   "expected": "44"
+  },
+  {
+   "stdin": "7 4 0\n20 4 6 18 25 3 30\n",
+   "expected": "60"
+  }
+ ],
+ "your_tests": "test_*.py"
+}

@@ -1,0 +1,79 @@
+[
+ {
+  "file": "inventory/replenish.py",
+  "old": "if pos > rule.min:",
+  "new": "if pos >= rule.min:",
+  "label": "reorders only strictly below min",
+  "k": "test_p2_"
+ },
+ {
+  "file": "inventory/replenish.py",
+  "old": "qty = (qty + rule.pack - 1) // rule.pack * rule.pack",
+  "new": "qty = qty // rule.pack * rule.pack",
+  "label": "case pack rounded down",
+  "k": "test_p2_"
+ },
+ {
+  "file": "inventory/replenish.py",
+  "old": "pos = self._available(k) + self.store.inbound.get(k, 0)",
+  "new": "pos = self._available(k)",
+  "label": "inbound transfers ignored",
+  "k": "test_p2_"
+ },
+ {
+  "file": "inventory/replenish.py",
+  "old": "pos = self._available(k) + self.store.inbound.get(k, 0)",
+  "new": "pos = self.store.on_hand.get(k, 0) + self.store.inbound.get(k, 0)",
+  "label": "holds ignored in position",
+  "k": "test_p2_"
+ },
+ {
+  "file": "inventory/replenish.py",
+  "old": "surplus = self._available(k) - (rule.min if rule else 0)",
+  "new": "surplus = self._available(k)",
+  "label": "source surplus ignores its own min",
+  "k": "test_p2_"
+ },
+ {
+  "file": "inventory/replenish.py",
+  "old": "surplus = self._available(k) - (rule.min if rule else 0)",
+  "new": "surplus = self.store.on_hand.get(k, 0) - (rule.min if rule else 0)",
+  "label": "source surplus ignores its holds",
+  "k": "test_p2_"
+ },
+ {
+  "file": "inventory/replenish.py",
+  "old": "surplus > best_surplus",
+  "new": "surplus >= best_surplus",
+  "label": "tie goes to highest id",
+  "k": "test_p2_"
+ },
+ {
+  "file": "inventory/replenish.py",
+  "old": "if surplus >= qty and",
+  "new": "if surplus > qty and",
+  "label": "source must strictly exceed need",
+  "k": "test_p2_"
+ },
+ {
+  "file": "inventory/expiry.py",
+  "old": "self.holds[0][0] <= now",
+  "new": "self.holds[0][0] < now",
+  "label": "hold still active at expires_at",
+  "k": "test_p1_"
+ },
+ {
+  "file": "inventory/store.py",
+  "old": "take = min(qty, self.bins[bk])",
+  "new": "take = self.bins[bk]",
+  "label": "pick empties whole bins",
+  "k": "test_p1_"
+ },
+ {
+  "file": "inventory/reservations.py",
+  "old": "if avail < qty:",
+  "new": "if avail <= qty:",
+  "label": "reserve refuses the last unit",
+  "k": "test_p1_"
+ }
+]

@@ -1,0 +1,10 @@
+[
+ {"file": "fares.go", "old": "m < 570)", "new": "m <= 570)", "label": "09:30 still counted as peak", "k": "test_p1_"},
+ {"file": "fares.go", "old": "weekday := (time/day)%7 <= 4", "new": "weekday := true", "label": "weekends charged peak fares", "k": "test_p1_"},
+ {"file": "fares.go", "old": "(fare*130 + 999) / 1000 * 10", "new": "(fare*130 + 500) / 1000 * 10", "label": "peak fare rounded to nearest 10 instead of up", "k": "test_p1_"},
+ {"file": "fares.go", "old": "if peak {\n\t\tfare = (fare*130 + 999) / 1000 * 10\n\t}\n\treturn fare * c.payPercent / 500 * 5", "new": "fare = fare * c.payPercent / 500 * 5\n\tif peak {\n\t\tfare = (fare*130 + 999) / 1000 * 10\n\t}\n\treturn fare", "label": "concession discount applied before the peak uplift", "k": "test_p1_"},
+ {"file": "fares.go", "old": "time-f.start < transferWindow", "new": "time-f.start <= transferWindow", "label": "ride at exactly 90 minutes still a transfer", "k": "test_p1_"},
+ {"file": "fares.go", "old": "f.rides++\n", "new": "f.rides++\n\t\tf.peak = IsPeak(time)\n", "label": "transfer priced by its own peak status, not the journey's first ride", "k": "test_p1_"},
+ {"file": "fares.go", "old": "f.rides < maxRides", "new": "f.rides < 99", "label": "no limit on rides per journey", "k": "test_p1_"},
+ {"file": "fares.go", "old": "floorDiv(time-240, day)", "new": "floorDiv(time, day)", "label": "daily and weekly caps reset at midnight instead of 04:00", "k": "test_p1_"}
+]

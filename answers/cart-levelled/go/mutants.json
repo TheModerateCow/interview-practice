@@ -1,0 +1,17 @@
+[
+ {"file":"shop.go","old":"if have+qty > p.stock {","new":"if have+qty >= p.stock {","label":"cart can't be filled up to the exact stock","k":"test_l1_"},
+ {"file":"shop.go","old":"left := max(0, have-qty)","new":"left := have - qty","label":"removing more than the line holds goes negative","k":"test_l1_"},
+ {"file":"shop.go","old":"for _, sku := range sortedKeys(c.lines) {","new":"for sku := range c.lines {","label":"items listed in map order, not by sku","k":"test_l1_"},
+ {"file":"shop.go","old":"return skus[i] < skus[j]","new":"return skus[i] > skus[j]","label":"top sellers ties broken by sku descending","k":"test_l2_"},
+ {"file":"shop.go","old":"if s.products[sku].stock < q {","new":"if s.products[sku].stock < q-1 {","label":"checkout lets a line exceed stock by one","k":"test_l2_"},
+ {"file":"shop.go","old":"return ts < c.touched+cartTTL","new":"return ts <= c.touched+cartTTL","label":"cart still alive at its abandon time","k":"test_l3_"},
+ {"file":"shop.go","old":"sub -= sub * pr.percent / 100","new":"sub -= (sub*pr.percent + 99) / 100","label":"discount rounded up","k":"test_l3_"},
+ {"file":"shop.go","old":"sub >= pr.minTotal","new":"sub > pr.minTotal","label":"subtotal exactly at the promo minimum gets no discount","k":"test_l3_"},
+ {"file":"shop.go","old":"ts < pr.expiresAt && sub","new":"ts <= pr.expiresAt && sub","label":"promo still discounts at its expiry time","k":"test_l3_"},
+ {"file":"shop.go","old":"q := max(have, min(have+add, s.products[sku].stock))","new":"q := have + add","label":"merge ignores stock","k":"test_l4_"},
+ {"file":"shop.go","old":"q := max(have, min(have+add, s.products[sku].stock))","new":"q := min(have+add, s.products[sku].stock)","label":"merge can shrink the user's own line","k":"test_l4_"},
+ {"file":"shop.go","old":"if u.promo == \"\" || up == nil || ts >= up.expiresAt {","new":"if u.promo == \"\" || up == nil {","label":"user keeps an expired promo over the guest's","k":"test_l4_"},
+ {"file":"shop.go","old":"if moved, ok := s.history[guestID]; ok {\n\t\tdelete(s.history, guestID)","new":"if moved, ok := s.history[guestID]; ok && false {\n\t\tdelete(s.history, guestID)","label":"merge leaves the guest's orders behind","k":"test_l4_"},
+ {"file":"shop.go","old":"return h[i].ts < h[j].ts","new":"return false","label":"merged history not ordered by time","k":"test_l4_"},
+ {"file":"shop.go","old":"p.sold -= q","new":"p.sold -= 0","label":"cancelled orders still count as sold","k":"test_l4_"}
+]

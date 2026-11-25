@@ -1,0 +1,51 @@
+[
+ {
+  "file": "Pricing.java",
+  "old": "Math.floorDiv(amount * bps + 5000, 10000)",
+  "new": "Math.floorDiv(amount * bps, 10000)",
+  "label": "percentage fee truncated instead of rounded half up",
+  "k": "test_p2_"
+ },
+ {
+  "file": "ChargeBook.java",
+  "old": "q.peek().availableOn <= ts",
+  "new": "q.peek().availableOn < ts",
+  "label": "cutoff exclusive",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Settlement.java",
+  "old": "pricing.fee(c.amount, cur)",
+  "new": "pricing.fee(c.amount - c.refunded, cur)",
+  "label": "fee charged on the refunded-down amount",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Settlement.java",
+  "old": "                c.batch = b.id;\n",
+  "new": "",
+  "label": "settled charges not marked with their batch",
+  "k": "test_p2_"
+ },
+ {
+  "file": "ChargeBook.java",
+  "old": ".thenComparingLong(c -> c.seq)",
+  "new": ".thenComparingLong(c -> -c.seq)",
+  "label": "ties on availableOn not broken by capture order",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Settlement.java",
+  "old": "b.gross += c.amount - c.refunded;",
+  "new": "b.gross += c.amount;",
+  "label": "gross ignores refunds made before settlement",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Payments.java",
+  "old": "if (!c.batch.isEmpty()) source",
+  "new": "if (c.batch.equals(\"never\")) source",
+  "label": "refund after settlement taken from pending",
+  "k": "test_p2_"
+ }
+]

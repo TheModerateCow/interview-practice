@@ -1,0 +1,17 @@
+[
+ {"file": "notify/service.py", "old": "n.at - last < DEDUPE_WINDOW", "new": "n.at - last <= DEDUPE_WINDOW", "label": "a repeat exactly an hour later is still a duplicate", "k": "test_p1_"},
+ {"file": "notify/service.py", "old": "if n.urgent or not in_quiet_hours(u, n.at):", "new": "if not in_quiet_hours(u, n.at):", "label": "urgent notifications wait out quiet hours", "k": "test_p1_"},
+ {"file": "notify/service.py", "old": "        self._store.accept(n.user, n.key, n.at)\n", "new": "", "label": "dedupe keys are never remembered", "k": "test_p1_"},
+ {"file": "notify/service.py", "old": "< HOURLY_CAP[ch]:", "new": "<= HOURLY_CAP[ch]:", "label": "one delivery over the hourly cap", "k": "test_p1_"},
+ {"file": "notify/service.py", "old": "ch not in HOURLY_CAP or ch in seen", "new": "ch not in HOURLY_CAP", "label": "a repeated channel is accepted", "k": "test_p1_"},
+ {"file": "notify/service.py", "old": "offset_min > 840", "new": "offset_min >= 840", "label": "UTC+14 is rejected", "k": "test_p1_"},
+ {"file": "notify/clock.py", "old": "return u.quiet_from <= h < u.quiet_to", "new": "return u.quiet_from <= h <= u.quiet_to", "label": "quiet hours include the end hour", "k": "test_p1_"},
+ {"file": "notify/clock.py", "old": "return h >= u.quiet_from or h < u.quiet_to", "new": "return h >= u.quiet_from and h < u.quiet_to", "label": "quiet hours that wrap midnight never apply", "k": "test_p1_"},
+ {"file": "notify/store.py", "old": "while q and q[0] <= since:", "new": "while q and q[0] < since:", "label": "a delivery exactly an hour ago still counts toward the cap", "k": "test_p1_"},
+ {"file": "notify/store.py", "old": "self._recent[(user, ch)].append(at)", "new": "self._recent[(user, ch)].append(at - 3600)", "label": "deliveries never count toward the cap", "k": "test_p1_"},
+ {"file": "notify/clock.py", "old": "return at - (at + shift) % DAY_SECONDS", "new": "return at - at % DAY_SECONDS", "label": "digest uses the UTC day", "k": "test_p2_"},
+ {"file": "notify/digest.py", "old": "n.at < start or n.at >= to", "new": "n.at <= start or n.at >= to", "label": "digest drops a notification at local midnight", "k": "test_p2_"},
+ {"file": "notify/digest.py", "old": "r.result.status != HELD", "new": "r.result.status == \"sent\"", "label": "digest includes duplicates", "k": "test_p2_"},
+ {"file": "notify/digest.py", "old": "key=lambda line: (-line.count, line.topic)", "new": "key=lambda line: (-line.count, [-ord(c) for c in line.topic])", "label": "ties in reverse topic order", "k": "test_p2_"},
+ {"file": "notify/digest.py", "old": "        line.latest = n.title\n", "new": "        line.latest = line.latest or n.title\n", "label": "latest is the first title, not the most recent", "k": "test_p2_"}
+]

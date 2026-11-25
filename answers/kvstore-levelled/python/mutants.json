@@ -1,0 +1,100 @@
+[
+ {
+  "file": "configstore.py",
+  "old": "if e is None or e.value != expected:",
+  "new": "if e is None:\n            e = _Entry(\"\")\n        if e.value != expected:",
+  "label": "compare-and-set on a missing field matches an empty expected value",
+  "k": "test_l1_"
+ },
+ {
+  "file": "configstore.py",
+  "old": "self._put(ts, key, field, _Entry(value))\n        return not had",
+  "new": "self._put(ts, key, field, _Entry(value))\n        return True",
+  "label": "Set reports every write as new",
+  "k": "test_l1_"
+ },
+ {
+  "file": "configstore.py",
+  "old": "if f.startswith(prefix) and fields[f].live(ts)",
+  "new": "if prefix in f and fields[f].live(ts)",
+  "label": "field prefix matched as a substring",
+  "k": "test_l2_"
+ },
+ {
+  "file": "configstore.py",
+  "old": "if k.startswith(prefix) and self.scan_prefix",
+  "new": "if prefix in k and self.scan_prefix",
+  "label": "key prefix matched as a substring",
+  "k": "test_l2_"
+ },
+ {
+  "file": "configstore.py",
+  "old": "return self.expires_at == 0 or ts < self.expires_at",
+  "new": "return self.expires_at == 0 or ts <= self.expires_at",
+  "label": "field still live at its expiry time",
+  "k": "test_l3_"
+ },
+ {
+  "file": "configstore.py",
+  "old": "return e if e is not None and e.live(ts) else None",
+  "new": "return e",
+  "label": "Get, Delete and compare-and-set ignore expiry",
+  "k": "test_l3_"
+ },
+ {
+  "file": "configstore.py",
+  "old": "replace(e, value=value)",
+  "new": "_Entry(value)",
+  "label": "compare-and-set drops the TTL",
+  "k": "test_l3_"
+ },
+ {
+  "file": "configstore.py",
+  "old": "and self.scan_prefix(ts, k, \"\"))",
+  "new": "and self.records[k])",
+  "label": "ListKeys lists records whose fields all expired",
+  "k": "test_l3_"
+ },
+ {
+  "file": "configstore.py",
+  "old": "return e.expires_at - ts\n",
+  "new": "return e.expires_at - ts + 1\n",
+  "label": "RemainingTTL off by one",
+  "k": "test_l3_"
+ },
+ {
+  "file": "configstore.py",
+  "old": "_Entry(value, ts + remaining if remaining else 0)",
+  "new": "_Entry(value, remaining)",
+  "label": "restore does not restart TTLs from the restore time",
+  "k": "test_l4_"
+ },
+ {
+  "file": "configstore.py",
+  "old": "if not e.live(ts):\n                    continue\n                b.setdefault",
+  "new": "b.setdefault",
+  "label": "backup keeps fields that already expired",
+  "k": "test_l4_"
+ },
+ {
+  "file": "configstore.py",
+  "old": "if f not in b.get(k, {}):",
+  "new": "if False:",
+  "label": "restore keeps fields the backup did not have",
+  "k": "test_l4_"
+ },
+ {
+  "file": "configstore.py",
+  "old": "if t <= at_ts:",
+  "new": "if t < at_ts:",
+  "label": "GetAt leaves out changes made exactly at atTs",
+  "k": "test_l4_"
+ },
+ {
+  "file": "configstore.py",
+  "old": "not last.live(at_ts)",
+  "new": "not last.live(ts)",
+  "label": "GetAt checks expiry against now instead of atTs",
+  "k": "test_l4_"
+ }
+]

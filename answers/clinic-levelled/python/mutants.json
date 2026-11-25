@@ -1,0 +1,170 @@
+[
+ {
+  "file": "clinic.py",
+  "old": "if o is None or not (s < o[1] and o[0] < e):",
+  "new": "if o is None or not (s <= o[1] and o[0] <= e):",
+  "label": "back-to-back appointments refused",
+  "k": "test_l1_"
+ },
+ {
+  "file": "clinic.py",
+  "old": "or d is None or start < t:",
+  "new": "or d is None:",
+  "label": "bookings in the past accepted",
+  "k": "test_l1_"
+ },
+ {
+  "file": "clinic.py",
+  "old": "self.rooms.insert(i, id)",
+  "new": "self.rooms.append(id)",
+  "label": "rooms tried in the order added, not smallest first",
+  "k": "test_l1_"
+ },
+ {
+  "file": "clinic.py",
+  "old": "if a is None or a.status != \"booked\" or ts >= a.start:\n            return False\n        a.status = \"cancelled\"",
+  "new": "if a is None or a.status == \"no-show\" or ts >= a.start:\n            return False\n        a.status = \"cancelled\"",
+  "label": "a cancelled appointment can be cancelled again",
+  "k": "test_l1_"
+ },
+ {
+  "file": "clinic.py",
+  "old": "or (room is not None and a.room == room)",
+  "new": "",
+  "label": "rooms double-booked",
+  "k": "test_l1_"
+ },
+ {
+  "file": "clinic.py",
+  "old": "key=lambda c: (-mins[c], c)",
+  "new": "key=lambda c: (mins[c], c)",
+  "label": "busiest ranked least busy first",
+  "k": "test_l2_"
+ },
+ {
+  "file": "clinic.py",
+  "old": "            if a.active():\n                mins[",
+  "new": "            if True:\n                mins[",
+  "label": "cancelled appointments count toward minutes",
+  "k": "test_l2_"
+ },
+ {
+  "file": "clinic.py",
+  "old": "lb = max(after, ts)",
+  "new": "lb = after",
+  "label": "NextFree can return a time in the past",
+  "k": "test_l2_"
+ },
+ {
+  "file": "clinic.py",
+  "old": "if self._place(clinician, s, s + d, None) is not None:\n                return s",
+  "new": "if self._free(clinician, None, s, s + d, None):\n                return s",
+  "label": "NextFree ignores rooms",
+  "k": "test_l2_"
+ },
+ {
+  "file": "clinic.py",
+  "old": "sorted((a for a in self.appts if a.clinician == clinician and a.active()), key=lambda a: a.start)",
+  "new": "[a for a in self.appts if a.clinician == clinician and a.active()]",
+  "label": "schedule in booking order",
+  "k": "test_l2_"
+ },
+ {
+  "file": "clinic.py",
+  "old": "a.start + GRACE <= ts), key=lambda a: a.start)",
+  "new": "a.start + GRACE < ts), key=lambda a: a.start)",
+  "label": "no-show noticed one minute late",
+  "k": "test_l3_"
+ },
+ {
+  "file": "clinic.py",
+  "old": "a.start + GRACE <= ts), key=lambda a: a.start)",
+  "new": "a.start + GRACE <= ts))",
+  "label": "no-shows handled in booking order, not time order",
+  "k": "test_l3_"
+ },
+ {
+  "file": "clinic.py",
+  "old": "return self.start, self.start + GRACE",
+  "new": "return self.start, self.end",
+  "label": "a no-show keeps holding the whole slot",
+  "k": "test_l3_"
+ },
+ {
+  "file": "clinic.py",
+  "old": "ts < a.start - CHECK_IN_OPENS:",
+  "new": "ts < a.start - CHECK_IN_OPENS + 1:",
+  "label": "check-in opens 29 minutes before",
+  "k": "test_l3_"
+ },
+ {
+  "file": "clinic.py",
+  "old": "n = self._fill(t, a.clinician, t)",
+  "new": "n = self._fill(t, a.clinician, a.start)",
+  "label": "no-show slot offered from the original start",
+  "k": "test_l3_"
+ },
+ {
+  "file": "clinic.py",
+  "old": "        self._fill(ts, a.clinician, a.start)\n        return True",
+  "new": "        return True",
+  "label": "cancellations not offered to the waitlist",
+  "k": "test_l3_"
+ },
+ {
+  "file": "clinic.py",
+  "old": "                del q[i]\n",
+  "new": "                del q[0]\n",
+  "label": "fill removes the head of the list, not the patient booked",
+  "k": "test_l3_"
+ },
+ {
+  "file": "clinic.py",
+  "old": "room = self._place(a.clinician, new_start, new_start + d, a)",
+  "new": "room = self._place(a.clinician, new_start, new_start + d, None)",
+  "label": "reschedule clashes with its own old slot",
+  "k": "test_l4_"
+ },
+ {
+  "file": "clinic.py",
+  "old": "        self._fill(ts, a.clinician, old)\n",
+  "new": "",
+  "label": "rescheduled slot not offered to the waitlist",
+  "k": "test_l4_"
+ },
+ {
+  "file": "clinic.py",
+  "old": "a.clinician == from_clinician and a.status == \"booked\")",
+  "new": "a.clinician == from_clinician and a.active())",
+  "label": "hand-over moves patients already checked in",
+  "k": "test_l4_"
+ },
+ {
+  "file": "clinic.py",
+  "old": "moving = sorted((a for a in self.appts if a.clinician == from_clinician and a.status == \"booked\"),\n                        key=lambda a: a.start)",
+  "new": "moving = [a for a in self.appts if a.clinician == from_clinician and a.status == \"booked\"]",
+  "label": "hand-over in booking order",
+  "k": "test_l4_"
+ },
+ {
+  "file": "clinic.py",
+  "old": "            if not any(x[0] == w[0] for x in dest):",
+  "new": "            if True:",
+  "label": "merged waitlist keeps duplicates",
+  "k": "test_l4_"
+ },
+ {
+  "file": "clinic.py",
+  "old": "a.record(t, \"no-show\")",
+  "new": "a.record(ts, \"no-show\")",
+  "label": "history dates a no-show when it was noticed",
+  "k": "test_l4_"
+ },
+ {
+  "file": "clinic.py",
+  "old": " or from_clinician == to_clinician:",
+  "new": ":",
+  "label": "hand-over to oneself allowed",
+  "k": "test_l4_"
+ }
+]

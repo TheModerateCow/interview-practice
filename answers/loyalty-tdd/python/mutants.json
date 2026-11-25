@@ -1,0 +1,7 @@
+[
+ {"file":"loyalty.py","old":"if spent >= SILVER_FROM:","new":"if spent > SILVER_FROM:","label":"lifetime spend of exactly 500.00 stays base","k":"test_p1_"},
+ {"file":"loyalty.py","old":"pts = (spend_cents * _rate(self.spent) + 5_000) // 10_000","new":"pts = (spend_cents * _rate(self.spent)) // 10_000","label":"points rounded down instead of half up","k":"test_p1_"},
+ {"file":"loyalty.py","old":"if spend_cents <= 0:","new":"if spend_cents < 0:","label":"zero spend accepted as a purchase","k":"test_p1_"},
+ {"file":"loyalty.py","old":"return day < lot[0] + LIFETIME_DAYS","new":"return day <= lot[0] + LIFETIME_DAYS","label":"points still usable on day 365 after earning","k":"test_p1_"},
+ {"file":"loyalty.py","old":"pts = (spend_cents * _rate(self.spent) + 5_000)","new":"pts = (spend_cents * _rate(self.spent + spend_cents) + 5_000)","label":"purchase that crosses a tier earns at the new tier's rate","k":"test_p1_"}
+]

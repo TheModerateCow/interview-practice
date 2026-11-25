@@ -1,0 +1,37 @@
+[
+ {
+  "file": "Store.java",
+  "old": "        if (likes.contains(key)) return false;\n",
+  "new": "",
+  "label": "addLike counts a retried like again: the already-liked check is missing",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Ranking.java",
+  "old": "Double.toString(score) + \"|\"",
+  "new": "String.format(java.util.Locale.ROOT, \"%.4f\", score) + \"|\"",
+  "label": "cursor stores the score to 4 decimals, so pages skip or repeat posts a few seconds apart",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Mute.java",
+  "old": "Math.round(hours * 60 * 60)",
+  "new": "Math.round(hours * 60)",
+  "label": "timed mute converts hours to seconds as minutes: a 24-hour mute lasts 24 minutes",
+  "k": "test_p1_"
+ },
+ {
+  "file": "FeedService.java",
+  "old": "        if (limit < 1) throw new FeedException(FeedException.Code.BAD_LIMIT, \"limit must be at least 1\");\n        store.requireUser(viewer);\n        long start = Math.max(since + 1, now - Ranking.FEED_WINDOW);\n        List<String> picked = new ArrayList<>();\n        Map<String, Integer> perAuthor = new HashMap<>();\n        for (Ranking.Ranked r : ranked(sources(viewer, now), start, now)) {\n            int count = perAuthor.getOrDefault(r.post().author(), 0);\n            if (count < CATCH_UP_PER_AUTHOR) {\n                perAuthor.put(r.post().author(), count + 1);\n                picked.add(r.post().id());\n                if (picked.size() == limit) break;\n            }\n        }\n        return picked;\n",
+  "new": "        throw new UnsupportedOperationException(\"not implemented\");\n",
+  "label": "feature removed: catchUp",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Store.java",
+  "old": "        List<Post> list = byAuthor.getOrDefault(author, List.of());\n        int lo = lowerBound(list, start);\n        int hi = upperBound(list, end);\n        return list.subList(lo, hi);\n",
+  "new": "        List<Post> out = new ArrayList<>();\n        for (Post p : posts.values()) {\n            if (p.author().equals(author) && p.createdAt() >= start && p.createdAt() <= end) out.add(p);\n        }\n        out.sort(java.util.Comparator.comparingLong(Post::createdAt).thenComparing(Post::id));\n        return out;\n",
+  "label": "slow: postsBy scans every post in the store instead of the per-author index",
+  "k": "test_p3_"
+ }
+]

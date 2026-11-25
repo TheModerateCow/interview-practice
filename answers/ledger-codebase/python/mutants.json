@@ -1,0 +1,51 @@
+[
+ {
+  "file": "ledger/settlement.py",
+  "old": "return (amount * self.bps + 5000) // 10000 + self.fixed.get(cur, 0)",
+  "new": "return amount * self.bps // 10000 + self.fixed.get(cur, 0)",
+  "label": "percentage fee truncated instead of rounded half up",
+  "k": "test_p2_"
+ },
+ {
+  "file": "ledger/charges.py",
+  "old": "while q and q[0][0] <= ts:",
+  "new": "while q and q[0][0] < ts:",
+  "label": "cutoff exclusive",
+  "k": "test_p2_"
+ },
+ {
+  "file": "ledger/settlement.py",
+  "old": "b.fees += pricing.fee(c.amount, cur)",
+  "new": "b.fees += pricing.fee(c.amount - c.refunded, cur)",
+  "label": "fee charged on the refunded-down amount",
+  "k": "test_p2_"
+ },
+ {
+  "file": "ledger/settlement.py",
+  "old": "                c.batch = b.id\n",
+  "new": "",
+  "label": "settled charges not marked with their batch",
+  "k": "test_p2_"
+ },
+ {
+  "file": "ledger/charges.py",
+  "old": "(c.available_on, c.seq, c)",
+  "new": "(c.available_on, -c.seq, c)",
+  "label": "ties on available_on not broken by capture order",
+  "k": "test_p2_"
+ },
+ {
+  "file": "ledger/settlement.py",
+  "old": "b.gross += c.amount - c.refunded",
+  "new": "b.gross += c.amount",
+  "label": "gross ignores refunds made before settlement",
+  "k": "test_p2_"
+ },
+ {
+  "file": "ledger/payments.py",
+  "old": "if c.batch != \"\":",
+  "new": "if c.batch == \"never\":",
+  "label": "refund after settlement taken from pending",
+  "k": "test_p2_"
+ }
+]

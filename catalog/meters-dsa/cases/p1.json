@@ -285,7 +285,9 @@
   "call": "best_battery_profit",
   "data": "data/large_fast.json",
   "budget_ms": {
-   "go": 2000
+   "go": 2000,
+   "java": 1000,
+   "python": 9000
   }
  }
 ]

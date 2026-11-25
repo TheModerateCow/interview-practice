@@ -1,0 +1,170 @@
+[
+ {
+  "file": "Clinic.java",
+  "old": "if (o == null || !(s < o[1] && o[0] < e)) continue;",
+  "new": "if (o == null || !(s <= o[1] && o[0] <= e)) continue;",
+  "label": "back-to-back appointments refused",
+  "k": "test_l1_"
+ },
+ {
+  "file": "Clinic.java",
+  "old": "if (!clinicians.contains(clinician) || d == null || start < t) return null;",
+  "new": "if (!clinicians.contains(clinician) || d == null) return null;",
+  "label": "bookings in the past accepted",
+  "k": "test_l1_"
+ },
+ {
+  "file": "Clinic.java",
+  "old": "private final TreeSet<String> rooms = new TreeSet<>();",
+  "new": "private final java.util.LinkedHashSet<String> rooms = new java.util.LinkedHashSet<>();",
+  "label": "rooms tried in the order added, not smallest first",
+  "k": "test_l1_"
+ },
+ {
+  "file": "Clinic.java",
+  "old": "if (a == null || !a.status.equals(\"booked\") || ts >= a.start) return false;\n        a.status = \"cancelled\";",
+  "new": "if (a == null || a.status.equals(\"no-show\") || ts >= a.start) return false;\n        a.status = \"cancelled\";",
+  "label": "a cancelled appointment can be cancelled again",
+  "k": "test_l1_"
+ },
+ {
+  "file": "Clinic.java",
+  "old": "(room != null && room.equals(a.room))",
+  "new": "false",
+  "label": "rooms double-booked",
+  "k": "test_l1_"
+ },
+ {
+  "file": "Clinic.java",
+  "old": "return mx != my ? Integer.compare(my, mx) : x.compareTo(y);",
+  "new": "return mx != my ? Integer.compare(mx, my) : x.compareTo(y);",
+  "label": "busiest ranked least busy first",
+  "k": "test_l2_"
+ },
+ {
+  "file": "Clinic.java",
+  "old": "if (a.active()) mins.merge",
+  "new": "if (true) mins.merge",
+  "label": "cancelled appointments count toward minutes",
+  "k": "test_l2_"
+ },
+ {
+  "file": "Clinic.java",
+  "old": "int lb = Math.max(after, ts);",
+  "new": "int lb = after;",
+  "label": "NextFree can return a time in the past",
+  "k": "test_l2_"
+ },
+ {
+  "file": "Clinic.java",
+  "old": "if (place(clinician, s, s + d, null) != null) return s;",
+  "new": "if (free(clinician, null, s, s + d, null)) return s;",
+  "label": "NextFree ignores rooms",
+  "k": "test_l2_"
+ },
+ {
+  "file": "Clinic.java",
+  "old": "        mine.sort(Comparator.comparingInt(a -> a.start));\n",
+  "new": "",
+  "label": "schedule in booking order",
+  "k": "test_l2_"
+ },
+ {
+  "file": "Clinic.java",
+  "old": "a.status.equals(\"booked\") && a.start + GRACE <= ts",
+  "new": "a.status.equals(\"booked\") && a.start + GRACE < ts",
+  "label": "no-show noticed one minute late",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Clinic.java",
+  "old": "        due.sort(Comparator.comparingInt(a -> a.start)); // stable\n",
+  "new": "",
+  "label": "no-shows handled in booking order, not time order",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Clinic.java",
+  "old": "return new int[] {start, start + GRACE};",
+  "new": "return new int[] {start, end};",
+  "label": "a no-show keeps holding the whole slot",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Clinic.java",
+  "old": "ts < a.start - CHECK_IN_OPENS) return false;",
+  "new": "ts < a.start - CHECK_IN_OPENS + 1) return false;",
+  "label": "check-in opens 29 minutes before",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Clinic.java",
+  "old": "Appt n = fill(t, a.clinician, t);",
+  "new": "Appt n = fill(t, a.clinician, a.start);",
+  "label": "no-show slot offered from the original start",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Clinic.java",
+  "old": "        fill(ts, a.clinician, a.start);\n        return true;\n    }\n\n    public String appointment",
+  "new": "        return true;\n    }\n\n    public String appointment",
+  "label": "cancellations not offered to the waitlist",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Clinic.java",
+  "old": "                q.remove(i);\n                return a;",
+  "new": "                q.remove(0);\n                return a;",
+  "label": "fill removes the head of the list, not the patient booked",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Clinic.java",
+  "old": "String room = place(a.clinician, newStart, newStart + d, a);",
+  "new": "String room = place(a.clinician, newStart, newStart + d, null);",
+  "label": "reschedule clashes with its own old slot",
+  "k": "test_l4_"
+ },
+ {
+  "file": "Clinic.java",
+  "old": "        fill(ts, a.clinician, old);\n",
+  "new": "",
+  "label": "rescheduled slot not offered to the waitlist",
+  "k": "test_l4_"
+ },
+ {
+  "file": "Clinic.java",
+  "old": "if (a.clinician.equals(fromClinician) && a.status.equals(\"booked\")) moving.add(a);",
+  "new": "if (a.clinician.equals(fromClinician) && a.active()) moving.add(a);",
+  "label": "hand-over moves patients already checked in",
+  "k": "test_l4_"
+ },
+ {
+  "file": "Clinic.java",
+  "old": "        moving.sort(Comparator.comparingInt(a -> a.start));\n",
+  "new": "",
+  "label": "hand-over in booking order",
+  "k": "test_l4_"
+ },
+ {
+  "file": "Clinic.java",
+  "old": "            if (!dup) dest.add(w);",
+  "new": "            if (true) dest.add(w);",
+  "label": "merged waitlist keeps duplicates",
+  "k": "test_l4_"
+ },
+ {
+  "file": "Clinic.java",
+  "old": "a.record(t, \"no-show\");",
+  "new": "a.record(ts, \"no-show\");",
+  "label": "history dates a no-show when it was noticed",
+  "k": "test_l4_"
+ },
+ {
+  "file": "Clinic.java",
+  "old": " || fromClinician.equals(toClinician)) {",
+  "new": " ) {",
+  "label": "hand-over to oneself allowed",
+  "k": "test_l4_"
+ }
+]

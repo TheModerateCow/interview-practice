@@ -683,7 +683,9 @@
   "call": "earliest_quorum_slot",
   "data": "data/large_org.json",
   "budget_ms": {
-   "java": 2000
+   "java": 2000,
+   "go": 500,
+   "python": 3000
   }
  }
 ]

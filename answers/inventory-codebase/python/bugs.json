@@ -1,0 +1,37 @@
+[
+ {
+  "file": "inventory/reservations.py",
+  "old": "        self._advance(now)\n        r = self.store.reservations.get(id)\n        if r is None:\n            raise NotFound(f\"not found: reservation {id!r}\")\n        if r.status == COMMITTED:\n            raise NotActive(f\"reservation is not active: {r.status}\")\n        if r.status in (RELEASED, EXPIRED):\n            return\n        self.store.end_hold(r, RELEASED, now)\n",
+  "new": "        r = self.store.reservations.get(id)\n        if r is None:\n            raise NotFound(f\"not found: reservation {id!r}\")\n        if r.status == COMMITTED:\n            raise NotActive(f\"reservation is not active: {r.status}\")\n        if r.status in (RELEASED, EXPIRED):\n            return\n        self._advance(now)\n        self.store.end_hold(r, RELEASED, now)\n",
+  "label": "release checks the hold's status before advancing the clock, so a hold that runs out during that advance is released a second time",
+  "k": "test_p1_"
+ },
+ {
+  "file": "inventory/store.py",
+  "old": "        if k not in self.bins:\n            self.pick_path.pop(k.stock, None)\n        self.bins[k] = self.bins.get(k, 0) + qty\n        self.on_hand[k.stock] = self.on_hand.get(k.stock, 0) + qty\n",
+  "new": "        self.bins[k] = self.bins.get(k, 0) + qty\n        self.on_hand[k.stock] = self.on_hand.get(k.stock, 0) + qty\n        if k not in self.bins:\n            self.pick_path.pop(k.stock, None)\n",
+  "label": "put_away checks for a new bin after writing it, so the cached pick path is never invalidated and later picks can't see new bins",
+  "k": "test_p1_"
+ },
+ {
+  "file": "inventory/transfers.py",
+  "old": "avail = self._available(src)",
+  "new": "avail = self.store.on_hand.get(src, 0)",
+  "label": "start_transfer checks on-hand instead of available, so transfers can ship stock held for orders",
+  "k": "test_p1_"
+ },
+ {
+  "file": "inventory/replenish.py",
+  "old": "from .models import Suggestion\nfrom .store import StockKey\n\n\nclass ReplenishMixin:\n    def replenishment(self, warehouse: str, now: int) -> list[Suggestion]:\n        \"\"\"Plan restocking for one warehouse at time now: one Suggestion for each SKU with\n        a Rule there whose stock position has fallen to the rule's min, sorted by SKU. It\n        only plans; nothing is moved or ordered.\"\"\"\n        self._check_warehouse(warehouse)\n        self._advance(now)\n        skus = sorted(k.sku for k in self.store.rules if k.warehouse == warehouse)\n        out: list[Suggestion] = []\n        for sku in skus:\n            k = StockKey(warehouse, sku)\n            rule = self.store.rules[k]\n            pos = self._available(k) + self.store.inbound.get(k, 0)\n            if pos > rule.min:\n                continue\n            qty = rule.max - pos\n            if rule.pack > 1:\n                qty = (qty + rule.pack - 1) // rule.pack * rule.pack\n            out.append(Suggestion(sku, pos, qty, self._source(warehouse, sku, qty)))\n        return out\n\n    def _source(self, dest: str, sku: str, qty: int) -> str:\n        \"\"\"The other warehouse that can best spare qty units of sku: the largest surplus\n        (available minus its own rule's min) that covers qty, lowest ID on a tie.\"\"\"\n        best, best_surplus = \"\", 0\n        for w in self._warehouse_ids():\n            if w == dest:\n                continue\n            k = StockKey(w, sku)\n            rule = self.store.rules.get(k)\n            surplus = self._available(k) - (rule.min if rule else 0)\n            if surplus >= qty and (best == \"\" or surplus > best_surplus):\n                best, best_surplus = w, surplus\n        return best\n",
+  "new": "from .models import Suggestion\n\n\nclass ReplenishMixin:\n    def replenishment(self, warehouse: str, now: int) -> list[Suggestion]:\n        \"\"\"Plan restocking for one warehouse at time now: one Suggestion for each SKU with\n        a Rule there whose stock position has fallen to the rule's min, sorted by SKU. It\n        only plans; nothing is moved or ordered. See problem.md for the full rules.\"\"\"\n        raise NotImplementedError\n",
+  "label": "replenishment removed (phase 2 feature)",
+  "k": "test_p2_"
+ },
+ {
+  "file": "inventory/expiry.py",
+  "old": "import heapq\n\nfrom .models import ACTIVE, EXPIRED\n\n\nclass ExpiryMixin:\n    \"\"\"Mixed into Store. ``holds`` is a min-heap of (expires_at, seq, reservation), so the\n    hold that runs out first is on top. Released and committed holds stay in it until\n    their time comes.\"\"\"\n\n    def track(self, r) -> None:\n        \"\"\"Register a newly placed reservation for expiry.\"\"\"\n        heapq.heappush(self.holds, (r.expires_at, r.seq, r))\n\n    def expire(self, now: int) -> None:\n        \"\"\"End every active reservation whose hold has run out by now (expires_at <= now)\n        and return its stock to available.\"\"\"\n        while self.holds and self.holds[0][0] <= now:\n            r = heapq.heappop(self.holds)[2]\n            if r.status == ACTIVE:\n                self.end_hold(r, EXPIRED, r.expires_at)\n",
+  "new": "from .models import ACTIVE, EXPIRED\n\n\nclass ExpiryMixin:\n    \"\"\"Mixed into Store. ``holds`` lists every reservation in the order it was placed.\"\"\"\n\n    def track(self, r) -> None:\n        \"\"\"Register a newly placed reservation for expiry.\"\"\"\n        self.holds.append(r)\n\n    def expire(self, now: int) -> None:\n        \"\"\"End every active reservation whose hold has run out by now (expires_at <= now)\n        and return its stock to available.\"\"\"\n        for r in self.holds:\n            if r.status == ACTIVE and r.expires_at <= now:\n                self.end_hold(r, EXPIRED, r.expires_at)\n",
+  "label": "expire scans every reservation ever placed on every call (phase 3 bottleneck)",
+  "k": "test_p3_"
+ }
+]

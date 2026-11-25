@@ -1,0 +1,37 @@
+[
+ {
+  "file": "Window.java",
+  "old": "long unused = Math.max(p.limit() - prevUsed, 0);",
+  "new": "long unused = p.limit() - prevUsed;",
+  "label": "rollover goes negative after a burst window, so the next window gets less than the plan's limit",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Store.java",
+  "old": " if (e.allowed()) sum += e.cost();",
+  "new": " sum += e.cost();",
+  "label": "unitsBetween counts denied requests as spent",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Store.java",
+  "old": "new Key(k.id(), k.org(), plan, k.revoked())",
+  "new": "new Key(k.id(), k.org(), plan)",
+  "label": "setPlan rebuilds the key and drops revoked",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Service.java",
+  "old": "        if (end <= start) throw QuotaException.badRange();\n        List<UsageLine> out = new ArrayList<>();\n        for (String id : store.keysOf(org)) {\n            List<Event> events = store.eventsBetween(id, start, end);\n            if (events.isEmpty()) continue;\n            long requests = 0, units = 0;\n            for (Event e : events) {\n                if (e.allowed()) {\n                    requests++;\n                    units += e.cost();\n                }\n            }\n            out.add(new UsageLine(id, store.key(id).plan(), requests, units, events.size() - requests));\n        }\n        out.sort(Comparator.comparingLong(UsageLine::units).reversed().thenComparing(UsageLine::keyId));\n        return out;\n",
+  "new": "        throw new UnsupportedOperationException(\"not implemented\");\n",
+  "label": "feature removed: report",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Store.java",
+  "old": "        List<Event> log = events.getOrDefault(id, List.of());\n        return log.subList(lowerBound(log, start), lowerBound(log, end));\n",
+  "new": "        List<Event> out = new ArrayList<>();\n        for (Event e : events.getOrDefault(id, List.of())) if (start <= e.at() && e.at() < end) out.add(e);\n        return out;\n",
+  "label": "slow: eventsBetween filters the key's whole log on every call",
+  "k": "test_p3_"
+ }
+]

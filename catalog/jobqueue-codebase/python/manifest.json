@@ -1,0 +1,14 @@
+{
+ "run_entry": "main.py",
+ "testcases": [
+  {
+   "stdin": "enqueue 100 emails welcome-42 key=signup-42\nenqueue 100 billing trial-42 key=signup-42\nenqueue 105 emails welcome-42 key=signup-42\nlease 110 emails\nextend 130 job-1 lease-1 60\nlease 145 emails\nfail 150 job-1 lease-1 smtp-timeout\nlease 165 emails\nlease 165 billing\nack 170 job-2 lease-3\nack 171 job-2 lease-3\njob job-1\n",
+   "expected": "job-1\njob-2\njob-1\njob-1 lease-1 attempt=1 until=140 welcome-42\nok\nempty\nok\njob-1 lease-2 attempt=2 until=195 welcome-42\njob-2 lease-3 attempt=1 until=195 trial-42\nok\nerror: NOT_FOUND: no live job job-2\njob-1 LEASED attempts=2 lastError=smtp-timeout\n"
+  },
+  {
+   "stdin": "enqueue 0 reports monthly runAt=100\nenqueue 0 reports weekly priority=5\nlease 10 reports\nfail 20 job-2 lease-1 timeout\nstats 25 reports\nlease 150 reports\nstats 150 reports\n",
+   "expected": "job-1\njob-2\njob-2 lease-1 attempt=1 until=40 weekly\nok\nStats[ready=0, scheduled=1, retrying=1, inFlight=0, dead=0, completed=0, oldestReadyAge=0, nextRunAt=30]\njob-2 lease-2 attempt=2 until=180 weekly\nStats[ready=1, scheduled=0, retrying=0, inFlight=1, dead=0, completed=0, oldestReadyAge=50, nextRunAt=null]\n"
+  }
+ ],
+ "your_tests": "test_*.py"
+}

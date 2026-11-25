@@ -1,0 +1,37 @@
+[
+ {
+  "file": "Reservations.java",
+  "old": "        s.advance(now);\n        Reservation r = s.store.reservations.get(id);\n        if (r == null) throw new InventoryException(InventoryException.Code.NOT_FOUND, \"reservation \" + id);\n        switch (r.status) {\n            case COMMITTED -> throw new InventoryException(InventoryException.Code.NOT_ACTIVE, \"committed\");\n            case RELEASED, EXPIRED -> { return; }\n            default -> { }\n        }\n",
+  "new": "        Reservation r = s.store.reservations.get(id);\n        if (r == null) throw new InventoryException(InventoryException.Code.NOT_FOUND, \"reservation \" + id);\n        switch (r.status) {\n            case COMMITTED -> throw new InventoryException(InventoryException.Code.NOT_ACTIVE, \"committed\");\n            case RELEASED, EXPIRED -> { return; }\n            default -> { }\n        }\n        s.advance(now);\n",
+  "label": "release checks the hold's status before advancing the clock, so a hold that runs out during that advance is released a second time",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Store.java",
+  "old": "        if (!bins.containsKey(k)) {\n            pickPath.remove(k.stock());\n        }\n        bins.merge(k, qty, Integer::sum);\n        onHand.merge(k.stock(), qty, Integer::sum);\n",
+  "new": "        bins.merge(k, qty, Integer::sum);\n        onHand.merge(k.stock(), qty, Integer::sum);\n        if (!bins.containsKey(k)) {\n            pickPath.remove(k.stock());\n        }\n",
+  "label": "putAway checks for a new bin after writing it, so the cached pick path is never invalidated and later picks can't see new bins",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Transfers.java",
+  "old": "int avail = s.avail(src);",
+  "new": "int avail = s.store.onHand(src);",
+  "label": "start checks on-hand instead of available, so transfers can ship stock held for orders",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Replenish.java",
+  "old": "import java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.List;\n\nfinal class Replenish {\n    private Replenish() {}\n\n    /**\n     * One Suggestion for each SKU with a Rule in the warehouse whose stock position has fallen to the\n     * rule's min, sorted by SKU. It only plans; nothing is moved or ordered. See problem.md for the full rules.\n     */\n    static List<Suggestion> plan(Inventory s, String warehouse, long now) {\n        s.checkWarehouse(warehouse);\n        s.advance(now);\n        List<String> skus = new ArrayList<>();\n        for (StockKey k : s.store.rules.keySet()) {\n            if (k.warehouse().equals(warehouse)) skus.add(k.sku());\n        }\n        Collections.sort(skus);\n        List<Suggestion> out = new ArrayList<>();\n        for (String sku : skus) {\n            StockKey k = new StockKey(warehouse, sku);\n            Rule rule = s.store.rules.get(k);\n            int pos = s.avail(k) + s.store.inbound(k);\n            if (pos > rule.min()) continue;\n            int qty = rule.max() - pos;\n            if (rule.pack() > 1) {\n                qty = (qty + rule.pack() - 1) / rule.pack() * rule.pack();\n            }\n            out.add(new Suggestion(sku, pos, qty, source(s, warehouse, sku, qty)));\n        }\n        return out;\n    }\n\n    /**\n     * The other warehouse that can best spare qty units of sku: the largest surplus (available minus its\n     * own rule's min) that covers qty, lowest ID on a tie.\n     */\n    private static String source(Inventory s, String dest, String sku, int qty) {\n        String best = \"\";\n        int bestSurplus = 0;\n        for (String w : s.warehouseIds()) {\n            if (w.equals(dest)) continue;\n            StockKey k = new StockKey(w, sku);\n            Rule rule = s.store.rules.get(k);\n            int surplus = s.avail(k) - (rule == null ? 0 : rule.min());\n            if (surplus >= qty && (best.isEmpty() || surplus > bestSurplus)) {\n                best = w;\n                bestSurplus = surplus;\n            }\n        }\n        return best;\n    }\n}\n",
+  "new": "import java.util.List;\n\nfinal class Replenish {\n    private Replenish() {}\n\n    /**\n     * One Suggestion for each SKU with a Rule in the warehouse whose stock position has fallen to the\n     * rule's min, sorted by SKU. It only plans; nothing is moved or ordered. See problem.md for the full rules.\n     */\n    static List<Suggestion> plan(Inventory s, String warehouse, long now) {\n        throw new UnsupportedOperationException(\"not implemented\");\n    }\n}\n",
+  "label": "Replenishment removed (phase 2 feature)",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Expiry.java",
+  "old": "import java.util.Comparator;\nimport java.util.PriorityQueue;\n\n/**\n * Reservation expiry: a min-heap of reservations ordered by when their hold runs out, then by\n * placement order. Released and committed holds stay in it until their time comes.\n */\nfinal class Expiry {\n    private final PriorityQueue<Reservation> holds =\n            new PriorityQueue<>(Comparator.comparingLong((Reservation r) -> r.expiresAt).thenComparingInt(r -> r.seq));\n\n    /** Registers a newly placed reservation for expiry. */\n    void track(Reservation r) {\n        holds.add(r);\n    }\n\n    /** Ends every active reservation whose hold has run out by now (expiresAt <= now) and returns its stock to available. */\n    void expire(long now, Store s) {\n        while (!holds.isEmpty() && holds.peek().expiresAt <= now) {\n            Reservation r = holds.poll();\n            if (r.status == Reservation.Status.ACTIVE) {\n                s.endHold(r, Reservation.Status.EXPIRED, r.expiresAt);\n            }\n        }\n    }\n}\n",
+  "new": "import java.util.ArrayList;\nimport java.util.List;\n\n/** Reservation expiry: every reservation in the order it was placed. */\nfinal class Expiry {\n    private final List<Reservation> holds = new ArrayList<>();\n\n    /** Registers a newly placed reservation for expiry. */\n    void track(Reservation r) {\n        holds.add(r);\n    }\n\n    /** Ends every active reservation whose hold has run out by now (expiresAt <= now) and returns its stock to available. */\n    void expire(long now, Store s) {\n        for (Reservation r : holds) {\n            if (r.status == Reservation.Status.ACTIVE && r.expiresAt <= now) {\n                s.endHold(r, Reservation.Status.EXPIRED, r.expiresAt);\n            }\n        }\n    }\n}\n",
+  "label": "expire scans every reservation ever placed on every call (phase 3 bottleneck)",
+  "k": "test_p3_"
+ }
+]

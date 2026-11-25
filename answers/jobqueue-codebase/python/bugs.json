@@ -1,0 +1,37 @@
+[
+ {
+  "file": "jobqueue/lifecycle.py",
+  "old": "elif job.status is Status.LEASED and job.lease_until <= now:",
+  "new": "elif job.status is Status.LEASED:",
+  "label": "The lease sweep doesn't check the job's current deadline, so a timer left from before an extend (or from an earlier attempt) takes back a live lease",
+  "k": "test_p1_"
+ },
+ {
+  "file": "jobqueue/service.py",
+  "old": "        job.attempts = 0\n        self._store.make_ready(job, now)",
+  "new": "        self._store.make_ready(job, now)",
+  "label": "redrive keeps the old attempt count, so a redriven job goes straight back to the DLQ on its next failure",
+  "k": "test_p1_"
+ },
+ {
+  "file": "jobqueue/store.py",
+  "old": "    return (queue, key)",
+  "new": "    return key",
+  "label": "Idempotency keys are not scoped to their queue, so the same key in two queues drops the second job",
+  "k": "test_p1_"
+ },
+ {
+  "file": "jobqueue/stats.py",
+  "old": "    lifecycle.advance(store, now)\n    ready = scheduled = retrying = in_flight = dead = 0\n    oldest: int | None = None\n    nxt: int | None = None\n    for j in store.jobs_in(queue):\n        if j.status is Status.READY:\n            ready += 1\n            oldest = j.ready_at if oldest is None else min(oldest, j.ready_at)\n        elif j.status is Status.SCHEDULED:\n            if j.attempts == 0:\n                scheduled += 1\n            else:\n                retrying += 1\n            nxt = j.available_at if nxt is None else min(nxt, j.available_at)\n        elif j.status is Status.LEASED:\n            in_flight += 1\n        elif j.status is Status.DEAD:\n            dead += 1\n    return Stats(ready, scheduled, retrying, in_flight, dead, store.completed_in(queue),\n                 0 if oldest is None else now - oldest, nxt)\n",
+  "new": "    raise NotImplementedError(\"not implemented\")\n",
+  "label": "stats removed (phase 2 feature)",
+  "k": "test_p2_"
+ },
+ {
+  "file": "jobqueue/ready.py",
+  "old": "import heapq\n\nfrom .models import Job, Status\n\n\ndef order(job: Job) -> tuple[int, int, int]:\n    \"\"\"Best first: higher priority, then the job that has been ready longest, then the job enqueued first.\"\"\"\n    return (-job.priority, job.ready_at, job.seq)\n\n\nclass ReadyQueue:\n    def __init__(self) -> None:\n        self._heap: list[tuple[tuple[int, int, int], Job]] = []\n\n    def add(self, job: Job) -> None:\n        heapq.heappush(self._heap, (order(job), job))\n\n    def poll(self) -> Job | None:\n        \"\"\"Removes and returns the best job that is still READY, or None. A job cancelled while it\n        waits stays in the heap until it reaches the top, and is dropped then.\"\"\"\n        while self._heap:\n            _, job = heapq.heappop(self._heap)\n            if job.status is Status.READY:\n                return job\n        return None\n",
+  "new": "from .models import Job, Status\n\n\ndef order(job: Job) -> tuple[int, int, int]:\n    \"\"\"Best first: higher priority, then the job that has been ready longest, then the job enqueued first.\"\"\"\n    return (-job.priority, job.ready_at, job.seq)\n\n\nclass ReadyQueue:\n    def __init__(self) -> None:\n        self._jobs: list[Job] = []\n\n    def add(self, job: Job) -> None:\n        self._jobs.append(job)\n\n    def poll(self) -> Job | None:\n        \"\"\"Removes and returns the best job that is still READY, or None.\"\"\"\n        self._jobs = [j for j in self._jobs if j.status is Status.READY]\n        if not self._jobs:\n            return None\n        best = min(self._jobs, key=order)\n        self._jobs.remove(best)\n        return best\n",
+  "label": "ReadyQueue rescans and filters a list on every lease (phase 3 bottleneck)",
+  "k": "test_p3_"
+ }
+]

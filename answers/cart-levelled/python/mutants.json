@@ -1,0 +1,17 @@
+[
+ {"file":"shop.py","old":"if have + qty > p.stock:","new":"if have + qty >= p.stock:","label":"cart can't be filled up to the exact stock","k":"test_l1_"},
+ {"file":"shop.py","old":"left = max(0, c.lines[sku] - qty)","new":"left = c.lines[sku] - qty","label":"removing more than the line holds goes negative","k":"test_l1_"},
+ {"file":"shop.py","old":"for sku in sorted(c.lines)]","new":"for sku in c.lines]","label":"items listed in insertion order, not by sku","k":"test_l1_"},
+ {"file":"shop.py","old":"key=lambda s: (-self._products[s].sold, s))","new":"key=lambda s: (-self._products[s].sold, [-ord(ch) for ch in s]))","label":"top sellers ties broken by sku descending","k":"test_l2_"},
+ {"file":"shop.py","old":"if self._products[sku].stock < q:","new":"if self._products[sku].stock < q - 1:","label":"checkout lets a line exceed stock by one","k":"test_l2_"},
+ {"file":"shop.py","old":"return ts < c.touched + CART_TTL","new":"return ts <= c.touched + CART_TTL","label":"cart still alive at its abandon time","k":"test_l3_"},
+ {"file":"shop.py","old":"sub -= sub * pr.percent // 100","new":"sub -= (sub * pr.percent + 99) // 100","label":"discount rounded up","k":"test_l3_"},
+ {"file":"shop.py","old":"sub >= pr.min_total","new":"sub > pr.min_total","label":"subtotal exactly at the promo minimum gets no discount","k":"test_l3_"},
+ {"file":"shop.py","old":"ts < pr.expires_at and sub","new":"ts <= pr.expires_at and sub","label":"promo still discounts at its expiry time","k":"test_l3_"},
+ {"file":"shop.py","old":"q = max(have, min(have + add, self._products[sku].stock))","new":"q = have + add","label":"merge ignores stock","k":"test_l4_"},
+ {"file":"shop.py","old":"q = max(have, min(have + add, self._products[sku].stock))","new":"q = min(have + add, self._products[sku].stock)","label":"merge can shrink the user's own line","k":"test_l4_"},
+ {"file":"shop.py","old":"if up is None or ts >= up.expires_at:","new":"if up is None:","label":"user keeps an expired promo over the guest's","k":"test_l4_"},
+ {"file":"shop.py","old":"moved = self._history.pop(guest_id, None)","new":"moved = None","label":"merge leaves the guest's orders behind","k":"test_l4_"},
+ {"file":"shop.py","old":"h.sort(key=lambda o: o.ts)","new":"h.sort(key=lambda o: 0)","label":"merged history not ordered by time","k":"test_l4_"},
+ {"file":"shop.py","old":"p.sold -= q","new":"p.sold -= 0","label":"cancelled orders still count as sold","k":"test_l4_"}
+]

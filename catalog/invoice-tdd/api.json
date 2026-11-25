@@ -4,6 +4,7 @@
  "functions": {},
  "classes": {
   "Invoice": {
+   "init_errors": true,
    "init": [
     [
      "issue_day",

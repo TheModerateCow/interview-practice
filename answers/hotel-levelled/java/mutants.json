@@ -1,0 +1,10 @@
+[
+ {"file":"Hotel.java","old":"checkIn < b.end && b.start < checkOut","new":"checkIn <= b.end && b.start < checkOut","label":"back-to-back bookings treated as overlapping","k":"test_l1_"},
+ {"file":"Hotel.java","old":"containsKey(roomId) || rate <= 0) return false;\n        Room r","new":"containsKey(roomId) || rate < 0) return false;\n        Room r","label":"a room with rate 0 is accepted","k":"test_l1_"},
+ {"file":"Hotel.java","old":"int c = Integer.compare(rooms.get(a).rate, rooms.get(b).rate);\n            return c != 0 ? c : a.compareTo(b);","new":"return a.compareTo(b);","label":"available rooms sorted by id only, ignoring rate","k":"test_l2_"},
+ {"file":"Hotel.java","old":"return c != 0 ? c : a.compareTo(b);\n        });\n        List<String> out","new":"return c != 0 ? c : b.compareTo(a);\n        });\n        List<String> out","label":"top guests ties broken by name descending","k":"test_l2_"},
+ {"file":"Hotel.java","old":"day > b.start)","new":"day >= b.start)","label":"booking released as a no-show on its own arrival day","k":"test_l3_"},
+ {"file":"Hotel.java","old":"Math.max(1, Math.min(day, b.end) - b.start)","new":"Math.min(day, b.end) - b.start","label":"same-day check-out charges nothing","k":"test_l3_"},
+ {"file":"Hotel.java","old":"return (b.end - b.start) * b.rate;\n    }\n\n    // ---------------------------------------------------------------- level 2","new":"return (b.end - b.start) * rooms.get(b.room).rate;\n    }\n\n    // ---------------------------------------------------------------- level 2","label":"cost uses the room's current rate, not the booked price","k":"test_l4_"},
+ {"file":"Hotel.java","old":"c.day() <= atDay","new":"c.day() < atDay","label":"rateAt leaves out a change made exactly on atDay","k":"test_l4_"}
+]

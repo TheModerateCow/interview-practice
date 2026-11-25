@@ -1,0 +1,37 @@
+[
+ {
+  "file": "notify/clock.py",
+  "old": "wall = at + offset_min * 60",
+  "new": "wall = at + offset_min",
+  "label": "local_hour adds the UTC offset in minutes as seconds, so quiet hours run on (almost) UTC",
+  "k": "test_p1_"
+ },
+ {
+  "file": "notify/store.py",
+  "old": "    return user + \"\\x00\" + key\n",
+  "new": "    return key\n",
+  "label": "dedupe index is keyed by the dedupe key alone, so one user's notification blocks everyone's",
+  "k": "test_p1_"
+ },
+ {
+  "file": "notify/store.py",
+  "old": "self._users[id].channels = list(chans)",
+  "new": "self._users[id].channels = chans",
+  "label": "set_channels keeps the caller's list, so a reused buffer rewrites an earlier user's channels",
+  "k": "test_p1_"
+ },
+ {
+  "file": "notify/digest.py",
+  "old": "    u = store.user(id)\n    if u is None:\n        raise UnknownUser(id)\n    to = local_midnight(now, u.offset_min)\n    start = to - DAY_SECONDS\n    lines: dict[str, DigestLine] = {}\n    for r in store.log(id):\n        n = r.notification\n        if r.result.status != HELD or n.at < start or n.at >= to:\n            continue\n        line = lines.setdefault(n.topic, DigestLine(n.topic, 0, \"\"))\n        line.count += 1\n        line.latest = n.title\n    return sorted(lines.values(), key=lambda line: (-line.count, line.topic))\n",
+  "new": "    raise NotImplementedError\n",
+  "label": "feature removed: Digest",
+  "k": "test_p2_"
+ },
+ {
+  "file": "notify/store.py",
+  "old": "        # Sends for one user arrive in time order, so entries this old can go.\n        q = self._recent[(user, ch)]\n        while q and q[0] <= since:\n            q.popleft()\n        return len(q)\n",
+  "new": "        return sum(1 for r in self._logs[user] if r.notification.at > since and ch in r.result.channels)\n",
+  "label": "slow: deliveries_since scans the user's whole log for every channel on every send",
+  "k": "test_p3_"
+ }
+]

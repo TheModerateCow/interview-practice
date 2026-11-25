@@ -1,0 +1,7 @@
+[
+ {"file":"Subscription.java","old":"day < start || day >= end","new":"day < start || day > end","label":"change on the renewal day (PeriodEnd) accepted","k":"test_p1_"},
+ {"file":"Subscription.java","old":"return pay((diff * left + length / 2) / length);","new":"return pay(diff * left / length);","label":"upgrade charge rounded down instead of half up","k":"test_p1_"},
+ {"file":"Subscription.java","old":"credit += (-diff) * left / length;","new":"credit += ((-diff) * left + length / 2) / length;","label":"downgrade credit rounded half up instead of down","k":"test_p1_"},
+ {"file":"Subscription.java","old":"int used = Math.min(amount, credit);","new":"int used = credit;","label":"credit bigger than the charge is wiped out (charge goes negative)","k":"test_p1_"},
+ {"file":"Subscription.java","old":"seats < 1 || seats > MAX_SEATS","new":"seats < 0 || seats > MAX_SEATS","label":"zero seats accepted","k":"test_p1_"}
+]

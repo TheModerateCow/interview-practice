@@ -34,5 +34,5 @@ and filling up to 10 at junction 2 would waste 4 minutes.
 
 - **Run** runs the run entry. It reads `n m capacity charge`, then the `n` rates, then `m` lines `a b minutes energy`,
   and prints your answer.
-- **My tests** runs your own your own test files. The starter includes an example test to copy.
+- **My tests** runs your own test files. The starter includes an example test to copy.
 - **Submit** runs the hidden tests, including one large network (1000 junctions, 5000 roads, capacity 100).

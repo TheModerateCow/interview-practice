@@ -1,0 +1,12 @@
+[
+ {"file": "dispatch/service.py", "old": "if c.active >= c.capacity:", "new": "if c.active > c.capacity:", "label": "capacity check lets one extra order through", "k": "test_p1_"},
+ {"file": "dispatch/service.py", "old": "(dist == best_dist and c.id < best.id)", "new": "(dist == best_dist and c.id > best.id)", "label": "tie goes to the higher courier id", "k": "test_p1_"},
+ {"file": "dispatch/service.py", "old": "if dist > MAX_PICKUP_DISTANCE:", "new": "if dist >= MAX_PICKUP_DISTANCE:", "label": "pickup range excludes its boundary", "k": "test_p1_"},
+ {"file": "dispatch/service.py", "old": "            c.location = o.restaurant\n", "new": "            pass\n", "label": "pickup does not move the courier to the restaurant", "k": "test_p1_"},
+ {"file": "dispatch/service.py", "old": "            c.location = o.customer\n", "new": "            pass\n", "label": "delivery does not move the courier to the customer", "k": "test_p1_"},
+ {"file": "dispatch/eta.py", "old": "pickup = max(now + travel_minutes(distance(c.location, o.restaurant)), o.ready_at)", "new": "pickup = now + travel_minutes(distance(c.location, o.restaurant))", "label": "ETA ignores the kitchen's ready time", "k": "test_p1_"},
+ {"file": "dispatch/batch.py", "old": "if o.ready_at - now <= DISPATCH_WINDOW]", "new": "if o.ready_at - now < DISPATCH_WINDOW]", "label": "dispatch window excludes its boundary", "k": "test_p2_"},
+ {"file": "dispatch/batch.py", "old": "due.sort(key=lambda o: (o.ready_at, o.id))", "new": "due.sort(key=lambda o: (o.placed_at, o.id))", "label": "dispatch by placement time instead of ready time", "k": "test_p2_"},
+ {"file": "dispatch/batch.py", "old": "due.sort(key=lambda o: (o.ready_at, o.id))", "new": "due.sort(key=lambda o: (o.ready_at, [-ord(ch) for ch in o.id]))", "label": "ready-time ties go to the higher order id", "k": "test_p2_"},
+ {"file": "dispatch/batch.py", "old": "    return out", "new": "    return out or None", "label": "returns None instead of an empty list", "k": "test_p2_"}
+]

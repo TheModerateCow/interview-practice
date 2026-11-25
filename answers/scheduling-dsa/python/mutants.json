@@ -1,0 +1,6 @@
+[
+ {"file": "scheduler.py", "old": "base = d * DAY - a.offset", "new": "base = d * DAY + a.offset", "label": "time-zone offset applied the wrong way", "k": "test_p1_"},
+ {"file": "scheduler.py", "old": "if work and s <= work[-1][1]:", "new": "if work and s < work[-1][1]:", "label": "touching working windows not merged across midnight", "k": "test_p1_"},
+ {"file": "scheduler.py", "old": "cur = max(cur, be)", "new": "cur = be", "label": "nested busy block moves the cursor backwards", "k": "test_p1_"},
+ {"file": "scheduler.py", "old": "events.append((e - duration + 1, -1))", "new": "events.append((e - duration, -1))", "label": "exact-fit slot rejected", "k": "test_p1_"}
+]

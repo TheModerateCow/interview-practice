@@ -1,0 +1,7 @@
+[
+ {"file":"invoice.go","old":"if quantity >= 50 {","new":"if quantity > 50 {","label":"exactly 50 units gets no discount (tier starts at 51)","k":"test_p1_"},
+ {"file":"invoice.go","old":"for c, net := range byCategory {\n\t\tsum += halfUp(net*taxBP[c], 10000)\n\t}","new":"for _, l := range i.lines {\n\t\tsum += halfUp(l.net*taxBP[l.category], 10000)\n\t}","label":"tax rounded per line instead of once per category","k":"test_p1_"},
+ {"file":"invoice.go","old":"if day > i.DueDay() && owed > 0 {","new":"if day >= i.DueDay() && owed > 0 {","label":"late fee charged on the due day itself","k":"test_p1_"},
+ {"file":"invoice.go","old":"if amount < 1 || amount > i.Balance() {","new":"if amount < 1 {","label":"payment or credit note bigger than the balance accepted","k":"test_p1_"},
+ {"file":"invoice.go","old":"return owed + halfUp(owed*lateFeeBP, 10000), nil","new":"return owed + halfUp(i.Total()*lateFeeBP, 10000), nil","label":"late fee on the invoice total, ignoring payments and credit notes","k":"test_p1_"}
+]

@@ -17,7 +17,8 @@ def pascal(n):
 
 
 def name(kind, neutral):
-    if kind in ("func", "method", "field", "param"): return camel(neutral)
+    if kind == "param": return pname(neutral)
+    if kind in ("func", "method", "field"): return camel(neutral)
     if kind == "class": return pascal(neutral)
     if kind == "new": return "new " + pascal(neutral)
     if kind == "error": return pascal(neutral) + "Exception"
@@ -45,7 +46,15 @@ def primarr(t):
     return e in ("int", "long", "bool") or primarr(e)
 
 
-def params(ps): return ", ".join(f"{jtype(t)} {camel(n)}" for n, t in ps)
+KEYWORDS = set("abstract assert boolean break byte case catch char class const continue default do double else enum extends final finally float for goto if implements import instanceof int interface long native new package private protected public return short static strictfp super switch synchronized this throw throws transient try void volatile while var record yield true false null".split())
+
+
+def pname(n):
+    c = camel(n)
+    return c + "_" if c in KEYWORDS else c
+
+
+def params(ps): return ", ".join(f"{jtype(t)} {pname(n)}" for n, t in ps)
 
 
 def _methods(api, cls, upto=None):
@@ -74,7 +83,7 @@ def signatures(api):
 
 
 def _file(body):
-    return ("import java.util.List;\n\n" if "List<" in body else "") + body
+    return ("import java.util.List;\n\n" if ("List<" in body or "List.of(" in body) else "") + body
 
 
 def _lit(v, t):

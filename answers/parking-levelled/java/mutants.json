@@ -1,0 +1,11 @@
+[
+ {"file": "Garage.java", "old": "(best == null || s.size < best.size ||", "new": "(best == null || s.size > best.size ||", "label": "park prefers the largest fitting spot", "k": "test_l1_"},
+ {"file": "Garage.java", "old": "(s.size == best.size && s.id.compareTo(best.id) < 0)", "new": "(s.size == best.size && s.id.compareTo(best.id) > 0)", "label": "ties go to the highest spot id", "k": "test_l1_"},
+ {"file": "Garage.java", "old": "if (s.size == n && free(ts, s)) c++;", "new": "if (s.size >= n && free(ts, s)) c++;", "label": "free spots counts larger sizes too", "k": "test_l2_"},
+ {"file": "Garage.java", "old": "            return a.compareTo(b);\n        });\n        List<String> out", "new": "            return b.compareTo(a);\n        });\n        List<String> out", "label": "top visitors ties broken by plate descending", "k": "test_l2_"},
+ {"file": "Garage.java", "old": "r.spotId().equals(s.id) && ts < r.expiresAt()", "new": "r.spotId().equals(s.id) && ts <= r.expiresAt()", "label": "reservation still blocks its spot at the expiry time", "k": "test_l3_"},
+ {"file": "Garage.java", "old": "if (r == null || ts >= r.expiresAt()) return false;", "new": "if (r == null || ts > r.expiresAt()) return false;", "label": "reservation can be cancelled at its expiry time", "k": "test_l3_"},
+ {"file": "Garage.java", "old": "        reserved.remove(plate);\n        s.plate = plate;", "new": "        s.plate = plate;", "label": "parking doesn't use up the reservation", "k": "test_l3_"},
+ {"file": "Garage.java", "old": "atTs < st.to)", "new": "atTs <= st.to)", "label": "OccupantAt still shows the plate at the time it left", "k": "test_l4_"},
+ {"file": "Garage.java", "old": "((st.to - st.from + 59) / 60)", "new": "((st.to - st.from) / 60)", "label": "charges round hours down", "k": "test_l4_"}
+]

@@ -1,0 +1,10 @@
+[
+ {"file":"hotel.go","old":"checkIn < b.end && b.start < checkOut","new":"checkIn <= b.end && b.start < checkOut","label":"back-to-back bookings treated as overlapping","k":"test_l1_"},
+ {"file":"hotel.go","old":"ok || rate <= 0 {\n\t\treturn false\n\t}\n\th.rooms[roomID] = &room","new":"ok || rate < 0 {\n\t\treturn false\n\t}\n\th.rooms[roomID] = &room","label":"a room with rate 0 is accepted","k":"test_l1_"},
+ {"file":"hotel.go","old":"if ri != rj {\n\t\t\treturn ri < rj\n\t\t}\n","new":"","label":"available rooms sorted by id only, ignoring rate","k":"test_l2_"},
+ {"file":"hotel.go","old":"return order[i] < order[j]","new":"return order[i] > order[j]","label":"top guests ties broken by name descending","k":"test_l2_"},
+ {"file":"hotel.go","old":"day > b.start)","new":"day >= b.start)","label":"booking released as a no-show on its own arrival day","k":"test_l3_"},
+ {"file":"hotel.go","old":"max(1, min(day, b.end)-b.start)","new":"min(day, b.end)-b.start","label":"same-day check-out charges nothing","k":"test_l3_"},
+ {"file":"hotel.go","old":"return -1\n\t}\n\treturn (b.end - b.start) * b.rate\n}\n\n// ---------------------------------------------------------------- level 2","new":"return -1\n\t}\n\treturn (b.end - b.start) * h.rooms[b.room].rate\n}\n\n// ---------------------------------------------------------------- level 2","label":"cost uses the room's current rate, not the booked price","k":"test_l4_"},
+ {"file":"hotel.go","old":"if c.day <= atDay {","new":"if c.day < atDay {","label":"RateAt leaves out a change made exactly on atDay","k":"test_l4_"}
+]

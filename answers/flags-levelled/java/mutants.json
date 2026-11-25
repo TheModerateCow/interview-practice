@@ -1,0 +1,9 @@
+[
+ {"file":"FlagService.java","old":"return e != null && e.targets.add(userId);","new":"if (e != null) e.targets.add(userId);\n        return e != null;","label":"targeting an already-targeted user succeeds","k":"test_l1_"},
+ {"file":"FlagService.java","old":"bucket(flagId, userId) < e.rollout","new":"bucket(flagId, userId) <= e.rollout","label":"bucket equal to the rollout percent is let in","k":"test_l2_"},
+ {"file":"FlagService.java","old":".thenComparing(Map.Entry::getKey)","new":"","label":"most_evaluated ties left in creation order","k":"test_l2_"},
+ {"file":"FlagService.java","old":"if (!s.done && s.at <= ts)","new":"if (!s.done && s.at < ts)","label":"a change due at ts is applied after the call at ts","k":"test_l3_"},
+ {"file":"FlagService.java","old":".thenComparingInt(s -> s.seq)","new":".thenComparingInt(s -> -s.seq)","label":"changes due at the same time applied newest first","k":"test_l3_"},
+ {"file":"FlagService.java","old":"for (Stamp s : e.stateLog) if (s.ts() <= toTs) on","new":"for (Stamp s : e.stateLog) if (s.ts() < toTs) on","label":"rollback leaves out the on/off change made exactly at to_ts","k":"test_l4_"},
+ {"file":"FlagService.java","old":"        e.rollout = percent;\n        e.rolloutLog.add(new Stamp(ts, percent));\n        return true;\n    }\n\n    // ---- internals","new":"        return true;\n    }\n\n    // ---- internals","label":"rollback doesn't restore the rollout","k":"test_l4_"}
+]
