@@ -6,7 +6,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 export ILAB_TEST_PORT=${ILAB_TEST_PORT:-8766} ILAB_TEST_DATA="$PWD/tests/out/stack-data"
-dc() { docker compose -p ilab-test -f docker-compose.yml -f tests/compose.test.yml "$@"; }
+dc() { docker compose -p ilab-test -f deploy/docker-compose.yml -f tests/compose.test.yml "$@"; }
 case "${1:-}" in
   up)
     dc down --remove-orphans >/dev/null 2>&1 || true

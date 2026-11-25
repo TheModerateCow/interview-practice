@@ -1,0 +1,33 @@
+<script>
+  // The ready screen: what the round is, before the clock starts. onstart() enters the round or throws.
+  import { ROUND, LANGNAME, cap, md } from '../../lib/util.js';
+  let { shown, info, err, onstart } = $props();
+
+  let starting = $state(false), startErr = $state('');
+  $effect(() => { info; starting = false; startErr = ''; });   // each set opens with a fresh Start button
+  async function start() {
+    starting = true;
+    try { await onstart(); }
+    catch (e) { startErr = e.message; starting = false; }
+  }
+</script>
+
+<main id="ready" class:hidden={!shown}>
+  {#if err}
+    <div class="ready-card"><p class="err">{err}</p></div>
+  {:else if info}
+    {@const eyebrow = [info.company, info.role, ROUND[info.round] || info.round].filter(Boolean).join(' · ')}
+    <div class="ready-card">
+      {#if eyebrow}<div class="eyebrow">{eyebrow}</div>{/if}
+      <h1>{info.title}</h1>
+      <div id="ready-name" class="mono muted">{info.name}</div>
+      <div class="pills"><span class="pill">{LANGNAME[info.language] || info.language}</span><span class="pill">{cap(info.difficulty)}</span><span class="pill mono">{info.minutes} min</span></div>
+      {#if info.rules}<div class="rules md"><div class="label">Before you start</div>{@html md(info.rules)}</div>{/if}
+      <!-- the editor's built-in language services cover JS/TS only; other languages get word-based suggestions -->
+      <p id="ready-assist" class="assist">Autocomplete: {['javascript', 'typescript'].includes(info.language) ? 'suggests methods and types as you type.' : 'suggests only words already in your files, not library functions or methods.'}</p>
+      <div class="go"><button id="start-btn" class="btn btn-solid btn-lg" type="button" aria-label="Start interview" disabled={starting} onclick={start}>{#if starting}<span class="loading">Starting…</span>{:else}Start interview{/if}</button>
+        <small>The clock starts when you press Start. The problem appears then.</small></div>
+      <p id="start-err" class="err" role="alert">{startErr}</p>
+    </div>
+  {/if}
+</main>

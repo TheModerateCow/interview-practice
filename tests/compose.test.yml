@@ -11,4 +11,4 @@ services:
       ILAB_PORT: "${ILAB_TEST_PORT:-8766}"
       ILAB_INSTANCE: test
       ILAB_GO_CACHE: ilab-test-go-cache
-    volumes: !override ["${ILAB_TEST_DATA:-./tests/out/stack-data}:/data"]
+    volumes: !override ["${ILAB_TEST_DATA:-../tests/out/stack-data}:/data"]

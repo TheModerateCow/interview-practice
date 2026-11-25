@@ -47,7 +47,7 @@ Pinned: `ilab-python:3.15.2-pytest9.2.0` (python:3.15.2-slim + pytest 9.2.0), `g
 `GOTOOLCHAIN=local`; put `go 1.22` in go.mod), `eclipse-temurin:21.0.13.1_2-jdk` (no JUnit: the `Runner` + `Expect`
 mini-runner from grade.py), `node:24.22.3-slim` (`node:test`; TypeScript through type stripping: no enums, namespaces or
 parameter properties; import local files with their extension), `gcc:14.4.0` (C/C++ Run only). Change them in one place:
-`IMAGES` in `backend/runner.py`. Write code that also runs on older toolchains (claude.ai gates with local ones).
+`IMAGES` in `backend/sandbox/runner.py`. Write code that also runs on older toolchains (claude.ai gates with local ones).
 Containers have no network, a read-only root, a 256 MB `/tmp`, 512 MB RAM, 2 CPUs and 256 pids. Run cases get 5 s each.
 
 **Levelled Go/Java:** when Submit grades one tag, the app drops the other tags' test functions from its copy of the

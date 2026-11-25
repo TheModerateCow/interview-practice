@@ -19,7 +19,7 @@ COPY ui/ ./
 RUN npm run build
 
 FROM nginx:1.31.10-alpine
-COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY deploy/nginx/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=ui /ui/dist/ /usr/share/nginx/html/
 COPY --from=vendor /v/monaco/package/min/vs /usr/share/nginx/html/vendor/monaco/vs
 COPY --from=vendor /v/marked/package/marked.min.js /usr/share/nginx/html/vendor/marked.min.js

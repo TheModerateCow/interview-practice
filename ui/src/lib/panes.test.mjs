@@ -1,4 +1,4 @@
-// node ui/src/panes.test.mjs
+// node ui/src/lib/panes.test.mjs
 import assert from 'node:assert/strict';
 import { clampSize, parsePanes, PANE_DEF } from './panes.js';
 const c = { w: 1440, h: 600, files: 190, problem: 360 };

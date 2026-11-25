@@ -6,7 +6,8 @@ EXPR: a test-name substring ("test_p1_") or "not <substring>". The test command 
 and leaves its report in the output tar; parsing happens here.
 """
 import json, os, re, shlex, sys, xml.etree.ElementTree as ET
-import runner
+try: from sandbox import runner   # imported by the server
+except ImportError: import runner   # run as a script: python3 grade.py ...
 
 LANG_BY_EXT = {".py": "python", ".go": "go", ".java": "java", ".ts": "typescript", ".js": "javascript"}
 
