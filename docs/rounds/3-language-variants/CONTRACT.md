@@ -107,7 +107,7 @@ rounds use this for their code-specific statement.
   not-implemented error never counts as an expected error.
 - `data`: a file under `cases/` holding `{"args": [...]}` (and `expect` if not given inline).
 - `budget_ms`: per-language wall-time limit for that call (or the whole `steps` case), measured by the harness.
-  Set from each language's reference time × 10, at least 500.
+  Set from each language's reference time × 10, at least 500 (Go), 1000 (Java), 3000 (Python).
 - Test names: `<tag><name>` → Go `Test_l1_refund_all_left`, Java and Python `test_l1_refund_all_left`. Names are
   `[a-z0-9_]+` and unique per problem.
 - Failure message (becomes grade.py's `last_error`): `step 3 refund(3, "gig", "ana", 6): expected error insufficient_points, got 7`

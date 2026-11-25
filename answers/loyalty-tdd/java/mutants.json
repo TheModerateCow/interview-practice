@@ -1,0 +1,7 @@
+[
+ {"file":"Account.java","old":"if (spent >= SILVER_FROM) return \"silver\";","new":"if (spent > SILVER_FROM) return \"silver\";","label":"lifetime spend of exactly 500.00 stays base","k":"test_p1_"},
+ {"file":"Account.java","old":"int pts = (spendCents * rate(spent) + 5_000) / 10_000;","new":"int pts = (spendCents * rate(spent)) / 10_000;","label":"points rounded down instead of half up","k":"test_p1_"},
+ {"file":"Account.java","old":"if (spendCents <= 0) throw","new":"if (spendCents < 0) throw","label":"zero spend accepted as a purchase","k":"test_p1_"},
+ {"file":"Account.java","old":"return day < l.day + LIFETIME_DAYS;","new":"return day <= l.day + LIFETIME_DAYS;","label":"points still usable on day 365 after earning","k":"test_p1_"},
+ {"file":"Account.java","old":"int pts = (spendCents * rate(spent) + 5_000)","new":"int pts = (spendCents * rate(spent + spendCents) + 5_000)","label":"purchase that crosses a tier earns at the new tier's rate","k":"test_p1_"}
+]

@@ -56,7 +56,7 @@ def main(a):
         out = gate(dest)
         lines = [l for l in out.splitlines() if l.startswith(("PASS", "FAIL", "GATE"))]
         for l in lines:
-            if not l.startswith("PASS"): print(f"{lang}: {l}")
+            if l.startswith("FAIL"): print(f"{lang}: {l}")
         passed = bool(lines) and lines[-1] == "GATE PASS"
         if not lines: print(f"{lang}: no gate output:\n{out[-2000:]}")
         print(f"{lang}: {'GATE PASS' if passed else 'GATE FAIL'}")

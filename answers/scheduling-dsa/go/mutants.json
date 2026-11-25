@@ -1,0 +1,6 @@
+[
+ {"file": "scheduler.go", "old": "base := d*day - a.Offset", "new": "base := d*day + a.Offset", "label": "time-zone offset applied the wrong way", "k": "test_p1_"},
+ {"file": "scheduler.go", "old": "n > 0 && s <= work[n-1][1]", "new": "n > 0 && s < work[n-1][1]", "label": "touching working windows not merged across midnight", "k": "test_p1_"},
+ {"file": "scheduler.go", "old": "cur = max(cur, busy[i][1])", "new": "cur = busy[i][1]", "label": "nested busy block moves the cursor backwards", "k": "test_p1_"},
+ {"file": "scheduler.go", "old": "event{e - duration + 1, -1}", "new": "event{e - duration, -1}", "label": "exact-fit slot rejected", "k": "test_p1_"}
+]

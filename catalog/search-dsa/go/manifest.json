@@ -1,0 +1,14 @@
+{
+ "run_entry": "cmd/run/main.go",
+ "testcases": [
+  {
+   "stdin": "7\nshoes\nshirts\nshoes\nshirt\nshirts\nshorts\nshirts\nshirtless\n",
+   "expected": "6\n"
+  },
+  {
+   "stdin": "9\nkayak\nkayak\nkayak\nkayaking\nkayakingtrips\nkettle\nkettle\nkettle\nkettle\nkayakingtrips\n",
+   "expected": "7\n"
+  }
+ ],
+ "your_tests": "*_test.go"
+}

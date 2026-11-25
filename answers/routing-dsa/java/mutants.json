@@ -1,0 +1,30 @@
+[
+ {
+  "file": "Route.java",
+  "old": "if (nb >= 0) push",
+  "new": "if (nb > 0) push",
+  "label": "van may not arrive with an empty battery",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Route.java",
+  "old": "push(dist, pq, u * w + b + 1, it[0] + rate[u]);",
+  "new": "push(dist, pq, u * w + capacity, it[0] + rate[u] * (capacity - b));",
+  "label": "always charges to full",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Route.java",
+  "old": "            adj.get(r.b()).add(new Road(r.b(), r.a(), r.minutes(), r.energy()));\n",
+  "new": "            adj.get(r.b()).size();\n",
+  "label": "roads treated as one-way",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Route.java",
+  "old": "if (rate[u] > 0 && b < capacity)",
+  "new": "if (rate[u] >= 0 && b < capacity)",
+  "label": "junctions without a charger charge for free",
+  "k": "test_p1_"
+ }
+]

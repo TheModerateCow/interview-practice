@@ -1,0 +1,14 @@
+{
+ "run_entry": "cmd/run/main.go",
+ "testcases": [
+  {
+   "stdin": "9\nadd 101 5\nadd 100 3\nadd 103 4\nquote 6\ncancel 101 2\nquote 7\nbuy 4\nquote 7\nbuy 10\n",
+   "expected": "603\n706\n401\n-1\n614\n"
+  },
+  {
+   "stdin": "7\nadd 10 2\nadd 8 1\nbuy 2\nquote 2\ncancel 10 1\nquote 1\nbuy 3\n",
+   "expected": "18\n-1\n-1\n0\n"
+  }
+ ],
+ "your_tests": "*_test.go"
+}

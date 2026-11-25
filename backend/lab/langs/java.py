@@ -74,7 +74,7 @@ def signatures(api):
 
 
 def _file(body):
-    return ("import java.util.List;\n\n" if "List<" in body else "") + body
+    return ("import java.util.List;\n\n" if ("List<" in body or "List.of(" in body) else "") + body
 
 
 def _lit(v, t):

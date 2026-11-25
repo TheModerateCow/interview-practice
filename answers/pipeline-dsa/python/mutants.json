@@ -1,0 +1,6 @@
+[
+ {"file": "pipeline.py", "old": "map(max, g[b::-1], fc[: b + 1])", "new": "map(lambda a, c: a + c, g[b::-1], fc[: b + 1])", "label": "inputs run one after another, not in parallel", "k": "test_p1_"},
+ {"file": "pipeline.py", "old": "job.warm + g[b - 1]", "new": "job.warm + g[b]", "label": "warming a job doesn't use up a slot", "k": "test_p1_"},
+ {"file": "pipeline.py", "old": "if len(order) != n:", "new": "if len(order) > n:", "label": "cycles not rejected", "k": "test_p1_"},
+ {"file": "pipeline.py", "old": "k = min(k, n)", "new": "k = min(k, n - 1)", "label": "can never warm every job", "k": "test_p1_"}
+]

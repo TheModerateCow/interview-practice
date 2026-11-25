@@ -2107,7 +2107,9 @@
   "call": "max_upgrades",
   "data": "data/large_route.json",
   "budget_ms": {
-   "java": 2000
+   "java": 2000,
+   "go": 4000,
+   "python": 3000
   }
  }
 ]

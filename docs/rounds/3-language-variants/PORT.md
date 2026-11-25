@@ -24,7 +24,8 @@ Read `CONTRACT.md` (names, types, how each language's harness calls your code). 
 3. **Mutants**: port `answers/<p>/S/mutants.json` to T (same intent and `k`, edits against your T reference; each must
    change behaviour and be caught).
 4. **Budgets**: for every case with `budget_ms`, add T's budget: run the gate with `--keep`, time T's reference on that
-   case, budget = max(10 × reference time, 500) ms, rounded up. Edit only the `"T"` key in `cases/*.json`.
+   case, budget = max(10 × reference time, floor) ms, rounded up, with floor 500 for Go, 1000 for Java (JIT warm-up) and 3000 for
+   Python (a correct but slower approach must still pass; the budget only has to stop the brute force). Edit only the `"T"` key in `cases/*.json`.
 5. **Gate**: `python3 tools/gate_problem.py catalog/<p> answers/<p> --lang T` must print `T: GATE PASS` (runner images;
    one docker command at a time). Then the whole problem: `python3 tools/gate_problem.py catalog/<p> answers/<p>` (every
    language passes the same cases).
