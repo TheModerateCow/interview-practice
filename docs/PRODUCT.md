@@ -448,3 +448,32 @@ sanity" (F12) and the round-1 follow-up about a drop during page load. My tests 
 - Found during verification: dropping a zip within ~1 s of page load can be overridden by the app's own first load of the last-used set. (Tests now run on their own throwaway stack, `tests/stack.sh`, so they no longer leave `t-*` sets in the user's picker.)
 - 400 px layout: the editor is very short (pre-existing).
 - The synced copy of the skill under `~/.claude/skills/synced/` needs refreshing by the owner.
+
+### Round 2: Drop to ready (2026-11-25)
+
+**Theme and why.** Getting the right set on screen is the one step a candidate can't undo: once Start is pressed, the clock runs and that set can't be imported again under its name. Before this round a good drop said nothing, a bad drop left the previous set's Start button on screen, copies looked identical in the picker, a drop in the first second after a reload could lose to the app's own first load, and `pack.py` packed sets that could never work. During the round the owner added five more changes from real use (PRs 6–9 and the confirm step in PR 1).
+
+| PR | Before → after |
+|---|---|
+| [#15](https://github.com/TheModerateCow/interview-practice/pull/15) | Plan: SPEC, HLD, and §4a user flows (Candidate and Interviewer agent, today vs ideal) |
+| [#17](https://github.com/TheModerateCow/interview-practice/pull/17) | `pack.py` printed `packed 7 files` for a set whose Part 3 can never pass → `NOT PACKED:` naming the field; the importer refuses the same zip |
+| [#18](https://github.com/TheModerateCow/interview-practice/pull/18) | A drop during page load showed "Cannot read properties of null" where Start should be → the dropped set opens, every time; a drop during a round asks "Open <file>? Your round keeps running…" first (Stay is the default) |
+| [#16](https://github.com/TheModerateCow/interview-practice/pull/16) | Picker read "Rate limiter · running" / "Rate limiter · ready" → "Rate limiter · rate-limiter-b · 30 min left" / "… rate-limiter-py · not started"; the ready screen shows the set's name |
+| [#20](https://github.com/TheModerateCow/interview-practice/pull/20) | A drop said nothing, or "Import failed: invalid set: format: …" → "Imported Rate limiter (rate-limiter-py)." / "Not imported: file.zip. This zip is not a valid Interview Lab set. Ask Claude to pack it again." |
+| [#22](https://github.com/TheModerateCow/interview-practice/pull/22) | Files, Problem and stdin/results had fixed sizes → drag any of the three borders (or Tab + arrows); sizes are remembered |
+| [#21](https://github.com/TheModerateCow/interview-practice/pull/21) | No way to remove old sets → "Delete" on Home for unstarted and finished sets; the folder moves to `data/deleted/`, nothing is erased |
+| [#23](https://github.com/TheModerateCow/interview-practice/pull/23) | Run on a Go library showed `/tmp/w/prog: 2: Syntax error` → "Nothing to run: this code is a library (package flagstore)… Check it with Submit." |
+| [#24](https://github.com/TheModerateCow/interview-practice/pull/24) | Each unlocked level was appended under the last, after "New part · 1.1 min" → one tab per unlocked level; the new one opens by itself |
+| [#19](https://github.com/TheModerateCow/interview-practice/pull/19) | The skill said "drag it in, press Start" → check the "Imported <name>" message first; every set must give a way to check code besides Submit (`your_tests`, and a `run_entry` for levelled/codebase rounds) |
+
+**How it was verified.** Every PR was built and tested on the isolated test stack (`tests/stack.sh`, port 8766), never on the owner's app.
+- #17, #18 and #16 were verified by the lead before merging: `tests/run_all.sh` on `main` plus each PR in merge order (every step PASS once #18 was in; it fixed an e2e failure already on `main`), the examples walked, and the confirm bar, picker and ready screen checked at 1440 and 400 px in light and dark (no sideways scroll). Their PR bodies carry before/after screenshots.
+- #20, #21, #22, #23 and #24 passed their builders' full runs. The owner asked to merge the rest without the lead's separate runs, so the lead resolved the merge conflicts (test files, `App.svelte`) and ran `tests/run_all.sh` once on the final `main` (8a07216): every step PASS, 5 gates, api_test ALL PASSED (243 checks), e2e 5 passed (full flow, time up, drop during page load, Home delete, panes).
+
+**Decided by the owner:** a drop during a round asks first; the lead merges verified PRs; delete is a soft delete into `data/deleted/`.
+
+**Still open:**
+- Autocomplete: Monaco ships language services only for JS/TS (and JSON/CSS/HTML). Python, Go, Java and C get "words already in this file" only. Options: say so on the ready screen; keyword lists; an in-browser Python analyser; language servers in the backend.
+- `pack.py` doesn't yet refuse a levelled or codebase set without `run_entry` or `your_tests` (the skill now asks for them; nothing enforces it).
+- One shared test stack makes every full run wait its turn (6–13 min each). Let `tests/stack.sh` run several stacks at once (own name and port per run).
+- The 400 px layout still squeezes the stdin box (F14).
