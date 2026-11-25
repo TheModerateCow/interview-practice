@@ -27,9 +27,9 @@ Limits: 2000 files, 50 MB unpacked, no absolute paths, no `..`, no symlinks.
 | `difficulty` | yes | `medium` · `hard` |
 | `minutes` | yes | Round length. The clock starts only when the candidate presses Start |
 | `rules` | no | Short markdown for the ready screen |
-| `tags` | no | Every test-name tag in order, e.g. `["test_p1_","test_p2_","test_p3_"]` or `["test_l1_",…,"test_l4_"]`. Default `["test_"]`. At Start, the unlocked tags are the ones that no `reveal` entry `unlocks` |
+| `tags` | no | Every test-name tag in order, e.g. `["test_p1_","test_p2_","test_p3_"]` or `["test_l1_",…,"test_l4_"]`. Default `["test_"]`. Each tag must appear in the hidden tests file (pack.py and the importer check, case-insensitive). At Start, the unlocked tags are the ones that no `reveal` entry `unlocks` |
 | `hidden_tests` | no | `.hidden/<tests file>`. Submit runs it once per unlocked tag (`-k <tag>`) |
-| `reveal` | no | `[{"file", "after_tag", "or_minutes_left", "unlocks"}]`, in order. `file` (`.hidden/…md`) is shown and tag `unlocks` is graded once every test in `after_tag` passes, **or** once `or_minutes_left` minutes are left (null = never), **or** when the candidate presses *Next part* (the next locked entry, logged "asked to move on"). Locked parts are hidden and not graded |
+| `reveal` | no | `[{"file", "after_tag", "or_minutes_left", "unlocks"}]`, in order. `file` (`.hidden/…md`) is shown and tag `unlocks` is graded once every test in `after_tag` passes, **or** once `or_minutes_left` minutes are left (null = never), **or** when the candidate presses *Next part* (the next locked entry, logged "asked to move on"). Locked parts are hidden and not graded. Each `file` and each `unlocks` may appear once, and `after_tag` must be unlocked at Start or by another entry (not by its own); pack.py and the importer refuse otherwise |
 | `your_tests` | no | Glob over work/ for the candidate's own tests (*My tests*), e.g. `test_*.py`, `*_test.go`, `*Test.java`, `*.test.ts` |
 | `run_entry` | no | Path in starter/ that the `testcases` run against, e.g. `main.py`, `cmd/run/main.go`, `Main.java` |
 | `testcases` | no | `[{"stdin": "...", "expected": "..."}]`. Run shows ✓/✗ per case for `run_entry`. Trailing whitespace on each line and at the end is ignored |

@@ -176,7 +176,8 @@ def do_import(body):
         if rel in ("manifest.json", "problem.md") or rel.startswith(("starter/", ".hidden/")): keep[rel] = i
     try: m = json.loads(z.read(keep["manifest.json"]))
     except (ValueError, KeyError): raise HTTPError(400, "manifest.json is not valid JSON")
-    errs = pack.validate(m, lambda p: p in keep or (p.endswith("/") and any(k.startswith(p) for k in keep)))
+    errs = pack.validate(m, lambda p: p in keep or (p.endswith("/") and any(k.startswith(p) for k in keep)),
+                        read=lambda p: z.read(keep[p]))
     if errs: raise HTTPError(400, "invalid set: " + "; ".join(errs))
     n = m["name"]
     dest = os.path.join(SETS, n)
