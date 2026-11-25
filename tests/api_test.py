@@ -132,6 +132,8 @@ def lang_test(lang):
     tc = r["testcases"]
     check(f"{lang}: testcases pass/fail", len(tc) == 2 and tc[0].get("pass") is True and tc[1].get("pass") is False, tc)
     check(f"{lang}: verdict Wrong Answer", r["verdict"] == "Wrong Answer", r["verdict"])
+    r = runfile(n, entry, "")
+    check(f"{lang}: empty stdin next to testcases still shows stdout", (r.get("stdin_case") or {}).get("stdout", "").strip() == "hello" and len(r["testcases"]) == 2, r)
     r = runfile(n, entry, "xyz\n")
     check(f"{lang}: stdin transform", r["stdin_case"].get("stdout", "").strip() == "XYZ", r)
     if broken:
@@ -623,6 +625,21 @@ def _():
     check("retaking your own problem: a fresh <id>-1", s == 200 and d.get("name") == n + "-1", d)
     check("unknown problem: 404", jreq("POST", "/api/catalog/no-such-problem/attempt")[0] == 404)
     check("catalog needs X-ILab", req("GET", "/api/catalog", hdr=False)[0] == 403)
+
+@sec("run: stdout with an empty stdin box")
+def _():
+    n = uniq("t-stdout")
+    m = manifest(n, "python", run_entry="main.py", testcases=[{"stdin": "abc\n", "expected": "ABC"}])
+    s, j = imp(mkzip({"manifest.json": json.dumps(m), "problem.md": "x", "starter/main.py": "print(input().upper())\n"}))
+    check("import", s == 200, j); jreq("POST", f"/api/sets/{n}/start")
+    r = runfile(n, "main.py", "")
+    sc = r.get("stdin_case") or {}
+    check("the empty-stdin run is shown (its crash included)", sc.get("verdict") == "Runtime Error" and "EOFError" in sc.get("stderr", ""), sc)
+    check("the testcases decide the verdict when stdin is empty", r["verdict"] == "Accepted" and r["testcases"][0]["pass"], r)
+    r = runfile(n, "main.py", "")
+    r2 = runfile(n, "main.py", "xy\n")
+    check("typed stdin: shown and counted", (r2.get("stdin_case") or {}).get("stdout", "").strip() == "XY" and r2["verdict"] == "Accepted", r2)
+
 
 print(f"\n{'ALL PASSED' if not fails else f'{fails} FAILED'}")
 sys.exit(1 if fails else 0)

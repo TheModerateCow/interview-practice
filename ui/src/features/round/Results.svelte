@@ -28,8 +28,12 @@
       {#if c0}<span class="meta">{c0.ms} ms{r.memory_kb != null ? ' · ' + (r.memory_kb / 1024).toFixed(1) + ' MB' : ''}{r.stdin_case && r.stdin_case.exit != null ? ' · exit ' + r.stdin_case.exit : ''}</span>{/if}
     </div>
     {#if r.compile && !r.compile.ok}<pre class="out bad">{r.compile.log}</pre>{/if}
-    {#if r.stdin_case}{@render caseOut(r.stdin_case)}{/if}
+    {#if r.stdin_case}
+      <div class="label" id="stdout-label">stdout{results.stdin ? '' : ' · empty stdin'}{#if r.stdin_case.verdict && r.stdin_case.verdict !== 'Accepted'} · <span class={vclass(r.stdin_case.verdict)}>{r.stdin_case.verdict}{r.stdin_case.exit != null ? ' (exit ' + r.stdin_case.exit + ')' : ''}</span>{/if}</div>
+      <div id="stdout">{@render caseOut(r.stdin_case)}</div>
+    {/if}
     {#if r.testcases && r.testcases.length}
+      <div class="label">Testcases · {r.testcases.filter(c => c.pass).length}/{r.testcases.length} passed</div>
       <div class="tbl-wrap"><table><thead><tr><th></th><th>Input</th><th>Expected</th><th>Got</th></tr></thead><tbody>
         {#each r.testcases as c}<tr><td class={c.pass ? 'ok' : 'no'} aria-label={c.pass ? 'passed' : 'failed'}>{c.pass ? '✓' : '✗'}</td><td class="mono">{c.stdin}</td><td class="mono">{c.expected}</td><td class="mono">{c.stdout || c.stderr}{c.truncated ? ' (output truncated)' : ''}</td></tr>{/each}
       </tbody></table></div>

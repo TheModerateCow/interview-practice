@@ -152,7 +152,7 @@ export function doRun() {
   guarded('Running', async () => {
     round.results = { kind: 'loading', msg: 'Running ' + (round.curFile || 'your code') };
     const r = await api('/sets/' + app.cur + '/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ file: round.curFile, stdin: round.stdin }) });
-    round.results = { kind: 'run', r, late: !!round.st.ended };
+    round.results = { kind: 'run', r, late: !!round.st.ended, stdin: round.stdin };
   });
 }
 
