@@ -10,6 +10,7 @@ services:
   backend:
     build: {context: ., dockerfile: backend/Dockerfile}
     image: ilab-backend
+    init: true
     user: "${ILAB_UID:-1000}:${ILAB_GID:-1000}"
     environment:
       DOCKER_HOST: tcp://docker-proxy:2375
