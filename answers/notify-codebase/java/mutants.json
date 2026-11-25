@@ -1,0 +1,107 @@
+[
+ {
+  "file": "Service.java",
+  "old": "n.at() - last < Notify.DEDUPE_WINDOW",
+  "new": "n.at() - last <= Notify.DEDUPE_WINDOW",
+  "label": "a repeat exactly an hour later is still a duplicate",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Service.java",
+  "old": "if (n.urgent() || !Clock.inQuietHours(u, n.at())) {",
+  "new": "if (!Clock.inQuietHours(u, n.at())) {",
+  "label": "urgent notifications wait out quiet hours",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Service.java",
+  "old": "        store.accept(n.user(), n.key(), n.at());\n",
+  "new": "",
+  "label": "dedupe keys are never remembered",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Service.java",
+  "old": "< Notify.HOURLY_CAP.get(ch)",
+  "new": "<= Notify.HOURLY_CAP.get(ch)",
+  "label": "one delivery over the hourly cap",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Service.java",
+  "old": "!Notify.HOURLY_CAP.containsKey(ch) || seen.contains(ch)",
+  "new": "!Notify.HOURLY_CAP.containsKey(ch)",
+  "label": "a repeated channel is accepted",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Service.java",
+  "old": "offsetMin > 840",
+  "new": "offsetMin >= 840",
+  "label": "UTC+14 is rejected",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Clock.java",
+  "old": "return u.quietFrom <= h && h < u.quietTo;",
+  "new": "return u.quietFrom <= h && h <= u.quietTo;",
+  "label": "quiet hours include the end hour",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Clock.java",
+  "old": "return h >= u.quietFrom || h < u.quietTo;",
+  "new": "return h >= u.quietFrom && h < u.quietTo;",
+  "label": "quiet hours that wrap midnight never apply",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Store.java",
+  "old": "q.peekFirst() <= since",
+  "new": "q.peekFirst() < since",
+  "label": "a delivery exactly an hour ago still counts toward the cap",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Store.java",
+  "old": ".addLast(at);",
+  "new": ".addLast(at - 3600);",
+  "label": "deliveries never count toward the cap",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Clock.java",
+  "old": "return at - Math.floorMod(at + shift, DAY_SECONDS);",
+  "new": "return at - Math.floorMod(at, DAY_SECONDS);",
+  "label": "digest uses the UTC day",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Digest.java",
+  "old": "n.at() < start || n.at() >= to",
+  "new": "n.at() <= start || n.at() >= to",
+  "label": "digest drops a notification at local midnight",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Digest.java",
+  "old": "!r.result().status().equals(Notify.HELD)",
+  "new": "r.result().status().equals(Notify.SENT)",
+  "label": "digest includes duplicates",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Digest.java",
+  "old": ".thenComparing(l -> l.topic)",
+  "new": ".thenComparing(l -> l.topic, Comparator.reverseOrder())",
+  "label": "ties in reverse topic order",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Digest.java",
+  "old": "            line.latest = n.title();\n",
+  "new": "            if (line.latest.isEmpty()) line.latest = n.title();\n",
+  "label": "latest is the first title, not the most recent",
+  "k": "test_p2_"
+ }
+]

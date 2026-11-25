@@ -1,0 +1,37 @@
+[
+ {
+  "file": "Clock.java",
+  "old": "long wall = at + offsetMin * 60L;",
+  "new": "long wall = at + offsetMin;",
+  "label": "localHour adds the UTC offset in minutes as seconds, so quiet hours run on (almost) UTC",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Store.java",
+  "old": "        return user + \"\\u0000\" + key;\n",
+  "new": "        return key;\n",
+  "label": "dedupe index is keyed by the dedupe key alone, so one user's notification blocks everyone's",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Store.java",
+  "old": "users.get(id).channels = new ArrayList<>(chans);",
+  "new": "users.get(id).channels = chans;",
+  "label": "setChannels keeps the caller's list, so a reused buffer rewrites an earlier user's channels",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Digest.java",
+  "old": "        User u = store.user(id);\n        if (u == null) {\n            throw new NotifyException(NotifyException.Code.UNKNOWN_USER, id);\n        }\n        long to = Clock.localMidnight(now, u.offsetMin);\n        long start = to - Clock.DAY_SECONDS;\n        Map<String, DigestLine> lines = new LinkedHashMap<>();\n        for (Entry r : store.log(id)) {\n            Notification n = r.notification();\n            if (!r.result().status().equals(Notify.HELD) || n.at() < start || n.at() >= to) {\n                continue;\n            }\n            DigestLine line = lines.computeIfAbsent(n.topic(), DigestLine::new);\n            line.count++;\n            line.latest = n.title();\n        }\n        List<DigestLine> out = new ArrayList<>(lines.values());\n        out.sort(Comparator.comparingInt((DigestLine l) -> -l.count).thenComparing(l -> l.topic));\n        return out;\n",
+  "new": "        throw new UnsupportedOperationException(\"not implemented\");\n",
+  "label": "feature removed: Digest",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Store.java",
+  "old": "        // Sends for one user arrive in time order, so entries this old can go.\n        ArrayDeque<Long> q = recent.computeIfAbsent(new Pair(user, ch), k -> new ArrayDeque<>());\n        while (!q.isEmpty() && q.peekFirst() <= since) {\n            q.pollFirst();\n        }\n        return q.size();\n",
+  "new": "        int n = 0;\n        for (Entry e : log(user)) {\n            if (e.notification().at() > since && e.result().channels().contains(ch)) n++;\n        }\n        return n;\n",
+  "label": "slow: deliveriesSince scans the user's whole log for every channel on every send",
+  "k": "test_p3_"
+ }
+]

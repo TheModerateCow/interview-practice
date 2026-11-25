@@ -1,0 +1,37 @@
+[
+ {
+  "file": "Store.java",
+  "old": "        return new ArrayList<>(lines.getOrDefault(b, List.of()));\n",
+  "new": "        return lines.computeIfAbsent(b, k -> new ArrayList<>());\n",
+  "label": "history hands out the store's own list; statement reverses it in place",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Store.java",
+  "old": "        payouts.put(payoutId, nxt);\n",
+  "new": "",
+  "label": "updatePayout never stores the updated copy, so webhook retries re-post",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Entry.java",
+  "old": "        Map<String, Long> sums = new HashMap<>();\n        for (Posting p : postings) {\n            if (p.account().isEmpty() || p.amount() == 0) throw new LedgerError.Invalid(\"empty account or zero amount\");\n            if (!Money.validCurrency(p.currency())) throw new LedgerError.UnknownCurrency(\"'\" + p.currency() + \"'\");\n            sums.merge(p.currency(), p.amount(), Long::sum);\n        }\n        for (Posting p : postings) {\n            long s = sums.get(p.currency());\n            if (s != 0) throw new LedgerError.Unbalanced(\"entry does not balance: off by \" + Money.formatAmount(s, p.currency()));\n        }\n",
+  "new": "        long total = 0;\n        for (Posting p : postings) {\n            if (p.account().isEmpty() || p.amount() == 0) throw new LedgerError.Invalid(\"empty account or zero amount\");\n            if (!Money.validCurrency(p.currency())) throw new LedgerError.UnknownCurrency(\"'\" + p.currency() + \"'\");\n            total += p.amount();\n        }\n        if (total != 0) throw new LedgerError.Unbalanced(\"entry does not balance: off by \" + total + \" minor units\");\n",
+  "label": "validate nets amounts across currencies instead of per currency",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Settlement.java",
+  "old": "        Pricing pricing = l.merchants.get(merchant);\n        if (pricing == null) throw new LedgerError.UnknownMerchant(\"'\" + merchant + \"'\");\n        if (ts < l.store.headTs) throw new LedgerError.Backdated(\"settle at \" + ts);\n        List<Charge> due = l.charges.due(merchant, ts);\n        Map<String, List<Charge>> groups = new TreeMap<>();\n        for (Charge c : due) groups.computeIfAbsent(c.currency, k -> new ArrayList<>()).add(c);\n        List<Batch> out = new ArrayList<>();\n        for (Map.Entry<String, List<Charge>> g : groups.entrySet()) {\n            String cur = g.getKey();\n            Batch b = new Batch(\"b\" + (++l.batchSeq), merchant, cur, ts);\n            for (Charge c : g.getValue()) {\n                b.charges.add(c.id);\n                b.gross += c.amount - c.refunded;\n                b.fees += pricing.fee(c.amount, cur);\n                c.batch = b.id;\n            }\n            b.net = b.gross - b.fees;\n            List<Posting> ps = new ArrayList<>();\n            for (Posting p : List.of(\n                    new Posting(Journal.pendingAccount(merchant), cur, -b.gross),\n                    new Posting(Journal.availableAccount(merchant), cur, b.net),\n                    new Posting(Journal.FEES_ACCOUNT, cur, b.fees))) {\n                if (p.amount() != 0) ps.add(p);\n            }\n            if (!ps.isEmpty()) l.post(new Entry(ts, ps, \"settlement \" + b.id));\n            out.add(b);\n        }\n        return out;\n",
+  "new": "        throw new UnsupportedOperationException(\"not implemented\");\n",
+  "label": "settle removed (phase 2 feature)",
+  "k": "test_p2_"
+ },
+ {
+  "file": "ChargeBook.java",
+  "old": "    private final Map<String, PriorityQueue<Charge>> pending = new HashMap<>();\n\n    void add(Charge c) {\n        c.seq = byId.size();\n        byId.put(c.id, c);\n        pending.computeIfAbsent(c.merchant, k -> new PriorityQueue<>(ORDER)).add(c);\n    }\n\n    Charge get(String chargeId) {\n        return byId.get(chargeId);\n    }\n\n    /**\n     * The merchant's unsettled charges whose funds are available at ts, earliest availableOn first\n     * (capture order breaks ties). Takes them off the pending set.\n     */\n    List<Charge> due(String merchant, long ts) {\n        PriorityQueue<Charge> q = pending.get(merchant);\n        List<Charge> out = new ArrayList<>();\n        while (q != null && !q.isEmpty() && q.peek().availableOn <= ts) out.add(q.poll());\n        return out;\n    }\n",
+  "new": "    private final Map<String, List<String>> pending = new HashMap<>();\n\n    void add(Charge c) {\n        c.seq = byId.size();\n        byId.put(c.id, c);\n        pending.computeIfAbsent(c.merchant, k -> new ArrayList<>()).add(c.id);\n    }\n\n    Charge get(String chargeId) {\n        return byId.get(chargeId);\n    }\n\n    /**\n     * The merchant's unsettled charges whose funds are available at ts, earliest availableOn first\n     * (capture order breaks ties). A charge counts as settled once its batch is set.\n     */\n    List<Charge> due(String merchant, long ts) {\n        List<Charge> out = new ArrayList<>();\n        for (String id : pending.getOrDefault(merchant, List.of())) {\n            Charge c = byId.get(id);\n            if (c.batch.isEmpty() && c.availableOn <= ts) out.add(c);\n        }\n        out.sort(ORDER);\n        return out;\n    }\n",
+  "label": "due scans every charge the merchant ever had, then sorts (phase 3 bottleneck)",
+  "k": "test_p3_"
+ }
+]

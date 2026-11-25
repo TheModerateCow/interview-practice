@@ -1,0 +1,142 @@
+[
+ {
+  "file": "lifecycle.go",
+  "old": "for i := 1; i < attempts; i++ {",
+  "new": "for i := 0; i < attempts; i++ {",
+  "label": "backoff exponent off by one",
+  "k": "test_p1_"
+ },
+ {
+  "file": "lifecycle.go",
+  "old": "return min(d, maxDelay)",
+  "new": "return d",
+  "label": "backoff not capped",
+  "k": "test_p1_"
+ },
+ {
+  "file": "lifecycle.go",
+  "old": "if j.Attempts >= j.MaxAttempts {\n\t\tdeadLetter(j, j.leaseUntil)",
+  "new": "if false {\n\t\tdeadLetter(j, j.leaseUntil)",
+  "label": "expired leases never dead-letter",
+  "k": "test_p1_"
+ },
+ {
+  "file": "lifecycle.go",
+  "old": "if j.Attempts >= j.MaxAttempts {\n\t\tdeadLetter(j, now)",
+  "new": "if j.Attempts > j.MaxAttempts {\n\t\tdeadLetter(j, now)",
+  "label": "one attempt too many before the DLQ",
+  "k": "test_p1_"
+ },
+ {
+  "file": "lifecycle.go",
+  "old": "st.makeReady(j, j.leaseUntil)",
+  "new": "st.makeReady(j, st.clock)",
+  "label": "reclaimed job ready from sweep time, not its deadline",
+  "k": "test_p2_"
+ },
+ {
+  "file": "lifecycle.go",
+  "old": "st.makeReady(j, j.availableAt)",
+  "new": "st.makeReady(j, now)",
+  "label": "scheduled job ready from sweep time, not its run time",
+  "k": "test_p2_"
+ },
+ {
+  "file": "service.go",
+  "old": " || j.leaseToken != token",
+  "new": "",
+  "label": "stale lease token accepted",
+  "k": "test_p1_"
+ },
+ {
+  "file": "service.go",
+  "old": "if o.RunAt > now {",
+  "new": "if o.RunAt != 0 {",
+  "label": "a run_at in the past still goes through the timers",
+  "k": "test_p1_"
+ },
+ {
+  "file": "service.go",
+  "old": "if o.RunAt > now {",
+  "new": "if false {",
+  "label": "run_at ignored",
+  "k": "test_p1_"
+ },
+ {
+  "file": "service.go",
+  "old": "q.st.setDeadline(j, now+seconds)",
+  "new": "q.st.setDeadline(j, j.leaseUntil+seconds)",
+  "label": "extend adds to the old deadline",
+  "k": "test_p1_"
+ },
+ {
+  "file": "store.go",
+  "old": "now < k.until",
+  "new": "now <= k.until",
+  "label": "idempotency window one second too long",
+  "k": "test_p1_"
+ },
+ {
+  "file": "ready.go",
+  "old": "return a.Priority > b.Priority",
+  "new": "return a.Priority < b.Priority",
+  "label": "priority reversed",
+  "k": "test_p1_"
+ },
+ {
+  "file": "ready.go",
+  "old": "if a.readyAt != b.readyAt {\n\t\treturn a.readyAt < b.readyAt\n\t}\n",
+  "new": "",
+  "label": "ready time ignored in lease order",
+  "k": "test_p1_"
+ },
+ {
+  "file": "stats.go",
+  "old": "\tif err := advance(st, now); err != nil {\n\t\treturn Stats{}, err\n\t}\n",
+  "new": "",
+  "label": "stats doesn't move the clock",
+  "k": "test_p2_"
+ },
+ {
+  "file": "stats.go",
+  "old": "if oldest == nil || j.readyAt < *oldest {\n\t\t\t\toldest = &j.readyAt",
+  "new": "if oldest == nil || j.enqueuedAt < *oldest {\n\t\t\t\toldest = &j.enqueuedAt",
+  "label": "age from enqueue time",
+  "k": "test_p2_"
+ },
+ {
+  "file": "stats.go",
+  "old": "if j.Attempts == 0 {\n\t\t\t\ts.Scheduled++",
+  "new": "if j.Attempts >= 0 {\n\t\t\t\ts.Scheduled++",
+  "label": "retrying counted as scheduled",
+  "k": "test_p2_"
+ },
+ {
+  "file": "stats.go",
+  "old": "if next == nil || j.availableAt < *next {\n\t\t\t\tnext = &j.availableAt\n\t\t\t}",
+  "new": "if j.Attempts == 0 && (next == nil || j.availableAt < *next) {\n\t\t\t\tnext = &j.availableAt\n\t\t\t}",
+  "label": "nextRunAt ignores retries",
+  "k": "test_p2_"
+ },
+ {
+  "file": "stats.go",
+  "old": "\t\t\ts.Dead++",
+  "new": "",
+  "label": "dead not counted",
+  "k": "test_p2_"
+ },
+ {
+  "file": "stats.go",
+  "old": "s.Completed = st.completedIn(queue)",
+  "new": "s.Completed = 0",
+  "label": "completed not reported",
+  "k": "test_p2_"
+ },
+ {
+  "file": "stats.go",
+  "old": "s.OldestReadyAge = now - *oldest",
+  "new": "s.OldestReadyAge = now - *oldest - 1",
+  "label": "age off by one",
+  "k": "test_p2_"
+ }
+]

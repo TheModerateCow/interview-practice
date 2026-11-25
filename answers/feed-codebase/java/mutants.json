@@ -1,0 +1,114 @@
+[
+ {
+  "file": "Ranking.java",
+  "old": "Math.log(1 + likes) / Math.log(2)",
+  "new": "Math.log(1 + likes)",
+  "label": "likes weighted with a natural log",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Ranking.java",
+  "old": "return a.post().id().compareTo(b.post().id());",
+  "new": "return b.post().id().compareTo(a.post().id());",
+  "label": "equal scores tie on highest id",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Ranking.java",
+  "old": "FEED_WINDOW = 7 * 24",
+  "new": "FEED_WINDOW = 6 * 24",
+  "label": "feed window is 6 days",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Store.java",
+  "old": "int lo = lowerBound(list, start);",
+  "new": "int lo = upperBound(list, start);",
+  "label": "window start excludes its boundary",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Store.java",
+  "old": "int hi = upperBound(list, end);",
+  "new": "int hi = lowerBound(list, end);",
+  "label": "posts published at now are left out",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Mute.java",
+  "old": "return until == null || now < until;",
+  "new": "return until == null || now <= until;",
+  "label": "mute still active at its end second",
+  "k": "test_p1_"
+ },
+ {
+  "file": "FeedService.java",
+  "old": "        authors.add(viewer);\n",
+  "new": "",
+  "label": "home feed drops the viewer's own posts",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Ranking.java",
+  "old": "return r.post().id().compareTo(cursorId) > 0;",
+  "new": "return r.post().id().compareTo(cursorId) >= 0;",
+  "label": "next page repeats the cursor's post",
+  "k": "test_p1_"
+ },
+ {
+  "file": "FeedService.java",
+  "old": "if (ranked.size() > limit) {",
+  "new": "if (ranked.size() >= limit) {",
+  "label": "exactly-full last page still returns a cursor",
+  "k": "test_p1_"
+ },
+ {
+  "file": "FeedService.java",
+  "old": "if (m.active(now)) followed.remove(m.target());",
+  "new": "followed.remove(m.target());",
+  "label": "expired mutes still hide posts",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Store.java",
+  "old": "            throw new FeedException(FeedException.Code.DUPLICATE_POST, \"post already exists: \" + p.id());\n",
+  "new": "            posts.remove(p.id());\n",
+  "label": "republishing an id replaces the post",
+  "k": "test_p1_"
+ },
+ {
+  "file": "FeedService.java",
+  "old": "Math.max(since + 1, now - Ranking.FEED_WINDOW)",
+  "new": "Math.max(since, now - Ranking.FEED_WINDOW)",
+  "label": "catchUp includes posts published exactly at since",
+  "k": "test_p2_"
+ },
+ {
+  "file": "FeedService.java",
+  "old": "Math.max(since + 1, now - Ranking.FEED_WINDOW)",
+  "new": "since + 1",
+  "label": "catchUp ignores the feed window",
+  "k": "test_p2_"
+ },
+ {
+  "file": "FeedService.java",
+  "old": "if (count < CATCH_UP_PER_AUTHOR) {",
+  "new": "if (count <= CATCH_UP_PER_AUTHOR) {",
+  "label": "catchUp allows three posts per account",
+  "k": "test_p2_"
+ },
+ {
+  "file": "FeedService.java",
+  "old": "for (Ranking.Ranked r : ranked(sources(viewer, now), start, now)) {",
+  "new": "for (Ranking.Ranked r : ranked(java.util.stream.Stream.concat(sources(viewer, now).stream(), java.util.stream.Stream.of(viewer)).collect(java.util.stream.Collectors.toSet()), start, now)) {",
+  "label": "catchUp includes the viewer's own posts",
+  "k": "test_p2_"
+ },
+ {
+  "file": "FeedService.java",
+  "old": "                if (picked.size() == limit) break;\n",
+  "new": "",
+  "label": "catchUp ignores limit",
+  "k": "test_p2_"
+ }
+]

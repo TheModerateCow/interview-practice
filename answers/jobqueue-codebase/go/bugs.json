@@ -1,0 +1,37 @@
+[
+ {
+  "file": "lifecycle.go",
+  "old": "} else if j.Status == Leased && j.leaseUntil <= now {",
+  "new": "} else if j.Status == Leased {",
+  "label": "The lease sweep doesn't check the job's current deadline, so a timer left from before an extend (or from an earlier attempt) takes back a live lease",
+  "k": "test_p1_"
+ },
+ {
+  "file": "service.go",
+  "old": "\tj.Attempts = 0\n\tq.st.makeReady(j, now)",
+  "new": "\tq.st.makeReady(j, now)",
+  "label": "redrive keeps the old attempt count, so a redriven job goes straight back to the DLQ on its next failure",
+  "k": "test_p1_"
+ },
+ {
+  "file": "store.go",
+  "old": "\treturn keyID{queue, key}",
+  "new": "\treturn keyID{key: key}",
+  "label": "Idempotency keys are not scoped to their queue, so the same key in two queues drops the second job",
+  "k": "test_p1_"
+ },
+ {
+  "file": "stats.go",
+  "old": "// statsOf computes the stats of queue at time now. See problem.md for the rules.\nfunc statsOf(st *store, queue string, now int64) (Stats, error) {\n\tif err := advance(st, now); err != nil {\n\t\treturn Stats{}, err\n\t}\n\tvar s Stats\n\tvar oldest, next *int64\n\tfor _, j := range st.jobsIn(queue) {\n\t\tswitch j.Status {\n\t\tcase Ready:\n\t\t\ts.Ready++\n\t\t\tif oldest == nil || j.readyAt < *oldest {\n\t\t\t\toldest = &j.readyAt\n\t\t\t}\n\t\tcase Scheduled:\n\t\t\tif j.Attempts == 0 {\n\t\t\t\ts.Scheduled++\n\t\t\t} else {\n\t\t\t\ts.Retrying++\n\t\t\t}\n\t\t\tif next == nil || j.availableAt < *next {\n\t\t\t\tnext = &j.availableAt\n\t\t\t}\n\t\tcase Leased:\n\t\t\ts.InFlight++\n\t\tcase Dead:\n\t\t\ts.Dead++\n\t\t}\n\t}\n\ts.Completed = st.completedIn(queue)\n\tif oldest != nil {\n\t\ts.OldestReadyAge = now - *oldest\n\t}\n\tif next != nil {\n\t\tv := *next\n\t\ts.NextRunAt = &v\n\t}\n\treturn s, nil\n}\n",
+  "new": "// statsOf computes the stats of queue at time now. See problem.md for the rules.\nfunc statsOf(st *store, queue string, now int64) (Stats, error) {\n\tpanic(\"not implemented\")\n}\n",
+  "label": "stats removed (phase 2 feature)",
+  "k": "test_p2_"
+ },
+ {
+  "file": "ready.go",
+  "old": "package jobqueue\n\nimport \"container/heap\"\n\n// readyQueue holds the jobs of one named queue that can be leased now.\ntype readyQueue struct{ h readyHeap }\n\n// order reports whether a is leased before b: higher priority, then the job\n// that has been ready longest, then the job enqueued first.\nfunc order(a, b *Job) bool {\n\tif a.Priority != b.Priority {\n\t\treturn a.Priority > b.Priority\n\t}\n\tif a.readyAt != b.readyAt {\n\t\treturn a.readyAt < b.readyAt\n\t}\n\treturn a.seq < b.seq\n}\n\nfunc (q *readyQueue) add(j *Job) { heap.Push(&q.h, j) }\n\n// poll removes and returns the best job that is still READY, or nil. A job\n// cancelled while it waits stays in the heap until it reaches the top, and is\n// dropped then.\nfunc (q *readyQueue) poll() *Job {\n\tfor q.h.Len() > 0 {\n\t\tj := heap.Pop(&q.h).(*Job)\n\t\tif j.Status == Ready {\n\t\t\treturn j\n\t\t}\n\t}\n\treturn nil\n}\n\ntype readyHeap []*Job\n\nfunc (h readyHeap) Len() int           { return len(h) }\nfunc (h readyHeap) Less(i, j int) bool { return order(h[i], h[j]) }\nfunc (h readyHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }\nfunc (h *readyHeap) Push(x any)        { *h = append(*h, x.(*Job)) }\nfunc (h *readyHeap) Pop() any {\n\told := *h\n\tn := len(old)\n\tx := old[n-1]\n\told[n-1] = nil\n\t*h = old[:n-1]\n\treturn x\n}\n",
+  "new": "package jobqueue\n\ntype readyQueue struct{ jobs []*Job }\n\nfunc order(a, b *Job) bool {\n\tif a.Priority != b.Priority {\n\t\treturn a.Priority > b.Priority\n\t}\n\tif a.readyAt != b.readyAt {\n\t\treturn a.readyAt < b.readyAt\n\t}\n\treturn a.seq < b.seq\n}\n\nfunc (q *readyQueue) add(j *Job) { q.jobs = append(q.jobs, j) }\n\n// poll removes and returns the best job that is still READY, or nil.\nfunc (q *readyQueue) poll() *Job {\n\tlive := q.jobs[:0:0]\n\tfor _, j := range q.jobs {\n\t\tif j.Status == Ready {\n\t\t\tlive = append(live, j)\n\t\t}\n\t}\n\tq.jobs = live\n\tif len(live) == 0 {\n\t\treturn nil\n\t}\n\ttype key struct {\n\t\tprio  int\n\t\tready int64\n\t\tseq   int\n\t}\n\tranked := make([]key, len(live))\n\tfor i, j := range live {\n\t\tranked[i] = key{-j.Priority, j.readyAt, j.seq}\n\t}\n\tbi := 0\n\tfor i, k := range ranked {\n\t\tb := ranked[bi]\n\t\tif k.prio < b.prio || k.prio == b.prio && (k.ready < b.ready || k.ready == b.ready && k.seq < b.seq) {\n\t\t\tbi = i\n\t\t}\n\t}\n\tbest := live[bi]\n\tq.jobs = append(live[:bi], live[bi+1:]...)\n\treturn best\n}\n",
+  "label": "readyQueue rescans and filters a list on every lease (phase 3 bottleneck)",
+  "k": "test_p3_"
+ }
+]

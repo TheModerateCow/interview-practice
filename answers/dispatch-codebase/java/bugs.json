@@ -1,0 +1,37 @@
+[
+ {
+  "file": "Geo.java",
+  "old": "return (metres + COURIER_SPEED - 1) / COURIER_SPEED;",
+  "new": "return metres / COURIER_SPEED;",
+  "label": "travelMinutes rounds down, so every ETA leg can be a minute early",
+  "k": "test_p1_"
+ },
+ {
+  "file": "State.java",
+  "old": "return this == DELIVERED || this == CANCELLED;",
+  "new": "return this == DELIVERED;",
+  "label": "CANCELLED is not terminal: cancelling never frees the courier",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Store.java",
+  "old": "        if (orders.containsKey(o.id)) {\n            throw new DispatchException(DispatchException.Code.DUPLICATE_ORDER, \"order already exists\");\n        }\n        orders.put(o.id, o);",
+  "new": "        orders.put(o.id, o);",
+  "label": "addOrder overwrites an existing order on a retried checkout",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Batch.java",
+  "old": "import java.util.ArrayList;\nimport java.util.Comparator;\nimport java.util.List;\n\n/** The dispatch loop's tick. */\nfinal class Batch {\n    /** How many minutes before its food is ready an order may be handed to a courier by dispatchPending. */\n    static final int DISPATCH_WINDOW = 10;\n\n    private Batch() { }\n\n    /** Hands out the waiting orders that are due at minute now. See problem.md for the rules. */\n    static List<Assignment> dispatchPending(Dispatcher d, int now) {\n        List<Order> due = new ArrayList<>();\n        for (Order o : d.store.pendingOrders()) {\n            if (o.readyAt() - now <= DISPATCH_WINDOW) due.add(o);\n        }\n        due.sort(Comparator.comparingInt((Order o) -> o.readyAt()).thenComparing(o -> o.id));\n        List<Assignment> out = new ArrayList<>();\n        for (Order o : due) {\n            Courier c = d.nearestCourier(o.restaurant);\n            if (c != null) {\n                d.assignTo(o, c);\n                out.add(new Assignment(o.id, c.id));\n            }\n        }\n        return out;\n    }\n}\n",
+  "new": "import java.util.List;\n\n/** The dispatch loop's tick. */\nfinal class Batch {\n    /** How many minutes before its food is ready an order may be handed to a courier by dispatchPending. */\n    static final int DISPATCH_WINDOW = 10;\n\n    private Batch() { }\n\n    /** Hands out the waiting orders that are due at minute now. See problem.md for the rules. */\n    static List<Assignment> dispatchPending(Dispatcher d, int now) {\n        throw new UnsupportedOperationException(\"not implemented\");\n    }\n}\n",
+  "label": "feature removed: dispatchPending",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Dispatcher.java",
+  "old": "if (c.active >= c.capacity) continue;",
+  "new": "if (store.activeOrdersOf(c.id).size() >= c.capacity) continue;",
+  "label": "slow: nearestCourier counts each courier's load by scanning every order",
+  "k": "test_p3_"
+ }
+]

@@ -1,0 +1,16 @@
+[
+ {"file": "Service.java", "old": "if (u.used() + cost > u.limit()) {", "new": "if (u.used() + cost >= u.limit()) {", "label": "a request that exactly fills the window is denied", "k": "test_p1_"},
+ {"file": "Window.java", "old": "return start(now, window) + window - now;", "new": "return now % window;", "label": "retryAfter counts seconds elapsed instead of seconds left", "k": "test_p1_"},
+ {"file": "Window.java", "old": "return Math.min(unused, p.burst());", "new": "return unused;", "label": "rollover ignores the burst cap", "k": "test_p1_"},
+ {"file": "Store.java", "old": "if (log.get(mid).at() < t) lo = mid + 1;", "new": "if (log.get(mid).at() <= t) lo = mid + 1;", "label": "a request at the window start is not counted in it, and one at its end is counted in it", "k": "test_p1_"},
+ {"file": "Store.java", "old": "return log.subList(lowerBound(log, start), lowerBound(log, end));", "new": "return log.subList(lowerBound(log, start), lowerBound(log, end + 1));", "label": "a request at the window end is also counted in the window", "k": "test_p1_"},
+ {"file": "Service.java", "old": "        if (k.revoked()) throw QuotaException.revoked();\n", "new": "", "label": "revoked keys are not rejected", "k": "test_p1_"},
+ {"file": "Service.java", "old": "p.burst() < 0) throw QuotaException.invalidPlan();", "new": "p.burst() <= 0) throw QuotaException.invalidPlan();", "label": "plans without burst are rejected", "k": "test_p1_"},
+ {"file": "Service.java", "old": "store.record(id, new Event(now, cost, false));", "new": "store.record(id, new Event(now, cost, true));", "label": "denied requests are logged as allowed", "k": "test_p1_"},
+ {"file": "Service.java", "old": "if (end <= start) throw", "new": "if (end < start) throw", "label": "an empty range is accepted", "k": "test_p2_"},
+ {"file": "Service.java", "old": "UsageLine::units).reversed()", "new": "UsageLine::units)", "label": "fewest units first", "k": "test_p2_"},
+ {"file": "Service.java", "old": ".thenComparing(UsageLine::keyId)", "new": ".thenComparing(UsageLine::keyId, Comparator.reverseOrder())", "label": "unit ties go to the higher key id", "k": "test_p2_"},
+ {"file": "Service.java", "old": "            if (events.isEmpty()) continue;\n", "new": "", "label": "keys with no traffic in range get a line", "k": "test_p2_"},
+ {"file": "Service.java", "old": "new UsageLine(id, store.key(id).plan(), requests, units,", "new": "new UsageLine(id, store.key(id).plan(), 0, units,", "label": "allowed requests are not counted", "k": "test_p2_"},
+ {"file": "Service.java", "old": "events.size() - requests)", "new": "0)", "label": "denied requests are not counted", "k": "test_p2_"}
+]

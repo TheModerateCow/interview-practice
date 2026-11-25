@@ -1,0 +1,72 @@
+[
+ {
+  "file": "Dispatcher.java",
+  "old": "if (c.active >= c.capacity) continue;",
+  "new": "if (c.active > c.capacity) continue;",
+  "label": "capacity check lets one extra order through",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Dispatcher.java",
+  "old": "(dist == bestDist && c.id.compareTo(best.id) < 0)",
+  "new": "(dist == bestDist && c.id.compareTo(best.id) > 0)",
+  "label": "tie goes to the higher courier id",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Dispatcher.java",
+  "old": "if (dist > MAX_PICKUP_DISTANCE) continue;",
+  "new": "if (dist >= MAX_PICKUP_DISTANCE) continue;",
+  "label": "pickup range excludes its boundary",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Dispatcher.java",
+  "old": "            case PICKED_UP -> c.location = o.restaurant;\n",
+  "new": "",
+  "label": "pickup does not move the courier to the restaurant",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Dispatcher.java",
+  "old": "            case DELIVERED -> c.location = o.customer;\n",
+  "new": "",
+  "label": "delivery does not move the courier to the customer",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Eta.java",
+  "old": "int pickup = Math.max(now + Geo.travelMinutes(Geo.distance(c.location, o.restaurant)), o.readyAt());",
+  "new": "int pickup = now + Geo.travelMinutes(Geo.distance(c.location, o.restaurant));",
+  "label": "ETA ignores the kitchen's ready time",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Batch.java",
+  "old": "if (o.readyAt() - now <= DISPATCH_WINDOW)",
+  "new": "if (o.readyAt() - now < DISPATCH_WINDOW)",
+  "label": "dispatch window excludes its boundary",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Batch.java",
+  "old": "Comparator.comparingInt((Order o) -> o.readyAt()).thenComparing(o -> o.id)",
+  "new": "Comparator.comparingInt((Order o) -> o.placedAt).thenComparing(o -> o.id)",
+  "label": "dispatch by placement time instead of ready time",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Batch.java",
+  "old": "Comparator.comparingInt((Order o) -> o.readyAt()).thenComparing(o -> o.id)",
+  "new": "Comparator.comparingInt((Order o) -> o.readyAt()).thenComparing(o -> o.id, Comparator.reverseOrder())",
+  "label": "ready-time ties go to the higher order id",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Batch.java",
+  "old": "        return out;\n",
+  "new": "        return out.isEmpty() ? null : out;\n",
+  "label": "returns null instead of an empty list",
+  "k": "test_p2_"
+ }
+]

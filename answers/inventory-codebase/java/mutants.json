@@ -1,0 +1,79 @@
+[
+ {
+  "file": "Replenish.java",
+  "old": "if (pos > rule.min()) continue;",
+  "new": "if (pos >= rule.min()) continue;",
+  "label": "reorders only strictly below min",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Replenish.java",
+  "old": "qty = (qty + rule.pack() - 1) / rule.pack() * rule.pack();",
+  "new": "qty = qty / rule.pack() * rule.pack();",
+  "label": "case pack rounded down",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Replenish.java",
+  "old": "int pos = s.avail(k) + s.store.inbound(k);",
+  "new": "int pos = s.avail(k);",
+  "label": "inbound transfers ignored",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Replenish.java",
+  "old": "int pos = s.avail(k) + s.store.inbound(k);",
+  "new": "int pos = s.store.onHand(k) + s.store.inbound(k);",
+  "label": "holds ignored in position",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Replenish.java",
+  "old": "int surplus = s.avail(k) - (rule == null ? 0 : rule.min());",
+  "new": "int surplus = s.avail(k);",
+  "label": "source surplus ignores its own min",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Replenish.java",
+  "old": "int surplus = s.avail(k) - (rule == null ? 0 : rule.min());",
+  "new": "int surplus = s.store.onHand(k) - (rule == null ? 0 : rule.min());",
+  "label": "source surplus ignores its holds",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Replenish.java",
+  "old": "(best.isEmpty() || surplus > bestSurplus)",
+  "new": "(best.isEmpty() || surplus >= bestSurplus)",
+  "label": "tie goes to highest id",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Replenish.java",
+  "old": "if (surplus >= qty &&",
+  "new": "if (surplus > qty &&",
+  "label": "source must strictly exceed need",
+  "k": "test_p2_"
+ },
+ {
+  "file": "Expiry.java",
+  "old": "holds.peek().expiresAt <= now",
+  "new": "holds.peek().expiresAt < now",
+  "label": "hold still active at expiresAt",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Store.java",
+  "old": "int take = Math.min(qty, bins.get(bk));",
+  "new": "int take = bins.get(bk);",
+  "label": "pick empties whole bins",
+  "k": "test_p1_"
+ },
+ {
+  "file": "Reservations.java",
+  "old": "if (avail < qty) {\n            throw new InventoryException(InventoryException.Code.INSUFFICIENT_STOCK, avail + \" available, \"",
+  "new": "if (avail <= qty) {\n            throw new InventoryException(InventoryException.Code.INSUFFICIENT_STOCK, avail + \" available, \"",
+  "label": "reserve refuses the last unit",
+  "k": "test_p1_"
+ }
+]
