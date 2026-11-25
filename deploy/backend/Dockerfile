@@ -6,7 +6,7 @@ COPY backend/server.py /app/
 COPY backend/lab/ /app/lab/
 COPY backend/sandbox/ /app/sandbox/
 COPY tools/pack.py /app/lab/
-COPY presets/ /app/presets/
+COPY catalog/ /app/catalog/
 ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
 # gate.py and grade.py run from here, so `docker compose run backend python3 gate.py /set` keeps working
 WORKDIR /app/sandbox

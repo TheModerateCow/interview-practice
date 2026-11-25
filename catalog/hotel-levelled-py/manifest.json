@@ -1,0 +1,25 @@
+{
+  "format": "interview-set/1",
+  "name": "hotel-levelled-py",
+  "title": "Hotel front desk: bookings, stays and rates",
+  "company": "Hospitality (practice domain)",
+  "round": "levelled",
+  "language": "python",
+  "difficulty": "medium",
+  "minutes": 90,
+  "rules": "Four levels, revealed one at a time. Each opens when the previous level's hidden tests all pass, or when you press Next part. Python standard library only. Hints are free: ask in the chat.",
+  "tags": ["test_l1_", "test_l2_", "test_l3_", "test_l4_"],
+  "hidden_tests": ".hidden/tests_hidden.py",
+  "reveal": [
+    {"file": ".hidden/l2.md", "after_tag": "test_l1_", "or_minutes_left": null, "unlocks": "test_l2_"},
+    {"file": ".hidden/l3.md", "after_tag": "test_l2_", "or_minutes_left": null, "unlocks": "test_l3_"},
+    {"file": ".hidden/l4.md", "after_tag": "test_l3_", "or_minutes_left": null, "unlocks": "test_l4_"}
+  ],
+  "your_tests": "test_*.py",
+  "run_entry": "main.py",
+  "testcases": [
+    {"stdin": "room 1 101 double 12000\nbook 2 maya 101 10 13\nbook 3 leo 101 13 15\ncost 4 b1\ncancel 5 b1\nbook 6 ana 101 11 12\ncost 7 b3\n", "expected": "True\nb1\nb2\n36000\nTrue\nb3\n12000"},
+    {"stdin": "room 1 201 single 8000\nroom 2 201 double 9000\nroom 3 202 single 0\nbook 4 sam 201 20 22\ncost 5 b1\ncancel 6 b1\ncancel 7 b1\ncost 8 b1\n", "expected": "True\nFalse\nFalse\nb1\n16000\nTrue\nFalse\n-1"}
+  ],
+  "grade_timeout_s": 45
+}

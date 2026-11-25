@@ -1,0 +1,20 @@
+{
+  "format": "interview-set/1",
+  "name": "scheduling-dsa-ts",
+  "title": "Quorum meeting finder",
+  "company": "Calendar software (practice domain)",
+  "round": "dsa",
+  "language": "typescript",
+  "difficulty": "medium",
+  "minutes": 45,
+  "rules": "One problem. Talk through your approach and its complexity before coding. Node standard library only. Hints are free: ask in the chat.",
+  "tags": ["test_p1_"],
+  "hidden_tests": ".hidden/hidden.test.ts",
+  "your_tests": "*.test.ts",
+  "run_entry": "main.ts",
+  "testcases": [
+    {"stdin": "3 1 60 2\n0 540 1020 2\n540 610\n660 720\n60 540 1020 1\n500 630\n-120 480 720 0\n", "expected": "630\n"},
+    {"stdin": "2 2 90 2\n0 0 1440 1\n0 1380\n-300 1200 1440 0\n", "expected": "1500\n"}
+  ],
+  "grade_timeout_s": 45
+}

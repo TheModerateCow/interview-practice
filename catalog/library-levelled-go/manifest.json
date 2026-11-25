@@ -1,0 +1,25 @@
+{
+  "format": "interview-set/1",
+  "name": "library-levelled-go",
+  "title": "Library lending: loans, due dates and account merges",
+  "company": "Public library (practice domain)",
+  "round": "levelled",
+  "language": "go",
+  "difficulty": "medium",
+  "minutes": 90,
+  "rules": "Four levels, revealed one at a time. Each opens when the previous level's hidden tests all pass, or when you press Next part. Go standard library only. Hints are free: ask in the chat.",
+  "tags": ["test_l1_", "test_l2_", "test_l3_", "test_l4_"],
+  "hidden_tests": ".hidden/hidden_test.go",
+  "reveal": [
+    {"file": ".hidden/l2.md", "after_tag": "test_l1_", "or_minutes_left": null, "unlocks": "test_l2_"},
+    {"file": ".hidden/l3.md", "after_tag": "test_l2_", "or_minutes_left": null, "unlocks": "test_l3_"},
+    {"file": ".hidden/l4.md", "after_tag": "test_l3_", "or_minutes_left": null, "unlocks": "test_l4_"}
+  ],
+  "your_tests": "*_test.go",
+  "run_entry": "cmd/run/main.go",
+  "testcases": [
+    {"stdin": "member 1 ana\nmember 2 ana\ncopy 3 D-2 Dune\ncopy 4 D-1 Dune\ncopy 5 E-1 Emma\ncheckout 6 ana Dune\ncheckout 7 ana Dune\ncheckout 8 bo Dune\nborrower 9 D-1\n", "expected": "true\nfalse\ntrue\ntrue\ntrue\n\"D-1\"\n\"\"\n\"\"\n\"ana\""},
+    {"stdin": "member 1 ana\nmember 2 bo\ncopy 3 E-1 Emma\ncheckout 4 ana Emma\ncheckout 5 bo Emma\nreturn 6 E-1\nreturn 7 E-1\ncheckout 8 bo Emma\nborrower 9 E-1\ncheckout 10 bo Ulysses\n", "expected": "true\ntrue\ntrue\n\"E-1\"\n\"\"\ntrue\nfalse\n\"E-1\"\n\"bo\"\n\"\""}
+  ],
+  "grade_timeout_s": 45
+}

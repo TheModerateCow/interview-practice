@@ -4,7 +4,9 @@ A local, Docker-only app for timed coding-interview practice. Claude (`/intervie
 Drag it onto http://127.0.0.1:8765. The app says "Imported <title> (<name>)" and shows the name under the title; press **Start** only if the name matches. If it says "Not imported", paste the message back to Claude. Run, Submit, Next part, End, then Export.
 Send `export.zip` back to Claude for the debrief.
 
-No set yet? Home's **Library** has ready-made sets (`presets/*.zip`). Click one to open a fresh copy (`<preset>-1`, `-2`, …) on its ready screen; an unstarted copy is reused, so you can retake a preset as often as you like. To add one, pack a gated set into `presets/` with `tools/pack.py` and rebuild; keep its source (with `reference/` and `mutants.json`) out of git, e.g. in `.private/presets/`, for debriefs.
+Home is a **catalog of problems** to pick from: the built-in ones in `catalog/` plus every set you've imported (marked Yours). Filter by round, language and difficulty, and click one. That opens its round in progress, an unstarted attempt, or a fresh attempt (`<id>-1`, `-2`, …) on the ready screen, so you can retake any problem. Past attempts stay listed under Not started / Finished.
+
+To add a built-in problem: gate it, pack it with `tools/pack.py`, unzip the zip into `catalog/<id>/`, and rebuild. Keep its source (with `reference/` and `mutants.json`) out of git in `.private/catalog/<id>/`: Claude needs it for the debrief.
 
 ## Install / remove
 ```
@@ -32,17 +34,17 @@ Only nginx publishes a port. The backend and proxy sit on internal networks. `/a
 | `FORMAT.md` | The interview-set/1 zip + manifest spec, the runner images, and what the app writes |
 | `API.md` | The HTTP API |
 | `backend/server.py` | The HTTP layer: routes, the Host/Origin/X-ILab guard, error mapping |
-| `backend/lab/` | `store.py` set files, session, clock and reveals; `importer.py` zip import; `rounds.py` Start/Run/Submit/My tests/Next/End/Export/Delete |
+| `backend/lab/` | `store.py` set files, session, clock and reveals; `catalog.py` problems and attempts; `importer.py` zip import; `rounds.py` Start/Run/Submit/My tests/Next/End/Export/Delete |
 | `backend/sandbox/runner.py` | DockerRunner (Run: verdicts, time, memory) + the pinned runner image list |
 | `backend/sandbox/grade.py` | Hidden-test grading in the runner, with the same CLI/JSON as the skill's grade.py |
 | `backend/sandbox/gate.py` | The skill's gate.py, unchanged |
 | `backend/sandbox/images.py` | `/api/health` and the thread that keeps runner images pulled |
-| `ui/src/` | `App.svelte` the shell; `features/` one folder per screen (`home`, `ready`, `round`, `import`, `health`), `round/round.svelte.js` holds the round's state and actions; `components/` shared pieces; `lib/` API, Monaco and helpers; `styles/` CSS |
-| `presets/` | The Library: packed, gated sets baked into the backend image (`backend/lab/library.py`) |
+| `ui/src/` | `App.svelte` the shell; `features/` one folder per screen (`home`, `catalog`, `ready`, `round`, `import`, `health`), `round/round.svelte.js` holds the round's state and actions; `components/` shared pieces; `lib/` API, Monaco and helpers; `styles/` CSS |
+| `catalog/` | Built-in problems, one folder each (interview-set/1, unpacked), baked into the backend image (`backend/lab/catalog.py`) |
 | `deploy/` | Everything that builds or runs the app: `docker-compose.yml`, the backend/nginx/runner-python Dockerfiles, `nginx.conf`, install/uninstall. The root `.env` points `docker compose` at it, so compose commands work from the repo root |
 | `tools/pack.py` | Packs a set dir into a zip (refuses reference/, mutants.json, bugs.json) |
 | `tools/status.py` | `python3 tools/status.py data/sets/<name>` → time left, from session.json |
-| `data/` | Your sets, sessions and exports (bind-mounted; never deleted by uninstall). Home's Delete moves a set to `data/deleted/<name>-<stamp>/`; restore by moving it back to `data/sets/` |
+| `data/` | Your attempts (`sets/`), your own problems (`catalog/`) and exports (bind-mounted; never deleted by uninstall). Home's Delete moves a set to `data/deleted/<name>-<stamp>/`; restore by moving it back to `data/sets/` |
 
 ## Building a set by hand
 ```

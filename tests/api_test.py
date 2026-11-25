@@ -562,26 +562,41 @@ def _():
     check("goiso: the failure is the panic, not 'did not run'", "did not run" not in json.dumps(r) and "panic" in r.get("last_error", ""), r)
 
 
-@sec("preset library")
+@sec("problem catalog")
 def _():
-    s, j = jreq("GET", "/api/library"); ps = j.get("presets", [])
-    check("library lists the shipped presets with ready-screen fields", s == 200 and ps and all(p.get("name") and p.get("title") and p.get("round") for p in ps), j)
-    p = ps[0]["name"] if ps else "none"
-    pdir = lambda n: os.path.join(DATA, "sets", n)
-    s, a = jreq("POST", f"/api/library/{p}")
-    check("take: a copy named <preset>-<k>, not reused", s == 200 and a.get("name", "").startswith(p + "-") and a.get("reused") is False, a)
-    m = json.load(open(os.path.join(pdir(a["name"]), "manifest.json"))) if s == 200 else {}
-    check("the copy's manifest has its own name and the preset it came from", m.get("name") == a.get("name") and m.get("preset") == p, m)
-    check("the copy opens on the ready screen", jreq("GET", f"/api/sets/{a.get('name')}")[1].get("status") == "ready")
-    s, b = jreq("POST", f"/api/library/{p}")
-    check("take again while unstarted: the same copy, reused", s == 200 and b.get("name") == a.get("name") and b.get("reused") is True, b)
+    s, j = jreq("GET", "/api/catalog"); ps = j.get("problems", [])
+    built = [p for p in ps if p.get("source") == "builtin"]
+    check("catalog lists the built-in problems with ready-screen fields", s == 200 and len(built) >= 10 and all(p.get("id") and p.get("title") and p.get("round") and p.get("language") and "attempts" in p for p in ps), j)
+    for d in sorted(glob.glob(os.path.join(ROOT, "catalog", "*", "manifest.json"))):
+        d = os.path.dirname(d); r = subprocess.run([sys.executable, os.path.join(ROOT, "tools", "pack.py"), d, "/tmp/_cat.zip"], capture_output=True, text=True)
+        check(f"sanity: catalog/{os.path.basename(d)} is a valid set", r.returncode == 0 and "packed" in r.stdout, r.stdout + r.stderr)
+    p = built[0]["id"] if built else "none"
+    row = lambda: next((x for x in jreq("GET", "/api/catalog")[1]["problems"] if x["id"] == p), {})
+    s, a = jreq("POST", f"/api/catalog/{p}/attempt")
+    check("attempt: a copy named <id>-<k>, not reused", s == 200 and a.get("name", "").startswith(p + "-") and a.get("reused") is False, a)
+    m = json.load(open(os.path.join(DATA, "sets", a["name"], "manifest.json"))) if s == 200 else {}
+    check("the attempt's manifest has its own name and the problem it came from", m.get("name") == a.get("name") and m.get("problem") == p, m)
+    check("the attempt opens on the ready screen and lists its problem", jreq("GET", f"/api/sets/{a.get('name')}")[1].get("status") == "ready"
+          and any(x["name"] == a.get("name") and x.get("problem") == p for x in jreq("GET", "/api/sets")[1]["sets"]))
+    check("picking again while unstarted: the same attempt", jreq("POST", f"/api/catalog/{p}/attempt")[1] == {"name": a["name"], "title": a["title"], "reused": True})
     jreq("POST", f"/api/sets/{a['name']}/start")
-    s, c = jreq("POST", f"/api/library/{p}")
-    check("after Start: a new copy", s == 200 and c.get("name") not in (None, a["name"]) and c.get("name", "").startswith(p + "-") and c.get("reused") is False, c)
-    check("unknown preset: 404", jreq("POST", "/api/library/no-such-preset")[0] == 404)
-    check("library needs X-ILab", req("GET", "/api/library", hdr=False)[0] == 403)
+    check("picking while it runs: back to the running attempt", jreq("POST", f"/api/catalog/{p}/attempt")[1].get("name") == a["name"])
     jreq("POST", f"/api/sets/{a['name']}/end")
-
+    s, c = jreq("POST", f"/api/catalog/{p}/attempt")
+    check("after it finished: a new attempt", s == 200 and c.get("name") not in (None, a["name"]) and c.get("reused") is False, c)
+    check("the catalog counts the finished attempt", row().get("attempts", 0) >= 1 and row().get("last") == "ended", row())
+    n = uniq("t-cat"); ht = ".hidden/test_hidden.py"
+    zb = mkzip({"manifest.json": json.dumps(manifest(n, "python", hidden_tests=ht)), "problem.md": "x",
+                "starter/main.py": "print('hi')\n", ht: "def test_ok():\n    assert True\n"})
+    check("a dropped set imports as before", imp(zb)[0] == 200)
+    mine = next((x for x in jreq("GET", "/api/catalog")[1]["problems"] if x["id"] == n), {})
+    check("and joins the catalog as your own problem", mine.get("source") == "custom" and mine.get("title") == "T " + n, mine)
+    check("picking it opens the imported attempt", jreq("POST", f"/api/catalog/{n}/attempt")[1].get("name") == n)
+    jreq("POST", f"/api/sets/{n}/start"); jreq("POST", f"/api/sets/{n}/end")
+    s, d = jreq("POST", f"/api/catalog/{n}/attempt")
+    check("retaking your own problem: a fresh <id>-1", s == 200 and d.get("name") == n + "-1", d)
+    check("unknown problem: 404", jreq("POST", "/api/catalog/no-such-problem/attempt")[0] == 404)
+    check("catalog needs X-ILab", req("GET", "/api/catalog", hdr=False)[0] == 403)
 
 print(f"\n{'ALL PASSED' if not fails else f'{fails} FAILED'}")
 sys.exit(1 if fails else 0)

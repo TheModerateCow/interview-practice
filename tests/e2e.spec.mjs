@@ -307,18 +307,28 @@ test('Home: delete a finished and an unstarted set', async ({ page, request }) =
   await api(`/api/sets/${A}`, { method: 'DELETE' });
 });
 
-test('Library: a preset opens a copy on the ready screen', async ({ page, request }) => {
-  const lib = await (await request.get(`${BASE}/api/library`, { headers: H })).json();
-  const p = lib.presets[0];
+test('Catalog: filter, then pick a problem to open an attempt', async ({ page, request }) => {
+  const cat = await (await request.get(`${BASE}/api/catalog`, { headers: H })).json();
+  const dsa = cat.problems.filter(p => p.round === 'dsa');
+  const p = dsa[0];
   await page.goto(BASE);
   await page.waitForLoadState('networkidle');
   await openIfAsked(page);
   if (await page.locator('#home-btn').isVisible()) await page.click('#home-btn');
-  await expect(page.locator('#library summary')).toContainText('Library');
-  await page.click(`#library [data-preset="${p.name}"]`);
+  await expect(page.locator('#catalog h2')).toContainText('Problems');
+  await page.click('#f-round');
+  await page.click('#f-round-list [data-value="dsa"]');
+  // other tests import sets in parallel (each joins the catalog), so check the filter by content, not an exact count
+  await expect.poll(async () => (await page.locator('#catalog .set-meta').allTextContents()).every(t => t.startsWith('DSA round'))).toBe(true);
+  expect(await page.locator('#catalog .set-row').count()).toBeGreaterThanOrEqual(dsa.length);
+  await page.click(`#catalog [data-problem="${p.id}"]`);
   await expect(page.locator('#ready')).toBeVisible();
   await expect(page.locator('#ready h1')).toHaveText(p.title);
-  await expect(page.locator('#ready-name')).toHaveText(new RegExp(`^${p.name}-\\d+$`));
+  await expect(page.locator('#ready-name')).toHaveText(new RegExp(`^${p.id}-\\d+$`));
+  await page.click('#home-btn');
+  await page.click('#f-round');
+  await page.click('#f-round-list [data-value=""]');   // back to all
+  await expect.poll(() => page.locator('#catalog .set-row').count()).toBeGreaterThanOrEqual(cat.problems.length);
 });
 
 test('panes resize and remember', async ({ page, request }) => {

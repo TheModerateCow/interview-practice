@@ -4,9 +4,9 @@ from flask import Flask, Response, jsonify, request
 from waitress import serve
 from werkzeug.exceptions import HTTPException
 
-from lab import importer, library, rounds
+from lab import catalog, importer, rounds
 from sandbox import images, runner
-from lab.store import EXPORTS, NAME_RE, SETS, HTTPError, clock, ready_info, require_started, sdir, session, state, work_path
+from lab.store import EXPORTS, NAME_RE, SETS, HTTPError, clock, manifest, ready_info, require_started, sdir, session, state, work_path
 
 PORT = os.environ.get("ILAB_PORT", "8765")   # the port nginx publishes; the Host/Origin allowlist follows it
 HOSTS = {f"127.0.0.1:{PORT}", f"localhost:{PORT}"}
@@ -70,12 +70,12 @@ def r_health(): return images.health()
 def r_import(): return importer.do_import(body(importer.MAX_ZIP))
 
 
-@app.get("/api/library")
-def r_library(): return library.listing()
+@app.get("/api/catalog")
+def r_catalog(): return catalog.listing()
 
 
-@app.post("/api/library/<n>")
-def r_take(n): return library.take(n)
+@app.post("/api/catalog/<n>/attempt")
+def r_attempt(n): return catalog.start_attempt(n)
 
 
 @app.get("/api/sets")
@@ -86,7 +86,7 @@ def r_sets():
         if NAME_RE.fullmatch(n) and os.path.isfile(os.path.join(SETS, n, "manifest.json")):
             i = ready_info(n)
             left = round(clock(session(n))[1] * 60) if i["status"] == "running" else None   # same rule as state.left_s
-            out.append({k: i[k] for k in ("name", "title", "language", "round", "minutes", "status")} | {"left_s": left})
+            out.append({k: i[k] for k in ("name", "title", "language", "round", "minutes", "status")} | {"left_s": left, "problem": catalog.problem_of(manifest(n))})
     return {"sets": out}
 
 
