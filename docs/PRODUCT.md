@@ -1,37 +1,32 @@
 # Interview Lab: product doc
 
-Status: written 2026-11-25 from the round-1 usage tests (persona A: candidate in a browser; persona B: interviewer
-agent following the skill), the owner's own timed round, and a read of the code at `origin/main` (e537022).
+Status: written 2026-11-25 from the round-1 usage tests (a candidate in a browser), the owner's own timed round, and a read of the code at `origin/main` (e537022).
 Every claim about today's behaviour names the file and function it comes from.
 
 ## 1. Problem and goals
 
-Practising coding interviews alone fails in two ways: the practice is not realistic (no clock, no hidden tests, the
-problem visible in advance), or the feedback is not honest (you grade yourself, you forget what happened at minute 12).
-Interview Lab is a local, Docker-only app that gives a realistic timed round; Claude's `/interview-practice` skill builds
-the round and debriefs it.
+Interview Lab is for one thing: practising coding interviews on your own. Practising alone fails in two ways: the
+practice is not realistic (no clock, no hidden tests, the problem visible in advance), or the feedback is not honest
+(you grade yourself, you forget what happened at minute 12). Interview Lab is a local, Docker-only practice app: pick a
+problem from its catalog, take a realistic timed round, get honest results, practise again.
 
 Goals, in priority order:
-1. **Honest results.** Every number the candidate or Claude sees (time left, N/M passed, "after time") is true. A round that
+1. **Honest results.** Every number the candidate sees (time left, N/M passed, "after time") is true. A round that
    ended on time reads on time; work done after the round reads as after the round.
 2. **A realistic round.** Nothing about the problem or tests leaks before Start or during the round; the clock is real.
-3. **One connected loop.** Skill builds a set → candidate drops it → ready → Start → code → close → export → Claude
-   debriefs → next round. Each hand-off tells the next actor what to do.
+3. **One practice loop.** Pick a problem → ready → Start → code → close → honest results → pick the next one or retake.
+   Each step tells the candidate what to do next.
 4. **Company- and role-agnostic.** The app shows only what the set brings; it never knows about any company or role.
 
 Non-goals: hosting, accounts, multi-user, scoring candidates against a real platform, an AI tutor inside the app.
 
 ## 2. Personas
 
+One persona: the candidate. (The interviewer-agent persona was removed by the owner on 2026-11-26.)
+
 **Candidate** (the owner). Wants a realistic timed round with honest results and no leaks. Works in a browser at
 1440×900 and sometimes a narrow window. Under pressure: every click must give a visible answer, and the screen must say
 plainly what counts and what doesn't. Will practise after time sometimes, and wants that labelled, not blocked.
-
-**Interviewer agent** (Claude running `/interview-practice` on claude.ai or in Claude Code; company- and role-agnostic: it
-takes the company and role from the user and puts them only in the set). Builds, gates and packs a set; during the round
-answers "how long is left?" and "why does this fail?" without guessing; after the round reads `export.zip` (or the set's
-files in Claude Code) and runs the debrief. Needs machine-readable truth: `session.json`, `results.json`, a stable export
-shape, and docs (SKILL.md, FORMAT.md, API.md) that agree with the code.
 
 ## 3. Ideal end-to-end workflow
 
@@ -47,18 +42,6 @@ shape, and docs (SKILL.md, FORMAT.md, API.md) that agree with the code.
 6. The round closes at **End or at 00:00, whichever comes first**. Closing grades the code one last time and shows the
    final result. The candidate can keep practising; everything after the close is visibly marked "after time".
 7. Export saves `export.zip` and says where it went and what to do with it ("send it to Claude").
-
-### Interviewer agent
-1. Builds the set in its workspace (reference first, tests, mutants, starter, problem), gates it in the runner images
-   (`GATE PASS`), packs it with `tools/pack.py`. Pack and gate catch manifest mistakes (bad reveal chains, tags no test
-   carries) before the candidate does.
-2. Sends the zip with one instruction: drop it, read, Start.
-3. During the round: "how long is left?" comes from `tools/status.py` (Claude Code) or the candidate reading the app;
-   "why does it fail?" comes from the latest `last_error`; test names stay private until the debrief.
-4. Debrief: reads the official result (`results.json` `final`, graded at the close, with names), the code as it was at
-   the close, the event log and its own hint log, and keeps the set so it can re-grade. Says which results came after
-   time, using the app's own flags rather than re-deriving them.
-5. Picks the next round from what the debrief found.
 
 ## 4. Ideal information architecture
 
@@ -83,8 +66,8 @@ Data (per set, data/sets/<name>/):
 
 ## 4a. User flows
 
-Each persona's flow as it works today, then the ideal from §3. Drawn from the code on `main` (6003d09) and the round-1
-usage tests (A-report: candidate; B-report: interviewer agent). Screen names are the ones a user sees.
+The candidate's flow as it works today, then the ideal from §3. Drawn from the code on `main` (6003d09) and the round-1
+usage test (A-report). Screen names are the ones a user sees.
 
 Legend for every diagram: **thick blue border** = round 2 ("Drop to ready", `docs/rounds/2-drop-to-ready/`) changes
 this step; **dashed border** = round 1 ("Honest round close") already fixed it. Unmarked steps that differ between
@@ -165,68 +148,6 @@ second and nothing marks the last minute (A-25). Cues should scale with the roun
 
 **Finishing every part is a dead end (later).** The candidate passes every part. Today Next part disappears and nothing
 says what to do (A-35). The screen should say "All parts pass. End now, or keep polishing."
-
-### Interviewer agent: today
-
-```mermaid
-flowchart TD
-  build["Builds the set: reference, tests, mutants, starter, problem"] -->|"runs gate.py"| gate{"GATE PASS?"}
-  gate -->|"FAIL: strengthens a test"| build
-  gate -->|"PASS: writes manifest.json"| pack{"pack.py"}
-  pack -->|"field error"| notpacked["NOT PACKED: field named"]
-  notpacked -->|"fixes the field"| pack
-  pack -->|"good manifest, or a broken reveal chain"| zip["set .zip"]
-  zip -->|"sends: drag it in, read, press Start"| drop["Candidate drops it, with nothing to check"]
-  drop -->|"candidate presses Start"| live["Round in progress"]
-  live -->|"how long is left?"| status["tools/status.py"]
-  live -->|"why does it fail?"| why["last_error; test names kept private"]
-  live -.->|"broken chain shows mid-round"| stuck["A part never passes, or shows twice"]
-  live -->|"End or 00:00, then Export"| export["export.zip: final grade, final/ code, timeline"]
-  export -->|"re-grades final/ against the kept set"| debrief["Debrief from the final grade and final/ code"]
-  classDef round2 stroke:#3772ff,stroke-width:4px
-  classDef round1 stroke-dasharray:6 4
-  class pack,drop,stuck round2
-  class status,export,debrief round1
-```
-Thick blue: round 2 changes it. Dashed: round 1 fixed it.
-
-### Interviewer agent: ideal
-
-```mermaid
-flowchart TD
-  build["Builds the set"] -->|"runs gate.py"| gate{"GATE PASS?"}
-  gate -->|"FAIL: strengthens a test"| build
-  gate -->|"PASS: writes manifest.json"| pack{"pack.py"}
-  pack -->|"field, reveal-chain or tag error"| fix["NOT PACKED: field named"]
-  fix -->|"fixes it"| pack
-  pack -->|"packed"| zip["set .zip"]
-  zip -->|"sends: drop it, check the Imported name, press Start"| drop["Candidate confirms the name"]
-  drop -->|"candidate presses Start"| live["Round in progress"]
-  live -->|"how long is left?"| status["tools/status.py"]
-  live -->|"why does it fail?"| why["last_error; test names kept private"]
-  live -->|"End or 00:00, then Export"| export["export.zip: final grade, final/ code, timeline"]
-  export -->|"reads the final grade and final/ code"| debrief["Debrief with hints in the timeline"]
-  debrief -->|"picks the next round from past results"| next["Next set"]
-  classDef round2 stroke:#3772ff,stroke-width:4px
-  classDef round1 stroke-dasharray:6 4
-  class fix,drop round2
-  class status,export round1
-```
-Thick blue: round 2 changes it. Dashed: round 1 fixed it.
-
-**Broken reveal chains get packed (round 2).** Claude writes a Levelled manifest with a part whose tag no test carries,
-or reveals the same file twice, and runs `pack.py`. Today it prints "packed" (B-report §4, C1–C3), and the candidate
-meets the mistake mid-round. Pack and import should refuse it with a line naming the field.
-
-**Nothing to check after the drop (round 2).** Claude tells the candidate "drag it in, read the ready screen, press
-Start". Today, with two sets of the same title in the app, the candidate cannot tell which one Claude meant. The skill
-should quote the app's "Imported <title> (<name>)" and tell the candidate to start only if the name matches.
-
-**Hints are stitched in by hand (later).** In the debrief Claude merges its own hint log with the app's event log.
-Today `session.json` has a `hints` list the app never writes. Hints Claude gives should appear in the timeline.
-
-**The next round is chosen from memory (later).** After the debrief Claude suggests the next round. Today nothing keeps
-past results across conversations. A local round history should let Claude cite them.
 
 ## 5. What exists today (bottom-up)
 
