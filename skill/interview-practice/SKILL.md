@@ -289,6 +289,8 @@ def validate(m, exists, read=None):
         # ponytail: text match, the grader's case-insensitive substring rule; a tag only in a comment passes. The gate's run is the exact check.
         e += [f"tags: {t} matches no test in {ht}" for t in tags if t.lower() not in text]
     s("your_tests", False)
+    ex = s("examples", False)
+    if ex and (not ex.startswith(".hidden/") or ".." in ex or not exists(ex)): e.append(f"examples: {ex} missing or not under .hidden/")
     re_ = s("run_entry", False)
     if re_ and (".." in re_ or not exists("starter/" + re_)): e.append(f"run_entry: starter/{re_} missing")
     tc = m.get("testcases", [])
@@ -300,7 +302,7 @@ def validate(m, exists, read=None):
 
 def pack(d, out):
     m = json.load(open(os.path.join(d, "manifest.json")))
-    hidden = [m.get("hidden_tests")] + [r.get("file") for r in m.get("reveal", []) if isinstance(r, dict)]
+    hidden = [m.get("hidden_tests"), m.get("examples")] + [r.get("file") for r in m.get("reveal", []) if isinstance(r, dict)]
     src = {}
     for h in filter(None, hidden):
         x = h[len(".hidden/"):] if isinstance(h, str) and h.startswith(".hidden/") else None
