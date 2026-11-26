@@ -6,7 +6,7 @@
   import { api } from '../../lib/api.js';
   import { LS, ROUND, LANGNAME, cap } from '../../lib/util.js';
   import { app, showFlash } from '../../app.svelte.js';
-  let { onpick } = $props();   // onpick(attempt name): list the sets and open that one
+  import { loadSets } from '../../nav.js';
 
   let problems = $state([]), picking = $state('');
   let lang = $state(LS.get('ilab.lang') || 'python');   // "Practise in": only the switch changes it
@@ -36,7 +36,7 @@
     try {
       const r = await api('/catalog/' + encodeURIComponent(p.id) + '/attempt', { method: 'POST',
         headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ language: lang }) });
-      await onpick(r.name);
+      await loadSets(r.name);   // list the sets and open the attempt
     }
     catch (e) { showFlash(e.message, true); }
     finally { picking = ''; }

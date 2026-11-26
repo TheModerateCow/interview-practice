@@ -167,7 +167,7 @@ Export (`submission/` = `work/` now, plus `session.json`, `results.json`, `manif
 `data/exports/`). Clock: `clock()` uses wall time from `start`; `over()` = `ended` **or** time expired; `log()` appends
 `" (after time)"` when `over()`; `stamp()` sets `after_time: over()`.
 
-**UI** (`ui/src/App.svelte` shell, `ui/src/features/<screen>/`, `ui/src/components/`, `ui/src/lib/`, `ui/src/styles/`; Svelte, built by Vite in `deploy/nginx/Dockerfile`). Home (first load, or "All sets"): drop zone + sets grouped In progress / Not started / Finished
+**UI** (`ui/src/App.svelte` shell, `ui/src/nav.js` navigation, `ui/src/features/<screen>/`, `ui/src/components/`, `ui/src/lib/`, `ui/src/styles/`; Svelte, built by Vite in `deploy/nginx/Dockerfile`). Home (first load, or "All sets"): drop zone + sets grouped In progress / Not started / Finished
 (title, name, round, language); first load resumes a round in progress, else stays home. Header picker of `title · status`; ready
 card; round screen with Monaco, file tree, new-file input, stdin, results pane, problem pane, part chips, timer (yellow
 at ≤5 min, red at 0); inline confirm bars for Next part and End; final card with grade rows, "Where the time went" and

@@ -1,5 +1,5 @@
 <script>
-  // The shell: header, navigation between Home / Ready / Round, toasts. Each screen lives in features/.
+  // The shell: header, the screens (each in features/), toasts. Navigation lives in nav.js.
   import { onMount } from 'svelte';
   import Dropdown from './components/Dropdown.svelte';
   import Settings from './features/settings/Settings.svelte';
@@ -9,65 +9,11 @@
   import Clock from './features/round/Clock.svelte';
   import DropImport from './features/import/DropImport.svelte';
   import Health from './features/health/Health.svelte';
-  import { api } from './lib/api.js';
-  import { LS, statusWords } from './lib/util.js';
-  import { app, fetchSets } from './app.svelte.js';
-  import { enterRound, leaveRound, stopTimers } from './features/round/round.svelte.js';
+  import { statusWords } from './lib/util.js';
+  import { app } from './app.svelte.js';
+  import { boot, goHome, openSet } from './nav.js';
 
-  let info = $state(null);          // ready screen
-  let readyErr = $state('');
-  let loading = $state('Loading sets');   // page-level wait while no screen is shown
-
-  function screen(v) {
-    app.settings = false;
-    app.view = v;
-    if (v !== 'round') stopTimers();
-  }
-
-  async function loadSets(select, my = app.nav) {   // first load, and after an import
-    app.sets = await fetchSets();
-    if (my !== app.nav) return;
-    if (select && app.sets.some(s => s.name === select)) return openSet(select);   // just imported
-    // A round in progress resumes (a reload mid-round lands back in it); otherwise start at home.
-    const running = app.sets.filter(s => s.status === 'running').map(s => s.name);
-    const resume = running.includes(LS.get('ilab-last')) ? LS.get('ilab-last') : running[0];
-    if (resume) return openSet(resume);
-    return goHome();
-  }
-
-  // Save, then drop everything that belongs to the current set.
-  async function leaveSet() {
-    await leaveRound();
-    info = null; readyErr = '';
-  }
-
-  async function goHome() {
-    const my = ++app.nav;
-    await leaveSet(); if (my !== app.nav) return;
-    app.cur = null; loading = ''; screen('home');
-    try { const fresh = await fetchSets(); if (my === app.nav) app.sets = fresh; } catch (e) {}   // fresh statuses: rounds may have timed out
-  }
-
-  async function openSet(name, my = ++app.nav) {
-    await leaveSet(); if (my !== app.nav) return;
-    app.cur = name; LS.set('ilab-last', name);
-    screen(''); loading = 'Opening ' + (app.sets.find(s => s.name === name)?.title || name);
-    try {
-      const i = await api('/sets/' + name); if (my !== app.nav) return;
-      if (i.status === 'ready') { info = i; screen('ready'); return; }
-      const s = await api('/sets/' + name + '/state'); if (my !== app.nav) return;
-      screen('round'); await enterRound(s, my);
-    } catch (e) { if (my === app.nav) { screen('ready'); readyErr = e.message; } }
-    finally { if (my === app.nav) loading = ''; }
-  }
-
-  async function startRound() {   // errors go back to the ready screen's Start button
-    const s = await api('/sets/' + app.cur + '/start', { method: 'POST' });
-    const my = ++app.nav;
-    screen('round'); await enterRound(s, my);
-  }
-
-  onMount(() => { loadSets().catch(e => { screen('home'); app.dropErr = e.message; }); });
+  onMount(boot);
 </script>
 
 <header id="top" class:above={app.settings}>
@@ -82,12 +28,12 @@
   <button id="settings-btn" class="btn btn-ghost" type="button" aria-expanded={app.settings}
     aria-controls="settings" onclick={() => (app.settings = !app.settings)}>Settings</button>
 </header>
-<DropImport reload={loadSets} reopen={() => (app.cur ? openSet(app.cur) : loadSets())} />
+<DropImport />
 <Health />
-{#if !app.view && loading}<div class="loading block" role="status">{loading}…</div>{/if}
+{#if !app.view && app.loading}<div class="loading block" role="status">{app.loading}…</div>{/if}
 
-<Home onopen={openSet} onpick={name => loadSets(name)} />
-<Ready shown={app.view === 'ready'} {info} err={readyErr} onstart={startRound} />
+<Home />
+<Ready />
 <Round />
 <Settings />
 
