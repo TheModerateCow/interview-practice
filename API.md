@@ -41,7 +41,7 @@ with a 4xx/5xx status. If Docker or the proxy is unreachable, the response is **
  "events": [[minute, "text"], ...]}
 ```
 
-**run result**: Run executes the file in `file`. Testcases run only when `file == run_entry`.
+**run result**: Run executes the file in `file`. Testcases run only when `file == run_entry`. The UI always sends `run_entry` when the set has one, whichever file is open.
 ```
 {"compile": null | {"ok": bool, "log": str},
  "stdin_case": case,                      # the stdin box run

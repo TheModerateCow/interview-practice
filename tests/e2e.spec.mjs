@@ -108,6 +108,16 @@ test('full interview flow', async ({ page, request }) => {
   ]);
   expect(rq.method()).toBe('POST');
   await expect(page.locator('#verdict')).toBeVisible({ timeout: 120000 });
+  // Run runs the run program even with another file open
+  const other = st.run_entry && st.files.find(f => f !== st.run_entry && /\.(py|go|java)$/.test(f));
+  if (other) {
+    await page.click(`[data-testid="file-${other}"]`);
+    const [rq2] = await Promise.all([page.waitForRequest(r => r.url().includes('/run'), { timeout: 10000 }), page.click('#run-btn')]);
+    expect(rq2.postDataJSON().file).toBe(st.run_entry);
+    await expect(page.locator('#verdict')).toBeVisible({ timeout: 120000 });
+    if (st.testcases_count > 0) await expect(page.locator('body')).toContainText(/[✓✗]/);
+    await page.click(`[data-testid="file-${st.run_entry}"]`);
+  }
 
   // Submit with starter
   await page.click('#submit-btn');
