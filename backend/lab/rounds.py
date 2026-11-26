@@ -36,6 +36,7 @@ def run(n, body):
     t0 = time.time()
     require_started(n)
     m, f, stdin = manifest(n), body.get("file") or "", body.get("stdin") or ""
+    if not isinstance(f, str) or not isinstance(stdin, str): raise HTTPError(400, "file and stdin must be strings")
     lang = EXT_LANG.get(os.path.splitext(f)[1])
     if not lang: raise HTTPError(400, f"can't run {f or 'this file'}: supported .py .go .java .ts .js .c .cpp")
     work_path(n, f)
