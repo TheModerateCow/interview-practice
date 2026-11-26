@@ -23,6 +23,8 @@ input { height: 32px; padding: 0 var(--s-3); }
 .seg { display: inline-flex; border: 1px solid var(--line-strong); border-radius: var(--r-md); overflow: hidden; }
 .seg button { border: 0; background: none; color: var(--fg-2); font: 500 var(--t-label)/1 var(--font-sans); padding: 8px 10px; cursor: pointer; }
 .seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+.seg button:not([aria-pressed="true"]):hover { background: var(--surface-2); color: var(--fg); }
+.seg button:focus-visible { outline-offset: -2px; }   /* .seg clips anything drawn outside a button */
 .health { padding: var(--s-2) var(--s-4); background: var(--warn-bg); color: var(--fg); border-bottom: 1px solid var(--line); font-size: var(--t-small); }
 
 /* ---------- home: drop zone + sets ---------- */
@@ -31,13 +33,10 @@ input { height: 32px; padding: 0 var(--s-3); }
 #catalog { display: grid; gap: var(--s-2); }
 .catalog-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s-4); flex-wrap: wrap; }
 .catalog-head h2 { margin: 0; }
-.filters { display: flex; gap: var(--s-2); flex-wrap: wrap; }
+.filters { display: flex; gap: var(--s-2); flex-wrap: wrap; align-items: center; }
+.lang-pick { display: inline-flex; align-items: center; gap: var(--s-2); }
 .set-title .pill { margin-left: var(--s-2); vertical-align: middle; }
 .set-row:disabled { cursor: progress; }
-.langs { display: flex; gap: var(--s-1); padding-right: var(--s-2); }
-.lang-chip { font: inherit; font-size: var(--t-small); padding: 2px var(--s-2); border: 1px solid var(--line-strong); border-radius: var(--r-pill, 999px); background: transparent; color: var(--fg-2); cursor: pointer; }
-.lang-chip:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
-.lang-chip:disabled { cursor: progress; }
 .sets summary { padding: var(--s-2) 0; cursor: pointer; }
 .set-row { display: grid; grid-template-columns: 1fr auto; gap: 2px var(--s-4); width: 100%; padding: var(--s-3) var(--s-2);
   border: 0; border-bottom: 1px solid var(--line); background: none; color: var(--fg); font: inherit; text-align: left; cursor: pointer; }
@@ -46,7 +45,7 @@ input { height: 32px; padding: 0 var(--s-3); }
 .set-del { flex: none; margin: 0 var(--s-2); padding: var(--s-2); border: 0; background: none; color: var(--fg-2); font: inherit; font-size: var(--t-small); text-decoration: underline; cursor: pointer; }
 .set-del:hover { color: var(--fg); }
 .set-del:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
-.set-row:hover, .set-item:hover { background: var(--surface); }   /* the whole row, chips included */
+.set-row:hover, .set-item:hover { background: var(--surface); }   /* the whole row, Delete included */
 .set-row:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
 .set-meta { color: var(--fg-2); font-size: var(--t-small); }
 .set-name { grid-column: 2; grid-row: 1 / span 2; align-self: center; color: var(--fg-3); font: var(--t-small)/1.3 var(--font-mono); }
