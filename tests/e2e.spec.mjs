@@ -511,6 +511,8 @@ test('Settings: word wrap, mid-round, and the clock keeps running', async ({ pag
   await expect(page.locator('#catalog')).toBeVisible();
 });
 
+// One language server runs per app, so the code-help tests must not overlap: run them one after the other.
+test.describe.serial('Code help', () => {
 test('Code help: Python suggestions, hints and underlines', async ({ page, request }) => {
   const a = await (await request.post(`${BASE}/api/catalog/ledger-codebase/attempt`, { headers: H, data: { language: 'python' } })).json();
   await request.post(`${BASE}/api/sets/${a.name}/start`, { headers: H, data: {} });
@@ -575,6 +577,7 @@ test('Code help: Java suggestions and underlines', async ({ page, request }) => 
   await expect(page.locator('.suggest-widget .monaco-list-row', { hasText: 'balanceAt' })).toBeVisible({ timeout: 8000 });   // Ledger.java was never opened
   await page.keyboard.press('Escape'); await page.keyboard.press('Shift+Home'); await page.keyboard.press('Shift+Home'); await page.keyboard.press('Delete');
   await page.keyboard.type('        l.balance("a");'); await page.keyboard.press('Escape');
-  await expect.poll(() => page.locator('.squiggly-error').count(), { timeout: 8000 }).toBeGreaterThan(0);
+  await expect.poll(() => page.locator('.squiggly-error').count(), { timeout: 15000 }).toBeGreaterThan(0);
   await expect(page.locator('#assist-status')).toHaveText('');
+});
 });
