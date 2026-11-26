@@ -6,7 +6,7 @@ from werkzeug.exceptions import HTTPException
 
 from lab import catalog, importer, rounds
 from sandbox import images, runner
-from lab.store import EXPORTS, NAME_RE, SETS, HTTPError, clock, manifest, ready_info, require_started, sdir, session, state, work_path
+from lab.store import EXPORTS, SETS, HTTPError, ready_info, require_started, sdir, state, work_path
 
 PORT = os.environ.get("ILAB_PORT", "8765")   # the port nginx publishes; the Host/Origin allowlist follows it
 HOSTS = {f"127.0.0.1:{PORT}", f"localhost:{PORT}"}
@@ -79,15 +79,7 @@ def r_attempt(n): return catalog.start_attempt(n, json.loads(body(MAX_FILE) or b
 
 
 @app.get("/api/sets")
-def r_sets():
-    os.makedirs(SETS, exist_ok=True)
-    out = []
-    for n in sorted(os.listdir(SETS)):
-        if NAME_RE.fullmatch(n) and os.path.isfile(os.path.join(SETS, n, "manifest.json")):
-            i = ready_info(n)
-            left = round(clock(session(n))[1] * 60) if i["status"] == "running" else None   # same rule as state.left_s
-            out.append({k: i[k] for k in ("name", "title", "language", "round", "minutes", "status")} | {"left_s": left, "problem": catalog.problem_of(manifest(n))})
-    return {"sets": out}
+def r_sets(): return catalog.sets()
 
 
 @app.get("/api/sets/<n>")
