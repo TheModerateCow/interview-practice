@@ -123,3 +123,69 @@ All references are to `main` at 1a42f81.
 
 Should "Practise in Java" also hide your imported problems that are in another language? Today the built-in 30 have
 all three, so this only affects your own imports. The plan keeps them listed with "Python only".
+
+---
+
+## Addition (owner, 2026-11-27): a Settings page, with word wrap
+
+Owner: "also add word wrap if the person wants. actually you should add a setting pages for this."
+
+### Problem
+
+- **Long lines run off the editor.** Monaco is created with no `wordWrap` option (`ui/src/lib/monaco.js`
+  `loadMonaco()`), so it uses Monaco's default, off. A long line scrolls sideways. Example: Transit fares (TDD) in Java,
+  `Fares.java` line 9, is a 169-character comment. The editor is about 878 px wide at 1440 px (1440 minus Files
+  190 px, Problem 360 px and two 6 px borders). That shows about 105 characters, so the last 60 or so are past the
+  right edge.
+- **There is nowhere to put a preference.** The only one today is the theme: an Auto / Light / Dark switch in the
+  header (`ThemeToggle.svelte`), saved in the browser as `ilab-theme`. A second switch in the header would crowd it
+  at 400 px, where it already wraps onto several lines.
+
+### What the page holds, and why
+
+| Setting | On Settings? | Why |
+|---|---|---|
+| **Word wrap** (Off / On, Off by default) | Yes, new | The owner asked for it. It is a preference you set once, like the theme |
+| **Theme** (Auto / Light / Dark) | Yes, moved from the header | It is set once and rarely changed. Moving it gives the header room for "Settings" at 400 px |
+| **Practise in** (PR 1) | No: stays on Home only, and Settings says where it is | It is chosen next to the problems it affects. A second copy would need shared state for no gain |
+
+Nothing else is added: no settings nobody asked for, and nothing that changes problems, tests or the clock.
+
+### Requirements
+
+#### R4. Settings opens from the header, over any screen (UI)
+1. The header's last item is a "Settings" button (`btn btn-ghost`, like "All sets"), where the theme switch is today.
+   At 1440 px it sits at the right end of the header. At 400 px it stays the header's last item, after the clock.
+   It shows on every screen: Home, Ready and Round.
+2. It opens a Settings panel over the current screen. The app has no page addresses (it switches screens with
+   `app.view`), and changing `app.view` would stop the clock (`screen()` in `App.svelte` calls `stopTimers()` for any
+   screen but the round). So Settings is a panel, not a new screen. The screen under it stays as it was.
+3. The header stays above the panel and keeps working: the clock keeps counting and the parts stay visible.
+   Choosing "All sets" or another set in the picker closes Settings and goes there.
+4. Getting back: "Done", Esc, or "Settings" again closes the panel. Focus returns to the "Settings" button. Mid-round,
+   the round is exactly as it was: same file, same cursor, the clock still running.
+5. If time runs out while Settings is open, Settings closes and the end card shows, as it does today.
+
+#### R5. Word wrap (UI)
+1. "Word wrap" with an Off / On switch (the same `.seg` as the theme), and one line under it: "Long lines wrap at
+   the editor's edge instead of scrolling sideways. Your code doesn't change."
+2. Off by default. The choice applies to the open editor at once and is remembered in the browser (`ilab-wrap`).
+3. Wrapping is display only. It inserts no line breaks, so the saved files, Run, My tests and Submit are unchanged.
+   Line numbers still count real lines.
+
+#### R6. Theme and "Practise in" on Settings (UI)
+1. The Auto / Light / Dark switch moves from the header to Settings unchanged (the same component, the same
+   `ilab-theme` key). The saved theme still applies when the page loads.
+2. Settings says: "The language problems open in is set on Home, above the problem list ("Practise in")."
+3. 1440 px and 400 px, light and dark: no sideways scroll. At 400 px each setting's switch wraps under its name.
+   Keyboard: Tab reaches every switch and "Done". Screen readers hear a dialog named "Settings" and each switch as a
+   labelled group of toggle buttons.
+
+### Decisions defaulted (owner can override)
+
+5. The theme moves to Settings instead of being in both places. Two copies of the switch would each keep their own
+   state and could disagree. Changing the theme now takes two clicks instead of one.
+6. Settings is a panel over the current screen, not a separate screen, so a round in progress keeps its clock and
+   its editor. The header stays above it.
+7. "Practise in" is not mirrored on Settings; Settings points to it on Home.
+8. Word wrap is one switch for every language and file, not per file.
