@@ -6,9 +6,13 @@ export const app = $state({
   view: '',            // '' (loading) | 'home' | 'ready' | 'round'
   sets: [],            // the picker and Home
   cur: null,           // the open set's name
+  ready: null,         // the ready screen's set info
+  readyErr: '',        // why the open set couldn't be shown
+  loading: 'Loading sets',   // page-level wait while no screen is shown
   nav: 0,              // bumped by every navigation: an older async step that sees a newer value stops, so the latest wins
   assist: LS.get('ilab-assist') || 'full',   // code help level: full | words | off (browser setting)
   settings: false,     // the Settings panel is open over the current screen
+  hideTimer: LS.get('ilab-timer') === 'hidden',   // Settings: hide the countdown (the round still closes at 00:00)
   dropErr: '',         // last import error, shown on Home
   over: false,         // a file is being dragged over the page
   importing: '',       // file name of a zip being imported

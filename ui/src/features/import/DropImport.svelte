@@ -1,12 +1,10 @@
 <script>
   // Drag & drop import, the only import path: a .zip dropped anywhere on the page.
-  // reload(name, my) lists the sets and opens the imported one; reopen() resumes a first load the drop interrupted.
   import { tick as flush } from 'svelte';
   import { api } from '../../lib/api.js';
-  import { LS } from '../../lib/util.js';
   import { app, fetchSets, showFlash } from '../../app.svelte.js';
   import { round } from '../round/round.svelte.js';
-  let { reload, reopen } = $props();
+  import { loadSets, openSet, resumable } from '../../nav.js';
 
   let askDrop = $state(null), stayEl, dragN = 0;
   $effect(() => { document.body.classList.toggle('over', app.over); });
@@ -21,9 +19,8 @@
     if (app.view === 'round' && round.st) return !round.st.ended;
     if (app.view === 'ready' || app.view === 'home') return false;
     try {   // still opening: the page's first load may not know yet, so ask the server
-      const running = (await fetchSets()).filter(s => s.status === 'running').map(s => s.name);
-      const last = LS.get('ilab-last');
-      return running.includes(app.cur || (running.includes(last) ? last : running[0]));
+      const sets = await fetchSets();
+      return app.cur ? sets.some(s => s.name === app.cur && s.status === 'running') : !!resumable(sets);
     } catch (e) { return false; }
   }
   async function onDrop(e) {
@@ -42,13 +39,13 @@
       const { name, title, replaced } = await api('/import', { method: 'POST', body: await f.arrayBuffer() });
       app.importing = '';
       showFlash('Imported ' + title + ' (' + name + ')' + (replaced ? ", replacing the copy you hadn't started." : '.'));
-      await reload(name, my);
+      await loadSets(name, my);   // list the sets and open the imported one
     } catch (err) {
       app.importing = '';
       const msg = 'Not imported: ' + f.name + '. ' + err.message;
       app.dropErr = msg; showFlash(msg, true);   // always, on Home too; the screen stays as it was
       // the import bumped `nav`, which stopped a first load that was still opening a set: pick it up again
-      if (my === app.nav && !app.view) reopen().catch(() => {});
+      if (my === app.nav && !app.view) (app.cur ? openSet(app.cur) : loadSets()).catch(() => {});
     }
   }
 </script>

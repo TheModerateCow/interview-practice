@@ -11,6 +11,6 @@ export const LANGNAME = { python: 'Python', go: 'Go', java: 'Java', typescript: 
 export const cap = s => s ? s[0].toUpperCase() + s.slice(1) : '';
 // "test_p2_" -> "Part 2", "test_l3_" -> "Level 3", anything else -> "Tests"
 export function partName(tag) { const m = /_(p|l)(\d+)_?$/i.exec(tag); return m ? (m[1].toLowerCase() === 'l' ? 'Level ' : 'Part ') + m[2] : 'Tests'; }
-export const statusWords = s => s.status === 'running' && s.left_s != null ? Math.max(1, Math.ceil(s.left_s / 60)) + ' min left' : s.status === 'ready' ? 'not started' : s.status === 'ended' ? 'finished' : s.status;
+export const statusWords = (s, hideTime) => s.status === 'running' && hideTime ? 'in progress' : s.status === 'running' && s.left_s != null ? Math.max(1, Math.ceil(s.left_s / 60)) + ' min left' : s.status === 'ready' ? 'not started' : s.status === 'ended' ? 'finished' : s.status;
 export const mmss = sec => String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(Math.floor(sec % 60)).padStart(2, '0');
 export const vclass = v => v === 'Accepted' ? 'pass' : /Limit/.test(v) ? 'warn' : 'fail';
