@@ -553,3 +553,70 @@ test('Code help: Python suggestions, hints and underlines', async ({ page, reque
   await newLine(); await page.keyboard.type('    l.bal');
   await expect(row('balance_at')).toBeVisible({ timeout: 15000 });
 });
+
+test('Settings: code help Full, Words only, Off', async ({ page, request }) => {
+  const mk = async () => (await (await request.post(`${BASE}/api/catalog/ledger-codebase/attempt`, { headers: H, data: { language: 'python' } })).json()).name;
+  const a = await mk(), b = await mk();
+  await request.post(`${BASE}/api/sets/${a}/start`, { headers: H, data: {} });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(BASE);
+  await page.waitForLoadState('networkidle');
+  await openIfAsked(page);
+  await pickSet(page, a);
+  await expect(page.locator('#editor .monaco-editor')).toBeVisible({ timeout: 60000 });
+  const assistOps = [];   // every language-server request the page makes
+  page.on('request', r => { if (r.url().includes('/assist')) assistOps.push(JSON.parse(r.postData() || '{}').op); });
+  const row = t => page.locator(`.suggest-widget .monaco-list-row[aria-label="${t}"]`);
+  const level = async v => { await page.click('#settings-btn'); await page.click(`#assist-pick [data-assist="${v}"]`); await expect(page.locator(`#assist-pick [data-assist="${v}"]`)).toHaveAttribute('aria-pressed', 'true'); await page.keyboard.press('Escape'); };
+  const typeNew = async txt => {
+    await page.evaluate(() => { const e = window.monaco.editor.getEditors()[0], m = e.getModel(), n = m.getLineCount();
+      e.executeEdits('t', [{ range: new window.monaco.Range(n, 1, n, 1), text: '\n' }]); e.setPosition({ lineNumber: n + 1, column: 1 }); e.focus(); });
+    await page.keyboard.type(txt);
+  };
+  await page.click('#editor .view-lines');
+  await page.keyboard.press('Control+Home'); await page.keyboard.type('import heapq\n'); await page.keyboard.press('Escape');
+  await typeNew('heapq.heap');
+  await expect(row('heappush')).toBeVisible({ timeout: 30000 });   // Full: the server may take a moment to start
+  await page.keyboard.press('Escape');
+  const t1 = await page.locator('#timer').textContent();
+  // Words only: today's word suggestions, no language-server requests, no underlines
+  assistOps.length = 0;
+  await level('words');
+  await typeNew('heapq.heap');
+  await page.keyboard.press('Control+Space');
+  await page.waitForTimeout(1500);
+  await expect(row('heappush')).toHaveCount(0);
+  await expect(page.locator('.squiggly-error, .squiggly-warning')).toHaveCount(0);
+  expect(assistOps.filter(o => o !== 'stop')).toEqual([]);
+  expect(assistOps).toContain('stop');   // the container is stopped when the level drops
+  // Off: no suggestion list, no parameter hints
+  await level('off');
+  await typeNew('heapq.heappush(');
+  await page.keyboard.press('Control+Space');
+  await page.waitForTimeout(800);
+  await expect(page.locator('.suggest-widget .monaco-list-row')).toHaveCount(0);
+  await expect(page.locator('.parameter-hints-widget.visible')).toHaveCount(0);
+  expect(assistOps.filter(o => o !== 'stop')).toEqual([]);
+  // the clock kept running, and the choice survives a reload
+  expect(await page.locator('#timer').textContent()).not.toBe(t1);
+  await page.reload(); await page.waitForLoadState('networkidle'); await openIfAsked(page);
+  await expect(page.locator('#editor .monaco-editor')).toBeVisible({ timeout: 60000 });
+  await page.click('#settings-btn');
+  await expect(page.locator('#assist-pick [data-assist="off"]')).toHaveAttribute('aria-pressed', 'true');
+  await page.keyboard.press('Escape');
+  // another, unstarted attempt: the ready screen names the level
+  await page.evaluate(() => { location.hash = ''; });
+  await pickSet(page, b);
+  await expect(page.locator('#ready-assist')).toContainText('Code help: Off');
+  await page.click('#settings-btn'); await page.click('#assist-pick [data-assist="words"]');
+  await expect(page.locator('#ready-assist')).toContainText('Code help: Words only');
+  await page.click('#assist-pick [data-assist="full"]');
+  await expect(page.locator('#ready-assist')).toContainText('Code help: Full');
+  await page.keyboard.press('Escape');
+  // back to Full mid-round: suggestions return without a reload
+  await pickSet(page, a);
+  await expect(page.locator('#editor .monaco-editor')).toBeVisible({ timeout: 60000 });
+  await page.click('#editor .view-lines');
+  await typeNew('heapq.heap');
+  await expect(row('heappush')).toBeVisible({ timeout: 30000 });
+});

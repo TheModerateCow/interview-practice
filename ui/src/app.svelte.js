@@ -1,11 +1,13 @@
 // App-wide state shared by every feature: which screen is shown, the set list, the open set, the toast.
 import { api } from './lib/api.js';
+import { LS } from './lib/util.js';
 
 export const app = $state({
   view: '',            // '' (loading) | 'home' | 'ready' | 'round'
   sets: [],            // the picker and Home
   cur: null,           // the open set's name
   nav: 0,              // bumped by every navigation: an older async step that sees a newer value stops, so the latest wins
+  assist: LS.get('ilab-assist') || 'full',   // code help level: full | words | off (browser setting)
   settings: false,     // the Settings panel is open over the current screen
   dropErr: '',         // last import error, shown on Home
   over: false,         // a file is being dragged over the page

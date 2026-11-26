@@ -2,11 +2,18 @@
 // The language server lives in a container on the backend; if it is starting or unavailable every provider returns
 // nothing, so Monaco falls back to word suggestions and the round carries on.
 import { api } from './api.js';
+import { LS } from './util.js';
+const full = () => (LS.get('ilab-assist') || 'full') === 'full';   // words and off: no language-server request at all
 
 const LANGS = ['python'];   // languages with a server; one line per language as PRs add them
 const ASSIST_LINE = { python: 'Code help: suggestions from your code and Python\'s standard library, parameter hints and error underlines.' };
-export function assistLine(lang) {
-  return ASSIST_LINE[lang] || 'Autocomplete: ' + (['javascript', 'typescript'].includes(lang)
+const LEVEL_LINE = { words: 'Code help: Words only. Suggestions from words already in your files, no hints or underlines.',
+  off: 'Code help: Off. No suggestions, hints or underlines, like a shared doc.' };
+export function assistLine(lang, level = 'full') {
+  if (LEVEL_LINE[level]) return LEVEL_LINE[level] + ' Change it in Settings.';
+  const s = ASSIST_LINE[lang];
+  if (s) return 'Code help: Full. ' + s.charAt(11).toUpperCase() + s.slice(12) + ' Change it in Settings.';
+  return 'Autocomplete: ' + (['javascript', 'typescript'].includes(lang)
     ? 'suggests methods and types as you type.' : 'suggests only words already in your files, not library functions or methods.');
 }
 
@@ -27,13 +34,13 @@ function report(r) {
 }
 
 async function ask(model, op, pos, extra = {}) {
-  if (!ctx || model.isDisposed() || !LANGS.includes(ctx.lang)) return null;
+  if (!ctx || model.isDisposed() || !LANGS.includes(ctx.lang) || !full()) return null;
   const set = ctx.set;
   try {
     const r = await api('/sets/' + set + '/assist', { method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ op, file: fileOf(model), text: model.getValue(), line: pos ? pos.lineNumber - 1 : 0, col: pos ? pos.column - 1 : 0, ...extra }),
       signal: AbortSignal.timeout(1500) });
-    return ctx && ctx.set === set ? report(r) : null;
+    return ctx && ctx.set === set && full() ? report(r) : null;   // ponytail: a reply in flight when the level drops is ignored, but its request may already have started the container
   } catch (e) { return null; }
 }
 
@@ -127,4 +134,13 @@ export function watch(model) {
   if (!ctx) return;
   model.onDidChangeContent(() => { clearTimeout(checkT); checkT = setTimeout(() => ctx && check(model), 500); });
   check(model);
+}
+
+// The level changed mid-round (Settings). Below Full: stop the server, clear the underlines. Back to Full: check the open files.
+export function applyLevel() {
+  if (!ctx) return;
+  if (full()) { if (monaco) monaco.editor.getModels().forEach(check); return; }
+  clearTimeout(checkT); ctx.state = ''; ctx.onState({ state: '', reason: '' });
+  if (monaco) monaco.editor.getModels().forEach(m => monaco.editor.setModelMarkers(m, 'ilab-assist', []));
+  if (LANGS.includes(ctx.lang)) fetch('/api/sets/' + ctx.set + '/assist', { method: 'POST', headers: { 'X-ILab': '1', 'Content-Type': 'application/json' }, body: '{"op":"stop"}', keepalive: true }).catch(() => {});
 }
