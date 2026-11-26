@@ -571,13 +571,15 @@ test('Code help: Python suggestions, hints and underlines', async ({ page, reque
 
 test('Settings: code help Full, Words only, Off', async ({ page, request }) => {
   const mk = async () => (await (await request.post(`${BASE}/api/catalog/ledger-codebase/attempt`, { headers: H, data: { language: 'python' } })).json()).name;
-  const a = await mk(), b = await mk();
+  const a = await mk();
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(BASE);
   await page.waitForLoadState('networkidle');
   await openIfAsked(page);
   // an unstarted attempt first: the ready screen names the level, and follows Settings
-  await pickSet(page, b);
+  if (await page.locator('#home-btn').isVisible()) await page.click('#home-btn');
+  await page.click('#lang-pick [data-lang="python"]');
+  await page.click('[data-problem="ledger-codebase"]');
   await expect(page.locator('#ready-assist')).toContainText('Code help: Full');
   await page.click('#settings-btn'); await page.click('#assist-pick [data-assist="words"]');
   await expect(page.locator('#ready-assist')).toContainText('Code help: Words only');
