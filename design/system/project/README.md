@@ -39,8 +39,19 @@ Interview Lab is a local, timed coding-interview simulator. Everything on screen
 - Hover: buttons and rows move to `surface-2`; Submit moves to `accent-hover`. Disabled: 45% opacity, `not-allowed` cursor, while a run is in progress.
 - Focus: a 2px solid `focus` ring with 2px offset on every interactive element.
 - Destructive or irreversible actions confirm inline, in the page, never with a browser dialog: End shows a `fail`-tinted bar with **End interview** and **Keep going**; Next part shows a neutral bar.
-- Motion is limited to `dur` (160ms) color transitions on `ease`. Nothing slides or bounces. `prefers-reduced-motion` turns transitions off.
 - Loading: a wait longer than 300 ms shows a small turning ring with words for what is happening ("Running hidden tests…"), in the one place the answer will appear. The ring is the only continuous motion; with `prefers-reduced-motion` it stands still.
+
+## Motion
+
+Motion explains a change in place. It never decorates, and it never makes the candidate wait. Every animation uses `ease`, the only easing curve, with one of two durations: `dur` (160ms) or `dur-slow` (280ms).
+
+- Color: hover, pressed and selected states change color over `dur`. The dropdown chevron turns over `dur`.
+- Entering: a layer that appears fades in (`fade`) or fades in and rises 4px (`rise`). Use `rise` for things that sit in the flow or come up from below: confirm bars, the toast and the end card. Use `fade` for things that drop down or cover the page: the dropdown list and the overlay behind the end card. Small layers take `dur`; the end overlay and its card take `dur-slow`.
+- Leaving: things disappear at once. Nothing animates out, so closing never delays the next action.
+- Progress: a grade meter's fill grows to its new width over `dur-slow` when a count changes.
+- Theme: switching between Light and Dark in the header crossfades the whole page, editor included, over `dur-slow`. The switch runs inside a view transition (`document.startViewTransition`). Browsers without view transitions switch at once, and so does a system theme change while the switch is on Auto.
+- Never: the clock, the code in the editor, pane sizes while dragging a splitter, or a layout change. Nothing bounces, overshoots, scales, slides in from off screen or loops (the loading ring is the one exception).
+- `prefers-reduced-motion` turns off every transition, animation and the theme crossfade. Changes then happen at once and the words carry the meaning.
 
 ## Iconography
 
