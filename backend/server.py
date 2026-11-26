@@ -2,11 +2,12 @@
 import json, os, sys, threading, traceback
 from flask import Flask, Response, jsonify, request
 from waitress import serve
-from werkzeug.exceptions import HTTPException
+from werkzeug.exceptions import Forbidden, HTTPException
 
 from lab import catalog, importer, rounds
+from lab.errors import Conflict, Invalid, NotFound, Refused
 from sandbox import images, runner
-from lab.store import EXPORTS, NAME_RE, SETS, HTTPError, clock, manifest, ready_info, require_started, sdir, session, state, work_path
+from lab.store import EXPORTS, NAME_RE, SETS, clock, manifest, ready_info, require_started, sdir, session, state, work_path
 
 PORT = os.environ.get("ILAB_PORT", "8765")   # the port nginx publishes; the Host/Origin allowlist follows it
 HOSTS = {f"127.0.0.1:{PORT}", f"localhost:{PORT}"}
@@ -24,10 +25,10 @@ def body(limit):
 
 @app.before_request
 def guard():
-    if request.headers.get("Host") not in HOSTS: raise HTTPError(403, "forbidden host")
-    if request.headers.get("X-ILab") != "1": raise HTTPError(403, "missing X-ILab header")
+    if request.headers.get("Host") not in HOSTS: raise Forbidden("forbidden host")
+    if request.headers.get("X-ILab") != "1": raise Forbidden("missing X-ILab header")
     o = request.headers.get("Origin")
-    if o is not None and o not in ORIGINS: raise HTTPError(403, "forbidden origin")
+    if o is not None and o not in ORIGINS: raise Forbidden("forbidden origin")
 
 
 @app.after_request
@@ -40,8 +41,11 @@ def no_store(r):
 def err(code, msg): return jsonify(error=msg), code
 
 
-@app.errorhandler(HTTPError)
-def _app_error(e): return err(e.code, str(e))
+STATUS = {Invalid: 400, NotFound: 404, Conflict: 409}   # the only place a lab refusal becomes an HTTP status
+
+
+@app.errorhandler(Refused)
+def _refused(e): return err(next(c for k, c in STATUS.items() if isinstance(e, k)), str(e))
 
 
 @app.errorhandler(HTTPException)
@@ -99,7 +103,7 @@ def r_files(n, rel):
     sdir(n); require_started(n)
     p = work_path(n, rel)
     if request.method == "GET":
-        if not os.path.isfile(p): raise HTTPError(404, "no such file")
+        if not os.path.isfile(p): raise NotFound("no such file")
         return Response(open(p, "rb").read(), mimetype="text/plain; charset=utf-8")
     data = body(MAX_FILE)
     os.makedirs(os.path.dirname(p), exist_ok=True)
@@ -121,7 +125,7 @@ ACTIONS = {"start": rounds.start, "mytests": rounds.mytests, "submit": rounds.su
 @app.post("/api/sets/<n>/<act>")
 def r_action(n, act):
     sdir(n)
-    if act not in ACTIONS: raise HTTPError(404, "not found")
+    if act not in ACTIONS: raise NotFound("not found")
     return ACTIONS[act](n)
 
 

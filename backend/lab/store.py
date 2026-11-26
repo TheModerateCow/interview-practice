@@ -1,6 +1,7 @@
 """Set storage under data/sets/<name>/: manifest, session.json (clock, events, reveals) and the work folder."""
 import json, os, re, threading, time
 
+from lab.errors import Conflict, Invalid, NotFound
 from sandbox import grade
 
 DATA = os.environ.get("ILAB_DATA", "/data")
@@ -10,17 +11,13 @@ _locks, _busy = {}, {}   # per set: session read-modify-write lock, and one run/
 _glock = threading.Lock()
 
 
-class HTTPError(Exception):
-    def __init__(self, code, msg): super().__init__(msg); self.code = code
-
-
 def lock(n, kind=_locks):
     with _glock: return kind.setdefault(n, threading.Lock())
 
 
 def sdir(n):
     if not NAME_RE.fullmatch(n or "") or not os.path.isfile(os.path.join(SETS, n, "manifest.json")):
-        raise HTTPError(404, f"no set named {n!r}")
+        raise NotFound(f"no set named {n!r}")
     return os.path.join(SETS, n)
 
 
@@ -41,10 +38,10 @@ def session(n): return jload(os.path.join(sdir(n), "session.json"))
 
 def work_path(n, rel):
     work = os.path.realpath(os.path.join(sdir(n), "work"))
-    if not rel or "\x00" in rel or "\\" in rel or rel.startswith("/"): raise HTTPError(400, "bad path")
-    if rel.split("/")[0] == ".hidden": raise HTTPError(400, "bad path")
+    if not rel or "\x00" in rel or "\\" in rel or rel.startswith("/"): raise Invalid("bad path")
+    if rel.split("/")[0] == ".hidden": raise Invalid("bad path")
     p = os.path.realpath(os.path.join(work, rel))
-    if not p.startswith(work + os.sep): raise HTTPError(400, "path escapes the work folder")
+    if not p.startswith(work + os.sep): raise Invalid("path escapes the work folder")
     return p
 
 
@@ -77,7 +74,7 @@ def mutate(n, fn):
     """Read-modify-write session.json under the set's lock. fn(session, manifest) -> result."""
     with lock(n):
         s = session(n)
-        if not s or not s.get("start"): raise HTTPError(409, "not started")
+        if not s or not s.get("start"): raise Conflict("not started")
         r = fn(s, manifest(n))
         jsave(os.path.join(sdir(n), "session.json"), s)
         return r
@@ -133,5 +130,5 @@ def state(n):
 
 def require_started(n):
     s = session(n)
-    if not s or not s.get("start"): raise HTTPError(409, "not started")
+    if not s or not s.get("start"): raise Conflict("not started")
     return s

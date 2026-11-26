@@ -6,7 +6,8 @@ is one interview-set/1 set in one language (manifest.json)."""
 import json, os, shutil
 
 from lab import variants
-from lab.store import DATA, NAME_RE, SETS, HTTPError, jload, jsave, lock, ready_info, session
+from lab.errors import Invalid, NotFound
+from lab.store import DATA, NAME_RE, SETS, jload, jsave, lock, ready_info, session
 
 BUILTIN = os.environ.get("ILAB_CATALOG", "/app/catalog")
 CUSTOM = os.path.join(DATA, "catalog")
@@ -90,11 +91,11 @@ def listing():
 def start_attempt(pid, lang=None):
     """Open the problem's running attempt in that language, else an unstarted one, else a new attempt."""
     ps = problems()
-    if pid not in ps: raise HTTPError(404, f"no problem named {pid!r}")
+    if pid not in ps: raise NotFound(f"no problem named {pid!r}")
     p = ps[pid]
     if lang is None and len(p.languages) == 1: lang = p.languages[0]
     if lang not in p.languages:
-        raise HTTPError(400, f"{p.meta['title']} has no {lang} version" if lang else "pick a language: " + ", ".join(p.languages))
+        raise Invalid(f"{p.meta['title']} has no {lang} version" if lang else "pick a language: " + ", ".join(p.languages))
     with lock("catalog:" + pid):
         mine = [x for x in attempts().get(pid, []) if x[1] == lang]
         for want in ("running", "ready"):
@@ -103,7 +104,7 @@ def start_attempt(pid, lang=None):
         k = 1
         while os.path.exists(os.path.join(SETS, p.attempt_name(lang, k))): k += 1
         name = p.attempt_name(lang, k)
-        if not NAME_RE.fullmatch(name): raise HTTPError(400, f"problem id {pid!r} is too long to copy")
+        if not NAME_RE.fullmatch(name): raise Invalid(f"problem id {pid!r} is too long to copy")
         tmp = os.path.join(SETS, f".attempt-{name}")
         shutil.rmtree(tmp, ignore_errors=True)
         variants.write(p.files(lang, name), tmp)
