@@ -3,8 +3,9 @@
 // nothing, so Monaco falls back to word suggestions and the round carries on.
 import { api } from './api.js';
 
-const LANGS = ['python'];   // languages with a server; one line per language as PRs add them
-const ASSIST_LINE = { python: 'Code help: suggestions from your code and Python\'s standard library, parameter hints and error underlines.' };
+const LANGS = ['python', 'go'];   // languages with a server; one line per language as PRs add them
+const ASSIST_LINE = { python: 'Code help: suggestions from your code and Python\'s standard library, parameter hints and error underlines.',
+  go: 'Code help: suggestions from your code and Go\'s standard library, parameter hints and error underlines.' };
 export function assistLine(lang) {
   return ASSIST_LINE[lang] || 'Autocomplete: ' + (['javascript', 'typescript'].includes(lang)
     ? 'suggests methods and types as you type.' : 'suggests only words already in your files, not library functions or methods.');
@@ -51,7 +52,7 @@ function suggestion(model, pos, it) {
 export function register(m) {
   if (monaco) return;
   monaco = m;
-  const lang = 'python';
+  for (const lang of LANGS) {
   m.languages.registerCompletionItemProvider(lang, {
     triggerCharacters: ['.'],
     async provideCompletionItems(model, pos) {
@@ -90,6 +91,7 @@ export function register(m) {
       return { value: { signatures: sigs, activeSignature: h.activeSignature || 0, activeParameter: h.activeParameter ?? 0 }, dispose() {} };
     },
   });
+  }
 }
 
 // Round entered. onState({state, reason}) feeds the toolbar line.

@@ -22,7 +22,8 @@ LOCKED = {"AutoRemove": True, "NetworkMode": "none", "ReadonlyRootfs": True,
           "Tmpfs": {"/tmp": "rw,exec,nosuid,size=256m"}, "Memory": 512 << 20, "MemorySwap": 512 << 20,
           "NanoCpus": 2_000_000_000, "PidsLimit": 256, "CapDrop": ["ALL"], "SecurityOpt": ["no-new-privileges"]}
 # Code-help images: built locally at install (deploy/lsp-<lang>/), never pulled. One line per language.
-LSP_IMAGES = {"python": os.environ.get("ILAB_IMG_LSP_PYTHON", "ilab-lsp-python:pyright1.1.414")}
+LSP_IMAGES = {"python": os.environ.get("ILAB_IMG_LSP_PYTHON", "ilab-lsp-python:pyright1.1.414"),
+              "go": os.environ.get("ILAB_IMG_LSP_GO", "ilab-lsp-go:gopls0.24.0")}
 GO_ENV = ["GOTOOLCHAIN=local", "GOFLAGS=-mod=mod", "GOCACHE=/gocache", "GOPATH=/tmp/gopath", "CGO_ENABLED=0"]
 BASE_ENV = ["HOME=/tmp", "PYTHONDONTWRITEBYTECODE=1", "NODE_NO_WARNINGS=1"]
 OUT_CAP = 65536  # bytes kept per stream per case
