@@ -95,21 +95,34 @@ def start_attempt(pid, lang=None):
     if lang is None and len(p.languages) == 1: lang = p.languages[0]
     if lang not in p.languages:
         raise HTTPError(400, f"{p.meta['title']} has no {lang} version" if lang else "pick a language: " + ", ".join(p.languages))
+    reused = lambda name: {"name": name, "title": p.meta["title"], "language": lang, "reused": True}  # noqa: E731
     with lock("catalog:" + pid):
         mine = [x for x in attempts().get(pid, []) if x[1] == lang]
-        for want in ("running", "ready"):
-            hit = next((x[0] for x in mine if x[2] == want), None)
-            if hit: return {"name": hit, "title": p.meta["title"], "language": lang, "reused": True}
+        hit = next((x[0] for x in mine if x[2] == "running"), None)
+        if hit: return reused(hit)
+        hit = next((x[0] for x in mine if x[2] == "ready"), None)
+        if hit:
+            with lock(hit):   # Start takes this lock: an attempt is never rebuilt under a Start
+                if not (session(hit) or {}).get("start"): _build(p, lang, hit)
+            return reused(hit)
         k = 1
         while os.path.exists(os.path.join(SETS, p.attempt_name(lang, k))): k += 1
         name = p.attempt_name(lang, k)
         if not NAME_RE.fullmatch(name): raise HTTPError(400, f"problem id {pid!r} is too long to copy")
-        tmp = os.path.join(SETS, f".attempt-{name}")
-        shutil.rmtree(tmp, ignore_errors=True)
-        variants.write(p.files(lang, name), tmp)
-        shutil.copytree(os.path.join(tmp, "starter"), os.path.join(tmp, "work"))
-        os.replace(tmp, os.path.join(SETS, name))
+        _build(p, lang, name)
     return {"name": name, "title": p.meta["title"], "language": lang, "reused": False}
+
+
+def _build(p, lang, name):
+    """Write the attempt's set from the problem as it is now. An unstarted attempt is rebuilt each time it's opened,
+    so a catalog update reaches it (it holds no edits: files can't be saved before Start)."""
+    tmp, dest, old = (os.path.join(SETS, x) for x in (f".attempt-{name}", name, f".old-{name}"))
+    for d in (tmp, old): shutil.rmtree(d, ignore_errors=True)
+    variants.write(p.files(lang, name), tmp)
+    shutil.copytree(os.path.join(tmp, "starter"), os.path.join(tmp, "work"))
+    if os.path.isdir(dest): os.replace(dest, old)
+    os.replace(tmp, dest)
+    shutil.rmtree(old, ignore_errors=True)
 
 
 def save_custom(set_dir, pid):
