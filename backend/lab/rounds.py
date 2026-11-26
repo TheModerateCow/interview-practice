@@ -1,7 +1,7 @@
 """What a candidate does in a round: Start, Run, Submit, My tests, Next part, End, Export, Delete."""
 import fnmatch, io, os, shutil, time, zipfile
 
-from sandbox import grade, runner
+from sandbox import grade, lsp, runner
 from lab.store import (DATA, EXPORTS, HTTPError, _busy, closed, deadline, jload, jsave, late, lock, locked, log, manifest,
                        minute, mutate, public, ready_info, require_started, reveal, sdir, session, state, work_files, work_path)
 
@@ -191,4 +191,5 @@ def delete(n):
             os.makedirs(os.path.dirname(dest), exist_ok=True)
             os.replace(sdir(n), dest)
     finally: wait.release()
+    lsp.stop(n)
     return {"name": n, "title": i["title"], "moved_to": dest}

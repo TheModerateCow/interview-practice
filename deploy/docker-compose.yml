@@ -36,6 +36,13 @@ services:
     entrypoint: ["true"]
     network_mode: none
     restart: "no"
+  # Build-only, like ilab-python: the Python language server for code help in the editor.
+  ilab-lsp-python:
+    build: lsp-python
+    image: ilab-lsp-python:pyright1.1.414
+    entrypoint: ["true"]
+    network_mode: none
+    restart: "no"
 networks:
   front: {}
   web: {internal: true}

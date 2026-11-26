@@ -70,7 +70,7 @@ test('full interview flow', async ({ page, request }) => {
   await expect(page.locator('#start-btn')).toBeVisible();
   await shot('1-ready');
   await expect(page.locator('#ready-name')).toHaveText(NAME);
-  await expect(page.locator('#ready-assist')).toContainText('words already in your files');   // the e2e set is Python
+  await expect(page.locator('#ready-assist')).toContainText('Python\'s standard library');   // the e2e set is Python
   await page.click('#set-picker');
   await expect(page.locator(`#set-picker-list [data-value="${NAME}"]`)).toContainText(`${NAME} · not started`);
   await page.keyboard.press('Escape');
@@ -509,4 +509,47 @@ test('Settings: word wrap, mid-round, and the clock keeps running', async ({ pag
   await page.click('#home-btn');
   await expect(page.locator('#settings')).toBeHidden();
   await expect(page.locator('#catalog')).toBeVisible();
+});
+
+test('Code help: Python suggestions, hints and underlines', async ({ page, request }) => {
+  const a = await (await request.post(`${BASE}/api/catalog/ledger-codebase/attempt`, { headers: H, data: { language: 'python' } })).json();
+  await request.post(`${BASE}/api/sets/${a.name}/start`, { headers: H, data: {} });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(BASE);
+  await page.waitForLoadState('networkidle');
+  await openIfAsked(page);
+  await pickSet(page, a.name);
+  await expect(page.locator('#editor .monaco-editor')).toBeVisible({ timeout: 60000 });
+  // main.py is open. Put the cursor on a new line inside handle(), before its last line.
+  const newLine = () => page.evaluate(() => {
+    const e = window.monaco.editor.getEditors()[0], m = e.getModel(), i = m.getLinesContent().findIndex(l => l.includes('return ["ok"]'));
+    e.executeEdits('t', [{ range: new window.monaco.Range(i + 1, 1, i + 1, 1), text: '\n' }]); e.setPosition({ lineNumber: i + 1, column: 1 }); e.focus();
+  });
+  const clear = async () => { await page.keyboard.press('Escape'); await page.keyboard.press('Shift+Home'); await page.keyboard.press('Shift+Home'); await page.keyboard.press('Delete'); };
+  const row = t => page.locator(`.suggest-widget .monaco-list-row[aria-label="${t}"]`);
+  await page.click('#editor .view-lines');
+  await page.keyboard.press('Control+Home'); await page.keyboard.type('import heapq\n');
+  await page.keyboard.press('Escape');
+  // the first request starts the server; while it does, the line says so and typing is not blocked
+  await expect.poll(async () => (await request.post(`${BASE}/api/sets/${a.name}/assist`, { headers: H, data: { op: 'complete', file: 'main.py', text: '' } })).json().then(j => j.state), { timeout: 30000 }).toBe('ready');
+  await newLine(); await page.keyboard.type('    heapq.heap');
+  await expect(row('heappush')).toBeVisible({ timeout: 5000 });
+  await clear();
+  await page.keyboard.type('    l.bal');
+  await expect(row('balance_at')).toBeVisible({ timeout: 5000 });   // ledger/ledger.py was never opened
+  await clear();
+  await page.keyboard.type('    heapq.heappush(');
+  await expect(page.locator('.parameter-hints-widget')).toContainText('heap', { timeout: 5000 });
+  await clear();
+  await page.keyboard.type("    l.balance('a')"); await page.keyboard.press('Escape');
+  await expect.poll(() => page.locator('.squiggly-error').count(), { timeout: 5000 }).toBeGreaterThan(0);
+  await expect(page.locator('#assist-status')).toHaveText('');
+  // reload: still works
+  await page.reload();
+  await page.waitForLoadState('networkidle');
+  await openIfAsked(page);
+  await expect(page.locator('#editor .monaco-editor')).toBeVisible({ timeout: 60000 });
+  await page.click('#editor .view-lines');
+  await newLine(); await page.keyboard.type('    l.bal');
+  await expect(row('balance_at')).toBeVisible({ timeout: 15000 });
 });
