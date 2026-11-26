@@ -407,3 +407,8 @@ Shared files with round 4:
   sideways scroll; keyboard reaches all three buttons, and a screen reader hears "Code help" and the pressed state;
   Go and Java behave the same way at each level; `tests/run_all.sh` all PASS.
 - **Not in this PR:** recording the level in the export (open question 2), a per-set level (open question 3).
+
+## Owner's decisions (2026-11-27)
+- Build real language servers for all three languages (Python, Go, Java), accepting about +141 MB of runner images.
+- The export does not record the code-help level: it stays a personal setting, with no change to `session.json` or `export.zip`.
+- Not asked, kept as defaulted: a problem set cannot force code help Off.
