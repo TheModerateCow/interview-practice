@@ -6,9 +6,9 @@ is one interview-set/1 set in one language (manifest.json)."""
 import json, os, shutil
 
 from lab import variants
-from lab.store import DATA, NAME_RE, SETS, HTTPError, jload, jsave, lock, ready_info, session
+from lab.store import DATA, NAME_RE, ROOT, SETS, HTTPError, jload, jsave, lock, ready_info, session
 
-BUILTIN = os.environ.get("ILAB_CATALOG", "/app/catalog")
+BUILTIN = os.environ.get("ILAB_CATALOG", os.path.join(ROOT, "catalog"))
 CUSTOM = os.path.join(DATA, "catalog")
 FIELDS = ("title", "company", "round", "difficulty", "minutes")
 SET_FILES = ("manifest.json", "problem.md", "starter", ".hidden")

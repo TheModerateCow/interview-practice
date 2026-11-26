@@ -1,9 +1,13 @@
 """POST /api/import: validate an interview-set/1 zip, unpack it as an attempt in data/sets/<name>/ and save the problem
 to the user's catalog (data/catalog/<name>/) so it can be taken again (spec: FORMAT.md)."""
-import io, json, os, re, shutil, uuid, zipfile
+import importlib.util, io, json, os, re, shutil, uuid, zipfile
 
-from lab import catalog, pack   # pack: tools/pack.py, copied in by deploy/backend/Dockerfile
-from lab.store import SETS, HTTPError, jload, jsave, lock
+from lab import catalog
+from lab.store import ROOT, SETS, HTTPError, jload, jsave, lock
+
+# tools/pack.py stays one standalone script (SKILL.md embeds it byte for byte), so its validate() is loaded from there
+_spec = importlib.util.spec_from_file_location("pack", os.path.join(ROOT, "tools", "pack.py"))
+pack = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(pack)
 
 MAX_ZIP, MAX_FILES, MAX_UNPACKED = 50 << 20, 2000, 50 << 20
 DROP = ("reference/", "mutants.json", "bugs.json")   # never unpacked: the answers stay with Claude
