@@ -1,12 +1,16 @@
 """Set storage under data/sets/<name>/: manifest, session.json (clock, events, reveals) and the work folder."""
-import json, os, re, threading, time
+import copy, json, os, re, threading, time
 
 from sandbox import grade
 
 DATA = os.environ.get("ILAB_DATA", "/data")
 SETS, EXPORTS = os.path.join(DATA, "sets"), os.path.join(DATA, "exports")
 NAME_RE = re.compile(r"[a-z0-9][a-z0-9-]{0,63}")
-_locks, _busy = {}, {}   # per set: session read-modify-write lock, and one run/submit at a time
+# Two locks per set, in memory (one process: see server.py). Lock order: run_lock, then lock. Never take run_lock while
+# holding lock: run_lock is held for a whole container run (up to minutes), lock only around a file read-modify-write.
+#   run_lock(n)  one Run / Submit / My tests / End grade at a time; delete takes it to refuse while one is in flight
+#   lock(n)      session.json / results.json read-modify-write, set creation and replacement (also "catalog:<id>")
+_locks, _run_locks = {}, {}
 _glock = threading.Lock()
 
 
@@ -14,8 +18,12 @@ class HTTPError(Exception):
     def __init__(self, code, msg): super().__init__(msg); self.code = code
 
 
-def lock(n, kind=_locks):
-    with _glock: return kind.setdefault(n, threading.Lock())
+def _get(locks, key):
+    with _glock: return locks.setdefault(key, threading.Lock())
+
+
+def lock(n): return _get(_locks, n)
+def run_lock(n): return _get(_run_locks, n)
 
 
 def sdir(n):
@@ -86,6 +94,13 @@ def clock(s):
 
 
 def closed(s): return bool(s.get("ended")) or clock(s)[2]    # failed names and the "ended" status only
+def left_s(s): return round(clock(s)[1] * 60, 1)             # the one rule for "left_s" in /state and /sets
+
+
+def set_names():
+    """Every set in data/sets/: a valid name with a manifest.json, sorted."""
+    ns = sorted(os.listdir(SETS)) if os.path.isdir(SETS) else []
+    return [n for n in ns if NAME_RE.fullmatch(n) and os.path.isfile(os.path.join(SETS, n, "manifest.json"))]
 
 
 def log(s, text, t=None):
@@ -94,12 +109,13 @@ def log(s, text, t=None):
 
 
 def mutate(n, fn):
-    """Read-modify-write session.json under the set's lock. fn(session, manifest) -> result."""
+    """Read-modify-write session.json under the set's lock; written only if fn changed it. fn(session, manifest) -> result."""
     with lock(n):
         s = session(n)
         if not s or not s.get("start"): raise HTTPError(409, "not started")
+        before = copy.deepcopy(s)
         r = fn(s, manifest(n))
-        jsave(os.path.join(sdir(n), "session.json"), s)
+        if s != before: jsave(os.path.join(sdir(n), "session.json"), s)
         return r
 
 
@@ -141,7 +157,7 @@ def state(n):
         p = os.path.join(d, f)
         parts.append({"file": os.path.basename(f), "md": open(p).read() if os.path.isfile(p) else ""})
     return ready_info(n) | {
-        "start": s["start"], "now": time.time(), "left_s": round(left * 60, 1), "expired": expired, "ended": bool(s.get("ended")),
+        "start": s["start"], "now": time.time(), "left_s": left_s(s), "expired": expired, "ended": bool(s.get("ended")),
         "problem": open(os.path.join(d, "problem.md")).read(), "parts": parts,
         "unlocked": s["unlocked"], "has_next": bool(locked(s, m)),
         "has_submit": bool(m.get("hidden_tests")), "has_mytests": bool(m.get("your_tests")),

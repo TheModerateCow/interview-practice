@@ -2,8 +2,9 @@
 import fnmatch, io, os, shutil, time, zipfile
 
 from sandbox import grade, runner
-from lab.store import (DATA, EXPORTS, HTTPError, _busy, closed, deadline, jload, jsave, late, lock, locked, log, manifest,
-                       minute, mutate, public, ready_info, require_started, reveal, SESSION_V, sdir, session, state, work_files, work_path)
+from lab.store import (DATA, EXPORTS, HTTPError, closed, deadline, jload, jsave, late, lock, locked, log, manifest, minute,
+                       mutate, public, ready_info, require_started, reveal, run_lock, SESSION_V, sdir, session, state,
+                       work_files, work_path)
 
 EXT_LANG = {".py": "python", ".go": "go", ".java": "java", ".ts": "typescript", ".js": "javascript", ".mjs": "javascript",
             ".c": "c", ".cpp": "cpp", ".cc": "cpp"}
@@ -24,7 +25,7 @@ def start(n):
 
 
 def busy(n):
-    lk = lock(n, _busy)
+    lk = run_lock(n)
     if not lk.acquire(blocking=False): raise HTTPError(409, "another Run/Submit is still running for this set")
     return lk
 
@@ -36,6 +37,7 @@ def run(n, body):
     t0 = time.time()
     require_started(n)
     m, f, stdin = manifest(n), body.get("file") or "", body.get("stdin") or ""
+    if not isinstance(f, str) or not isinstance(stdin, str): raise HTTPError(400, "file and stdin must be strings")
     lang = EXT_LANG.get(os.path.splitext(f)[1])
     if not lang: raise HTTPError(400, f"can't run {f or 'this file'}: supported .py .go .java .ts .js .c .cpp")
     work_path(n, f)
@@ -65,10 +67,10 @@ def run(n, body):
     return out
 
 
-def grade_tags(n, tags):
+def grade_tags(n, tags, tree="work"):
     m, d = manifest(n), sdir(n)
     ht = m["hidden_tests"]; base = os.path.basename(ht)
-    files = work_files(n); files[base] = open(os.path.join(d, ht), "rb").read()
+    files = grade.read_tree(os.path.join(d, tree)); files[base] = open(os.path.join(d, ht), "rb").read()
     lang = m["language"]; lim = m.get("grade_timeout_s", 45)
     return {t: grade.grade(files, [base], lang, t, lim, names=True) for t in tags}
 
@@ -138,7 +140,7 @@ def last_edit(n):
 def end(n):
     """The one close: idempotent; waits for an in-flight Run/Submit; grades the unlocked tags once."""
     require_started(n); m = manifest(n)
-    lk = lock(n, _busy)
+    lk = run_lock(n)
     if not lk.acquire(timeout=m.get("grade_timeout_s", 45) + 30): raise HTTPError(409, "a Run/Submit is still running")
     try:
         def close(s, _):
@@ -152,7 +154,9 @@ def end(n):
         s = session(n)
         rp = os.path.join(sdir(n), "results.json")
         if m.get("hidden_tests") and "final" not in jload(rp, {}):
-            res = grade_tags(n, [t for t in m.get("tags", ["test_"]) if t in s["unlocked"]])
+            # grade the snapshot, not work/: edits can still land in work/ after the close
+            tree = "final" if os.path.isdir(os.path.join(sdir(n), "final")) else "work"
+            res = grade_tags(n, [t for t in m.get("tags", ["test_"]) if t in s["unlocked"]], tree)
             after = last_edit(n) > deadline(s) + GRACE_S
             def apply(s, _):
                 allr = jload(rp, {})
@@ -180,7 +184,7 @@ def export(n):
 
 def delete(n):
     """Soft delete: move the set folder to data/deleted/<name>-<stamp>/. Nothing is erased; exports/ is untouched."""
-    wait = lock(n, _busy)   # a Run/Submit/grade holds this; refuse rather than move the folder under it
+    wait = run_lock(n)   # a Run/Submit/grade holds this; refuse rather than move the folder under it
     if not wait.acquire(blocking=False): raise HTTPError(409, "This round is in progress. End it first, then delete it.")
     try:
         with lock(n):
