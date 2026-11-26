@@ -55,6 +55,9 @@ python3 tools/pack.py <set> ~/Downloads/<name>.zip
 Re-grade an export (unzipped into `<export>`, with the set folder `<set>` that holds the hidden tests; `final/` is the code at the close, `submission/` the latest code, older exports have only `submission/`): `docker compose run --rm -T -v <export>:/c:ro -v <set>:/s:ro backend python3 grade.py /c/final /s/<hidden tests file> -k test_l1_ --names`.
 
 ## Tests
+`tests/unit/run.sh`: backend unit tests, no Docker, a few seconds (needs `pip install -r backend/requirements.txt`).
+One plain script per area in `tests/unit/test_*.py`: grading verdicts, test pruning, the clock, set validation, zip import.
+
 `tests/run_all.sh [--clean]`: gates every set in `tests/sets/`, then runs `tests/api_test.py` (all 7 languages,
 TLE/MLE/fork bomb/no network/read-only/truncation, leak check, grading flows, import validation, security), then
 `tests/e2e.sh` (Playwright: a real drop event → ready → Start → Run → Submit → reveal → End → Export).
@@ -71,5 +74,6 @@ CI (GitHub Actions) runs only what a change can affect:
   harness feature, and `quota-codebase`) in that language; the grader core (`variants.py`, `backend/sandbox/`, the backend
   image) → the canaries in all three. One job per language. Re-gating the whole catalog is a manual run (Actions → Catalog).
 - `.github/workflows/ci.yml` builds the UI when `ui/**` changes.
+- `.github/workflows/backend.yml` runs `tests/unit/run.sh` on every PR that touches `backend/`, `tools/` or `tests/unit/`.
 - `.github/workflows/full.yml` runs `tests/run_all.sh` only on a merge to `main` that touches app code, on demand
   (Actions → Full suite → Run workflow), or on a PR when you add the `full-suite` label.
