@@ -6,7 +6,7 @@ is one interview-set/1 set in one language (manifest.json)."""
 import json, os, shutil
 
 from lab import variants
-from lab.store import DATA, NAME_RE, SETS, HTTPError, jload, jsave, lock, ready_info, session
+from lab.store import DATA, NAME_RE, SETS, HTTPError, jload, jsave, left_s, lock, manifest, ready_info, session, set_names
 
 BUILTIN = os.environ.get("ILAB_CATALOG", "/app/catalog")
 CUSTOM = os.path.join(DATA, "catalog")
@@ -67,12 +67,22 @@ def problem_of(m):
 def attempts():
     """problem id -> [(attempt name, language, status, start)], oldest name first."""
     out = {}
-    for n in sorted(os.listdir(SETS)) if os.path.isdir(SETS) else []:
+    for n in set_names():
         m = jload(os.path.join(SETS, n, "manifest.json"))
-        if NAME_RE.fullmatch(n) and isinstance(m, dict) and problem_of(m):
+        if isinstance(m, dict) and problem_of(m):
             s = session(n) or {}
             out.setdefault(problem_of(m), []).append((n, m.get("language"), ready_info(n)["status"], s.get("start") or 0))
     return out
+
+
+def sets():
+    """GET /api/sets: every attempt with its status and, while running, the time left."""
+    out = []
+    for n in set_names():
+        i = ready_info(n)
+        out.append({k: i[k] for k in ("name", "title", "language", "round", "minutes", "status")}
+                   | {"left_s": left_s(session(n)) if i["status"] == "running" else None, "problem": problem_of(manifest(n))})
+    return {"sets": out}
 
 
 def listing():

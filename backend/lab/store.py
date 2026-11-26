@@ -66,6 +66,13 @@ def clock(s):
 
 
 def closed(s): return bool(s.get("ended")) or clock(s)[2]    # failed names and the "ended" status only
+def left_s(s): return round(clock(s)[1] * 60, 1)             # the one rule for "left_s" in /state and /sets
+
+
+def set_names():
+    """Every set in data/sets/: a valid name with a manifest.json, sorted."""
+    ns = sorted(os.listdir(SETS)) if os.path.isdir(SETS) else []
+    return [n for n in ns if NAME_RE.fullmatch(n) and os.path.isfile(os.path.join(SETS, n, "manifest.json"))]
 
 
 def log(s, text, t=None):
@@ -122,7 +129,7 @@ def state(n):
         p = os.path.join(d, f)
         parts.append({"file": os.path.basename(f), "md": open(p).read() if os.path.isfile(p) else ""})
     return ready_info(n) | {
-        "start": s["start"], "now": time.time(), "left_s": round(left * 60, 1), "expired": expired, "ended": bool(s.get("ended")),
+        "start": s["start"], "now": time.time(), "left_s": left_s(s), "expired": expired, "ended": bool(s.get("ended")),
         "problem": open(os.path.join(d, "problem.md")).read(), "parts": parts,
         "unlocked": s["unlocked"], "has_next": bool(locked(s, m)),
         "has_submit": bool(m.get("hidden_tests")), "has_mytests": bool(m.get("your_tests")),
