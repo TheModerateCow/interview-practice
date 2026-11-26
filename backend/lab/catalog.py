@@ -6,7 +6,7 @@ is one interview-set/1 set in one language (manifest.json)."""
 import json, os, shutil
 
 from lab import variants
-from lab.store import DATA, NAME_RE, SETS, HTTPError, jload, jsave, lock, ready_info, session
+from lab.store import DATA, NAME_RE, SETS, HTTPError, jload, jsave, lock, ready_info, session, upgrade_manifest
 
 BUILTIN = os.environ.get("ILAB_CATALOG", "/app/catalog")
 CUSTOM = os.path.join(DATA, "catalog")
@@ -61,14 +61,14 @@ def problems():
 
 
 def problem_of(m):
-    return m.get("problem") or m.get("preset")   # "preset": attempts made by the earlier Library
+    return m.get("problem")   # the catalog id an attempt came from
 
 
 def attempts():
     """problem id -> [(attempt name, language, status, start)], oldest name first."""
     out = {}
     for n in sorted(os.listdir(SETS)) if os.path.isdir(SETS) else []:
-        m = jload(os.path.join(SETS, n, "manifest.json"))
+        m = upgrade_manifest(jload(os.path.join(SETS, n, "manifest.json")))
         if NAME_RE.fullmatch(n) and isinstance(m, dict) and problem_of(m):
             s = session(n) or {}
             out.setdefault(problem_of(m), []).append((n, m.get("language"), ready_info(n)["status"], s.get("start") or 0))

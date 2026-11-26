@@ -45,7 +45,7 @@ def _app_error(e): return err(e.code, str(e))
 
 
 @app.errorhandler(HTTPException)
-def _http_errors(e):   # unknown route or wrong method: 404 as before; 413 etc. keep their code
+def _http_errors(e):   # unknown route or wrong method: 404; 413 etc. keep their code
     return err(404, "not found") if e.code in (404, 405) else err(e.code, e.description)
 
 

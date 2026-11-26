@@ -3,7 +3,7 @@ import fnmatch, io, os, shutil, time, zipfile
 
 from sandbox import grade, runner
 from lab.store import (DATA, EXPORTS, HTTPError, _busy, closed, deadline, jload, jsave, late, lock, locked, log, manifest,
-                       minute, mutate, public, ready_info, require_started, reveal, sdir, session, state, work_files, work_path)
+                       minute, mutate, public, ready_info, require_started, reveal, SESSION_V, sdir, session, state, work_files, work_path)
 
 EXT_LANG = {".py": "python", ".go": "go", ".java": "java", ".ts": "typescript", ".js": "javascript", ".mjs": "javascript",
             ".c": "c", ".cpp": "cpp", ".cc": "cpp"}
@@ -16,7 +16,7 @@ def start(n):
         s = jload(p)
         if not s or not s.get("start"):
             unlocks = {r.get("unlocks") for r in m.get("reveal", [])}
-            s = {"start": time.time(), "minutes": m["minutes"], "hints": [], "events": [], "ended": None,
+            s = {"v": SESSION_V, "start": time.time(), "minutes": m["minutes"], "events": [], "ended": None,
                  "unlocked": [t for t in m.get("tags", ["test_"]) if t not in unlocks], "revealed": []}
             log(s, "start")
             jsave(p, s)
@@ -170,7 +170,7 @@ def export(n):
         for f in ("session.json", "results.json", "manifest.json"):
             p = os.path.join(d, f)
             z.writestr(f, open(p, "rb").read() if os.path.isfile(p) else b"{}")
-        fd = os.path.join(d, "final")   # the code at the close; absent for rounds closed before this existed
+        fd = os.path.join(d, "final")   # the code at the close; older rounds have none
         for rel, data in sorted(grade.read_tree(fd).items() if os.path.isdir(fd) else []): z.writestr("final/" + rel, data)
     data = b.getvalue()
     os.makedirs(EXPORTS, exist_ok=True)
