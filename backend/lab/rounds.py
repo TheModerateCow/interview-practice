@@ -1,5 +1,6 @@
 """What a candidate does in a round: Start, Run, Submit, My tests, Next part, End, Export, Delete."""
 import fnmatch, io, os, shutil, time, zipfile
+from pathlib import Path
 
 from sandbox import grade, runner
 from lab.store import (DATA, EXPORTS, HTTPError, _busy, closed, deadline, jload, jsave, late, lock, locked, log, manifest,
@@ -68,7 +69,7 @@ def run(n, body):
 def grade_tags(n, tags):
     m, d = manifest(n), sdir(n)
     ht = m["hidden_tests"]; base = os.path.basename(ht)
-    files = work_files(n); files[base] = open(os.path.join(d, ht), "rb").read()
+    files = work_files(n); files[base] = Path(os.path.join(d, ht)).read_bytes()
     lang = m["language"]; lim = m.get("grade_timeout_s", 45)
     return {t: grade.grade(files, [base], lang, t, lim, names=True) for t in tags}
 
@@ -169,7 +170,7 @@ def export(n):
         for rel, data in sorted(work_files(n).items()): z.writestr("submission/" + rel, data)
         for f in ("session.json", "results.json", "manifest.json"):
             p = os.path.join(d, f)
-            z.writestr(f, open(p, "rb").read() if os.path.isfile(p) else b"{}")
+            z.writestr(f, Path(p).read_bytes() if os.path.isfile(p) else b"{}")
         fd = os.path.join(d, "final")   # the code at the close; absent for rounds closed before this existed
         for rel, data in sorted(grade.read_tree(fd).items() if os.path.isdir(fd) else []): z.writestr("final/" + rel, data)
     data = b.getvalue()

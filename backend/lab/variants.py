@@ -1,6 +1,7 @@
 """Language variants: render a language-neutral problem (catalog/<problem>/) into an interview-set/1 set for one language.
 Contract: docs/rounds/3-language-variants/CONTRACT.md. Pure stdlib; used by the backend and by tools/."""
 import importlib, json, os, re
+from pathlib import Path
 
 LANGS = ("go", "java", "python")
 YOUR_TESTS = {"go": "*_test.go", "java": "*Test.java", "python": "test_*.py"}
@@ -86,7 +87,7 @@ def render(d, lang, name=None):
              hidden_tests=".hidden/" + tests_file)
     m.setdefault("your_tests", YOUR_TESTS[lang])
     out = {}
-    md = open(_pick(d, lang, "problem.md")).read()
+    md = Path(_pick(d, lang, "problem.md")).read_text()
     md = render_md(md, api, be, m)
     if api: md = md.rstrip() + "\n\n## Your code\n\n" + be.signatures(api).rstrip() + "\n"
     out["problem.md"] = md.encode()
@@ -94,17 +95,17 @@ def render(d, lang, name=None):
         f = r["file"][len(".hidden/"):]
         src = _pick(d, lang, os.path.join("levels", f)) or _pick(d, lang, f)
         if not src: raise ValueError(f"reveal file {f} missing")
-        out[".hidden/" + f] = render_md(open(src).read(), api, be, m).encode()
+        out[".hidden/" + f] = render_md(Path(src).read_text(), api, be, m).encode()
     if api: out[".hidden/" + tests_file] = be.tests_file(api, cases, data).encode()
     else:
         src = os.path.join(d, lang, "hidden", tests_file)
         if not os.path.isfile(src): raise ValueError(f"{lang}/hidden/{tests_file} missing")
-        out[".hidden/" + tests_file] = open(src, "rb").read()
+        out[".hidden/" + tests_file] = Path(src).read_bytes()
     st = os.path.join(d, lang, "starter")
     for root, _, fs in os.walk(st):
         for f in fs:
             p = os.path.join(root, f)
-            out["starter/" + os.path.relpath(p, st).replace(os.sep, "/")] = open(p, "rb").read()
+            out["starter/" + os.path.relpath(p, st).replace(os.sep, "/")] = Path(p).read_bytes()
     out["manifest.json"] = json.dumps(m, indent=1).encode()
     return out
 

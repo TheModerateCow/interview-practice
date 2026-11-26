@@ -1,6 +1,8 @@
 """Set storage under data/sets/<name>/: manifest, session.json (clock, events, reveals) and the work folder."""
 import json, os, re, threading, time
+from pathlib import Path
 
+from lab.variants import jload   # noqa: F401  (one copy; lab modules import it from here)
 from sandbox import grade
 
 DATA = os.environ.get("ILAB_DATA", "/data")
@@ -22,11 +24,6 @@ def sdir(n):
     if not NAME_RE.fullmatch(n or "") or not os.path.isfile(os.path.join(SETS, n, "manifest.json")):
         raise HTTPError(404, f"no set named {n!r}")
     return os.path.join(SETS, n)
-
-
-def jload(p, default=None):
-    try: return json.load(open(p))
-    except FileNotFoundError: return default
 
 
 def jsave(p, obj):
@@ -119,10 +116,10 @@ def state(n):
     parts = []
     for f in s["revealed"]:
         p = os.path.join(d, f)
-        parts.append({"file": os.path.basename(f), "md": open(p).read() if os.path.isfile(p) else ""})
+        parts.append({"file": os.path.basename(f), "md": Path(p).read_text() if os.path.isfile(p) else ""})
     return ready_info(n) | {
         "start": s["start"], "now": time.time(), "left_s": round(left * 60, 1), "expired": expired, "ended": bool(s.get("ended")),
-        "problem": open(os.path.join(d, "problem.md")).read(), "parts": parts,
+        "problem": Path(os.path.join(d, "problem.md")).read_text(), "parts": parts,
         "unlocked": s["unlocked"], "has_next": bool(locked(s, m)),
         "has_submit": bool(m.get("hidden_tests")), "has_mytests": bool(m.get("your_tests")),
         "run_entry": m.get("run_entry"), "testcases_count": len(m.get("testcases", [])),
