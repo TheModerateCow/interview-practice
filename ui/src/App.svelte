@@ -75,7 +75,7 @@
   <button id="home-btn" class="btn btn-ghost" class:hidden={!app.view || app.view === 'home'} type="button" onclick={goHome}>All sets</button>
   {#if app.sets.length && app.view !== 'home'}
     <Dropdown id="set-picker" label="Interview set" value={app.cur} onchange={openSet}
-      options={app.sets.map(s => ({ value: s.name, label: s.title, meta: s.name + ' · ' + statusWords(s) }))} />
+      options={app.sets.map(s => ({ value: s.name, label: s.title, meta: s.name + ' · ' + statusWords(s, app.hideTimer) }))} />
   {/if}
   <span class="spacer"></span>
   <Clock shown={app.view === 'round'} />

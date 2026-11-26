@@ -504,6 +504,7 @@ test('Settings: word wrap, mid-round, and the clock keeps running', async ({ pag
   await expect(page.locator('#timer-pick [data-timer="hidden"]')).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('#timer')).toHaveCount(0);
   await expect(page.locator('#timer-hidden')).toHaveText('Timer hidden');
+  await expect(page.locator('#top')).not.toContainText('min left');   // the set picker doesn't give the time away either
   await page.reload();
   await page.waitForLoadState('networkidle');
   await openIfAsked(page);
