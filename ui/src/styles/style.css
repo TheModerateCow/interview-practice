@@ -181,9 +181,10 @@ body.resizing #editor { pointer-events: none; }
 }
 
 /* ---------- settings ---------- */
+.icon-btn { display: inline-flex; align-items: center; justify-content: center; padding: var(--s-2); }   /* the Settings gear: the app's one icon */
 #top.above { position: relative; z-index: 31; }   /* over the Settings overlay (30): the clock stays in sight */
 .settings .final-card { max-width: 560px; }
 .setting { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-2) var(--s-4);
   padding-top: var(--s-4); border-top: 1px solid var(--line); }
 .setting p { margin: var(--s-1) 0 0; max-width: 40ch; color: var(--fg-3); font-size: var(--t-small); }
-@media (max-width: 760px) { .settings { padding-top: 168px; } }   /* the header wraps to ~140px and stays above the panel */
+.setting-note { margin: 0; padding-top: var(--s-4); border-top: 1px solid var(--line); color: var(--fg-3); font-size: var(--t-small); }

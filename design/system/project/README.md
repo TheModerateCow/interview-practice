@@ -55,7 +55,7 @@ Motion explains a change in place. It never decorates, and it never makes the ca
 
 ## Iconography
 
-- There is no icon set and no logo. The wordmark is "Interview Lab" set in Inter Tight 600.
+- There is no icon set and no logo; the one icon is the Settings gear in the header (inline SVG, `currentColor`, labelled "Settings"). The wordmark is "Interview Lab" set in Inter Tight 600.
 - Meaning comes from words plus two glyphs: ✓ and ✗ in test tables and part chips. The dropdown's chevron is drawn with a border, not a glyph. Keyboard shortcuts appear as `kbd` hints inside the button: `Ctrl '` for Run, `Ctrl ↵` for Submit.
 
 ## Components
