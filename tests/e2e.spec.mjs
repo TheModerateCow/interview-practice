@@ -18,6 +18,8 @@ const H = { 'X-ILab': '1' };
 
 // The set picker is a custom dropdown: open it, then click the option for this set name.
 async function pickSet(page, name) {
+  // a page can open on a finished round (another test's set) with its Results card up, which covers the picker
+  if (await page.locator('#final').isVisible()) await page.click('#final-close');
   await page.click('#set-picker');
   await page.click(`#set-picker-list [data-value="${name}"]`);
 }
