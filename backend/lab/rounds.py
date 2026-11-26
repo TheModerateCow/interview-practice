@@ -66,10 +66,10 @@ def run(n, body):
     return out
 
 
-def grade_tags(n, tags):
+def grade_tags(n, tags, tree="work"):
     m, d = manifest(n), sdir(n)
     ht = m["hidden_tests"]; base = os.path.basename(ht)
-    files = work_files(n); files[base] = open(os.path.join(d, ht), "rb").read()
+    files = grade.read_tree(os.path.join(d, tree)); files[base] = open(os.path.join(d, ht), "rb").read()
     lang = m["language"]; lim = m.get("grade_timeout_s", 45)
     return {t: grade.grade(files, [base], lang, t, lim, names=True) for t in tags}
 
@@ -153,7 +153,9 @@ def end(n):
         s = session(n)
         rp = os.path.join(sdir(n), "results.json")
         if m.get("hidden_tests") and "final" not in jload(rp, {}):
-            res = grade_tags(n, [t for t in m.get("tags", ["test_"]) if t in s["unlocked"]])
+            # grade the snapshot, not work/: edits can still land in work/ after the close
+            tree = "final" if os.path.isdir(os.path.join(sdir(n), "final")) else "work"
+            res = grade_tags(n, [t for t in m.get("tags", ["test_"]) if t in s["unlocked"]], tree)
             after = last_edit(n) > deadline(s) + GRACE_S
             def apply(s, _):
                 allr = jload(rp, {})
