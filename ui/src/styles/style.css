@@ -74,7 +74,8 @@ body.over:not(:has(#dropzone:not(.hidden)))::after { content: "Release to import
 .closed-bar span { min-width: 0; overflow-wrap: anywhere; }
 .grade .late { grid-column: 2 / -1; }
 .late { color: var(--warn); font-size: var(--t-small); white-space: nowrap; }
-.confirm-inline { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); padding: 3px 3px 3px var(--s-3); border: 1px solid var(--line-strong); border-radius: var(--r-md); font-size: var(--t-small); }
+.confirm-inline { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); padding: 3px 3px 3px var(--s-3); border: 1px solid var(--line-strong); border-radius: var(--r-md); font-size: var(--t-small);
+  animation: rise var(--dur) var(--ease); }
 .confirm-inline.danger { border-color: var(--fail); background: var(--fail-bg); }
 .busy { font-size: var(--t-small); color: var(--fg-2); }
 .saved { font-size: var(--t-small); color: var(--fg-3); }
@@ -115,7 +116,7 @@ td.mono { font-family: var(--font-mono); white-space: pre-wrap; }
 .grade .count { font: 500 var(--t-small)/1 var(--font-mono); text-align: right; }
 .grade .count.warn, .grade .status { color: var(--warn); font-size: var(--t-small); }
 .meter { height: 6px; border-radius: var(--r-pill); background: var(--surface-2); overflow: hidden; }
-.meter i { display: block; height: 100%; background: var(--fg); }
+.meter i { display: block; height: 100%; background: var(--fg); transition: width var(--dur-slow) var(--ease), background var(--dur) var(--ease); }
 .meter.full i { background: var(--pass); }
 .grade .why { grid-column: 2 / -1; font: var(--t-small)/1.4 var(--font-mono); color: var(--fail); overflow-wrap: anywhere; white-space: pre-wrap; }
 .grade .names { grid-column: 2 / -1; font: var(--t-small)/1.5 var(--font-mono); color: var(--fg-2); white-space: pre-wrap; }
@@ -155,8 +156,9 @@ body.resizing #editor { pointer-events: none; }
 
 /* ---------- final overlay, toast ---------- */
 #final, .overlay { position: fixed; inset: 0; z-index: 30; overflow: auto; background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(2px);
-  padding: var(--s-7) max(16px, env(safe-area-inset-left, 0px)); }
-.final-card { max-width: 760px; margin: 0 auto; background: var(--bg); border: 1px solid var(--line-strong); border-radius: var(--r-xl); padding: var(--s-6); display: grid; gap: var(--s-5); }
+  padding: var(--s-7) max(16px, env(safe-area-inset-left, 0px)); animation: fade var(--dur-slow) var(--ease); }
+.final-card { max-width: 760px; margin: 0 auto; background: var(--bg); border: 1px solid var(--line-strong); border-radius: var(--r-xl); padding: var(--s-6); display: grid; gap: var(--s-5);
+  animation: rise var(--dur-slow) var(--ease); }
 .final-card h2 { font-size: var(--t-h1); line-height: var(--t-h1-lh); letter-spacing: var(--t-h1-ls); }
 .final-card .actions { display: flex; flex-wrap: wrap; gap: var(--s-2); }
 .events { display: grid; font-size: var(--t-small); }
@@ -165,8 +167,7 @@ body.resizing #editor { pointer-events: none; }
 .events em { color: var(--warn); font-style: normal; }
 .toast { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: max(16px, env(safe-area-inset-bottom, 0px)); z-index: 40;
   background: var(--inverse-bg); color: var(--inverse-fg); padding: 10px var(--s-4); border-radius: var(--r-md); font-size: var(--t-small); max-width: min(480px, calc(100vw - 32px)); }
-@keyframes toast-in { from { opacity: 0; transform: translateY(4px); } }
-.toast:not(.hidden) { animation: toast-in var(--dur) var(--ease); }
+.toast:not(.hidden) { animation: rise var(--dur) var(--ease); }
 .toast.bad { background: var(--fail); color: var(--bg); }
 
 @media (max-width: 900px) {
@@ -180,9 +181,10 @@ body.resizing #editor { pointer-events: none; }
 }
 
 /* ---------- settings ---------- */
+.icon-btn { display: inline-flex; align-items: center; justify-content: center; padding: var(--s-2); }   /* the Settings gear: the app's one icon */
 #top.above { position: relative; z-index: 31; }   /* over the Settings overlay (30): the clock stays in sight */
 .settings .final-card { max-width: 560px; }
 .setting { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-2) var(--s-4);
   padding-top: var(--s-4); border-top: 1px solid var(--line); }
 .setting p { margin: var(--s-1) 0 0; max-width: 40ch; color: var(--fg-3); font-size: var(--t-small); }
-@media (max-width: 760px) { .settings { padding-top: 168px; } }   /* the header wraps to ~140px and stays above the panel */
+.setting-note { margin: 0; padding-top: var(--s-4); border-top: 1px solid var(--line); color: var(--fg-3); font-size: var(--t-small); }

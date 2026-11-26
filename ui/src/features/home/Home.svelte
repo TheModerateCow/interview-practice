@@ -3,9 +3,9 @@
   import { tick as flush } from 'svelte';
   import { api } from '../../lib/api.js';
   import { LS, ROUND, LANGNAME, statusWords } from '../../lib/util.js';
-  import { app, fetchSets, showFlash } from '../../app.svelte.js';
+  import { app, showFlash } from '../../app.svelte.js';
+  import { openSet, refreshSets } from '../../nav.js';
   import Catalog from '../catalog/Catalog.svelte';
-  let { onopen, onpick } = $props();
 
   let delSet = $state(null), delNoEl = $state();   // the row whose Delete confirm is open, and its Keep button
 
@@ -15,7 +15,7 @@
     try {
       await api('/sets/' + s.name, { method: 'DELETE' });
       if (LS.get('ilab-last') === s.name) LS.set('ilab-last', '');
-      const fresh = await fetchSets(); if (my === app.nav) app.sets = fresh;
+      await refreshSets(my);
       showFlash(`Deleted ${s.title} (${s.name})`);
     } catch (e) { showFlash(e.message, true); }
   }
@@ -30,9 +30,9 @@
       <summary class="label">{label} · {list.length}</summary>
       {#each list as s (s.name)}
         <div class="set-item">
-          <button type="button" class="set-row" onclick={() => onopen(s.name)}>
+          <button type="button" class="set-row" onclick={() => openSet(s.name)}>
             <span class="set-title">{s.title}</span>
-            <span class="set-meta">{[ROUND[s.round] || s.round, LANGNAME[s.language] || s.language, status === 'running' && statusWords(s)].filter(Boolean).join(' · ')}</span>
+            <span class="set-meta">{[ROUND[s.round] || s.round, LANGNAME[s.language] || s.language, status === 'running' && statusWords(s, app.hideTimer)].filter(Boolean).join(' · ')}</span>
             <span class="set-name">{s.name}</span>
           </button>
           {#if status !== 'running'}<button type="button" class="set-del" aria-label="Delete {s.title} ({s.name})" onclick={() => askDelete(s)}>Delete</button>{/if}
@@ -45,7 +45,7 @@
 <main id="dropzone" class:hidden={app.view !== 'home'} class:over={app.over}>
   <div class="home">
     {@render group('running', 'In progress')}
-    <Catalog {onpick} />
+    <Catalog />
     {@render group('ready', 'Not started')}
     {@render group('ended', 'Finished')}
     <div class="drop">

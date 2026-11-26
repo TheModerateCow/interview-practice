@@ -167,7 +167,7 @@ Export (`submission/` = `work/` now, plus `session.json`, `results.json`, `manif
 `data/exports/`). Clock: `clock()` uses wall time from `start`; `over()` = `ended` **or** time expired; `log()` appends
 `" (after time)"` when `over()`; `stamp()` sets `after_time: over()`.
 
-**UI** (`ui/src/App.svelte` shell, `ui/src/features/<screen>/`, `ui/src/components/`, `ui/src/lib/`, `ui/src/styles/`; Svelte, built by Vite in `deploy/nginx/Dockerfile`). Home (first load, or "All sets"): drop zone + sets grouped In progress / Not started / Finished
+**UI** (`ui/src/App.svelte` shell, `ui/src/nav.js` navigation, `ui/src/features/<screen>/`, `ui/src/components/`, `ui/src/lib/`, `ui/src/styles/`; Svelte, built by Vite in `deploy/nginx/Dockerfile`). Home (first load, or "All sets"): drop zone + sets grouped In progress / Not started / Finished
 (title, name, round, language); first load resumes a round in progress, else stays home. Header picker of `title · status`; ready
 card; round screen with Monaco, file tree, new-file input, stdin, results pane, problem pane, part chips, timer (yellow
 at ≤5 min, red at 0); inline confirm bars for Next part and End; final card with grade rows, "Where the time went" and
@@ -398,3 +398,34 @@ sanity" (F12) and the round-1 follow-up about a drop during page load. My tests 
 - `pack.py` doesn't yet refuse a levelled or codebase set without `run_entry` or `your_tests` (the skill now asks for them; nothing enforces it).
 - One shared test stack makes every full run wait its turn (6–13 min each). Let `tests/stack.sh` run several stacks at once (own name and port per run).
 - The 400 px layout still squeezes the stdin box (F14).
+
+### Round 4: Choose the language, and Settings (2026-11-27)
+
+**Theme and why.** The owner said the Go / Java / Python pills on Home "look like a label and not an actual button": nothing on them responded to the pointer, and nothing said which language a row click would open. It was the first thing a candidate touches, so it went first. During the round the owner added Settings (word wrap, then the theme switch and a way to hide the timer), a spacing fix in the problem text, and the worst finding from the round's candidate usage test (Run ran the open tab).
+
+| PR | Before → after |
+|---|---|
+| [#37](https://github.com/TheModerateCow/interview-practice/pull/37) | The product doc had two personas → one, the candidate; the app is described as a practice tool |
+| [#40](https://github.com/TheModerateCow/interview-practice/pull/40), [#41](https://github.com/TheModerateCow/interview-practice/pull/41) | Plan: SPEC and HLD in `docs/rounds/4-language-pick/` |
+| [#43](https://github.com/TheModerateCow/interview-practice/pull/43) | Each row ended in three outlined pills that looked like tags; a row click opened a language nothing named → one "Practise in [Go \| Java \| Python]" switch above the list, the chosen one filled; every row says "Levelled round · Python · Hard · 90 min"; the choice survives a reload; at 400 px titles wrap to 2 lines instead of 4 |
+| [#42](https://github.com/TheModerateCow/interview-practice/pull/42) | No settings, long lines ran past the editor's edge, the theme switch sat in the header → a Settings panel from the header's last button, over the current screen (the clock keeps running): Word wrap Off / On and the theme switch |
+| [#46](https://github.com/TheModerateCow/interview-practice/pull/46) | The countdown was always on screen → Settings › Timer: Hide shows "Timer hidden"; the set picker says "in progress" instead of minutes left; the round still closes at 00:00 |
+| [#39](https://github.com/TheModerateCow/interview-practice/pull/39) | "Level 1: catalog and carts" sat right under the paragraph before it (0 px) → 32 px above section titles, 24 px above sub-headings |
+| [#44](https://github.com/TheModerateCow/interview-practice/pull/44) | With `alerting.py` open, Run said "Accepted · No output" and skipped the samples → Run always runs the run program (`main.py`) and shows "Testcases · n/2 passed" |
+
+**How it was verified.** Every PR was built and tested on the isolated test stack (port 8766), never on the owner's app.
+- Each PR: `tests/run_all.sh` on its branch, every step PASS (5 gates, api_test ALL PASSED, e2e 7–8 passed), and its example clicked through in Chromium with before/after screenshots in the PR body. #39 and the second commit of #46 ran `tests/e2e.sh` only (UI-only changes).
+- Lead walks: #43 Java chosen → every row says Java → still chosen after reload → Bank ledger opens `banking-levelled-java-1` with no clock; #42 clock 00:59 → 00:56 with Settings open, wrap kept after reload, at 00:00 Settings closes and the end card shows; #44 `alerting.py` open → Run sends `main.py`; #46 no countdown element while hidden, picker "in progress".
+- `main` at 3c2dd12 (after #44 and the round 5 plan) passed `tests/run_all.sh`; released 2026-11-27 after the owner's round ended (build at 1915fbd, nginx serves "Practise in", "Timer hidden", word wrap and the new heading spacing).
+
+**Decided by the owner:** the candidate is the only persona and the app is for practice; build without design sign-off; the theme switch moves into Settings; isolated test runs may happen during a live round (only redeploys wait). **Defaulted:** Python is the first-visit language; imports in one language stay listed ("Python only") whatever "Practise in" says; Settings is a panel, not a screen.
+
+**Still open** (round 4 candidate usage test, `.iteration/work/round-4/A-report.md`, worst first):
+- A slow solution shows only "did not finish in 45 s" with no pass count; leaving mid-Submit leaves "another Run/Submit is still running" with no timer.
+- Finished attempts carry no score, date or duration, sit collapsed below the catalog, and nothing suggests what to practise next.
+- Opening a ready screen creates an attempt ("Not started" ghosts); clicking a tried problem opens a new copy, not the old one.
+- Results and stdin vanish on leave or reload.
+- 400 px round screen: editor ~5 lines; the problem text draws over the results.
+- Ready screen: no Run vs Submit, no 0:00 behaviour; "Hints are free: ask in the chat" names a chat the app doesn't have.
+- The owner's own round: Submit said "test_l1_ could not be graded" 12 times in a row in Go (likely code that didn't compile); it should say why.
+- Round 5 (`docs/rounds/5-editor-intellisense/`, plan merged in #45): real code help for Python, Go and Java; in progress.
