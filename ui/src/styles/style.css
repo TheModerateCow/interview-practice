@@ -137,6 +137,8 @@ body.resizing #editor { pointer-events: none; }
 #problem { overflow: auto; padding: var(--s-5); min-width: 0; }
 .md { font-size: var(--t-small); line-height: 1.6; color: var(--fg-2); }
 .md > * + * { margin-top: var(--s-3); }
+#level-panel > * + :is(h1, h2) { margin-top: var(--s-6); }   /* a new section gets room above its title */
+#level-panel > * + :is(h3, h4) { margin-top: var(--s-5); }
 .md h1, .md h2 { color: var(--fg); font-size: var(--t-h2); line-height: var(--t-h2-lh); letter-spacing: var(--t-h2-ls); }
 .md h3, .md h4 { color: var(--fg); font-size: var(--t-h3); line-height: var(--t-h3-lh); letter-spacing: var(--t-h3-ls); }
 .md p, .md ul, .md ol { margin-bottom: 0; }
