@@ -32,7 +32,7 @@
         <div class="set-item">
           <button type="button" class="set-row" onclick={() => onopen(s.name)}>
             <span class="set-title">{s.title}</span>
-            <span class="set-meta">{[ROUND[s.round] || s.round, LANGNAME[s.language] || s.language, status === 'running' && statusWords(s)].filter(Boolean).join(' · ')}</span>
+            <span class="set-meta">{[ROUND[s.round] || s.round, LANGNAME[s.language] || s.language, status === 'running' && statusWords(s, app.hideTimer)].filter(Boolean).join(' · ')}</span>
             <span class="set-name">{s.name}</span>
           </button>
           {#if status !== 'running'}<button type="button" class="set-del" aria-label="Delete {s.title} ({s.name})" onclick={() => askDelete(s)}>Delete</button>{/if}
