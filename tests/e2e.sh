@@ -8,9 +8,10 @@ SRC=tests/sets/_zips/rate-limiter-py.zip
 [ -f "$SRC" ] || { echo "SKIP e2e: $SRC missing"; exit 0; }
 export E2E_NAME="e2e-$(date +%s)"
 export E2E_NAME_1M="$E2E_NAME-1m"
+export E2E_NAME_LANG="$E2E_NAME-lang"
 export E2E_NAME_RUN="$E2E_NAME-run" E2E_NAME_RACE="$E2E_NAME-race" E2E_NAME_PANES="$E2E_NAME-panes"
 # one zip per (name, minutes) pair: main, 1 minute, two for the "drop during page load" test, two for the Home delete test, one for the panes test
-for pair in "$E2E_NAME:" "$E2E_NAME_1M:1" "$E2E_NAME_RUN:" "$E2E_NAME_RACE:" "$E2E_NAME-del-a:" "$E2E_NAME-del-b:" "$E2E_NAME_PANES:"; do
+for pair in "$E2E_NAME:" "$E2E_NAME_1M:1" "$E2E_NAME_RUN:" "$E2E_NAME_RACE:" "$E2E_NAME-del-a:" "$E2E_NAME-del-b:" "$E2E_NAME_PANES:" "$E2E_NAME_LANG:"; do
 python3 - "$SRC" "tests/out/${pair%%:*}.zip" "${pair%%:*}" "${pair##*:}" <<'PY'
 import sys, zipfile, json
 src, dst, name, minutes = sys.argv[1:]
@@ -26,7 +27,7 @@ with zipfile.ZipFile(dst, "w", zipfile.ZIP_DEFLATED) as zo:
 PY
 done
 docker run --rm --network host --ipc=host --user "$(id -u):$(id -g)" -e HOME=/tmp \
-  -e E2E_BASE="http://127.0.0.1:${ILAB_TEST_PORT:-8766}" -e E2E_NAME -e E2E_NAME_1M -e E2E_NAME_RUN -e E2E_NAME_RACE -e E2E_NAME_PANES -e E2E_ZIP_PANES=/work/tests/out/$E2E_NAME_PANES.zip -e E2E_ZIP=/work/tests/out/$E2E_NAME.zip -e E2E_ZIP_1M=/work/tests/out/$E2E_NAME_1M.zip -e E2E_ZIP_RUN=/work/tests/out/$E2E_NAME_RUN.zip -e E2E_ZIP_RACE=/work/tests/out/$E2E_NAME_RACE.zip -v "$ROOT":/work \
+  -e E2E_BASE="http://127.0.0.1:${ILAB_TEST_PORT:-8766}" -e E2E_NAME -e E2E_NAME_1M -e E2E_NAME_RUN -e E2E_NAME_RACE -e E2E_NAME_PANES -e E2E_NAME_LANG -e E2E_ZIP_LANG=/work/tests/out/$E2E_NAME_LANG.zip -e E2E_ZIP_PANES=/work/tests/out/$E2E_NAME_PANES.zip -e E2E_ZIP=/work/tests/out/$E2E_NAME.zip -e E2E_ZIP_1M=/work/tests/out/$E2E_NAME_1M.zip -e E2E_ZIP_RUN=/work/tests/out/$E2E_NAME_RUN.zip -e E2E_ZIP_RACE=/work/tests/out/$E2E_NAME_RACE.zip -v "$ROOT":/work \
   mcr.microsoft.com/playwright:v1.56.0-noble bash -ec '
 mkdir -p /tmp/pw && cd /tmp/pw
 npm init -y >/dev/null && npm i @playwright/test@1.56.0 >/dev/null

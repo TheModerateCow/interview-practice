@@ -331,6 +331,47 @@ test('Catalog: filter, then pick a problem to open an attempt', async ({ page, r
   await expect.poll(() => page.locator('#catalog .set-row').count()).toBeGreaterThanOrEqual(cat.problems.length);
 });
 
+test('Catalog: the language you choose is the one that opens', async ({ page, request }) => {
+  const cat = await (await request.get(`${BASE}/api/catalog`, { headers: H })).json();
+  const p = cat.problems.find(q => q.source === 'builtin' && q.round === 'levelled' && q.languages.includes('java'));
+  await page.goto(BASE);
+  await page.waitForLoadState('networkidle');
+  await openIfAsked(page);
+  if (await page.locator('#home-btn').isVisible()) await page.click('#home-btn');
+  await expect(page.locator('#lang-pick [aria-pressed="true"]')).toHaveCount(1);
+  await expect(page.locator('#catalog .lang-chip')).toHaveCount(0);
+  await page.click('#lang-pick [data-lang="java"]');
+  await expect(page.locator('#lang-pick [data-lang="java"]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#lang-pick [aria-pressed="false"]')).toHaveCount(await page.locator('#lang-pick button').count() - 1);
+  await expect(page.locator(`[data-problem="${p.id}"] .set-meta`)).toContainText('Java');
+  await page.click(`[data-problem="${p.id}"]`);
+  await expect(page.locator('.ready-card .pills')).toContainText('Java');
+  await expect(page.locator('#ready-name')).toHaveText(new RegExp(`^${p.id}-java-\\d+$`));
+  await expect(page.locator('#round')).toBeHidden();   // no clock yet
+  // a one-language import says so and opens in its own language; the choice stays
+  const imp = await request.post(`${BASE}/api/import`, { headers: H, data: fs.readFileSync(process.env.E2E_ZIP_LANG) });
+  expect(imp.status()).toBe(200);
+  await page.click('#home-btn');
+  const mine = page.locator(`#catalog [data-problem="${process.env.E2E_NAME_LANG}"]`);
+  await expect(mine.locator('.set-meta')).toContainText('Python only');
+  await mine.click();
+  await expect(page.locator('.ready-card .pills')).toContainText('Python');
+  await page.click('#home-btn');
+  await expect(page.locator('#lang-pick [data-lang="java"]')).toHaveAttribute('aria-pressed', 'true');
+  await page.reload();
+  await page.waitForLoadState('networkidle');
+  await openIfAsked(page);
+  if (await page.locator('#home-btn').isVisible()) await page.click('#home-btn');
+  await expect(page.locator('#lang-pick [data-lang="java"]')).toHaveAttribute('aria-pressed', 'true');
+  await page.focus('#lang-pick [data-lang="go"]');
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#lang-pick [data-lang="go"]')).toHaveAttribute('aria-pressed', 'true');
+  await page.setViewportSize({ width: 400, height: 800 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  expect((await page.locator(`[data-problem="${p.id}"]`).boundingBox()).width).toBeGreaterThanOrEqual(340);   // 368 px less a 15 px scrollbar
+  expect((await page.locator('#lang-pick').boundingBox()).height).toBeLessThan(40);
+});
+
 test('panes resize and remember', async ({ page, request }) => {
   const api = async p => (await request.get(BASE + p, { headers: H })).json();
   await page.goto(BASE);
