@@ -439,3 +439,64 @@ test('panes resize and remember', async ({ page, request }) => {
   await page.dblclick('#split-problem');
   near((await size()).problem, 360);
 });
+
+test('Settings: word wrap, mid-round, and the clock keeps running', async ({ page, request }) => {
+  const a = await (await request.post(`${BASE}/api/catalog/fares-tdd/attempt`, { headers: H, data: { language: 'java' } })).json();
+  await request.post(`${BASE}/api/sets/${a.name}/start`, { headers: H, data: {} });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(BASE);
+  await page.waitForLoadState('networkidle');
+  await openIfAsked(page);
+  await pickSet(page, a.name);
+  await expect(page.locator('#editor .monaco-editor')).toBeVisible({ timeout: 60000 });
+  await page.locator('#file-tree div', { hasText: 'Fares.java' }).first().click();
+  // the line holding "senior" ends right of the editor box (no wrap) or inside it (wrap)
+  const seniorRight = async () => page.evaluate(() => {
+    const l = [...document.querySelectorAll('#editor .view-line')].find(e => e.textContent.includes('"senior"'));
+    return l ? [...l.querySelectorAll('span > span')].reduce((m, s) => Math.max(m, s.getBoundingClientRect().right), 0) : -1;
+  });
+  const editorRight = async () => (await page.locator('#editor').boundingBox()).x + (await page.locator('#editor').boundingBox()).width;
+  await expect.poll(seniorRight).toBeGreaterThan(await editorRight());
+  const t1 = await page.locator('#timer').textContent();
+  await page.click('#settings-btn');
+  await expect(page.locator('#settings')).toBeVisible();
+  await expect(page.locator('#settings-btn')).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.locator('#timer')).toBeVisible();
+  await page.click('#wrap-pick [data-wrap="on"]');
+  await expect(page.locator('#wrap-pick [data-wrap="on"]')).toHaveAttribute('aria-pressed', 'true');
+  await expect.poll(async () => { const r = await seniorRight(); return r > 0 && r <= await editorRight(); }).toBe(true);
+  await page.waitForTimeout(2000);
+  expect(await page.locator('#timer').textContent()).not.toBe(t1);   // the clock ticked while Settings was open
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#settings')).toBeHidden();
+  await expect(page.locator('#round')).toBeVisible();
+  await expect(page.locator('#settings-btn')).toBeFocused();
+  await expect(page.locator('#file-tree div.sel')).toHaveText('Fares.java');
+  await page.reload();
+  await page.waitForLoadState('networkidle');
+  await openIfAsked(page);
+  await expect(page.locator('#editor .monaco-editor')).toBeVisible({ timeout: 60000 });
+  await page.locator('#file-tree div', { hasText: 'Fares.java' }).first().click();
+  await expect.poll(async () => { const r = await seniorRight(); return r > 0 && r <= await editorRight(); }).toBe(true);
+  await page.click('#settings-btn');
+  await expect(page.locator('#wrap-pick [data-wrap="on"]')).toHaveAttribute('aria-pressed', 'true');
+  // the theme switch lives in Settings now
+  await expect(page.locator('#top [data-t]')).toHaveCount(0);
+  await expect(page.locator('#settings [data-t]')).toHaveCount(3);
+  await page.click('#settings [data-t="dark"]');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await page.click('#settings-btn');
+  await page.click('#settings [data-t=""]');   // back to Auto, so later tests are unaffected
+  // 400 px: no sideways scroll, Done in view
+  await page.setViewportSize({ width: 400, height: 800 });
+  await expect(page.locator('#settings')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await expect(page.locator('#settings-close')).toBeInViewport();
+  await expect(page.locator('#settings-btn')).toBeVisible();
+  // navigating closes Settings
+  await page.click('#home-btn');
+  await expect(page.locator('#settings')).toBeHidden();
+  await expect(page.locator('#catalog')).toBeVisible();
+});

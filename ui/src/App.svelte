@@ -2,7 +2,7 @@
   // The shell: header, navigation between Home / Ready / Round, toasts. Each screen lives in features/.
   import { onMount } from 'svelte';
   import Dropdown from './components/Dropdown.svelte';
-  import ThemeToggle from './components/ThemeToggle.svelte';
+  import Settings from './features/settings/Settings.svelte';
   import Home from './features/home/Home.svelte';
   import Ready from './features/ready/Ready.svelte';
   import Round from './features/round/Round.svelte';
@@ -19,6 +19,7 @@
   let loading = $state('Loading sets');   // page-level wait while no screen is shown
 
   function screen(v) {
+    app.settings = false;
     app.view = v;
     if (v !== 'round') stopTimers();
   }
@@ -69,7 +70,7 @@
   onMount(() => { loadSets().catch(e => { screen('home'); app.dropErr = e.message; }); });
 </script>
 
-<header id="top">
+<header id="top" class:above={app.settings}>
   <strong class="brand">Interview Lab</strong>
   <button id="home-btn" class="btn btn-ghost" class:hidden={!app.view || app.view === 'home'} type="button" onclick={goHome}>All sets</button>
   {#if app.sets.length && app.view !== 'home'}
@@ -78,7 +79,8 @@
   {/if}
   <span class="spacer"></span>
   <Clock shown={app.view === 'round'} />
-  <ThemeToggle />
+  <button id="settings-btn" class="btn btn-ghost" type="button" aria-expanded={app.settings}
+    aria-controls="settings" onclick={() => (app.settings = !app.settings)}>Settings</button>
 </header>
 <DropImport reload={loadSets} reopen={() => (app.cur ? openSet(app.cur) : loadSets())} />
 <Health />
@@ -87,6 +89,7 @@
 <Home onopen={openSet} onpick={name => loadSets(name)} />
 <Ready shown={app.view === 'ready'} {info} err={readyErr} onstart={startRound} />
 <Round />
+<Settings />
 
 {#if app.importing}<div class="toast" role="status"><span class="loading">Importing {app.importing}…</span></div>{/if}
 {#key app.flash.n}<div id="flash" class="toast" class:hidden={!app.flash.on} class:bad={app.flash.bad} role="status">{app.flash.text}</div>{/key}

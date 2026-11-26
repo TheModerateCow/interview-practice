@@ -1,3 +1,4 @@
+import { LS } from './util.js';
 // Monaco editor: language per file, the theme built from tokens.css, and the one-time AMD load.
 const LANG = { py: 'python', go: 'go', java: 'java', ts: 'typescript', js: 'javascript', c: 'c', h: 'c', cpp: 'cpp', cc: 'cpp', hpp: 'cpp', md: 'markdown', json: 'json', mod: 'plaintext' };
 export const langOf = p => LANG[(p.split('.').pop() || '').toLowerCase()] || 'plaintext';
@@ -36,6 +37,8 @@ export function monacoTheme() {
   monaco.editor.setTheme('ilab');
 }
 
+const wrapOpt = () => (LS.get('ilab-wrap') === 'on' ? 'on' : 'off');
+
 /* ---------- Monaco: loaded once through its AMD loader (/vendor/monaco/vs/loader.js) ---------- */
 let monacoP = null;
 // Resolves to the editor. on: { change, run, submit } callbacks.
@@ -52,7 +55,7 @@ export function loadMonaco(el, on) {
       monacoTheme();
       const ed = monaco.editor.create(el, { theme: 'ilab', automaticLayout: true, minimap: { enabled: false }, model: null,
         fontFamily: '"Geist Mono", ui-monospace, Menlo, Consolas, monospace', fontSize: 13, lineHeight: 21,
-        padding: { top: 12 }, scrollBeyondLastLine: false, renderLineHighlight: 'all', overviewRulerBorder: false });
+        padding: { top: 12 }, scrollBeyondLastLine: false, renderLineHighlight: 'all', overviewRulerBorder: false, wordWrap: wrapOpt() });
       document.fonts && document.fonts.ready.then(() => monaco.editor.remeasureFonts());
       ed.onDidChangeModelContent(on.change);
       ed.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Quote, on.run);
@@ -62,3 +65,6 @@ export function loadMonaco(el, on) {
   });
   return monacoP;
 }
+
+// Display only: the text, autosave, Run and Submit never see the wrap. Before the editor exists, only the choice is saved.
+export function setWrap(on) { LS.set('ilab-wrap', on ? 'on' : 'off'); monacoP?.then(ed => ed.updateOptions({ wordWrap: wrapOpt() })); }

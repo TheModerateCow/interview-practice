@@ -29,7 +29,7 @@ Interview Lab is a local, timed coding-interview simulator. Everything on screen
 
 ## Layout
 
-- Three screens. **Home**: the dashed drop zone, the only way to import a set, above the sets grouped In progress / Not started / Finished; the app opens here unless a round is in progress. **Ready**: eyebrow (company · role · round), the title in `display`, pills for language, difficulty and minutes, the rules, then **Start interview**; the problem is never shown here. **Round**: header (wordmark, set picker, part chips, clock, theme switch), toolbar, then three panes: files (`surface`), editor over stdin and results, problem (`bg`).
+- Three screens. **Home**: the dashed drop zone, the only way to import a set, above the sets grouped In progress / Not started / Finished; the app opens here unless a round is in progress. **Ready**: eyebrow (company · role · round), the title in `display`, pills for language, difficulty and minutes, the rules, then **Start interview**; the problem is never shown here. **Round**: header (wordmark, set picker, part chips, clock, **Settings** button; the theme switch and word wrap live in the Settings panel), toolbar, then three panes: files (`surface`), editor over stdin and results, problem (`bg`).
 - Spacing is a 4px grid: `s-1` … `s-8`. Toolbar gaps `s-2`, panel padding `s-3`–`s-5`, page sections `s-7`–`s-8`.
 - Radii are small: `r-md` (6px) for controls, `r-sm` for badges and rows, `r-xl` only for the drop zone and the ready and end cards; pills and part chips are `r-pill`.
 - Borders, not shadows. The one translucent layer is the end-of-round overlay.

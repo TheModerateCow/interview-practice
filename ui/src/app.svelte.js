@@ -6,6 +6,7 @@ export const app = $state({
   sets: [],            // the picker and Home
   cur: null,           // the open set's name
   nav: 0,              // bumped by every navigation: an older async step that sees a newer value stops, so the latest wins
+  settings: false,     // the Settings panel is open over the current screen
   dropErr: '',         // last import error, shown on Home
   over: false,         // a file is being dragged over the page
   importing: '',       // file name of a zip being imported
