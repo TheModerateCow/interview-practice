@@ -574,6 +574,8 @@ test('Code help: Python suggestions, hints and underlines', async ({ page, reque
 test('Settings: code help Full, Words only, Off', async ({ page, request }) => {
   const mk = async () => (await (await request.post(`${BASE}/api/catalog/ledger-codebase/attempt`, { headers: H, data: { language: 'python' } })).json()).name;
   const a = await mk();
+  const cat = await (await request.get(`${BASE}/api/catalog`, { headers: H })).json();
+  const other = cat.problems.filter(q => q.source === 'builtin' && q.languages.includes('python') && q.id !== 'ledger-codebase').pop();   // not the one the other code help test is running
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(BASE);
   await page.waitForLoadState('networkidle');
@@ -581,7 +583,7 @@ test('Settings: code help Full, Words only, Off', async ({ page, request }) => {
   // an unstarted attempt first: the ready screen names the level, and follows Settings
   if (await page.locator('#home-btn').isVisible()) await page.click('#home-btn');
   await page.click('#lang-pick [data-lang="python"]');
-  await page.click('[data-problem="ledger-codebase"]');
+  await page.click(`[data-problem="${other.id}"]`);
   await expect(page.locator('#ready-assist')).toContainText('Code help: Full');
   await page.click('#settings-btn'); await page.click('#assist-pick [data-assist="words"]');
   await expect(page.locator('#ready-assist')).toContainText('Code help: Words only');
