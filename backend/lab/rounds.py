@@ -5,8 +5,8 @@ from sandbox import grade, runner
 from lab.store import (DATA, EXPORTS, HTTPError, _busy, closed, deadline, jload, jsave, late, lock, locked, log, manifest,
                        minute, mutate, public, ready_info, require_started, reveal, sdir, session, state, work_files, work_path)
 
-EXT_LANG = {".py": "python", ".go": "go", ".java": "java", ".ts": "typescript", ".js": "javascript", ".mjs": "javascript",
-            ".c": "c", ".cpp": "cpp", ".cc": "cpp"}
+from sandbox.toolchains import BY_EXT
+EXT_LANG = {e: t.name for e, t in BY_EXT.items()}   # what Run can run, by file extension
 GRACE_S = 5   # ponytail: autosave lag + one request; raise if real rounds show false "after time" on the final grade
 
 
@@ -37,7 +37,7 @@ def run(n, body):
     require_started(n)
     m, f, stdin = manifest(n), body.get("file") or "", body.get("stdin") or ""
     lang = EXT_LANG.get(os.path.splitext(f)[1])
-    if not lang: raise HTTPError(400, f"can't run {f or 'this file'}: supported .py .go .java .ts .js .c .cpp")
+    if not lang: raise HTTPError(400, f"can't run {f or 'this file'}: supported " + " ".join(EXT_LANG))
     work_path(n, f)
     files = work_files(n)
     if f not in files: raise HTTPError(404, f"{f} not found")

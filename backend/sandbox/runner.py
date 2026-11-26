@@ -3,7 +3,9 @@
 Code goes in as a tar.gz on stdin (attach before start), results come back as a tar.gz on stdout.
 No bind mounts: the backend's paths are not host paths.
 """
-import http.client, io, json, os, shlex, socket, struct, tarfile, threading, time
+import http.client, io, json, os, socket, struct, tarfile, threading
+try: from sandbox.toolchains import TOOLCHAINS   # imported by the server
+except ImportError: from toolchains import TOOLCHAINS   # grade.py run as a script
 
 _hp = os.environ.get("DOCKER_HOST", "tcp://docker-proxy:2375").removeprefix("tcp://")
 DHOST, DPORT = _hp.rsplit(":", 1)[0], int(_hp.rsplit(":", 1)[1])
@@ -171,13 +173,6 @@ def _txt(b, cap=OUT_CAP):
     return (b or b"")[:cap].decode(errors="replace")
 
 
-def java_main(src, path):
-    import re
-    m = re.search(r"^\s*package\s+([\w.]+)\s*;", src, re.M)
-    cls = os.path.splitext(os.path.basename(path))[0]
-    return f"{m.group(1)}.{cls}" if m else cls
-
-
 RUN_LOOP = r'''
 oom() { sed -n 's/^oom_kill //p' /sys/fs/cgroup/memory.events 2>/dev/null || echo 0; }
 i=0
@@ -195,24 +190,12 @@ cat /sys/fs/cgroup/memory.peak > /tmp/out/peak 2>/dev/null
 
 def run(lang, files, entry, stdins):
     """Compile (if needed) and run `entry` once per stdin. Returns {"compile": {...}|None, "cases": [...], "memory_kb"}."""
-    q = shlex.quote
+    tc = TOOLCHAINS[lang]
     if entry not in files: raise ValueError(f"{entry} not found")
     artifacts, compile_res = {}, None
-    if lang in ("go", "java", "c", "cpp"):
-        if lang == "go":
-            d = os.path.dirname(entry) or "."
-            script = f"[ -f go.mod ] || go mod init ilab >/dev/null 2>&1\ngo build -o /tmp/out/prog ./{q(d)} > /tmp/out/compile.log 2>&1\nrc=$?\n"
-            # a non-main package builds to an archive, not a program: say so instead of executing it
-            script += (f"if [ $rc = 0 ]; then p=$(go list -f '{{{{.Name}}}}' ./{q(d)}); [ \"$p\" = main ] || {{ rc=1; "
-                       "echo \"Nothing to run: this code is a library (package $p), not a program with package main and func main(). "
-                       "Test it with My tests (add a file ending in _test.go) or Submit.\" > /tmp/out/compile.log; }; fi\n"
-                       "echo $rc > /tmp/out/compile.rc\n")
-        elif lang == "java":
-            files = dict(files); files.setdefault("Expect.java", JAVA_EXPECT)
-            script = "javac -d /tmp/out/classes $(find . -name '*.java') > /tmp/out/compile.log 2>&1\necho $? > /tmp/out/compile.rc\n"
-        else:
-            cc = "gcc -O2 -std=c17" if lang == "c" else "g++ -O2 -std=c++17"
-            script = f"{cc} -o /tmp/out/prog {q(entry)} -lm > /tmp/out/compile.log 2>&1\necho $? > /tmp/out/compile.rc\n"
+    build = tc.build(entry, files)
+    if build:
+        script, files = build
         out, to = container(lang, files, script, 120)
         rc = out.get("compile.rc", b"1").strip()
         compile_res = {"ok": rc == b"0" and not to, "log": _txt(out.get("compile.log", b"") or out.get("_harness.log", b""))}
@@ -220,10 +203,7 @@ def run(lang, files, entry, stdins):
         if not compile_res["ok"]:
             return {"compile": compile_res, "cases": [], "memory_kb": None}
         artifacts = {k: v for k, v in out.items() if k == "prog" or k.startswith("classes/")}
-    cmd = {"python": f"python3 {q(entry)}", "javascript": f"node {q(entry)}",
-           "typescript": f"node --disable-warning=ExperimentalWarning {q(entry)}",
-           "go": "/tmp/w/prog", "c": "/tmp/w/prog", "cpp": "/tmp/w/prog",
-           "java": f"java -cp /tmp/w/classes {q(java_main(files[entry].decode(errors='replace') if isinstance(files[entry], bytes) else files[entry], entry))}"}[lang]
+    cmd = tc.run_cmd(entry, files)
     rfiles = dict(artifacts) if artifacts else dict(files)
     for i, s in enumerate(stdins): rfiles[f"_cases/{i}.in"] = s
     script = f"NC={len(stdins)}\nTL={CASE_TL}\n" + RUN_LOOP.replace("CMD", cmd).replace("CAP1", str(OUT_CAP + 1))
@@ -245,12 +225,3 @@ def run(lang, files, entry, stdins):
     peak = out.get("peak", b"").strip()
     return {"compile": compile_res, "cases": cases, "memory_kb": int(peak) // 1024 if peak.isdigit() else None}
 
-
-JAVA_EXPECT = r'''
-public class Expect {
-  public static void eq(Object exp, Object act){ if(exp==null?act!=null:!exp.equals(act)) throw new AssertionError("expected "+exp+" but got "+act); }
-  public static void isTrue(boolean b, String msg){ if(!b) throw new AssertionError(msg); }
-  public static void isTrue(boolean b){ isTrue(b,"expected true"); }
-  public static void raises(Class<? extends Throwable> k, Runnable r){ try{ r.run(); }catch(Throwable x){ if(k.isInstance(x)) return; throw new AssertionError("expected "+k.getSimpleName()+" but got "+x); } throw new AssertionError("expected "+k.getSimpleName()+" but nothing was thrown"); }
-}
-'''

@@ -37,6 +37,7 @@ Only nginx publishes a port. The backend and proxy sit on internal networks. `/a
 | `backend/lab/` | `store.py` set files, session, clock and reveals; `catalog.py` problems and attempts; `importer.py` zip import; `rounds.py` Start/Run/Submit/My tests/Next/End/Export/Delete |
 | `backend/sandbox/runner.py` | DockerRunner (Run: verdicts, time, memory) + the pinned runner image list |
 | `backend/sandbox/grade.py` | Hidden-test grading in the runner, with the same CLI/JSON as the skill's grade.py |
+| `backend/sandbox/toolchains.py` | One class per language: extensions, Run build/command, hidden-test command and report parser |
 | `backend/sandbox/gate.py` | The skill's gate.py, unchanged |
 | `backend/sandbox/images.py` | `/api/health` and the thread that keeps runner images pulled |
 | `ui/src/` | `App.svelte` the shell (header, screens, toasts); `nav.js` navigation between screens; `app.svelte.js` app-wide state; `features/` one folder per screen (`home`, `catalog`, `ready`, `round`, `import`, `health`), `round/round.svelte.js` holds the round's state and actions; `components/` shared pieces; `lib/` API, Monaco and helpers; `styles/` CSS |
