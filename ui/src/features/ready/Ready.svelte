@@ -1,18 +1,20 @@
 <script>
-  // The ready screen: what the round is, before the clock starts. onstart() enters the round or throws.
+  // The ready screen: what the round is, before the clock starts.
   import { ROUND, LANGNAME, cap, md } from '../../lib/util.js';
-  let { shown, info, err, onstart } = $props();
+  import { app } from '../../app.svelte.js';
+  import { startRound } from '../../nav.js';
+  const info = $derived(app.ready), err = $derived(app.readyErr);
 
   let starting = $state(false), startErr = $state('');
   $effect(() => { info; starting = false; startErr = ''; });   // each set opens with a fresh Start button
   async function start() {
     starting = true;
-    try { await onstart(); }
+    try { await startRound(); }   // enters the round, or throws
     catch (e) { startErr = e.message; starting = false; }
   }
 </script>
 
-<main id="ready" class:hidden={!shown}>
+<main id="ready" class:hidden={app.view !== 'ready'}>
   {#if err}
     <div class="ready-card"><p class="err">{err}</p></div>
   {:else if info}
