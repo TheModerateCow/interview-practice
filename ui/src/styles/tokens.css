@@ -61,7 +61,8 @@
   --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 64px;
   --r-xs: 2px; --r-sm: 4px; --r-md: 6px; --r-lg: 8px; --r-xl: 12px; --r-pill: 999px;
   --ease: cubic-bezier(.2, .7, .2, 1);
-  --dur: 160ms;
+  --dur: 160ms;        /* hover, colour, small state changes */
+  --dur-slow: 280ms;   /* layers entering, the theme crossfade, meters filling */
   color-scheme: light;
 }
 
@@ -93,7 +94,12 @@ body { background: var(--bg); color: var(--fg); font: 400 var(--t-body)/var(--t-
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 code, kbd, pre, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 .label { font-size: var(--t-label); letter-spacing: var(--t-label-ls); text-transform: uppercase; color: var(--fg-3); font-weight: 500; }
-@media (prefers-reduced-motion: reduce) { *, ::before, ::after { transition: none !important; animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { *, ::before, ::after, ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { transition: none !important; animation: none !important; } }
+/* Motion vocabulary: things fade or rise 4px as they enter, and leave at once. */
+@keyframes fade { from { opacity: 0; } }
+@keyframes rise { from { opacity: 0; transform: translateY(4px); } }
+/* Light <-> dark: the theme switch runs inside a view transition, so the whole page (Monaco too) crossfades. */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: var(--dur-slow); animation-timing-function: var(--ease); }
 
 /* ---------- buttons: accent (Submit only) · outline · ghost · danger ---------- */
 .btn { display: inline-flex; align-items: center; gap: var(--s-2); height: 34px; padding: 0 var(--s-4);
@@ -137,11 +143,10 @@ code, kbd, pre, .mono { font-family: var(--font-mono); font-variant-numeric: tab
 .loading { display: inline-flex; align-items: center; gap: var(--s-2); }
 .loading::before { content: ""; flex: none; width: .85em; height: .85em; border-radius: 50%;
   border: 1.5px solid color-mix(in srgb, currentColor 25%, transparent); border-top-color: currentColor;
-  animation: loading-in var(--dur) var(--ease) 300ms both, loading-turn 800ms linear infinite; }
+  animation: fade var(--dur) var(--ease) 300ms both, loading-turn 800ms linear infinite; }
 .loading.block { display: flex; flex: 1; align-items: center; justify-content: center; padding: var(--s-5);
-  color: var(--fg-3); font-size: var(--t-small); animation: loading-in var(--dur) var(--ease) 300ms both; }
+  color: var(--fg-3); font-size: var(--t-small); animation: fade var(--dur) var(--ease) 300ms both; }
 @keyframes loading-turn { to { transform: rotate(360deg); } }
-@keyframes loading-in { from { opacity: 0; } }
 
 /* ---------- dropdown: a button that opens a listbox; replaces the browser's select ---------- */
 .dropdown { position: relative; display: inline-block; min-width: 0; }
@@ -151,13 +156,15 @@ code, kbd, pre, .mono { font-family: var(--font-mono); font-variant-numeric: tab
   transition: background var(--dur) var(--ease); }
 .dropdown-btn:hover { background: var(--surface-2); }
 .dropdown-btn::after { content: ""; position: absolute; right: var(--s-3); top: 50%; width: 6px; height: 6px; margin-top: -5px;
-  border: solid var(--fg-2); border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); }   /* chevron: a border, not a glyph */
+  border: solid var(--fg-2); border-width: 0 1.5px 1.5px 0; transform: rotate(45deg);
+  transition: transform var(--dur) var(--ease), margin-top var(--dur) var(--ease); }   /* chevron: a border, not a glyph */
 .dropdown-btn[aria-expanded="true"]::after { margin-top: -1px; transform: rotate(-135deg); }
 .dropdown-value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dropdown-meta { color: var(--fg-3); white-space: nowrap; }
 .dropdown-list { position: absolute; z-index: 25; top: calc(100% + 4px); left: 0; min-width: 100%; width: max-content;
   max-width: min(480px, calc(100vw - 32px)); max-height: min(360px, 60vh); overflow: auto; margin: 0; padding: var(--s-1);
-  list-style: none; background: var(--bg); border: 1px solid var(--line-strong); border-radius: var(--r-md); }
+  list-style: none; background: var(--bg); border: 1px solid var(--line-strong); border-radius: var(--r-md);
+  animation: fade var(--dur) var(--ease); }
 .dropdown-list li { display: flex; align-items: center; justify-content: space-between; gap: var(--s-4); padding: var(--s-2) var(--s-3);
   border-radius: var(--r-sm); color: var(--fg-2); font-size: var(--t-small); cursor: pointer; }
 .dropdown-list li.active { background: var(--surface-2); color: var(--fg); }
