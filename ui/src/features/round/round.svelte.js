@@ -150,8 +150,9 @@ export async function guarded(label, fn) {
 
 export function doRun() {
   guarded('Running', async () => {
-    round.results = { kind: 'loading', msg: 'Running ' + (round.curFile || 'your code') };
-    const r = await api('/sets/' + app.cur + '/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ file: round.curFile, stdin: round.stdin }) });
+    const file = round.st.run_entry || round.curFile;   // Run runs the run program, whichever tab is open
+    round.results = { kind: 'loading', msg: 'Running ' + (file || 'your code') };
+    const r = await api('/sets/' + app.cur + '/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ file, stdin: round.stdin }) });
     round.results = { kind: 'run', r, late: !!round.st.ended, stdin: round.stdin };
   });
 }
