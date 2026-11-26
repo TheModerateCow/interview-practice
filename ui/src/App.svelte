@@ -10,6 +10,7 @@
   import DropImport from './features/import/DropImport.svelte';
   import Health from './features/health/Health.svelte';
   import { statusWords } from './lib/util.js';
+  import { onTop } from './lib/dialog.js';
   import { app } from './app.svelte.js';
   import { boot, goHome, openSet } from './nav.js';
 
@@ -37,5 +38,5 @@
 <Round />
 <Settings />
 
-{#if app.importing}<div class="toast" role="status"><span class="loading">Importing {app.importing}…</span></div>{/if}
-{#key app.flash.n}<div id="flash" class="toast" class:hidden={!app.flash.on} class:bad={app.flash.bad} role="status">{app.flash.text}</div>{/key}
+{#if app.importing}<div class="toast" role="status" popover="manual" use:onTop><span class="loading">Importing {app.importing}…</span></div>{/if}
+{#key app.flash.n}<div id="flash" class="toast" popover="manual" use:onTop class:hidden={!app.flash.on} class:bad={app.flash.bad} role="status">{app.flash.text}</div>{/key}
