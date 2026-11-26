@@ -1,5 +1,5 @@
 """Set storage under data/sets/<name>/: manifest, session.json (clock, events, reveals) and the work folder."""
-import json, os, re, threading, time
+import copy, json, os, re, threading, time
 
 from sandbox import grade
 
@@ -74,12 +74,13 @@ def log(s, text, t=None):
 
 
 def mutate(n, fn):
-    """Read-modify-write session.json under the set's lock. fn(session, manifest) -> result."""
+    """Read-modify-write session.json under the set's lock; written only if fn changed it. fn(session, manifest) -> result."""
     with lock(n):
         s = session(n)
         if not s or not s.get("start"): raise HTTPError(409, "not started")
+        before = copy.deepcopy(s)
         r = fn(s, manifest(n))
-        jsave(os.path.join(sdir(n), "session.json"), s)
+        if s != before: jsave(os.path.join(sdir(n), "session.json"), s)
         return r
 
 
