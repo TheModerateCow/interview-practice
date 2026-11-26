@@ -5,14 +5,17 @@
   import { setWrap } from '../../lib/monaco.js';
   import { app } from '../../app.svelte.js';
   import { round } from '../round/round.svelte.js';
-  let wrap = $state(LS.get('ilab-wrap') === 'on'), panel = $state();
+  let wrap = $state(LS.get('ilab-wrap') === 'on'), panel = $state(), below = $state(0);
+  // the header stays above the overlay, so the panel starts a gap below wherever the header ends (it wraps on narrow screens)
+  const measure = () => { below = document.getElementById('top')?.getBoundingClientRect().bottom ?? 0; };
+  $effect(() => { if (app.settings) measure(); });
   const close = () => { app.settings = false; document.getElementById('settings-btn')?.focus(); };
   $effect(() => { if (round.finalOpen) app.settings = false; });            // 00:00 while open: the end card wins
   $effect(() => { if (app.settings) panel?.querySelector('button')?.focus(); });
 </script>
 
-<svelte:window onkeydown={e => { if (e.key === 'Escape' && app.settings) close(); }} />
-<div id="settings" class="overlay settings" class:hidden={!app.settings} role="dialog" aria-labelledby="settings-title">
+<svelte:window onresize={measure} onkeydown={e => { if (e.key === 'Escape' && app.settings) close(); }} />
+<div id="settings" class="overlay settings" class:hidden={!app.settings} role="dialog" aria-labelledby="settings-title" style:padding-top="calc({below}px + var(--s-5))">
   <div class="final-card" bind:this={panel}>
     <h2 id="settings-title">Settings</h2>
     <div class="setting"><div><span id="wrap-label">Word wrap</span>
@@ -29,7 +32,7 @@
             onclick={() => { app.hideTimer = v; LS.set('ilab-timer', v ? 'hidden' : 'shown'); }}>{label}</button>
         {/each}</div></div>
     <div class="setting"><div><span>Theme</span></div><ThemeToggle /></div>
-    <p class="muted">The language problems open in is set on Home, above the problem list ("Practise in").</p>
+    <p class="setting-note">The language problems open in is set on Home, above the problem list ("Practise in").</p>
     <div class="actions"><button id="settings-close" class="btn btn-outline" type="button" onclick={close}>Done</button></div>
   </div>
 </div>

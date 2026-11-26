@@ -79,8 +79,8 @@
   {/if}
   <span class="spacer"></span>
   <Clock shown={app.view === 'round'} />
-  <button id="settings-btn" class="btn btn-ghost" type="button" aria-expanded={app.settings}
-    aria-controls="settings" onclick={() => (app.settings = !app.settings)}>Settings</button>
+  <button id="settings-btn" class="btn btn-ghost icon-btn" type="button" aria-label="Settings" title="Settings" aria-expanded={app.settings}
+    aria-controls="settings" onclick={() => (app.settings = !app.settings)}><svg class="gear" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="6.8"/><circle cx="12" cy="12" r="2.6"/><g stroke-width="3.4"><line x1="18.28" y1="14.60" x2="20.87" y2="15.67"/><line x1="14.60" y1="18.28" x2="15.67" y2="20.87"/><line x1="9.40" y1="18.28" x2="8.33" y2="20.87"/><line x1="5.72" y1="14.60" x2="3.13" y2="15.67"/><line x1="5.72" y1="9.40" x2="3.13" y2="8.33"/><line x1="9.40" y1="5.72" x2="8.33" y2="3.13"/><line x1="14.60" y1="5.72" x2="15.67" y2="3.13"/><line x1="18.28" y1="9.40" x2="20.87" y2="8.33"/></g></svg></button>
 </header>
 <DropImport reload={loadSets} reopen={() => (app.cur ? openSet(app.cur) : loadSets())} />
 <Health />
