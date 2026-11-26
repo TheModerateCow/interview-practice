@@ -525,6 +525,10 @@ test('Settings: word wrap, mid-round, and the clock keeps running', async ({ pag
   await expect(page.locator('#catalog')).toBeVisible();
 });
 
+// One language server per app, so the code-help tests must not run side by side (two workers would restart each other's server).
+test.describe('Code help', () => {
+test.describe.configure({ mode: 'serial' });
+
 test('Code help: Python suggestions, hints and underlines', async ({ page, request }) => {
   const a = await (await request.post(`${BASE}/api/catalog/ledger-codebase/attempt`, { headers: H, data: { language: 'python' } })).json();
   await request.post(`${BASE}/api/sets/${a.name}/start`, { headers: H, data: {} });
@@ -590,4 +594,5 @@ test('Code help: Go suggestions and underlines', async ({ page, request }) => {
   await page.keyboard.type('_ = l.Balance("a")'); await page.keyboard.press('Escape');
   await expect.poll(() => page.locator('.squiggly-error').count(), { timeout: 5000 }).toBeGreaterThan(0);
   await expect(page.locator('#assist-status')).toHaveText('');
+});
 });
