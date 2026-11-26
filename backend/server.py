@@ -6,7 +6,7 @@ from werkzeug.exceptions import HTTPException
 
 from lab import catalog, importer, rounds
 from sandbox import images, runner
-from lab.store import EXPORTS, NAME_RE, SETS, HTTPError, clock, manifest, ready_info, require_started, sdir, session, state, work_path
+from lab.store import EXPORTS, SETS, HTTPError, ready_info, require_started, sdir, state, work_path
 
 PORT = os.environ.get("ILAB_PORT", "8765")   # the port nginx publishes; the Host/Origin allowlist follows it
 HOSTS = {f"127.0.0.1:{PORT}", f"localhost:{PORT}"}
@@ -20,6 +20,13 @@ app.json.sort_keys = False
 def body(limit):
     request.max_content_length = limit   # 413 for oversized bodies, chunked ones included
     return request.get_data(cache=False)
+
+
+def json_body():
+    try: b = json.loads(body(MAX_FILE) or b"{}")
+    except ValueError: raise HTTPError(400, "request body is not valid JSON")
+    if not isinstance(b, dict): raise HTTPError(400, "request body must be a JSON object")
+    return b
 
 
 @app.before_request
@@ -53,11 +60,6 @@ def _http_errors(e):   # unknown route or wrong method: 404 as before; 413 etc. 
 def _docker(e): return err(503, str(e))
 
 
-@app.errorhandler(ValueError)
-@app.errorhandler(KeyError)
-def _bad(e): traceback.print_exc(); return err(400, f"bad request: {e}")
-
-
 @app.errorhandler(Exception)
 def _internal(e): traceback.print_exc(); return err(500, f"internal error: {e}")
 
@@ -75,19 +77,11 @@ def r_catalog(): return catalog.listing()
 
 
 @app.post("/api/catalog/<n>/attempt")
-def r_attempt(n): return catalog.start_attempt(n, json.loads(body(MAX_FILE) or b"{}").get("language"))
+def r_attempt(n): return catalog.start_attempt(n, json_body().get("language"))
 
 
 @app.get("/api/sets")
-def r_sets():
-    os.makedirs(SETS, exist_ok=True)
-    out = []
-    for n in sorted(os.listdir(SETS)):
-        if NAME_RE.fullmatch(n) and os.path.isfile(os.path.join(SETS, n, "manifest.json")):
-            i = ready_info(n)
-            left = round(clock(session(n))[1] * 60) if i["status"] == "running" else None   # same rule as state.left_s
-            out.append({k: i[k] for k in ("name", "title", "language", "round", "minutes", "status")} | {"left_s": left, "problem": catalog.problem_of(manifest(n))})
-    return {"sets": out}
+def r_sets(): return catalog.sets()
 
 
 @app.get("/api/sets/<n>")
@@ -112,7 +106,7 @@ def r_state(n): sdir(n); require_started(n); return state(n)
 
 
 @app.post("/api/sets/<n>/run")
-def r_run(n): sdir(n); return rounds.run(n, json.loads(body(MAX_FILE) or b"{}"))
+def r_run(n): sdir(n); return rounds.run(n, json_body())
 
 
 ACTIONS = {"start": rounds.start, "mytests": rounds.mytests, "submit": rounds.submit, "next": rounds.next_part, "end": rounds.end}
