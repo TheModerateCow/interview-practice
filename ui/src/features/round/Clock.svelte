@@ -2,6 +2,7 @@
   // Header part of the round: part chips and the timer.
   import { mmss, partName } from '../../lib/util.js';
   import { round, secondsLeft } from './round.svelte.js';
+  import { app } from '../../app.svelte.js';
   let { shown } = $props();
 
   const st = $derived(round.st);
@@ -18,6 +19,6 @@
 <div id="parts" class="parts" class:hidden={!shown} aria-label="Parts">
   {#each chips as c}<span class="chip {c.cls}">{c.label}</span>{/each}
 </div>
-<div id="timer-wrap" class="timer-wrap" class:hidden={!shown}><span id="timer-label" class="label">{st?.ended ? 'closed' : 'left'}</span><span id="timer" class="timer"
+<div id="timer-wrap" class="timer-wrap" class:hidden={!shown}>{#if app.hideTimer && !st?.ended}<span id="timer-hidden" class="label">Timer hidden</span>{:else}<span id="timer-label" class="label">{st?.ended ? 'closed' : 'left'}</span><span id="timer" class="timer"
   class:low={!!st && !st.ended && left > 0 && left <= 300} class:over={!!st && (!!st.expired || (!st.ended && left === 0))}
-  role="timer" aria-label="Time left">{st ? mmss(left) : '--:--'}</span></div>
+  role="timer" aria-label="Time left">{st ? mmss(left) : '--:--'}</span>{/if}</div>

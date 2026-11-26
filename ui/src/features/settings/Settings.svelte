@@ -21,6 +21,13 @@
         {#each [[false, 'Off'], [true, 'On']] as [v, label]}
           <button type="button" data-wrap={v ? 'on' : 'off'} aria-pressed={String(wrap === v)} onclick={() => { wrap = v; setWrap(v); }}>{label}</button>
         {/each}</div></div>
+    <div class="setting"><div><span id="timer-set-label">Timer</span>
+        <p>Hide the countdown while you work. The round still ends at 00:00, and the time shows again once it closes.</p></div>
+      <div id="timer-pick" class="seg" role="group" aria-labelledby="timer-set-label">
+        {#each [[false, 'Show'], [true, 'Hide']] as [v, label]}
+          <button type="button" data-timer={v ? 'hidden' : 'shown'} aria-pressed={String(app.hideTimer === v)}
+            onclick={() => { app.hideTimer = v; LS.set('ilab-timer', v ? 'hidden' : 'shown'); }}>{label}</button>
+        {/each}</div></div>
     <div class="setting"><div><span>Theme</span></div><ThemeToggle /></div>
     <p class="muted">The language problems open in is set on Home, above the problem list ("Practise in").</p>
     <div class="actions"><button id="settings-close" class="btn btn-outline" type="button" onclick={close}>Done</button></div>

@@ -499,6 +499,19 @@ test('Settings: word wrap, mid-round, and the clock keeps running', async ({ pag
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page.click('#settings-btn');
   await page.click('#settings [data-t=""]');   // back to Auto, so later tests are unaffected
+  // Timer: Hide takes the countdown off the header (the round keeps running), and stays hidden after a reload
+  await page.click('#timer-pick [data-timer="hidden"]');
+  await expect(page.locator('#timer-pick [data-timer="hidden"]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#timer')).toHaveCount(0);
+  await expect(page.locator('#timer-hidden')).toHaveText('Timer hidden');
+  await page.reload();
+  await page.waitForLoadState('networkidle');
+  await openIfAsked(page);
+  await expect(page.locator('#timer-hidden')).toBeVisible();
+  await expect(page.locator('#timer')).toHaveCount(0);
+  await page.click('#settings-btn');
+  await page.click('#timer-pick [data-timer="shown"]');
+  await expect(page.locator('#timer')).toBeVisible();
   // 400 px: no sideways scroll, Done in view
   await page.setViewportSize({ width: 400, height: 800 });
   await expect(page.locator('#settings')).toBeVisible();
