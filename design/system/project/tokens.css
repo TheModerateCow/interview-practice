@@ -111,6 +111,7 @@
   --t-code-lh: 1.6;
   --t-timer: 2.25rem;
   --dur: 160ms;
+  --dur-slow: 280ms;
   --ease: cubic-bezier(.2, .7, .2, 1);
   --font-sans: "Inter Tight", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
