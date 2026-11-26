@@ -95,7 +95,7 @@ export async function enterRound(s, my) {
   await flush();   // the round screen is visible before Monaco measures its box
   await editor(); if (my !== app.nav) return;
   const st = round.st;
-  const first = st.files.find(f => f === st.run_entry) || st.files[0];
+  const first = st.files.find(f => f === st.run_entry) || st.files.find(f => f !== 'go.mod') || st.files[0];
   if (first) await openFile(first);
   if (my !== app.nav) return;
   stopTimers();
@@ -149,6 +149,11 @@ export async function guarded(label, fn) {
 }
 
 export function doRun() {
+  if (round.st?.has_examples) return guarded('Running the examples', async () => {   // Levelled: one example test per unlocked level
+    round.results = { kind: 'loading', msg: 'Running the examples' };
+    const r = await api('/sets/' + app.cur + '/run', { method: 'POST' });
+    round.results = { kind: 'grades', title: 'Examples', rows: r.examples, names: true };
+  });
   guarded('Running', async () => {
     const file = round.st.run_entry || round.curFile;   // Run runs the run program, whichever tab is open
     round.results = { kind: 'loading', msg: 'Running ' + (file || 'your code') };
@@ -171,7 +176,7 @@ export function doSubmit() {
     const was = round.st.ended;
     round.results = { kind: 'loading', msg: 'Running hidden tests' };
     const r = await api('/sets/' + app.cur + '/submit', { method: 'POST' });
-    round.results = { kind: 'grades', title: 'Hidden tests', rows: r.results, names: false };
+    round.results = { kind: 'grades', title: 'Hidden tests', rows: r.results, names: true };
     setState(r.state);
     if ((r.revealed || []).length) showFlash(unlockedMsg(round.st.unlocked[round.st.unlocked.length - 1]));
     if (r.state.ended && !was) openFinal();

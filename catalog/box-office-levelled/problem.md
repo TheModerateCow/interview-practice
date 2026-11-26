@@ -29,6 +29,5 @@ A buyer's tickets belong to one event: tickets for `"a"` can't be refunded again
 
 ## Checking your work
 
-- **Run** runs `{{run_entry}}`, a small program that reads commands from stdin (`create`, `buy`, `refund`, `available`; see the top of the file). Extend it as you go.
-- **My tests** runs your own test files. The starter includes an example test to copy.
-- **Submit** runs the hidden tests for every level you've unlocked.
+- **Run** checks your code against one example test per unlocked level and shows which fail and why.
+- **Submit** runs the full hidden tests for every level you've unlocked. Passing them all opens the next level.

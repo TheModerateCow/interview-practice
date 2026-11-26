@@ -37,6 +37,5 @@ Putting units in a cart doesn't take them out of stock: two carts can each hold 
 
 ## Checking your work
 
-- **Run** runs `{{run_entry}}`, a small program that reads commands from stdin (`product`, `add`, `remove`, `total`, `{{items}}`; see the top of the file). Extend it as you go.
-- **My tests** runs your own test files (`{{your_tests}}`). The starter includes an example test to copy.
-- **Submit** runs the hidden tests for every level you've unlocked.
+- **Run** checks your code against one example test per unlocked level and shows which fail and why.
+- **Submit** runs the full hidden tests for every level you've unlocked. Passing them all opens the next level.
