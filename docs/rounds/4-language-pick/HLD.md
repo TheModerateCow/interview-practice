@@ -95,8 +95,10 @@ sideways scroll.
 
 ## PR plan
 
-**One PR.** The change is about 20 lines of UI, 6 lines of CSS and one e2e test. Splitting it would leave Home with
-neither the pills nor the switch, or with both.
+**PR 1** is the language switch. The change is about 20 lines of UI, 6 lines of CSS and one e2e test. Splitting it
+would leave Home with neither the pills nor the switch, or with both.
+**PR 2** (added by the owner, 2026-11-27) is the Settings page with word wrap. It is built in parallel with PR 1 and
+merged after it (see PR 2 for the shared files).
 
 Verify on the isolated test stack (`tests/stack.sh up`, http://127.0.0.1:8766), never on the owner's app at 8765.
 The UI is built into the stack's image, so `tests/stack.sh up` picks up the branch.
@@ -161,3 +163,177 @@ The UI is built into the stack's image, so `tests/stack.sh up` picks up the bran
   8. `tests/run_all.sh` ends with every step PASS.
 - **Not in this PR:** the ready screen, filtering by language (owner's open question), and `docs/PRODUCT.md` §4a. The
   Home step there still means "pick a problem, land on its ready screen", so the user-flow diagrams don't change.
+
+---
+
+## Design addition (owner, 2026-11-27): Settings and word wrap
+
+Spec: `SPEC.md`, "Addition", R4–R6. Code references are to `main` at 4903d76.
+
+### Today
+
+```
+App.svelte header:  brand · [All sets] · [set picker ▾] · spacer · parts · clock · <ThemeToggle/> (Auto|Light|Dark)
+screen(v):          app.view = v; if v !== 'round' → stopTimers()      (the clock poll, the tick and the 00:00 auto-close)
+ThemeToggle:        theme = LS 'ilab-theme'; $effect sets <html data-theme>; onMount listens to the system theme
+loadMonaco():       monaco.editor.create(el, { …, no wordWrap })      → Monaco's default, off; one editor per page
+```
+
+### Settings panel: `ui/src/features/settings/Settings.svelte` (new)
+
+Always in the page and hidden while closed, like `#delete-confirm`. This keeps `ThemeToggle` mounted, so the saved
+theme still applies on load.
+
+```svelte
+<script>
+  import ThemeToggle from '../../components/ThemeToggle.svelte';
+  import { LS } from '../../lib/util.js';
+  import { setWrap } from '../../lib/monaco.js';
+  import { app } from '../../app.svelte.js';
+  import { round } from '../round/round.svelte.js';
+  let wrap = $state(LS.get('ilab-wrap') === 'on'), panel = $state();
+  const close = () => { app.settings = false; document.getElementById('settings-btn')?.focus(); };
+  $effect(() => { if (round.finalOpen) app.settings = false; });            // 00:00 while open: the end card wins
+  $effect(() => { if (app.settings) panel?.querySelector('button')?.focus(); });
+</script>
+<svelte:window onkeydown={e => { if (e.key === 'Escape' && app.settings) close(); }} />
+<div id="settings" class="overlay settings" class:hidden={!app.settings} role="dialog" aria-labelledby="settings-title">
+  <div class="final-card" bind:this={panel}>
+    <h2 id="settings-title">Settings</h2>
+    <div class="setting"><div><span id="wrap-label">Word wrap</span>
+        <p>Long lines wrap at the editor's edge instead of scrolling sideways. Your code doesn't change.</p></div>
+      <div id="wrap-pick" class="seg" role="group" aria-labelledby="wrap-label">
+        {#each [[false, 'Off'], [true, 'On']] as [v, label]}
+          <button type="button" data-wrap={v ? 'on' : 'off'} aria-pressed={String(wrap === v)} onclick={() => { wrap = v; setWrap(v); }}>{label}</button>
+        {/each}</div></div>
+    <div class="setting"><div><span>Theme</span></div><ThemeToggle /></div>
+    <p class="muted">The language problems open in is set on Home, above the problem list ("Practise in").</p>
+    <div class="actions"><button id="settings-close" class="btn btn-outline" type="button" onclick={close}>Done</button></div>
+  </div>
+</div>
+```
+
+`ThemeToggle.svelte` is not edited: its group is already labelled "Theme" (`aria-label`). #38 changes only its insides.
+
+### Header and app state: `ui/src/App.svelte`, `ui/src/app.svelte.js`
+
+```svelte
+<header id="top" class:above={app.settings}>
+  … brand · All sets · picker · spacer · <Clock/> …
+  <button id="settings-btn" class="btn btn-ghost" type="button" aria-expanded={app.settings}
+    aria-controls="settings" onclick={() => (app.settings = !app.settings)}>Settings</button>   <!-- replaces <ThemeToggle /> -->
+</header>
+… <Round /> <Settings />
+```
+
+- `screen(v)` starts with `app.settings = false`. Every navigation goes through it ("All sets", the picker, Start, a
+  pick on Home), so choosing one closes Settings. Opening and closing Settings never calls `screen()`, so the clock's
+  timers keep running.
+- `app.svelte.js`: `app` gains `settings: false`.
+
+### Word wrap: `ui/src/lib/monaco.js`
+
+```js
+import { LS } from './util.js';
+const wrapOpt = () => (LS.get('ilab-wrap') === 'on' ? 'on' : 'off');
+// in loadMonaco(): monaco.editor.create(el, { …, wordWrap: wrapOpt() })
+export function setWrap(on) { LS.set('ilab-wrap', on ? 'on' : 'off'); monacoP?.then(ed => ed.updateOptions({ wordWrap: wrapOpt() })); }
+```
+
+Monaco's `wordWrap: 'on'` wraps at the viewport and hides the horizontal scrollbar. It changes the view only: the
+model text, autosave, Run, My tests and Submit are untouched. When the editor isn't loaded yet (Home, Ready),
+`setWrap()` only saves the choice, and the editor reads it when it is created.
+
+### Styles: `ui/src/styles/style.css`, a new "settings" block (no edits to existing rules)
+
+```css
+#top.above { position: relative; z-index: 31; }   /* over the Settings overlay (30): the clock stays in sight */
+.settings .final-card { max-width: 560px; }
+.setting { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-2) var(--s-4);
+  padding-top: var(--s-4); border-top: 1px solid var(--line); }
+.setting p { margin: var(--s-1) 0 0; max-width: 40ch; color: var(--fg-3); font-size: var(--t-small); }
+```
+
+Reused as they are: `.overlay`, `.final-card` (and its `h2` and `.actions`), `.seg`, `.btn-ghost`, `.btn-outline`,
+`.muted`. No new tokens and no accent: Settings has no `btn-accent`, and on the round screen Submit stays the only
+one. Hint text is `fg-3` on `bg`: 4.9:1 light, 5.3:1 dark.
+
+### Data and interface changes (PR 2)
+
+| Thing | Change |
+|---|---|
+| API, backend, `data/` | None |
+| Browser key `ilab-wrap` | New: `"on"` or `"off"` (missing means off) |
+| Browser key `ilab-theme` | Unchanged |
+| Element ids | New: `#settings-btn`, `#settings`, `#settings-title`, `#settings-close`, `#wrap-pick [data-wrap]`. The theme buttons (`[data-t]`) move from `#top` into `#settings`; no test uses them. Kept: `#top`, `#home-btn`, `#set-picker`, `#set-picker-list`, `#timer`, `#round`, `#editor`, `#file-tree`, `#final`, `#drop-confirm-open` |
+
+---
+
+### PR 2 (added by the owner, 2026-11-27; parallel with PR 1, merge after it): Settings, with word wrap
+- **Example** (`catalog/fares-tdd/java/starter/Fares.java` line 9 is a 169-character comment):
+  1. On Home, choose Transit fares: peaks, transfers and caps (TDD) in Java. Press Start.
+  2. In Files, open `Fares.java`. Look at line 9, the comment above `journeyFare(...)`.
+  3. Look for a way to make long lines wrap.
+  4. Open Settings, set Word wrap to On, close Settings.
+  - **Expected:** step 3: a "Settings" button at the right end of the header. Step 4: Settings opens over the round,
+    and the clock in the header keeps counting. With Word wrap On, line 9 wraps onto two lines inside the editor and
+    ends `"adult", "child" or "senior". */`, with no sideways scrollbar. "Done" returns to the same file, and the clock
+    has kept running. After a reload, wrap is still on.
+  - **Got today:** step 2: line 9 runs past the editor's right edge at 1440 px. About the last 60 characters (the
+    list of concessions) are out of sight; the candidate scrolls sideways or moves the cursor to read them. Step 3:
+    there is no word wrap option and no Settings; the header holds only the theme switch.
+- **Files:** `ui/src/features/settings/Settings.svelte` (new), `ui/src/App.svelte` (header, `screen()`, render
+  `<Settings />`), `ui/src/app.svelte.js` (`settings`), `ui/src/lib/monaco.js` (`wordWrap`, `setWrap`),
+  `ui/src/styles/style.css` (new "settings" block), `design/system/project/README.md` (the Layout paragraph: the
+  header ends in "Settings", not the theme switch), `tests/e2e.spec.mjs`.
+- **Interface changes:** none in the API. New browser key `ilab-wrap`.
+- **Data changes:** none.
+- **Shared files and order:**
+  - PR 1 also edits `style.css` (the `.seg` and catalog rules; PR 2 only adds a new block at the end of the Home
+    section) and `tests/e2e.spec.mjs` (each PR appends its own test). Rebase, don't merge blind.
+  - PR 2 relies on PR 1's `.seg` hover and full focus ring for its two switches. Built before PR 1 lands, they work
+    but don't shade. **Merge order: PR 1 → PR 2.**
+  - #38 (motion, open) edits `ThemeToggle.svelte` (PR 2 doesn't), `style.css` (keyframes and toast; no overlap with
+    the new block) and `design/system/project/README.md` ("States and motion"; PR 2 edits only "Layout"). Either can
+    merge first. If #38 lands first, its crossfade must still run when the switch is inside Settings (acceptance 6).
+  - Neither PR touches `bundle.css` for Settings: the new rules live in `style.css` only.
+- **Tests:**
+  - New e2e test "Settings: word wrap, mid-round, and the clock keeps running":
+    1. Through the API: `POST /api/catalog/fares-tdd/attempt {"language": "java"}`, then `POST /api/sets/<name>/start`.
+       Open it with the picker (`pickSet`), after `openIfAsked`. Wait for `#editor .monaco-editor`.
+    2. Click `#file-tree div` with text `Fares.java`. The `.view-line` containing `"senior"` ends right of the
+       `#editor` box (no wrap).
+    3. Note `#timer`. Click `#settings-btn`: `#settings` is visible, `#settings-btn` has `aria-expanded="true"`,
+       `#timer` is still visible.
+    4. Click `#wrap-pick [data-wrap="on"]`: it has `aria-pressed="true"`. The text `"senior"` is now inside the
+       `#editor` box.
+    5. Wait 2 s: `#timer` shows less time than in step 3.
+    6. Press Escape: `#settings` is hidden, `#round` is visible, `#settings-btn` is focused, and `Fares.java` is
+       still the selected file (`#file-tree div.sel`).
+    7. Reload and reopen the round: `#wrap-pick [data-wrap="on"]` is still pressed, and `"senior"` is inside `#editor`.
+    8. `#top [data-t]` has count 0 and `#settings [data-t]` count 3. Click `#settings [data-t="dark"]`:
+       `<html data-theme="dark">`. Reload: still dark.
+    9. Resize to 400×800 and open Settings: no sideways scroll (`scrollWidth <= innerWidth`); `#settings-close` is in
+       view and `#settings-btn` is visible.
+    10. With Settings open, click `#home-btn`: Home shows and `#settings` is hidden.
+  - Every existing e2e test passes unchanged: none uses the theme switch, and every id they use is kept (table above).
+  - `tests/api_test.py`: no change (no backend change). `npm run build` in `ui/` succeeds.
+- **Acceptance** (on the test stack, by using the app):
+  1. The example above gives the expected result, in light and in dark.
+  2. Settings opens from Home, from a ready screen and mid-round. On the ready screen, opening and closing it starts
+     no clock. Mid-round the clock keeps counting the whole time Settings is open.
+  3. Done, Esc and the Settings button each close it, and focus lands back on "Settings".
+  4. Drop a 1-minute copy of the sample set (made the way `tests/e2e.sh` makes its `-1m` zip), press Start, open
+     Settings, and wait: at 00:00
+     Settings closes and the end card shows the final grade.
+  5. With wrap On: type a line longer than the editor and press Run, then Submit. Both behave as with wrap Off, and
+     the exported `submission/Fares.java` has no added line breaks.
+  6. Theme: Auto / Light / Dark from Settings changes the page and the editor at once, and the choice survives a
+     reload. The header no longer has the switch.
+  7. 1440 px: "Settings" at the right end of the header, after the clock. 400 px, light and dark: "Settings" is the
+     header's last item; the panel fits with no sideways scroll; each switch wraps under its name.
+  8. Keyboard only: Tab reaches Word wrap, Theme and Done. A screen reader announces the dialog "Settings" and each
+     switch's pressed state.
+  9. `tests/run_all.sh` ends with every step PASS.
+- **Not in this PR:** other editor options (font size, tab width, minimap); a keyboard shortcut for Settings;
+  mirroring "Practise in". `docs/PRODUCT.md` §4a doesn't change: Settings is outside the practice loop it draws.
