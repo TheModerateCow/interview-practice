@@ -22,6 +22,13 @@ def body(limit):
     return request.get_data(cache=False)
 
 
+def json_body():
+    try: b = json.loads(body(MAX_FILE) or b"{}")
+    except ValueError: raise HTTPError(400, "request body is not valid JSON")
+    if not isinstance(b, dict): raise HTTPError(400, "request body must be a JSON object")
+    return b
+
+
 @app.before_request
 def guard():
     if request.headers.get("Host") not in HOSTS: raise HTTPError(403, "forbidden host")
@@ -53,11 +60,6 @@ def _http_errors(e):   # unknown route or wrong method: 404 as before; 413 etc. 
 def _docker(e): return err(503, str(e))
 
 
-@app.errorhandler(ValueError)
-@app.errorhandler(KeyError)
-def _bad(e): traceback.print_exc(); return err(400, f"bad request: {e}")
-
-
 @app.errorhandler(Exception)
 def _internal(e): traceback.print_exc(); return err(500, f"internal error: {e}")
 
@@ -75,7 +77,7 @@ def r_catalog(): return catalog.listing()
 
 
 @app.post("/api/catalog/<n>/attempt")
-def r_attempt(n): return catalog.start_attempt(n, json.loads(body(MAX_FILE) or b"{}").get("language"))
+def r_attempt(n): return catalog.start_attempt(n, json_body().get("language"))
 
 
 @app.get("/api/sets")
@@ -112,7 +114,7 @@ def r_state(n): sdir(n); require_started(n); return state(n)
 
 
 @app.post("/api/sets/<n>/run")
-def r_run(n): sdir(n); return rounds.run(n, json.loads(body(MAX_FILE) or b"{}"))
+def r_run(n): sdir(n); return rounds.run(n, json_body())
 
 
 ACTIONS = {"start": rounds.start, "mytests": rounds.mytests, "submit": rounds.submit, "next": rounds.next_part, "end": rounds.end}
