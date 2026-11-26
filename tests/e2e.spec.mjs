@@ -517,6 +517,7 @@ test('Settings: word wrap, mid-round, and the clock keeps running', async ({ pag
   await page.setViewportSize({ width: 400, height: 800 });
   await expect(page.locator('#settings')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.locator('#settings-close').scrollIntoViewIfNeeded();   // three settings rows: the panel scrolls at 400 px
   await expect(page.locator('#settings-close')).toBeInViewport();
   await expect(page.locator('#settings-btn')).toBeVisible();
   // navigating closes Settings
@@ -571,11 +572,20 @@ test('Code help: Python suggestions, hints and underlines', async ({ page, reque
 test('Settings: code help Full, Words only, Off', async ({ page, request }) => {
   const mk = async () => (await (await request.post(`${BASE}/api/catalog/ledger-codebase/attempt`, { headers: H, data: { language: 'python' } })).json()).name;
   const a = await mk(), b = await mk();
-  await request.post(`${BASE}/api/sets/${a}/start`, { headers: H, data: {} });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(BASE);
   await page.waitForLoadState('networkidle');
   await openIfAsked(page);
+  // an unstarted attempt first: the ready screen names the level, and follows Settings
+  await pickSet(page, b);
+  await expect(page.locator('#ready-assist')).toContainText('Code help: Full');
+  await page.click('#settings-btn'); await page.click('#assist-pick [data-assist="words"]');
+  await expect(page.locator('#ready-assist')).toContainText('Code help: Words only');
+  await page.click('#assist-pick [data-assist="off"]');
+  await expect(page.locator('#ready-assist')).toContainText('Code help: Off');
+  await page.click('#assist-pick [data-assist="full"]');
+  await page.keyboard.press('Escape');
+  await request.post(`${BASE}/api/sets/${a}/start`, { headers: H, data: {} });
   await pickSet(page, a);
   await expect(page.locator('#editor .monaco-editor')).toBeVisible({ timeout: 60000 });
   const assistOps = [];   // every language-server request the page makes
@@ -617,15 +627,6 @@ test('Settings: code help Full, Words only, Off', async ({ page, request }) => {
   await expect(page.locator('#editor .monaco-editor')).toBeVisible({ timeout: 60000 });
   await page.click('#settings-btn');
   await expect(page.locator('#assist-pick [data-assist="off"]')).toHaveAttribute('aria-pressed', 'true');
-  await page.keyboard.press('Escape');
-  // another, unstarted attempt: the ready screen names the level
-  await page.evaluate(() => { location.hash = ''; });
-  await pickSet(page, b);
-  await expect(page.locator('#ready-assist')).toContainText('Code help: Off');
-  await page.click('#settings-btn'); await page.click('#assist-pick [data-assist="words"]');
-  await expect(page.locator('#ready-assist')).toContainText('Code help: Words only');
-  await page.click('#assist-pick [data-assist="full"]');
-  await expect(page.locator('#ready-assist')).toContainText('Code help: Full');
   await page.keyboard.press('Escape');
   // back to Full mid-round: suggestions return without a reload
   await pickSet(page, a);
