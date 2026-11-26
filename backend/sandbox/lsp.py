@@ -8,12 +8,21 @@ import json, re, struct, sys, threading, time
 from lab import store
 from sandbox import runner
 
+JDTLS_CMD = ("java -Xms64m -Xmx256m -XX:+UseSerialGC -XX:TieredStopAtLevel=1 -Declipse.application=org.eclipse.jdt.ls.core.id1 "
+             "-Dosgi.bundles.defaultStartLevel=4 -Declipse.product=org.eclipse.jdt.ls.core.product -Dlog.level=ERROR "
+             "-jar $(ls /opt/jdtls/plugins/org.eclipse.equinox.launcher_*.jar) -configuration /tmp/cfg -data /tmp/jws "
+             "--add-modules=ALL-SYSTEM --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED")
 SERVERS = {   # language -> command, source extension, files for the server's workspace only, answers to workspace/configuration
     # Debug (Codebase) rounds plant bugs the type checker would underline, so type checking is off there: completion, hover and
     # signatures stay, syntax errors and undefined names still show. /opt/site holds pytest, as in the runner image.
     "python": dict(cmd="pyright-langserver --stdio", ext=".py", settings={},
                    extra=lambda rnd: {"pyrightconfig.json": json.dumps({"pythonVersion": "3.15", "extraPaths": ["/opt/site"],
                                                                         "typeCheckingMode": "off" if rnd == "codebase" else "basic"}).encode()}),
+    # jdtls: Gradle/Maven import off (a build file the candidate writes is never read), signature help on, and only errors underline (no
+    # unused/raw-type lint). It writes its config and workspace, so both go to /tmp. Expect.java is the harness helper tests call.
+    "java": dict(cmd="sh -c 'cp -r /opt/jdtls/config_linux /tmp/cfg && exec " + JDTLS_CMD + "'", ext=".java", errors_only=True,
+                 settings={"java": {"signatureHelp": {"enabled": True}, "import": {"gradle": {"enabled": False}, "maven": {"enabled": False}}}},
+                 extra=lambda rnd: {"Expect.java": runner.JAVA_EXPECT.lstrip().encode()}),
 }
 OPS = {"complete": "textDocument/completion", "resolve": "completionItem/resolve",
        "hover": "textDocument/hover", "signature": "textDocument/signatureHelp"}
@@ -72,7 +81,8 @@ class Session:
             runner.api("POST", f"/containers/{self.cid}/start")
             self.sock.sendall(payload)
             ok = self.request("initialize", {"processId": None, "rootUri": "file://" + W, "capabilities": CAPS,
-                                             "workspaceFolders": [{"uri": "file://" + W, "name": "w"}]}, 30, raw=True)
+                                             "workspaceFolders": [{"uri": "file://" + W, "name": "w"}],
+                                             "initializationOptions": {"settings": self.cfg["settings"]}}, 30, raw=True)
             if ok is None: raise runner.DockerError("The language server did not start.")
             self._send({"jsonrpc": "2.0", "method": "initialized", "params": {}})
             self.state = "ready"
@@ -189,6 +199,7 @@ def call(n, lang, op, rel, text=None, line=0, col=0, item=None):
         if op == "check":
             if rel not in s.docs: return {"state": "ready", "diagnostics": []}
             d = s.diagnostics(rel)
+            if s.cfg.get("errors_only"): d = [x for x in d or [] if x.get("severity", 1) == 1]
             return {"state": "ready", "diagnostics": clean(d or [])} if d is not None or s.state == "ready" else {"state": s.state}
         res = s.request(OPS[op], item if op == "resolve" else pos)
     except OSError: return {"state": "unavailable", "reason": "The language server stopped."}

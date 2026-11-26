@@ -553,3 +553,28 @@ test('Code help: Python suggestions, hints and underlines', async ({ page, reque
   await newLine(); await page.keyboard.type('    l.bal');
   await expect(row('balance_at')).toBeVisible({ timeout: 15000 });
 });
+
+test('Code help: Java suggestions and underlines', async ({ page, request }) => {
+  const a = await (await request.post(`${BASE}/api/catalog/ledger-codebase/attempt`, { headers: H, data: { language: 'java' } })).json();
+  await request.post(`${BASE}/api/sets/${a.name}/start`, { headers: H, data: {} });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(BASE);
+  await page.waitForLoadState('networkidle');
+  await openIfAsked(page);
+  await pickSet(page, a.name);
+  await expect(page.locator('#editor .monaco-editor')).toBeVisible({ timeout: 60000 });
+  // Main.java is open. Start a new line inside handle(), after its first statement.
+  const newLine = () => page.evaluate(() => {
+    const e = window.monaco.editor.getEditors()[0], m = e.getModel(), i = m.getLinesContent().findIndex(l => l.includes('int n = f.length - 1;'));
+    e.executeEdits('t', [{ range: new window.monaco.Range(i + 1, 100, i + 1, 100), text: '\n' }]); e.setPosition({ lineNumber: i + 2, column: 1 }); e.focus();
+  });
+  await page.click('#editor .view-lines');
+  // the first request starts the server; typing and the toolbar are not blocked while it does
+  await expect.poll(async () => (await request.post(`${BASE}/api/sets/${a.name}/assist`, { headers: H, data: { op: 'complete', file: 'Main.java', text: '' } })).json().then(j => j.state), { timeout: 40000 }).toBe('ready');
+  await newLine(); await page.keyboard.type('        l.bal');
+  await expect(page.locator('.suggest-widget .monaco-list-row', { hasText: 'balanceAt' })).toBeVisible({ timeout: 8000 });   // Ledger.java was never opened
+  await page.keyboard.press('Escape'); await page.keyboard.press('Shift+Home'); await page.keyboard.press('Shift+Home'); await page.keyboard.press('Delete');
+  await page.keyboard.type('        l.balance("a");'); await page.keyboard.press('Escape');
+  await expect.poll(() => page.locator('.squiggly-error').count(), { timeout: 8000 }).toBeGreaterThan(0);
+  await expect(page.locator('#assist-status')).toHaveText('');
+});
