@@ -9,8 +9,11 @@ from lab import store
 from sandbox import runner
 
 SERVERS = {   # language -> command, source extension, files for the server's workspace only, answers to workspace/configuration
+    # Debug (Codebase) rounds plant bugs the type checker would underline, so type checking is off there: completion, hover and
+    # signatures stay, syntax errors and undefined names still show. /opt/site holds pytest, as in the runner image.
     "python": dict(cmd="pyright-langserver --stdio", ext=".py", settings={},
-                   extra={"pyrightconfig.json": b'{"pythonVersion": "3.15", "typeCheckingMode": "basic"}'}),
+                   extra=lambda rnd: {"pyrightconfig.json": json.dumps({"pythonVersion": "3.15", "extraPaths": ["/opt/site"],
+                                                                        "typeCheckingMode": "off" if rnd == "codebase" else "basic"}).encode()}),
 }
 OPS = {"complete": "textDocument/completion", "resolve": "completionItem/resolve",
        "hover": "textDocument/hover", "signature": "textDocument/signatureHelp"}
@@ -53,7 +56,7 @@ class Session:
 
     def _boot(self):
         try:
-            files = store.work_files(self.n) | self.cfg["extra"]
+            files = store.work_files(self.n) | self.cfg["extra"](store.manifest(self.n).get("round"))
             payload = runner._tar(files)
             body = {"Image": runner.LSP_IMAGES[self.lang], "Entrypoint": ["sh", "-c", BOOT + self.cfg["cmd"]], "Cmd": [],
                     "Env": runner.BASE_ENV + [f"ILAB_N={len(payload)}"], "WorkingDir": "/tmp",

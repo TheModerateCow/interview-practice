@@ -685,9 +685,13 @@ def _():
     j = at(A, "hover", main, hl, 17)
     hv = json.dumps(j.get("result"))
     check("hover on Ledger names the class", "Ledger" in hv and "class" in hv, hv[:200])
-    t = with_line("    l.balance('a')"); t0 = time.time(); j = at(A, "check", t, 0, 0)
+    t = with_line("    undefined_name()"); t0 = time.time(); j = at(A, "check", t, 0, 0)
     d = [x for x in j.get("diagnostics", []) if x["range"]["start"]["line"] == ln]
-    check("check: one diagnostic on the bad call, naming cur, within 2 s", len(d) == 1 and "cur" in d[0]["message"] and time.time() - t0 < 2.5, (j, time.time() - t0))
+    check("codebase round: an undefined name is underlined within 2 s", len(d) == 1 and "undefined_name" in d[0]["message"] and time.time() - t0 < 2.5, (j, time.time() - t0))
+    j = at(A, "check", with_line("    l.balance('a')"), 0, 0)
+    check("codebase round: type errors are not underlined (they would give away the planted bugs)", j.get("diagnostics") == [], j)
+    j = at(A, "check", main + "\ndef broken(:\n", 0, 0)
+    check("codebase round: a syntax error is underlined", any(x.get("severity") == 1 for x in j.get("diagnostics", [])), j)
     ex = req("GET", f"/api/sets/{A}/files/test_example.py")[1].decode()
     check("the untouched starter test file has no diagnostics", at(A, "check", ex, 0, 0, file="test_example.py").get("diagnostics") == [], None)
     check("main.py as shipped has no diagnostics", at(A, "check", main, 0, 0).get("diagnostics") == [], None)
@@ -715,6 +719,24 @@ def _():
     check("a request after stop starts a new session", ready(A))
     jreq("POST", f"/api/sets/{A}/end")
     check("delete a set with a live session: the container is gone within 5 s", jreq("DELETE", f"/api/sets/{A}")[0] == 200 and gone())
+    def errors(n, rels):
+        out = {}
+        for f in rels:
+            d = at(n, "check", req("GET", f"/api/sets/{n}/files/{f}")[1].decode(), 0, 0, file=f).get("diagnostics")
+            e = [x["message"] for x in d or [] if x.get("severity") == 1]
+            if e or d is None: out[f] = e or "no answer"
+        return out
+    for prob in ("ledger-codebase", "jobqueue-codebase", "quota-codebase"):
+        a = jreq("POST", f"/api/catalog/{prob}/attempt", {"language": "python"})[1]["name"]; jreq("POST", f"/api/sets/{a}/start")
+        ready(a)
+        py = [f for f in jreq("GET", f"/api/sets/{a}/state")[1]["files"] if f.endswith(".py")]
+        check(f"{prob}: untouched starter files have 0 errors", errors(a, py) == {}, errors(a, py))
+        jreq("POST", f"/api/sets/{a}/end")
+    a = jreq("POST", "/api/catalog/invoice-tdd/attempt", {"language": "python"})[1]["name"]; jreq("POST", f"/api/sets/{a}/start"); ready(a)
+    check("invoice-tdd: untouched test_example.py has 0 errors (import pytest resolves)", errors(a, ["test_example.py"]) == {}, errors(a, ["test_example.py"]))
+    j = at(a, "check", "def f(a, b): return a\nf(1)\n", 0, 0, file="probe.py")
+    check("other rounds keep type checking: a missing argument is underlined", any("b" in x["message"] for x in j.get("diagnostics", [])), j)
+    jreq("POST", f"/api/sets/{a}/end")
     # stdin handover: a 100 KB file saved before the server starts
     B = attempt()
     big = "".join(f"def big_fn_{i:04d}(x):\n    return x + {i}\n\n" for i in range(3500)) + "def big_last_fn(x):\n    return x\n"

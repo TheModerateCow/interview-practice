@@ -525,7 +525,7 @@ test('Code help: Python suggestions, hints and underlines', async ({ page, reque
     const e = window.monaco.editor.getEditors()[0], m = e.getModel(), i = m.getLinesContent().findIndex(l => l.includes('return ["ok"]'));
     e.executeEdits('t', [{ range: new window.monaco.Range(i + 1, 1, i + 1, 1), text: '\n' }]); e.setPosition({ lineNumber: i + 1, column: 1 }); e.focus();
   });
-  const clear = async () => { await page.keyboard.press('Escape'); await page.keyboard.press('Shift+Home'); await page.keyboard.press('Shift+Home'); await page.keyboard.press('Delete'); };
+  const clear = async () => { await page.keyboard.press('Escape'); await page.keyboard.press('End'); await page.keyboard.press('Shift+Home'); await page.keyboard.press('Shift+Home'); await page.keyboard.press('Delete'); };
   const row = t => page.locator(`.suggest-widget .monaco-list-row[aria-label="${t}"]`);
   await page.click('#editor .view-lines');
   await page.keyboard.press('Control+Home'); await page.keyboard.type('import heapq\n');
@@ -541,8 +541,8 @@ test('Code help: Python suggestions, hints and underlines', async ({ page, reque
   await page.keyboard.type('    heapq.heappush(');
   await expect(page.locator('.parameter-hints-widget')).toContainText('heap', { timeout: 5000 });
   await clear();
-  await page.keyboard.type("    l.balance('a')"); await page.keyboard.press('Escape');
-  await expect.poll(() => page.locator('.squiggly-error').count(), { timeout: 5000 }).toBeGreaterThan(0);
+  await page.keyboard.type('    undefined_name()'); await page.keyboard.press('Escape');   // a codebase round: names are checked, types are not
+  await expect.poll(() => page.locator('.squiggly-error, .squiggly-warning').count(), { timeout: 5000 }).toBeGreaterThan(0);
   await expect(page.locator('#assist-status')).toHaveText('');
   // reload: still works
   await page.reload();
