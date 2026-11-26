@@ -6,7 +6,11 @@ from sandbox import grade
 DATA = os.environ.get("ILAB_DATA", "/data")
 SETS, EXPORTS = os.path.join(DATA, "sets"), os.path.join(DATA, "exports")
 NAME_RE = re.compile(r"[a-z0-9][a-z0-9-]{0,63}")
-_locks, _busy = {}, {}   # per set: session read-modify-write lock, and one run/submit at a time
+# Two locks per set, in memory (one process: see server.py). Lock order: run_lock, then lock. Never take run_lock while
+# holding lock: run_lock is held for a whole container run (up to minutes), lock only around a file read-modify-write.
+#   run_lock(n)  one Run / Submit / My tests / End grade at a time; delete takes it to refuse while one is in flight
+#   lock(n)      session.json / results.json read-modify-write, set creation and replacement (also "catalog:<id>")
+_locks, _run_locks = {}, {}
 _glock = threading.Lock()
 
 
@@ -14,8 +18,12 @@ class HTTPError(Exception):
     def __init__(self, code, msg): super().__init__(msg); self.code = code
 
 
-def lock(n, kind=_locks):
-    with _glock: return kind.setdefault(n, threading.Lock())
+def _get(locks, key):
+    with _glock: return locks.setdefault(key, threading.Lock())
+
+
+def lock(n): return _get(_locks, n)
+def run_lock(n): return _get(_run_locks, n)
 
 
 def sdir(n):
