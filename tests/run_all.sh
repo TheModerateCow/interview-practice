@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Full acceptance run on the isolated test stack (tests/stack.sh), built from this checkout and removed at the end.
-# The dev stack on :8765 and data/ are never touched. Usage: tests/run_all.sh [--clean]
-#   --clean  first remove the test stack's own images and Go cache, so everything it uses is rebuilt from scratch
+# The dev stack on :8765 and data/ are never touched. Usage: [ILAB_SUITE=api|e2e] tests/run_all.sh [--clean]
+#   --clean     first remove the test stack's own images and Go cache, so everything it uses is rebuilt from scratch
+#   ILAB_SUITE  run only part: api (set gates + API tests) or e2e (Playwright); CI runs the two as parallel jobs
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
@@ -23,11 +24,14 @@ gate() {
   out=$(tests/stack.sh compose run --rm -T -v "$PWD/tests/sets/$1:/set:ro" backend python3 gate.py /set 2>&1); echo "$out" | tail -5
   echo "$out" | grep -q "GATE PASS"
 }
-for d in tests/sets/*/; do
-  n=$(basename "$d"); [ "$n" = "_zips" ] && continue
-  step "gate $n" gate "$n"
-done
-step api_test python3 tests/api_test.py
-step e2e tests/e2e.sh
+suite=${ILAB_SUITE:-all}
+if [ "$suite" != e2e ]; then
+  for d in tests/sets/*/; do
+    n=$(basename "$d"); [ "$n" = "_zips" ] && continue
+    step "gate $n" gate "$n"
+  done
+  step api_test python3 tests/api_test.py
+fi
+[ "$suite" != api ] && step e2e tests/e2e.sh
 echo; echo "=== summary ==="; printf '%b\n' "$summary"
 exit $fail
