@@ -58,7 +58,7 @@
       </button>
       <div class="langs" role="group" aria-label="Languages for {p.title}">
         {#each p.languages as l}
-          <button type="button" class="lang-chip" class:usual={l === langFor(p)} data-lang={l} disabled={!!picking}
+          <button type="button" class="lang-chip" data-lang={l} disabled={!!picking}
             aria-label="{p.title} in {LANGNAME[l] || l}" onclick={() => pick(p, l)}>{LANGNAME[l] || l}</button>
         {/each}
       </div>
