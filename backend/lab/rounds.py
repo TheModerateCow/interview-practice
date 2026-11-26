@@ -2,8 +2,8 @@
 import fnmatch, io, os, shutil, time, zipfile
 
 from sandbox import grade, runner
-from lab.store import (DATA, EXPORTS, HTTPError, _busy, closed, deadline, jload, jsave, late, lock, locked, log, manifest,
-                       minute, mutate, public, ready_info, require_started, reveal, sdir, session, state, work_files, work_path)
+from lab.store import (DATA, EXPORTS, HTTPError, closed, deadline, jload, jsave, late, lock, locked, log, manifest,
+                       minute, mutate, public, ready_info, require_started, reveal, run_lock, sdir, session, state, work_files, work_path)
 
 EXT_LANG = {".py": "python", ".go": "go", ".java": "java", ".ts": "typescript", ".js": "javascript", ".mjs": "javascript",
             ".c": "c", ".cpp": "cpp", ".cc": "cpp"}
@@ -24,7 +24,7 @@ def start(n):
 
 
 def busy(n):
-    lk = lock(n, _busy)
+    lk = run_lock(n)
     if not lk.acquire(blocking=False): raise HTTPError(409, "another Run/Submit is still running for this set")
     return lk
 
@@ -139,7 +139,7 @@ def last_edit(n):
 def end(n):
     """The one close: idempotent; waits for an in-flight Run/Submit; grades the unlocked tags once."""
     require_started(n); m = manifest(n)
-    lk = lock(n, _busy)
+    lk = run_lock(n)
     if not lk.acquire(timeout=m.get("grade_timeout_s", 45) + 30): raise HTTPError(409, "a Run/Submit is still running")
     try:
         def close(s, _):
@@ -181,7 +181,7 @@ def export(n):
 
 def delete(n):
     """Soft delete: move the set folder to data/deleted/<name>-<stamp>/. Nothing is erased; exports/ is untouched."""
-    wait = lock(n, _busy)   # a Run/Submit/grade holds this; refuse rather than move the folder under it
+    wait = run_lock(n)   # a Run/Submit/grade holds this; refuse rather than move the folder under it
     if not wait.acquire(blocking=False): raise HTTPError(409, "This round is in progress. End it first, then delete it.")
     try:
         with lock(n):
