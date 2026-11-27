@@ -49,6 +49,7 @@ class Session:
         self.cid, self.sock, self.last = None, None, time.time()
         self.cv, self.wlock = threading.Condition(), threading.Lock()
         self.pending, self.diags, self.docs, self.nid = {}, {}, {}, 0
+        self.seq, self.synced = 0, {}   # diagnostics without a version (jdtls) count only if published after the last sync
         self.stopping = threading.Event()
         threading.Thread(target=self._boot, daemon=True).start()
 
@@ -115,7 +116,7 @@ class Session:
             if "method" not in msg:
                 self.pending[msg.get("id")] = msg; self.cv.notify_all()
             elif msg["method"] == "textDocument/publishDiagnostics":
-                p = msg["params"]; self.diags[p["uri"]] = (p.get("version"), p["diagnostics"]); self.cv.notify_all()
+                self.seq += 1; p = msg["params"]; self.diags[p["uri"]] = (p.get("version"), p["diagnostics"], self.seq); self.cv.notify_all()
         if "id" in msg and "method" in msg:   # a request from the server: answer, the settings if it asks for them
             items = msg.get("params", {}).get("items", []) if msg["method"] == "workspace/configuration" else None
             try: self._send({"jsonrpc": "2.0", "id": msg["id"], "result": None if items is None else [self.cfg["settings"].get(i.get("section")) for i in items]})
@@ -144,7 +145,7 @@ class Session:
         with self.cv:
             v, old = self.docs.get(rel, (0, None))
             if old == text: return v
-            self.docs[rel] = (v + 1, text)
+            self.docs[rel] = (v + 1, text); self.synced[f"file://{W}/{rel}"] = self.seq
         if v == 0:
             self._send({"jsonrpc": "2.0", "method": "textDocument/didOpen", "params": {"textDocument": {"uri": uri, "languageId": self.lang, "version": 1, "text": text}}})
         else:
@@ -154,9 +155,10 @@ class Session:
     def diagnostics(self, rel, wait=2.0):
         uri, v = f"file://{W}/{rel}", self.docs[rel][0]
         with self.cv:
-            self.cv.wait_for(lambda: (self.diags.get(uri) or (None,))[0] == v or self.state != "ready", wait)
+            fresh = lambda d: bool(d) and (d[0] == v or (d[0] is None and d[2] > self.synced.get(uri, 0)))
+            self.cv.wait_for(lambda: fresh(self.diags.get(uri)) or self.state != "ready", wait)
             d = self.diags.get(uri)
-        return d[1] if d and d[0] == v else None
+        return d[1] if fresh(d) else None
 
     def _watch(self):
         last_ping = time.time()
@@ -193,8 +195,8 @@ def call(n, lang, op, rel, text=None, line=0, col=0, item=None):
         if op == "check":
             if rel not in s.docs: return {"state": "ready", "diagnostics": []}
             d = s.diagnostics(rel)
-            # codeDescription is a pkg.go.dev link: dropped
-            return {"state": "ready", "diagnostics": clean([{k: v for k, v in x.items() if k != "codeDescription"} for x in d or []])}  if d is not None or s.state == "ready" else {"state": s.state}
+            if d is None: return {"state": s.state}   # nothing published for this text yet: say nothing, never a false "no errors"
+            return {"state": "ready", "diagnostics": clean([{k: v for k, v in x.items() if k != "codeDescription"} for x in d])}   # codeDescription is a pkg.go.dev link: dropped
         res = s.request(OPS[op], item if op == "resolve" else pos)
     except OSError: return {"state": "unavailable", "reason": "The language server stopped."}
     return {"state": "ready", "result": clean(res)}
