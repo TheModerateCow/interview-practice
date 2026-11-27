@@ -1,5 +1,12 @@
 # Interview Lab: notes for agents (any tool)
 
+## Issue → branch → PR (every change, in order)
+
+1. **Issue first.** Find the open issue for the change or create one (`gh issue create --title … --body …`) before writing code. Its number is `<n>`.
+2. **Branch** from fresh `origin/main`, named `<type>/<n>-<kebab-summary>`, with `<type>` one of `feat`, `fix`, `refactor`, `chore`, `docs`, `test`, `ci`. Example: `fix/81-runner-container-leak`. A tool-made name (`worktree-…`) gets renamed before the first push: `git branch -m <name>`.
+3. **PR as draft** (`gh pr create --draft`), imperative title, body opening with `Closes #<n>`. Any PR that changes code gets the `full-suite` label (command below) so the API and e2e tests run; docs-only PRs skip it.
+4. **Green, then ready.** `gh pr checks <pr> --watch` must end with every check passing, none failing or pending. On red, fix the cause and push. Re-run a job only when it failed on infrastructure (runner, network), and say so in the PR. Once green, `gh pr ready <pr>`.
+
 ## Testing a change
 
 - Push the branch and open the PR as soon as the change is ready. GitHub CI runs the tests; a quick local check first is optional.
