@@ -1,0 +1,17 @@
+[
+ {"file": "risk.go", "old": "if _, ok := r.txns[txnID]; ok || amount <= 0 {", "new": "if amount <= 0 {", "label": "a transaction id can be screened twice", "k": "test_l1_"},
+ {"file": "risk.go", "old": "if _, ok := r.txns[txnID]; ok || amount <= 0 {", "new": "if _, ok := r.txns[txnID]; ok || amount < 0 {", "label": "a zero amount is screened", "k": "test_l1_"},
+ {"file": "risk.go", "old": "if !validKind(kind) || r.get(ts, name) != nil {", "new": "if r.get(ts, name) != nil {", "label": "block accepts an unknown kind", "k": "test_l1_"},
+ {"file": "risk.go", "old": "o.card == card && o.ts > ts-x.window", "new": "o.card == card && o.ts >= ts-x.window", "label": "the window includes a transaction exactly window seconds old", "k": "test_l2_"},
+ {"file": "risk.go", "old": "if used > x.limit {", "new": "if used >= x.limit {", "label": "a rule fires at exactly its limit", "k": "test_l2_"},
+ {"file": "risk.go", "old": "if o.card == card && o.ts", "new": "if o.card == card && o.decision != \"decline\" && o.ts", "label": "declined attempts left out of the velocity window", "k": "test_l2_"},
+ {"file": "risk.go", "old": "|| limit <= 0 || window <= 0", "new": "|| limit < 0 || window <= 0", "label": "a rule with limit 0 is accepted", "k": "test_l2_"},
+ {"file": "risk.go", "old": "\"review\": 1, \"approve\": 2}", "new": "\"review\": 1, \"approve\": -1}", "label": "an allowlist entry wins a priority tie", "k": "test_l3_"},
+ {"file": "risk.go", "old": "\treturn a.name < b.name\n", "new": "\treturn a.name > b.name\n", "label": "equal rules tie-broken by name descending", "k": "test_l3_"},
+ {"file": "risk.go", "old": "if _, ok := r.rules[name]; !validKind(kind) || ok {", "new": "if !validKind(kind) {", "label": "allow overwrites an existing allowlist entry", "k": "test_l3_"},
+ {"file": "risk.go", "old": "return a.priority > b.priority", "new": "return a.priority < b.priority", "label": "the lowest priority decides", "k": "test_l3_"},
+ {"file": "risk.go", "old": "if t == nil || t.decision != \"review\" {", "new": "if t == nil {", "label": "approve_review accepts a transaction that is not a pending review", "k": "test_l4_"},
+ {"file": "risk.go", "old": "x.until != 0 && ts >= x.until", "new": "x.until != 0 && ts > x.until", "label": "a temporary block still applies at its end time", "k": "test_l4_"},
+ {"file": "risk.go", "old": "x.until = max(x.until, ts+blockFor)", "new": "x.until = ts + blockFor", "label": "a second decline can shorten a temporary block", "k": "test_l4_"},
+ {"file": "risk.go", "old": "if x == nil {\n\t\tr.rules[name] = &rule{typ: \"block\", until: ts + blockFor}", "new": "if x == nil || x.until == 0 {\n\t\tr.rules[name] = &rule{typ: \"block\", until: ts + blockFor}", "label": "a decline turns a permanent card block into a temporary one", "k": "test_l4_"}
+]

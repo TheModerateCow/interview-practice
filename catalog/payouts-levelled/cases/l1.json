@@ -1,0 +1,569 @@
+[
+ {
+  "name": "merchants_and_sales",
+  "steps": [
+   {
+    "new": "Payouts",
+    "args": []
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "acme",
+     290
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "bolt",
+     250
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     2,
+     "acme",
+     100
+    ],
+    "expect": false
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     3,
+     "acme",
+     10000
+    ],
+    "expect": "s1"
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     4,
+     "zed",
+     500
+    ],
+    "expect": ""
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     5,
+     "bolt",
+     300
+    ],
+    "expect": "s2"
+   },
+   {
+    "call": "fee",
+    "args": [
+     6,
+     "s1"
+    ],
+    "expect": 290
+   },
+   {
+    "call": "fee",
+    "args": [
+     6,
+     "s2"
+    ],
+    "expect": 8
+   },
+   {
+    "call": "balance",
+    "args": [
+     7,
+     "acme"
+    ],
+    "expect": 9710
+   },
+   {
+    "call": "balance",
+    "args": [
+     7,
+     "bolt"
+    ],
+    "expect": 292
+   }
+  ]
+ },
+ {
+  "name": "add_merchant_rules",
+  "steps": [
+   {
+    "new": "Payouts",
+    "args": []
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "neg",
+     -1
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "over",
+     10001
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "free",
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "all",
+     10000
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     2,
+     "free",
+     300
+    ],
+    "expect": false
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     3,
+     "free",
+     4321
+    ],
+    "expect": "s1"
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     3,
+     "all",
+     4321
+    ],
+    "expect": "s2"
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     3,
+     "neg",
+     100
+    ],
+    "expect": ""
+   },
+   {
+    "call": "fee",
+    "args": [
+     4,
+     "s1"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "fee",
+    "args": [
+     4,
+     "s2"
+    ],
+    "expect": 4321
+   },
+   {
+    "call": "balance",
+    "args": [
+     5,
+     "free"
+    ],
+    "expect": 4321
+   },
+   {
+    "call": "balance",
+    "args": [
+     5,
+     "all"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "balance",
+    "args": [
+     5,
+     "neg"
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "fee_rounds_half_up",
+  "steps": [
+   {
+    "new": "Payouts",
+    "args": []
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "m",
+     250
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "n",
+     333
+    ],
+    "expect": true
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     2,
+     "m",
+     100
+    ],
+    "expect": "s1"
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     2,
+     "m",
+     140
+    ],
+    "expect": "s2"
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     2,
+     "m",
+     120
+    ],
+    "expect": "s3"
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     2,
+     "m",
+     119
+    ],
+    "expect": "s4"
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     2,
+     "m",
+     1
+    ],
+    "expect": "s5"
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     2,
+     "n",
+     1500
+    ],
+    "expect": "s6"
+   },
+   {
+    "call": "fee",
+    "args": [
+     3,
+     "s1"
+    ],
+    "expect": 3
+   },
+   {
+    "call": "fee",
+    "args": [
+     3,
+     "s2"
+    ],
+    "expect": 4
+   },
+   {
+    "call": "fee",
+    "args": [
+     3,
+     "s3"
+    ],
+    "expect": 3
+   },
+   {
+    "call": "fee",
+    "args": [
+     3,
+     "s4"
+    ],
+    "expect": 3
+   },
+   {
+    "call": "fee",
+    "args": [
+     3,
+     "s5"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "fee",
+    "args": [
+     3,
+     "s6"
+    ],
+    "expect": 50
+   },
+   {
+    "call": "balance",
+    "args": [
+     4,
+     "m"
+    ],
+    "expect": 467
+   },
+   {
+    "call": "balance",
+    "args": [
+     4,
+     "n"
+    ],
+    "expect": 1450
+   }
+  ]
+ },
+ {
+  "name": "sale_ids_skip_failures",
+  "steps": [
+   {
+    "new": "Payouts",
+    "args": []
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "acme",
+     290
+    ],
+    "expect": true
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     2,
+     "acme",
+     0
+    ],
+    "expect": ""
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     2,
+     "acme",
+     -500
+    ],
+    "expect": ""
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     3,
+     "nobody",
+     500
+    ],
+    "expect": ""
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     4,
+     "acme",
+     2000
+    ],
+    "expect": "s1"
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     5,
+     "acme",
+     3000
+    ],
+    "expect": "s2"
+   },
+   {
+    "call": "fee",
+    "args": [
+     6,
+     "s2"
+    ],
+    "expect": 87
+   },
+   {
+    "call": "fee",
+    "args": [
+     6,
+     "s3"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "fee",
+    "args": [
+     6,
+     ""
+    ],
+    "expect": -1
+   },
+   {
+    "call": "balance",
+    "args": [
+     7,
+     "acme"
+    ],
+    "expect": 4855
+   }
+  ]
+ },
+ {
+  "name": "balances_per_merchant",
+  "steps": [
+   {
+    "new": "Payouts",
+    "args": []
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "acme",
+     290
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "bolt",
+     150
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "idle",
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     2,
+     "acme",
+     2500
+    ],
+    "expect": "s1"
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     3,
+     "bolt",
+     999
+    ],
+    "expect": "s2"
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     4,
+     "acme",
+     7777
+    ],
+    "expect": "s3"
+   },
+   {
+    "call": "balance",
+    "args": [
+     5,
+     "acme"
+    ],
+    "expect": 9978
+   },
+   {
+    "call": "balance",
+    "args": [
+     5,
+     "bolt"
+    ],
+    "expect": 984
+   },
+   {
+    "call": "balance",
+    "args": [
+     5,
+     "idle"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "balance",
+    "args": [
+     5,
+     "ghost"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "fee",
+    "args": [
+     6,
+     "s2"
+    ],
+    "expect": 15
+   },
+   {
+    "call": "fee",
+    "args": [
+     6,
+     "s3"
+    ],
+    "expect": 226
+   }
+  ]
+ }
+]

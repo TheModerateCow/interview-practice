@@ -1,0 +1,492 @@
+[
+ {
+  "name": "payment_allocation",
+  "steps": [
+   {
+    "new": "Lender",
+    "args": []
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "car",
+     90000,
+     3,
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "pay",
+    "args": [
+     31,
+     "car",
+     10000
+    ],
+    "expect": 0
+   },
+   {
+    "call": "principal_left",
+    "args": [
+     32,
+     "car"
+    ],
+    "expect": 80900
+   },
+   {
+    "call": "owed",
+    "args": [
+     32,
+     "car"
+    ],
+    "expect": 82700
+   },
+   {
+    "call": "pay",
+    "args": [
+     40,
+     "car",
+     50000
+    ],
+    "expect": 0
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     61,
+     "car"
+    ],
+    "expect": 1800
+   },
+   {
+    "call": "pay",
+    "args": [
+     62,
+     "car",
+     40000
+    ],
+    "expect": 7300
+   },
+   {
+    "call": "owed",
+    "args": [
+     63,
+     "car"
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "interest_is_paid_before_principal",
+  "steps": [
+   {
+    "new": "Lender",
+    "args": []
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "loan",
+     50000,
+     2,
+     200
+    ],
+    "expect": true
+   },
+   {
+    "call": "pay",
+    "args": [
+     31,
+     "loan",
+     600
+    ],
+    "expect": 0
+   },
+   {
+    "call": "principal_left",
+    "args": [
+     32,
+     "loan"
+    ],
+    "expect": 50000
+   },
+   {
+    "call": "owed",
+    "args": [
+     32,
+     "loan"
+    ],
+    "expect": 51400
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     32,
+     "loan"
+    ],
+    "expect": 25400
+   },
+   {
+    "call": "pay",
+    "args": [
+     33,
+     "loan",
+     700
+    ],
+    "expect": 0
+   },
+   {
+    "call": "principal_left",
+    "args": [
+     34,
+     "loan"
+    ],
+    "expect": 49700
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     34,
+     "loan"
+    ],
+    "expect": 24700
+   },
+   {
+    "call": "owed",
+    "args": [
+     34,
+     "loan"
+    ],
+    "expect": 50700
+   }
+  ]
+ },
+ {
+  "name": "paying_ahead_reaches_later_instalments",
+  "steps": [
+   {
+    "new": "Lender",
+    "args": []
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "loan",
+     60000,
+     3,
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "pay",
+    "args": [
+     5,
+     "loan",
+     20600
+    ],
+    "expect": 0
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     6,
+     "loan"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     31,
+     "loan"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "pay",
+    "args": [
+     32,
+     "loan",
+     21000
+    ],
+    "expect": 0
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     33,
+     "loan"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "principal_left",
+    "args": [
+     33,
+     "loan"
+    ],
+    "expect": 20000
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     61,
+     "loan"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     91,
+     "loan"
+    ],
+    "expect": 20200
+   },
+   {
+    "call": "owed",
+    "args": [
+     92,
+     "loan"
+    ],
+    "expect": 20200
+   },
+   {
+    "call": "schedule",
+    "args": [
+     92,
+     "loan"
+    ],
+    "expect": [
+     "31:20600",
+     "61:20600",
+     "91:20600"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "change_and_rejected_payments",
+  "steps": [
+   {
+    "new": "Lender",
+    "args": []
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "loan",
+     30000,
+     2,
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "pay",
+    "args": [
+     2,
+     "nope",
+     100
+    ],
+    "expect": -1
+   },
+   {
+    "call": "owed",
+    "args": [
+     2,
+     "nope"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "principal_left",
+    "args": [
+     2,
+     "nope"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "pay",
+    "args": [
+     3,
+     "loan",
+     0
+    ],
+    "expect": -1
+   },
+   {
+    "call": "pay",
+    "args": [
+     4,
+     "loan",
+     -50
+    ],
+    "expect": -1
+   },
+   {
+    "call": "owed",
+    "args": [
+     5,
+     "loan"
+    ],
+    "expect": 30000
+   },
+   {
+    "call": "pay",
+    "args": [
+     31,
+     "loan",
+     30000
+    ],
+    "expect": 0
+   },
+   {
+    "call": "pay",
+    "args": [
+     32,
+     "loan",
+     1
+    ],
+    "expect": 1
+   },
+   {
+    "call": "owed",
+    "args": [
+     33,
+     "loan"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     70,
+     "loan"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "pay",
+    "args": [
+     71,
+     "loan",
+     500
+    ],
+    "expect": 500
+   },
+   {
+    "call": "principal_left",
+    "args": [
+     72,
+     "loan"
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "loans_are_paid_separately",
+  "steps": [
+   {
+    "new": "Lender",
+    "args": []
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "a",
+     20000,
+     2,
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "originate",
+    "args": [
+     2,
+     "b",
+     20000,
+     2,
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "pay",
+    "args": [
+     31,
+     "a",
+     10100
+    ],
+    "expect": 0
+   },
+   {
+    "call": "pay",
+    "args": [
+     32,
+     "b",
+     5000
+    ],
+    "expect": 0
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     33,
+     "a"
+    ],
+    "expect": 100
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     33,
+     "b"
+    ],
+    "expect": 5200
+   },
+   {
+    "call": "owed",
+    "args": [
+     33,
+     "a"
+    ],
+    "expect": 10300
+   },
+   {
+    "call": "owed",
+    "args": [
+     33,
+     "b"
+    ],
+    "expect": 15400
+   },
+   {
+    "call": "principal_left",
+    "args": [
+     33,
+     "a"
+    ],
+    "expect": 10100
+   },
+   {
+    "call": "principal_left",
+    "args": [
+     33,
+     "b"
+    ],
+    "expect": 15200
+   }
+  ]
+ }
+]

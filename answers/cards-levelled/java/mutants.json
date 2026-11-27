@@ -1,0 +1,16 @@
+[
+ {"file": "Issuer.java", "old": "amount > available(day, cardId)", "new": "amount >= available(day, cardId)", "label": "a purchase of exactly the available credit is declined", "k": "test_l1_"},
+ {"file": "Issuer.java", "old": "amount <= 0 || amount > a.amount) return false;", "new": "amount <= 0 || amount >= a.amount) return false;", "label": "capturing the full authorised amount is refused", "k": "test_l1_"},
+ {"file": "Issuer.java", "old": "a.captured = amount;", "new": "a.captured = a.amount;", "label": "partial capture posts the whole authorised amount", "k": "test_l1_"},
+ {"file": "Issuer.java", "old": "        a.status = \"voided\";\n", "new": "", "label": "void returns true but keeps the hold", "k": "test_l1_"},
+ {"file": "Issuer.java", "old": "day >= a.day + HOLD_DAYS", "new": "day > a.day + HOLD_DAYS", "label": "hold expires a day late", "k": "test_l2_"},
+ {"file": "Issuer.java", "old": "return a == null ? \"\" : status(day, a);", "new": "return a == null ? \"\" : a.status;", "label": "authStatus never reports expired", "k": "test_l2_"},
+ {"file": "Issuer.java", "old": "if (a.card.equals(cardId) && status(day, a).equals(\"open\")) out.add", "new": "if (a.card.equals(cardId) && a.status.equals(\"open\")) out.add", "label": "holds lists expired authorisations", "k": "test_l2_"},
+ {"file": "Issuer.java", "old": "amount > a.captured - a.refunded", "new": "amount > a.captured", "label": "refund cap ignores earlier refunds", "k": "test_l3_"},
+ {"file": "Issuer.java", "old": "amount > a.captured - a.refunded", "new": "amount > a.amount - a.refunded", "label": "refund capped by the authorised amount, not the captured one", "k": "test_l3_"},
+ {"file": "Issuer.java", "old": "total += a.captured - a.refunded;", "new": "total += a.captured;", "label": "refunds don't lower the posted total", "k": "test_l3_"},
+ {"file": "Issuer.java", "old": "spent(day, cardId, category) + amount > lim", "new": "spent(day, cardId, category) + amount >= lim", "label": "reaching the category limit exactly is declined", "k": "test_l4_"},
+ {"file": "Issuer.java", "old": "if (s.equals(\"open\")) total += a.amount;", "new": "if (s.equals(\"open\") || s.equals(\"voided\")) total += a.amount;", "label": "voided authorisations still count toward the daily category spend", "k": "test_l4_"},
+ {"file": "Issuer.java", "old": "else if (s.equals(\"captured\")) total += a.captured;", "new": "else if (s.equals(\"captured\")) total += a.amount;", "label": "a partial capture counts its authorised amount toward the category spend", "k": "test_l4_"},
+ {"file": "Issuer.java", "old": "c == null || c.frozen || amount <= 0", "new": "c == null || amount <= 0", "label": "frozen cards still approve purchases", "k": "test_l4_"}
+]

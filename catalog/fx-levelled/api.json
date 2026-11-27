@@ -1,0 +1,298 @@
+{
+ "module": "wallets",
+ "classes": {
+  "Wallets": {
+   "init": [],
+   "methods": {
+    "open_wallet": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "wallet_id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "deposit": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "wallet_id",
+       "string"
+      ],
+      [
+       "currency",
+       "string"
+      ],
+      [
+       "amount",
+       "long"
+      ]
+     ],
+     "returns": "long",
+     "level": 1
+    },
+    "withdraw": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "wallet_id",
+       "string"
+      ],
+      [
+       "currency",
+       "string"
+      ],
+      [
+       "amount",
+       "long"
+      ]
+     ],
+     "returns": "long",
+     "level": 1
+    },
+    "balance": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "wallet_id",
+       "string"
+      ],
+      [
+       "currency",
+       "string"
+      ]
+     ],
+     "returns": "long",
+     "level": 1
+    },
+    "holdings": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "wallet_id",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 1
+    },
+    "set_rate": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "source",
+       "string"
+      ],
+      [
+       "target",
+       "string"
+      ],
+      [
+       "rate",
+       "long"
+      ]
+     ],
+     "returns": "bool",
+     "level": 2
+    },
+    "quote": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "source",
+       "string"
+      ],
+      [
+       "target",
+       "string"
+      ],
+      [
+       "amount",
+       "long"
+      ]
+     ],
+     "returns": "long",
+     "level": 2
+    },
+    "convert": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "wallet_id",
+       "string"
+      ],
+      [
+       "source",
+       "string"
+      ],
+      [
+       "target",
+       "string"
+      ],
+      [
+       "amount",
+       "long"
+      ]
+     ],
+     "returns": "long",
+     "level": 2
+    },
+    "transfer": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "sender",
+       "string"
+      ],
+      [
+       "receiver",
+       "string"
+      ],
+      [
+       "currency",
+       "string"
+      ],
+      [
+       "amount",
+       "long"
+      ]
+     ],
+     "returns": "bool",
+     "level": 2
+    },
+    "quote_at": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "source",
+       "string"
+      ],
+      [
+       "target",
+       "string"
+      ],
+      [
+       "amount",
+       "long"
+      ],
+      [
+       "at_ts",
+       "int"
+      ]
+     ],
+     "returns": "long",
+     "level": 3
+    },
+    "total_value": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "wallet_id",
+       "string"
+      ],
+      [
+       "currency",
+       "string"
+      ]
+     ],
+     "returns": "long",
+     "level": 3
+    },
+    "place_order": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "wallet_id",
+       "string"
+      ],
+      [
+       "source",
+       "string"
+      ],
+      [
+       "target",
+       "string"
+      ],
+      [
+       "amount",
+       "long"
+      ],
+      [
+       "min_rate",
+       "long"
+      ]
+     ],
+     "returns": "string",
+     "level": 4
+    },
+    "cancel_order": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "order_id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    },
+    "order_status": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "order_id",
+       "string"
+      ]
+     ],
+     "returns": "string",
+     "level": 4
+    }
+   }
+  }
+ }
+}

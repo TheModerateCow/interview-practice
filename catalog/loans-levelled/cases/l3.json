@@ -1,0 +1,528 @@
+[
+ {
+  "name": "late_fees_and_status",
+  "steps": [
+   {
+    "new": "Lender",
+    "args": []
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "car",
+     60000,
+     2,
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "van",
+     60000,
+     2,
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "pay",
+    "args": [
+     31,
+     "van",
+     30600
+    ],
+    "expect": 0
+   },
+   {
+    "call": "pay",
+    "args": [
+     35,
+     "car",
+     400
+    ],
+    "expect": 0
+   },
+   {
+    "call": "charge_late_fees",
+    "args": [
+     41
+    ],
+    "expect": 0
+   },
+   {
+    "call": "charge_late_fees",
+    "args": [
+     42
+    ],
+    "expect": 1
+   },
+   {
+    "call": "status",
+    "args": [
+     42,
+     "car"
+    ],
+    "expect": "late"
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     42,
+     "car"
+    ],
+    "expect": 32700
+   },
+   {
+    "call": "pay",
+    "args": [
+     43,
+     "car",
+     3000
+    ],
+    "expect": 0
+   },
+   {
+    "call": "principal_left",
+    "args": [
+     43,
+     "car"
+    ],
+    "expect": 59700
+   },
+   {
+    "call": "charge_late_fees",
+    "args": [
+     44
+    ],
+    "expect": 0
+   },
+   {
+    "call": "status",
+    "args": [
+     44,
+     "van"
+    ],
+    "expect": "current"
+   }
+  ]
+ },
+ {
+  "name": "one_fee_per_instalment",
+  "steps": [
+   {
+    "new": "Lender",
+    "args": []
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "loan",
+     40000,
+     2,
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "charge_late_fees",
+    "args": [
+     42
+    ],
+    "expect": 1
+   },
+   {
+    "call": "charge_late_fees",
+    "args": [
+     43
+    ],
+    "expect": 0
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     43,
+     "loan"
+    ],
+    "expect": 22500
+   },
+   {
+    "call": "charge_late_fees",
+    "args": [
+     71
+    ],
+    "expect": 0
+   },
+   {
+    "call": "charge_late_fees",
+    "args": [
+     72
+    ],
+    "expect": 1
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     72,
+     "loan"
+    ],
+    "expect": 45000
+   },
+   {
+    "call": "owed",
+    "args": [
+     72,
+     "loan"
+    ],
+    "expect": 45000
+   },
+   {
+    "call": "schedule",
+    "args": [
+     72,
+     "loan"
+    ],
+    "expect": [
+     "31:20000",
+     "61:20000"
+    ]
+   },
+   {
+    "call": "charge_late_fees",
+    "args": [
+     100
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "paid_before_the_run_means_no_fee",
+  "steps": [
+   {
+    "new": "Lender",
+    "args": []
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "loan",
+     40000,
+     2,
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "status",
+    "args": [
+     41,
+     "loan"
+    ],
+    "expect": "current"
+   },
+   {
+    "call": "status",
+    "args": [
+     42,
+     "loan"
+    ],
+    "expect": "late"
+   },
+   {
+    "call": "pay",
+    "args": [
+     50,
+     "loan",
+     20400
+    ],
+    "expect": 0
+   },
+   {
+    "call": "charge_late_fees",
+    "args": [
+     51
+    ],
+    "expect": 0
+   },
+   {
+    "call": "status",
+    "args": [
+     51,
+     "loan"
+    ],
+    "expect": "current"
+   },
+   {
+    "call": "owed",
+    "args": [
+     51,
+     "loan"
+    ],
+    "expect": 20400
+   },
+   {
+    "call": "pay",
+    "args": [
+     52,
+     "loan",
+     20400
+    ],
+    "expect": 0
+   },
+   {
+    "call": "charge_late_fees",
+    "args": [
+     90
+    ],
+    "expect": 0
+   },
+   {
+    "call": "status",
+    "args": [
+     90,
+     "loan"
+    ],
+    "expect": "paid_off"
+   }
+  ]
+ },
+ {
+  "name": "fee_comes_before_interest",
+  "steps": [
+   {
+    "new": "Lender",
+    "args": []
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "loan",
+     30000,
+     3,
+     300
+    ],
+    "expect": true
+   },
+   {
+    "call": "charge_late_fees",
+    "args": [
+     42
+    ],
+    "expect": 1
+   },
+   {
+    "call": "pay",
+    "args": [
+     43,
+     "loan",
+     2000
+    ],
+    "expect": 0
+   },
+   {
+    "call": "principal_left",
+    "args": [
+     44,
+     "loan"
+    ],
+    "expect": 30000
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     44,
+     "loan"
+    ],
+    "expect": 11400
+   },
+   {
+    "call": "pay",
+    "args": [
+     45,
+     "loan",
+     1000
+    ],
+    "expect": 0
+   },
+   {
+    "call": "principal_left",
+    "args": [
+     46,
+     "loan"
+    ],
+    "expect": 30000
+   },
+   {
+    "call": "pay",
+    "args": [
+     47,
+     "loan",
+     1000
+    ],
+    "expect": 0
+   },
+   {
+    "call": "principal_left",
+    "args": [
+     48,
+     "loan"
+    ],
+    "expect": 29400
+   },
+   {
+    "call": "status",
+    "args": [
+     48,
+     "loan"
+    ],
+    "expect": "late"
+   },
+   {
+    "call": "owed",
+    "args": [
+     48,
+     "loan"
+    ],
+    "expect": 31200
+   }
+  ]
+ },
+ {
+  "name": "status_across_loans",
+  "steps": [
+   {
+    "new": "Lender",
+    "args": []
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "a",
+     10000,
+     2,
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "b",
+     10000,
+     2,
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "c",
+     10000,
+     2,
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "status",
+    "args": [
+     2,
+     "a"
+    ],
+    "expect": "current"
+   },
+   {
+    "call": "status",
+    "args": [
+     2,
+     "nope"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "pay",
+    "args": [
+     3,
+     "b",
+     6000
+    ],
+    "expect": 0
+   },
+   {
+    "call": "pay",
+    "args": [
+     4,
+     "c",
+     10000
+    ],
+    "expect": 0
+   },
+   {
+    "call": "status",
+    "args": [
+     5,
+     "c"
+    ],
+    "expect": "paid_off"
+   },
+   {
+    "call": "status",
+    "args": [
+     50,
+     "a"
+    ],
+    "expect": "late"
+   },
+   {
+    "call": "status",
+    "args": [
+     50,
+     "b"
+    ],
+    "expect": "current"
+   },
+   {
+    "call": "charge_late_fees",
+    "args": [
+     50
+    ],
+    "expect": 1
+   },
+   {
+    "call": "charge_late_fees",
+    "args": [
+     72
+    ],
+    "expect": 2
+   },
+   {
+    "call": "status",
+    "args": [
+     72,
+     "b"
+    ],
+    "expect": "late"
+   },
+   {
+    "call": "pay",
+    "args": [
+     73,
+     "c",
+     10
+    ],
+    "expect": 10
+   }
+  ]
+ }
+]

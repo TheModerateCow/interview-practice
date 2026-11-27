@@ -1,0 +1,514 @@
+[
+ {
+  "name": "refunds_and_activity",
+  "steps": [
+   {
+    "new": "Payouts",
+    "args": []
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "acme",
+     290
+    ],
+    "expect": true
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     1,
+     "acme",
+     10000
+    ],
+    "expect": "s1"
+   },
+   {
+    "call": "refund",
+    "args": [
+     2,
+     "s1",
+     2500
+    ],
+    "expect": 2428
+   },
+   {
+    "call": "fee",
+    "args": [
+     3,
+     "s1"
+    ],
+    "expect": 218
+   },
+   {
+    "call": "balance",
+    "args": [
+     3,
+     "acme"
+    ],
+    "expect": 7282
+   },
+   {
+    "call": "refund",
+    "args": [
+     4,
+     "s1",
+     8000
+    ],
+    "expect": -1
+   },
+   {
+    "call": "refund",
+    "args": [
+     5,
+     "s1",
+     7500
+    ],
+    "expect": 7282
+   },
+   {
+    "call": "fee",
+    "args": [
+     6,
+     "s1"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "balance",
+    "args": [
+     6,
+     "acme"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "activity",
+    "args": [
+     7,
+     "acme"
+    ],
+    "expect": [
+     "1:sale:9710",
+     "2:refund:-2428",
+     "5:refund:-7282"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "refund_rejects",
+  "steps": [
+   {
+    "new": "Payouts",
+    "args": []
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "acme",
+     290
+    ],
+    "expect": true
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     1,
+     "acme",
+     5000
+    ],
+    "expect": "s1"
+   },
+   {
+    "call": "refund",
+    "args": [
+     2,
+     "s9",
+     100
+    ],
+    "expect": -1
+   },
+   {
+    "call": "refund",
+    "args": [
+     2,
+     "s1",
+     0
+    ],
+    "expect": -1
+   },
+   {
+    "call": "refund",
+    "args": [
+     2,
+     "s1",
+     -100
+    ],
+    "expect": -1
+   },
+   {
+    "call": "refund",
+    "args": [
+     2,
+     "s1",
+     5001
+    ],
+    "expect": -1
+   },
+   {
+    "call": "refund",
+    "args": [
+     3,
+     "s1",
+     5000
+    ],
+    "expect": 4855
+   },
+   {
+    "call": "refund",
+    "args": [
+     4,
+     "s1",
+     1
+    ],
+    "expect": -1
+   },
+   {
+    "call": "balance",
+    "args": [
+     5,
+     "acme"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "activity",
+    "args": [
+     5,
+     "acme"
+    ],
+    "expect": [
+     "1:sale:4855",
+     "3:refund:-4855"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "refund_fee_rounding",
+  "steps": [
+   {
+    "new": "Payouts",
+    "args": []
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "m",
+     250
+    ],
+    "expect": true
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     1,
+     "m",
+     300
+    ],
+    "expect": "s1"
+   },
+   {
+    "call": "fee",
+    "args": [
+     2,
+     "s1"
+    ],
+    "expect": 8
+   },
+   {
+    "call": "refund",
+    "args": [
+     3,
+     "s1",
+     100
+    ],
+    "expect": 97
+   },
+   {
+    "call": "fee",
+    "args": [
+     3,
+     "s1"
+    ],
+    "expect": 5
+   },
+   {
+    "call": "refund",
+    "args": [
+     4,
+     "s1",
+     100
+    ],
+    "expect": 98
+   },
+   {
+    "call": "fee",
+    "args": [
+     4,
+     "s1"
+    ],
+    "expect": 3
+   },
+   {
+    "call": "refund",
+    "args": [
+     5,
+     "s1",
+     100
+    ],
+    "expect": 97
+   },
+   {
+    "call": "fee",
+    "args": [
+     5,
+     "s1"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "balance",
+    "args": [
+     6,
+     "m"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "activity",
+    "args": [
+     6,
+     "m"
+    ],
+    "expect": [
+     "1:sale:292",
+     "3:refund:-97",
+     "4:refund:-98",
+     "5:refund:-97"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "activity_per_merchant",
+  "steps": [
+   {
+    "new": "Payouts",
+    "args": []
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "acme",
+     290
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "bolt",
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "idle",
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     2,
+     "bolt",
+     1200
+    ],
+    "expect": "s1"
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     3,
+     "acme",
+     4000
+    ],
+    "expect": "s2"
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     4,
+     "bolt",
+     800
+    ],
+    "expect": "s3"
+   },
+   {
+    "call": "refund",
+    "args": [
+     5,
+     "s1",
+     200
+    ],
+    "expect": 200
+   },
+   {
+    "call": "refund",
+    "args": [
+     6,
+     "s2",
+     1000
+    ],
+    "expect": 971
+   },
+   {
+    "call": "activity",
+    "args": [
+     7,
+     "acme"
+    ],
+    "expect": [
+     "3:sale:3884",
+     "6:refund:-971"
+    ]
+   },
+   {
+    "call": "activity",
+    "args": [
+     7,
+     "bolt"
+    ],
+    "expect": [
+     "2:sale:1200",
+     "4:sale:800",
+     "5:refund:-200"
+    ]
+   },
+   {
+    "call": "activity",
+    "args": [
+     7,
+     "idle"
+    ],
+    "expect": []
+   },
+   {
+    "call": "activity",
+    "args": [
+     7,
+     "ghost"
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "refunds_touch_one_sale",
+  "steps": [
+   {
+    "new": "Payouts",
+    "args": []
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "acme",
+     290
+    ],
+    "expect": true
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     1,
+     "acme",
+     10000
+    ],
+    "expect": "s1"
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     2,
+     "acme",
+     3000
+    ],
+    "expect": "s2"
+   },
+   {
+    "call": "refund",
+    "args": [
+     3,
+     "s2",
+     3000
+    ],
+    "expect": 2913
+   },
+   {
+    "call": "fee",
+    "args": [
+     4,
+     "s1"
+    ],
+    "expect": 290
+   },
+   {
+    "call": "fee",
+    "args": [
+     4,
+     "s2"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "refund",
+    "args": [
+     5,
+     "s1",
+     10000
+    ],
+    "expect": 9710
+   },
+   {
+    "call": "refund",
+    "args": [
+     6,
+     "s2",
+     1
+    ],
+    "expect": -1
+   },
+   {
+    "call": "balance",
+    "args": [
+     7,
+     "acme"
+    ],
+    "expect": 0
+   }
+  ]
+ }
+]

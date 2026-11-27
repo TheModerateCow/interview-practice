@@ -1,0 +1,194 @@
+{
+ "module": "payouts",
+ "classes": {
+  "Payouts": {
+   "init": [],
+   "methods": {
+    "add_merchant": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "merchant_id",
+       "string"
+      ],
+      [
+       "fee_bps",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "record_sale": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "merchant_id",
+       "string"
+      ],
+      [
+       "amount",
+       "int"
+      ]
+     ],
+     "returns": "string",
+     "level": 1
+    },
+    "fee": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "sale_id",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 1
+    },
+    "balance": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "merchant_id",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 1
+    },
+    "refund": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "sale_id",
+       "string"
+      ],
+      [
+       "amount",
+       "int"
+      ]
+     ],
+     "returns": "int",
+     "level": 2
+    },
+    "activity": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "merchant_id",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "run_payouts": {
+     "params": [
+      [
+       "day",
+       "int"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 3
+    },
+    "available": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "merchant_id",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 3
+    },
+    "payout_history": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "merchant_id",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 3
+    },
+    "set_reserve": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "merchant_id",
+       "string"
+      ],
+      [
+       "reserve_bps",
+       "int"
+      ],
+      [
+       "hold_days",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    },
+    "reserve_held": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "merchant_id",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 4
+    },
+    "chargeback": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "sale_id",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 4
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,648 @@
+[
+ {
+  "name": "convert_example",
+  "steps": [
+   {
+    "new": "Wallets",
+    "args": []
+   },
+   {
+    "call": "open_wallet",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "ana",
+     "USD",
+     10000
+    ],
+    "expect": 10000
+   },
+   {
+    "call": "set_rate",
+    "args": [
+     3,
+     "USD",
+     "EUR",
+     920000
+    ],
+    "expect": true
+   },
+   {
+    "call": "quote",
+    "args": [
+     4,
+     "USD",
+     "EUR",
+     1000
+    ],
+    "expect": 911
+   },
+   {
+    "call": "convert",
+    "args": [
+     5,
+     "ana",
+     "USD",
+     "EUR",
+     1000
+    ],
+    "expect": 911
+   },
+   {
+    "call": "balance",
+    "args": [
+     6,
+     "ana",
+     "USD"
+    ],
+    "expect": 9000
+   },
+   {
+    "call": "quote",
+    "args": [
+     7,
+     "EUR",
+     "USD",
+     100
+    ],
+    "expect": -1
+   },
+   {
+    "call": "open_wallet",
+    "args": [
+     8,
+     "bob"
+    ],
+    "expect": true
+   },
+   {
+    "call": "transfer",
+    "args": [
+     9,
+     "ana",
+     "bob",
+     "EUR",
+     500
+    ],
+    "expect": true
+   },
+   {
+    "call": "holdings",
+    "args": [
+     10,
+     "bob"
+    ],
+    "expect": [
+     "EUR:500"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "half_up_rounding",
+  "steps": [
+   {
+    "new": "Wallets",
+    "args": []
+   },
+   {
+    "call": "set_rate",
+    "args": [
+     1,
+     "USD",
+     "GBP",
+     1000000
+    ],
+    "expect": true
+   },
+   {
+    "call": "quote",
+    "args": [
+     2,
+     "USD",
+     "GBP",
+     50
+    ],
+    "expect": 50
+   },
+   {
+    "call": "quote",
+    "args": [
+     3,
+     "USD",
+     "GBP",
+     150
+    ],
+    "expect": 149
+   },
+   {
+    "call": "quote",
+    "args": [
+     4,
+     "USD",
+     "GBP",
+     49
+    ],
+    "expect": 49
+   },
+   {
+    "call": "quote",
+    "args": [
+     5,
+     "USD",
+     "GBP",
+     1
+    ],
+    "expect": 1
+   },
+   {
+    "call": "set_rate",
+    "args": [
+     6,
+     "GBP",
+     "USD",
+     500000
+    ],
+    "expect": true
+   },
+   {
+    "call": "quote",
+    "args": [
+     7,
+     "GBP",
+     "USD",
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "quote",
+    "args": [
+     8,
+     "GBP",
+     "USD",
+     101
+    ],
+    "expect": 50
+   },
+   {
+    "call": "open_wallet",
+    "args": [
+     9,
+     "w"
+    ],
+    "expect": true
+   },
+   {
+    "call": "deposit",
+    "args": [
+     10,
+     "w",
+     "GBP",
+     101
+    ],
+    "expect": 101
+   },
+   {
+    "call": "convert",
+    "args": [
+     11,
+     "w",
+     "GBP",
+     "USD",
+     1
+    ],
+    "expect": -1
+   },
+   {
+    "call": "balance",
+    "args": [
+     12,
+     "w",
+     "GBP"
+    ],
+    "expect": 101
+   },
+   {
+    "call": "convert",
+    "args": [
+     13,
+     "w",
+     "GBP",
+     "USD",
+     101
+    ],
+    "expect": 50
+   },
+   {
+    "call": "holdings",
+    "args": [
+     14,
+     "w"
+    ],
+    "expect": [
+     "USD:50"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "rate_rules_and_direction",
+  "steps": [
+   {
+    "new": "Wallets",
+    "args": []
+   },
+   {
+    "call": "set_rate",
+    "args": [
+     1,
+     "USD",
+     "USD",
+     1000000
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_rate",
+    "args": [
+     2,
+     "USD",
+     "JPY",
+     0
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_rate",
+    "args": [
+     3,
+     "usd",
+     "JPY",
+     5
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_rate",
+    "args": [
+     4,
+     "EUR",
+     "USD",
+     1100000
+    ],
+    "expect": true
+   },
+   {
+    "call": "quote",
+    "args": [
+     5,
+     "USD",
+     "EUR",
+     1000
+    ],
+    "expect": -1
+   },
+   {
+    "call": "quote",
+    "args": [
+     6,
+     "EUR",
+     "USD",
+     1000
+    ],
+    "expect": 1089
+   },
+   {
+    "call": "set_rate",
+    "args": [
+     7,
+     "USD",
+     "JPY",
+     1500000
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_rate",
+    "args": [
+     8,
+     "USD",
+     "JPY",
+     1600000
+    ],
+    "expect": true
+   },
+   {
+    "call": "quote",
+    "args": [
+     9,
+     "USD",
+     "JPY",
+     1000
+    ],
+    "expect": 1584
+   },
+   {
+    "call": "quote",
+    "args": [
+     10,
+     "USD",
+     "JPY",
+     0
+    ],
+    "expect": -1
+   },
+   {
+    "call": "quote",
+    "args": [
+     11,
+     "USD",
+     "USD",
+     10
+    ],
+    "expect": -1
+   }
+  ]
+ },
+ {
+  "name": "convert_failures_change_nothing",
+  "steps": [
+   {
+    "new": "Wallets",
+    "args": []
+   },
+   {
+    "call": "open_wallet",
+    "args": [
+     1,
+     "w"
+    ],
+    "expect": true
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "w",
+     "USD",
+     800
+    ],
+    "expect": 800
+   },
+   {
+    "call": "set_rate",
+    "args": [
+     3,
+     "USD",
+     "EUR",
+     900000
+    ],
+    "expect": true
+   },
+   {
+    "call": "convert",
+    "args": [
+     4,
+     "w",
+     "USD",
+     "EUR",
+     801
+    ],
+    "expect": -1
+   },
+   {
+    "call": "convert",
+    "args": [
+     5,
+     "w",
+     "USD",
+     "CHF",
+     100
+    ],
+    "expect": -1
+   },
+   {
+    "call": "convert",
+    "args": [
+     6,
+     "w",
+     "USD",
+     "USD",
+     100
+    ],
+    "expect": -1
+   },
+   {
+    "call": "convert",
+    "args": [
+     7,
+     "w",
+     "USD",
+     "EUR",
+     0
+    ],
+    "expect": -1
+   },
+   {
+    "call": "convert",
+    "args": [
+     8,
+     "x",
+     "USD",
+     "EUR",
+     100
+    ],
+    "expect": -1
+   },
+   {
+    "call": "holdings",
+    "args": [
+     9,
+     "w"
+    ],
+    "expect": [
+     "USD:800"
+    ]
+   },
+   {
+    "call": "convert",
+    "args": [
+     10,
+     "w",
+     "USD",
+     "EUR",
+     800
+    ],
+    "expect": 713
+   },
+   {
+    "call": "holdings",
+    "args": [
+     11,
+     "w"
+    ],
+    "expect": [
+     "EUR:713"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "transfer_rules",
+  "steps": [
+   {
+    "new": "Wallets",
+    "args": []
+   },
+   {
+    "call": "open_wallet",
+    "args": [
+     1,
+     "a"
+    ],
+    "expect": true
+   },
+   {
+    "call": "open_wallet",
+    "args": [
+     2,
+     "b"
+    ],
+    "expect": true
+   },
+   {
+    "call": "deposit",
+    "args": [
+     3,
+     "a",
+     "EUR",
+     300
+    ],
+    "expect": 300
+   },
+   {
+    "call": "transfer",
+    "args": [
+     4,
+     "a",
+     "a",
+     "EUR",
+     10
+    ],
+    "expect": false
+   },
+   {
+    "call": "transfer",
+    "args": [
+     5,
+     "a",
+     "zed",
+     "EUR",
+     10
+    ],
+    "expect": false
+   },
+   {
+    "call": "transfer",
+    "args": [
+     6,
+     "zed",
+     "a",
+     "EUR",
+     10
+    ],
+    "expect": false
+   },
+   {
+    "call": "transfer",
+    "args": [
+     7,
+     "a",
+     "b",
+     "EUR",
+     301
+    ],
+    "expect": false
+   },
+   {
+    "call": "transfer",
+    "args": [
+     8,
+     "a",
+     "b",
+     "EUR",
+     0
+    ],
+    "expect": false
+   },
+   {
+    "call": "transfer",
+    "args": [
+     9,
+     "a",
+     "b",
+     "USD",
+     1
+    ],
+    "expect": false
+   },
+   {
+    "call": "transfer",
+    "args": [
+     10,
+     "a",
+     "b",
+     "EUR",
+     300
+    ],
+    "expect": true
+   },
+   {
+    "call": "holdings",
+    "args": [
+     11,
+     "a"
+    ],
+    "expect": []
+   },
+   {
+    "call": "holdings",
+    "args": [
+     12,
+     "b"
+    ],
+    "expect": [
+     "EUR:300"
+    ]
+   },
+   {
+    "call": "transfer",
+    "args": [
+     13,
+     "b",
+     "a",
+     "EUR",
+     120
+    ],
+    "expect": true
+   },
+   {
+    "call": "balance",
+    "args": [
+     14,
+     "a",
+     "EUR"
+    ],
+    "expect": 120
+   }
+  ]
+ }
+]

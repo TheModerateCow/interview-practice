@@ -1,0 +1,17 @@
+[
+ {"file": "wallets.py", "old": "return len(c) == 3 and all(\"A\" <= ch <= \"Z\" for ch in c)", "new": "return len(c) == 3 and c.isalpha()", "label": "lowercase currency codes accepted", "k": "test_l1_"},
+ {"file": "wallets.py", "old": "if w is None or amount <= 0 or w.get(currency, 0) < amount:", "new": "if w is None or amount <= 0 or w.get(currency, 0) <= amount:", "label": "withdrawing the whole balance refused", "k": "test_l1_"},
+ {"file": "wallets.py", "old": "for c, a in sorted(w.items()) if a > 0]", "new": "for c, a in sorted(w.items()) if a >= 0]", "label": "holdings keeps currencies whose balance went back to 0", "k": "test_l1_"},
+ {"file": "wallets.py", "old": "if w is None or not _code(currency) or amount <= 0:", "new": "if w is None or not _code(currency) or amount < 0:", "label": "a deposit of 0 is accepted", "k": "test_l1_"},
+ {"file": "wallets.py", "old": "(100 - FEE_PERCENT) + d // 2) // d", "new": "(100 - FEE_PERCENT)) // d", "label": "credited amount rounded down instead of half up", "k": "test_l2_"},
+ {"file": "wallets.py", "old": "if w is None or got <= 0 or w.get(source, 0) < amount:", "new": "if w is None or got < 0 or w.get(source, 0) < amount:", "label": "a conversion that credits 0 still takes the money", "k": "test_l2_"},
+ {"file": "wallets.py", "old": "if s is None or r is None or sender == receiver or amount <= 0", "new": "if s is None or r is None or amount <= 0", "label": "a transfer to the same wallet succeeds", "k": "test_l2_"},
+ {"file": "wallets.py", "old": "rate = r if at_ts < t + RATE_TTL else -1", "new": "rate = r if at_ts <= t + RATE_TTL else -1", "label": "a rate still in force at p + 100", "k": "test_l3_"},
+ {"file": "wallets.py", "old": "if t <= at_ts:", "new": "if t <= at_ts and rate < 0:", "label": "the first rate ever published stays in force", "k": "test_l3_"},
+ {"file": "wallets.py", "old": "if a == 0:", "new": "if a < 0:", "label": "a currency whose balance went back to 0 makes total_value fail", "k": "test_l3_"},
+ {"file": "wallets.py", "old": "v = a if c == currency else self._quote(c, currency, a, ts)", "new": "v = self._quote(c, currency, a, ts)", "label": "the balance already in the chosen currency is quoted too (and fails)", "k": "test_l3_"},
+ {"file": "wallets.py", "old": "and rate >= o[\"min_rate\"]:", "new": "and rate > o[\"min_rate\"]:", "label": "an order doesn't run when the rate equals min_rate", "k": "test_l4_"},
+ {"file": "wallets.py", "old": "o[\"source\"] == source and o[\"target\"] == target", "new": "{o[\"source\"], o[\"target\"]} == {source, target}", "label": "orders also checked when the reverse pair is published", "k": "test_l4_"},
+ {"file": "wallets.py", "old": "o[\"status\"] = \"cancelled\" if got < 0 else f\"filled:{got}\"", "new": "o[\"status\"] = o[\"status\"] if got < 0 else f\"filled:{got}\"", "label": "an order short of funds stays open", "k": "test_l4_"},
+ {"file": "wallets.py", "old": "if o is None or o[\"status\"] != \"open\":", "new": "if o is None:", "label": "a filled order can be cancelled", "k": "test_l4_"}
+]

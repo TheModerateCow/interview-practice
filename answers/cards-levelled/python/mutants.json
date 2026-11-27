@@ -1,0 +1,16 @@
+[
+ {"file": "cards.py", "old": "amount > self.available(day, card_id):", "new": "amount >= self.available(day, card_id):", "label": "a purchase of exactly the available credit is declined", "k": "test_l1_"},
+ {"file": "cards.py", "old": "amount <= 0 or amount > a[\"amount\"]:", "new": "amount <= 0 or amount >= a[\"amount\"]:", "label": "capturing the full authorised amount is refused", "k": "test_l1_"},
+ {"file": "cards.py", "old": "a[\"captured\"] = amount", "new": "a[\"captured\"] = a[\"amount\"]", "label": "partial capture posts the whole authorised amount", "k": "test_l1_"},
+ {"file": "cards.py", "old": "        a[\"status\"] = \"voided\"\n", "new": "", "label": "void returns true but keeps the hold", "k": "test_l1_"},
+ {"file": "cards.py", "old": "day >= a[\"day\"] + HOLD_DAYS", "new": "day > a[\"day\"] + HOLD_DAYS", "label": "hold expires a day late", "k": "test_l2_"},
+ {"file": "cards.py", "old": "return \"\" if a is None else self._status(day, a)", "new": "return \"\" if a is None else a[\"status\"]", "label": "auth_status never reports expired", "k": "test_l2_"},
+ {"file": "cards.py", "old": "if a[\"card\"] == card_id and self._status(day, a) == \"open\"]", "new": "if a[\"card\"] == card_id and a[\"status\"] == \"open\"]", "label": "holds lists expired authorisations", "k": "test_l2_"},
+ {"file": "cards.py", "old": "amount > a[\"captured\"] - a[\"refunded\"]", "new": "amount > a[\"captured\"]", "label": "refund cap ignores earlier refunds", "k": "test_l3_"},
+ {"file": "cards.py", "old": "amount > a[\"captured\"] - a[\"refunded\"]", "new": "amount > a[\"amount\"] - a[\"refunded\"]", "label": "refund capped by the authorised amount, not the captured one", "k": "test_l3_"},
+ {"file": "cards.py", "old": "sum(a[\"captured\"] - a[\"refunded\"] for", "new": "sum(a[\"captured\"] for", "label": "refunds don't lower the posted total", "k": "test_l3_"},
+ {"file": "cards.py", "old": "self._spent(day, card_id, category) + amount > cap", "new": "self._spent(day, card_id, category) + amount >= cap", "label": "reaching the category limit exactly is declined", "k": "test_l4_"},
+ {"file": "cards.py", "old": "if s == \"open\":", "new": "if s in (\"open\", \"voided\"):", "label": "voided authorisations still count toward the daily category spend", "k": "test_l4_"},
+ {"file": "cards.py", "old": "total += a[\"captured\"]", "new": "total += a[\"amount\"]", "label": "a partial capture counts its authorised amount toward the category spend", "k": "test_l4_"},
+ {"file": "cards.py", "old": "if c is None or c[\"frozen\"] or amount <= 0", "new": "if c is None or amount <= 0", "label": "frozen cards still approve purchases", "k": "test_l4_"}
+]

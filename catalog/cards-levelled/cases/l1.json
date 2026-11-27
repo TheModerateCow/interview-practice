@@ -1,0 +1,525 @@
+[
+ {
+  "name": "authorize_capture_void",
+  "steps": [
+   {
+    "new": "Issuer",
+    "args": []
+   },
+   {
+    "call": "issue_card",
+    "args": [
+     1,
+     "c1",
+     50000
+    ],
+    "expect": true
+   },
+   {
+    "call": "issue_card",
+    "args": [
+     1,
+     "c1",
+     9000
+    ],
+    "expect": false
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "grocery",
+     12000
+    ],
+    "expect": "a1"
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "travel",
+     45000
+    ],
+    "expect": ""
+   },
+   {
+    "call": "authorize",
+    "args": [
+     3,
+     "c1",
+     "travel",
+     30000
+    ],
+    "expect": "a2"
+   },
+   {
+    "call": "available",
+    "args": [
+     3,
+     "c1"
+    ],
+    "expect": 8000
+   },
+   {
+    "call": "capture",
+    "args": [
+     4,
+     "a1",
+     9500
+    ],
+    "expect": true
+   },
+   {
+    "call": "available",
+    "args": [
+     4,
+     "c1"
+    ],
+    "expect": 10500
+   },
+   {
+    "call": "void_auth",
+    "args": [
+     5,
+     "a2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "available",
+    "args": [
+     5,
+     "c1"
+    ],
+    "expect": 40500
+   },
+   {
+    "call": "capture",
+    "args": [
+     6,
+     "a2",
+     100
+    ],
+    "expect": false
+   }
+  ]
+ },
+ {
+  "name": "issue_and_decline_rules",
+  "steps": [
+   {
+    "new": "Issuer",
+    "args": []
+   },
+   {
+    "call": "issue_card",
+    "args": [
+     1,
+     "c1",
+     0
+    ],
+    "expect": false
+   },
+   {
+    "call": "issue_card",
+    "args": [
+     1,
+     "c2",
+     -100
+    ],
+    "expect": false
+   },
+   {
+    "call": "issue_card",
+    "args": [
+     1,
+     "c3",
+     1000
+    ],
+    "expect": true
+   },
+   {
+    "call": "available",
+    "args": [
+     1,
+     "c1"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "available",
+    "args": [
+     1,
+     "c3"
+    ],
+    "expect": 1000
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "fuel",
+     100
+    ],
+    "expect": ""
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c3",
+     "fuel",
+     0
+    ],
+    "expect": ""
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c3",
+     "fuel",
+     -5
+    ],
+    "expect": ""
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c3",
+     "fuel",
+     1001
+    ],
+    "expect": ""
+   },
+   {
+    "call": "authorize",
+    "args": [
+     3,
+     "c3",
+     "fuel",
+     400
+    ],
+    "expect": "a1"
+   },
+   {
+    "call": "available",
+    "args": [
+     3,
+     "c3"
+    ],
+    "expect": 600
+   }
+  ]
+ },
+ {
+  "name": "exact_available_and_shared_ids",
+  "steps": [
+   {
+    "new": "Issuer",
+    "args": []
+   },
+   {
+    "call": "issue_card",
+    "args": [
+     1,
+     "c1",
+     1000
+    ],
+    "expect": true
+   },
+   {
+    "call": "issue_card",
+    "args": [
+     1,
+     "c2",
+     500
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "dining",
+     600
+    ],
+    "expect": "a1"
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c2",
+     "dining",
+     500
+    ],
+    "expect": "a2"
+   },
+   {
+    "call": "authorize",
+    "args": [
+     3,
+     "c1",
+     "dining",
+     400
+    ],
+    "expect": "a3"
+   },
+   {
+    "call": "authorize",
+    "args": [
+     3,
+     "c1",
+     "dining",
+     1
+    ],
+    "expect": ""
+   },
+   {
+    "call": "available",
+    "args": [
+     3,
+     "c1"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "available",
+    "args": [
+     3,
+     "c2"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "authorize",
+    "args": [
+     4,
+     "c2",
+     "dining",
+     1
+    ],
+    "expect": ""
+   }
+  ]
+ },
+ {
+  "name": "capture_rules",
+  "steps": [
+   {
+    "new": "Issuer",
+    "args": []
+   },
+   {
+    "call": "issue_card",
+    "args": [
+     1,
+     "c1",
+     10000
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "retail",
+     3000
+    ],
+    "expect": "a1"
+   },
+   {
+    "call": "capture",
+    "args": [
+     3,
+     "a1",
+     3001
+    ],
+    "expect": false
+   },
+   {
+    "call": "capture",
+    "args": [
+     3,
+     "a1",
+     0
+    ],
+    "expect": false
+   },
+   {
+    "call": "capture",
+    "args": [
+     3,
+     "a9",
+     100
+    ],
+    "expect": false
+   },
+   {
+    "call": "capture",
+    "args": [
+     4,
+     "a1",
+     3000
+    ],
+    "expect": true
+   },
+   {
+    "call": "capture",
+    "args": [
+     5,
+     "a1",
+     3000
+    ],
+    "expect": false
+   },
+   {
+    "call": "void_auth",
+    "args": [
+     5,
+     "a1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "available",
+    "args": [
+     5,
+     "c1"
+    ],
+    "expect": 7000
+   },
+   {
+    "call": "authorize",
+    "args": [
+     6,
+     "c1",
+     "retail",
+     7000
+    ],
+    "expect": "a2"
+   },
+   {
+    "call": "available",
+    "args": [
+     6,
+     "c1"
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "void_rules",
+  "steps": [
+   {
+    "new": "Issuer",
+    "args": []
+   },
+   {
+    "call": "issue_card",
+    "args": [
+     1,
+     "c1",
+     2000
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "travel",
+     2000
+    ],
+    "expect": "a1"
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "travel",
+     1
+    ],
+    "expect": ""
+   },
+   {
+    "call": "void_auth",
+    "args": [
+     3,
+     "a7"
+    ],
+    "expect": false
+   },
+   {
+    "call": "void_auth",
+    "args": [
+     3,
+     "a1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "void_auth",
+    "args": [
+     4,
+     "a1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "capture",
+    "args": [
+     4,
+     "a1",
+     2000
+    ],
+    "expect": false
+   },
+   {
+    "call": "available",
+    "args": [
+     4,
+     "c1"
+    ],
+    "expect": 2000
+   },
+   {
+    "call": "authorize",
+    "args": [
+     5,
+     "c1",
+     "travel",
+     1500
+    ],
+    "expect": "a2"
+   },
+   {
+    "call": "capture",
+    "args": [
+     6,
+     "a2",
+     1200
+    ],
+    "expect": true
+   },
+   {
+    "call": "available",
+    "args": [
+     6,
+     "c1"
+    ],
+    "expect": 800
+   }
+  ]
+ }
+]

@@ -1,0 +1,657 @@
+[
+ {
+  "name": "orders_example",
+  "steps": [
+   {
+    "new": "Wallets",
+    "args": []
+   },
+   {
+    "call": "open_wallet",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "ana",
+     "USD",
+     5000
+    ],
+    "expect": 5000
+   },
+   {
+    "call": "set_rate",
+    "args": [
+     3,
+     "USD",
+     "EUR",
+     900000
+    ],
+    "expect": true
+   },
+   {
+    "call": "place_order",
+    "args": [
+     4,
+     "ana",
+     "USD",
+     "EUR",
+     2000,
+     950000
+    ],
+    "expect": "o1"
+   },
+   {
+    "call": "place_order",
+    "args": [
+     5,
+     "ana",
+     "USD",
+     "EUR",
+     4000,
+     920000
+    ],
+    "expect": "o2"
+   },
+   {
+    "call": "set_rate",
+    "args": [
+     6,
+     "USD",
+     "EUR",
+     960000
+    ],
+    "expect": true
+   },
+   {
+    "call": "order_status",
+    "args": [
+     7,
+     "o1"
+    ],
+    "expect": "filled:1901"
+   },
+   {
+    "call": "order_status",
+    "args": [
+     8,
+     "o2"
+    ],
+    "expect": "cancelled"
+   },
+   {
+    "call": "balance",
+    "args": [
+     9,
+     "ana",
+     "EUR"
+    ],
+    "expect": 1901
+   },
+   {
+    "call": "cancel_order",
+    "args": [
+     10,
+     "o1"
+    ],
+    "expect": false
+   }
+  ]
+ },
+ {
+  "name": "checked_only_when_its_pair_is_published",
+  "steps": [
+   {
+    "new": "Wallets",
+    "args": []
+   },
+   {
+    "call": "open_wallet",
+    "args": [
+     1,
+     "w"
+    ],
+    "expect": true
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "w",
+     "USD",
+     1000
+    ],
+    "expect": 1000
+   },
+   {
+    "call": "set_rate",
+    "args": [
+     3,
+     "USD",
+     "EUR",
+     1000000
+    ],
+    "expect": true
+   },
+   {
+    "call": "place_order",
+    "args": [
+     4,
+     "w",
+     "USD",
+     "EUR",
+     1000,
+     900000
+    ],
+    "expect": "o1"
+   },
+   {
+    "call": "order_status",
+    "args": [
+     5,
+     "o1"
+    ],
+    "expect": "open"
+   },
+   {
+    "call": "set_rate",
+    "args": [
+     6,
+     "EUR",
+     "USD",
+     2000000
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_rate",
+    "args": [
+     7,
+     "USD",
+     "GBP",
+     2000000
+    ],
+    "expect": true
+   },
+   {
+    "call": "order_status",
+    "args": [
+     8,
+     "o1"
+    ],
+    "expect": "open"
+   },
+   {
+    "call": "set_rate",
+    "args": [
+     9,
+     "USD",
+     "EUR",
+     899999
+    ],
+    "expect": true
+   },
+   {
+    "call": "order_status",
+    "args": [
+     10,
+     "o1"
+    ],
+    "expect": "open"
+   },
+   {
+    "call": "set_rate",
+    "args": [
+     11,
+     "USD",
+     "EUR",
+     900000
+    ],
+    "expect": true
+   },
+   {
+    "call": "order_status",
+    "args": [
+     12,
+     "o1"
+    ],
+    "expect": "filled:891"
+   },
+   {
+    "call": "holdings",
+    "args": [
+     13,
+     "w"
+    ],
+    "expect": [
+     "EUR:891"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "fills_at_published_rate_and_cancel",
+  "steps": [
+   {
+    "new": "Wallets",
+    "args": []
+   },
+   {
+    "call": "open_wallet",
+    "args": [
+     1,
+     "w"
+    ],
+    "expect": true
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "w",
+     "GBP",
+     5000
+    ],
+    "expect": 5000
+   },
+   {
+    "call": "place_order",
+    "args": [
+     3,
+     "w",
+     "GBP",
+     "USD",
+     1000,
+     1200000
+    ],
+    "expect": "o1"
+   },
+   {
+    "call": "place_order",
+    "args": [
+     4,
+     "w",
+     "GBP",
+     "USD",
+     1000,
+     1250000
+    ],
+    "expect": "o2"
+   },
+   {
+    "call": "place_order",
+    "args": [
+     5,
+     "w",
+     "GBP",
+     "USD",
+     1000,
+     1100000
+    ],
+    "expect": "o3"
+   },
+   {
+    "call": "cancel_order",
+    "args": [
+     6,
+     "o3"
+    ],
+    "expect": true
+   },
+   {
+    "call": "cancel_order",
+    "args": [
+     7,
+     "o3"
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_rate",
+    "args": [
+     8,
+     "GBP",
+     "USD",
+     1300000
+    ],
+    "expect": true
+   },
+   {
+    "call": "order_status",
+    "args": [
+     9,
+     "o1"
+    ],
+    "expect": "filled:1287"
+   },
+   {
+    "call": "order_status",
+    "args": [
+     10,
+     "o2"
+    ],
+    "expect": "filled:1287"
+   },
+   {
+    "call": "order_status",
+    "args": [
+     11,
+     "o3"
+    ],
+    "expect": "cancelled"
+   },
+   {
+    "call": "cancel_order",
+    "args": [
+     12,
+     "o1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_rate",
+    "args": [
+     13,
+     "GBP",
+     "USD",
+     1400000
+    ],
+    "expect": true
+   },
+   {
+    "call": "holdings",
+    "args": [
+     14,
+     "w"
+    ],
+    "expect": [
+     "GBP:3000",
+     "USD:2574"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "place_order_rules",
+  "steps": [
+   {
+    "new": "Wallets",
+    "args": []
+   },
+   {
+    "call": "open_wallet",
+    "args": [
+     1,
+     "w"
+    ],
+    "expect": true
+   },
+   {
+    "call": "place_order",
+    "args": [
+     2,
+     "zed",
+     "USD",
+     "EUR",
+     100,
+     900000
+    ],
+    "expect": ""
+   },
+   {
+    "call": "place_order",
+    "args": [
+     3,
+     "w",
+     "USD",
+     "USD",
+     100,
+     900000
+    ],
+    "expect": ""
+   },
+   {
+    "call": "place_order",
+    "args": [
+     4,
+     "w",
+     "USD",
+     "EUR",
+     0,
+     900000
+    ],
+    "expect": ""
+   },
+   {
+    "call": "place_order",
+    "args": [
+     5,
+     "w",
+     "USD",
+     "EUR",
+     100,
+     0
+    ],
+    "expect": ""
+   },
+   {
+    "call": "place_order",
+    "args": [
+     6,
+     "w",
+     "USD",
+     "eur",
+     100,
+     900000
+    ],
+    "expect": ""
+   },
+   {
+    "call": "place_order",
+    "args": [
+     7,
+     "w",
+     "USD",
+     "EUR",
+     100,
+     900000
+    ],
+    "expect": "o1"
+   },
+   {
+    "call": "order_status",
+    "args": [
+     8,
+     "o2"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "cancel_order",
+    "args": [
+     9,
+     "o2"
+    ],
+    "expect": false
+   },
+   {
+    "call": "deposit",
+    "args": [
+     10,
+     "w",
+     "USD",
+     100
+    ],
+    "expect": 100
+   },
+   {
+    "call": "set_rate",
+    "args": [
+     11,
+     "USD",
+     "EUR",
+     900000
+    ],
+    "expect": true
+   },
+   {
+    "call": "order_status",
+    "args": [
+     12,
+     "o1"
+    ],
+    "expect": "filled:89"
+   },
+   {
+    "call": "balance",
+    "args": [
+     13,
+     "w",
+     "EUR"
+    ],
+    "expect": 89
+   }
+  ]
+ },
+ {
+  "name": "creation_order_when_funds_run_short",
+  "steps": [
+   {
+    "new": "Wallets",
+    "args": []
+   },
+   {
+    "call": "open_wallet",
+    "args": [
+     1,
+     "w"
+    ],
+    "expect": true
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "w",
+     "USD",
+     3000
+    ],
+    "expect": 3000
+   },
+   {
+    "call": "place_order",
+    "args": [
+     3,
+     "w",
+     "USD",
+     "CHF",
+     2000,
+     1000000
+    ],
+    "expect": "o1"
+   },
+   {
+    "call": "place_order",
+    "args": [
+     4,
+     "w",
+     "USD",
+     "CHF",
+     2000,
+     900000
+    ],
+    "expect": "o2"
+   },
+   {
+    "call": "place_order",
+    "args": [
+     5,
+     "w",
+     "USD",
+     "CHF",
+     1000,
+     950000
+    ],
+    "expect": "o3"
+   },
+   {
+    "call": "set_rate",
+    "args": [
+     6,
+     "USD",
+     "CHF",
+     1000000
+    ],
+    "expect": true
+   },
+   {
+    "call": "order_status",
+    "args": [
+     7,
+     "o1"
+    ],
+    "expect": "filled:1980"
+   },
+   {
+    "call": "order_status",
+    "args": [
+     8,
+     "o2"
+    ],
+    "expect": "cancelled"
+   },
+   {
+    "call": "order_status",
+    "args": [
+     9,
+     "o3"
+    ],
+    "expect": "filled:990"
+   },
+   {
+    "call": "deposit",
+    "args": [
+     10,
+     "w",
+     "USD",
+     5000
+    ],
+    "expect": 5000
+   },
+   {
+    "call": "set_rate",
+    "args": [
+     11,
+     "USD",
+     "CHF",
+     1100000
+    ],
+    "expect": true
+   },
+   {
+    "call": "order_status",
+    "args": [
+     12,
+     "o2"
+    ],
+    "expect": "cancelled"
+   },
+   {
+    "call": "holdings",
+    "args": [
+     13,
+     "w"
+    ],
+    "expect": [
+     "CHF:2970",
+     "USD:5000"
+    ]
+   }
+  ]
+ }
+]

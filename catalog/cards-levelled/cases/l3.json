@@ -1,0 +1,571 @@
+[
+ {
+  "name": "refunds_and_statement",
+  "steps": [
+   {
+    "new": "Issuer",
+    "args": []
+   },
+   {
+    "call": "issue_card",
+    "args": [
+     1,
+     "c1",
+     20000
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "retail",
+     8000
+    ],
+    "expect": "a1"
+   },
+   {
+    "call": "capture",
+    "args": [
+     3,
+     "a1",
+     6000
+    ],
+    "expect": true
+   },
+   {
+    "call": "refund",
+    "args": [
+     5,
+     "a1",
+     2500
+    ],
+    "expect": true
+   },
+   {
+    "call": "refund",
+    "args": [
+     6,
+     "a1",
+     4000
+    ],
+    "expect": false
+   },
+   {
+    "call": "refund",
+    "args": [
+     7,
+     "a1",
+     3500
+    ],
+    "expect": true
+   },
+   {
+    "call": "balance",
+    "args": [
+     8,
+     "c1"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "available",
+    "args": [
+     8,
+     "c1"
+    ],
+    "expect": 20000
+   },
+   {
+    "call": "statement",
+    "args": [
+     8,
+     "c1"
+    ],
+    "expect": [
+     "3:a1:charge:6000",
+     "5:a1:refund:2500",
+     "7:a1:refund:3500"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "refund_rules",
+  "steps": [
+   {
+    "new": "Issuer",
+    "args": []
+   },
+   {
+    "call": "issue_card",
+    "args": [
+     1,
+     "c1",
+     9000
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "retail",
+     1000
+    ],
+    "expect": "a1"
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "retail",
+     2000
+    ],
+    "expect": "a2"
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "retail",
+     3000
+    ],
+    "expect": "a3"
+   },
+   {
+    "call": "void_auth",
+    "args": [
+     3,
+     "a2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "refund",
+    "args": [
+     4,
+     "a1",
+     100
+    ],
+    "expect": false
+   },
+   {
+    "call": "refund",
+    "args": [
+     4,
+     "a2",
+     100
+    ],
+    "expect": false
+   },
+   {
+    "call": "capture",
+    "args": [
+     5,
+     "a1",
+     1000
+    ],
+    "expect": true
+   },
+   {
+    "call": "refund",
+    "args": [
+     10,
+     "a3",
+     100
+    ],
+    "expect": false
+   },
+   {
+    "call": "refund",
+    "args": [
+     10,
+     "a9",
+     100
+    ],
+    "expect": false
+   },
+   {
+    "call": "refund",
+    "args": [
+     10,
+     "a1",
+     0
+    ],
+    "expect": false
+   },
+   {
+    "call": "refund",
+    "args": [
+     10,
+     "a1",
+     1001
+    ],
+    "expect": false
+   },
+   {
+    "call": "refund",
+    "args": [
+     11,
+     "a1",
+     1000
+    ],
+    "expect": true
+   },
+   {
+    "call": "refund",
+    "args": [
+     12,
+     "a1",
+     1
+    ],
+    "expect": false
+   },
+   {
+    "call": "statement",
+    "args": [
+     12,
+     "c1"
+    ],
+    "expect": [
+     "5:a1:charge:1000",
+     "11:a1:refund:1000"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "refund_capped_by_captured_amount",
+  "steps": [
+   {
+    "new": "Issuer",
+    "args": []
+   },
+   {
+    "call": "issue_card",
+    "args": [
+     1,
+     "c1",
+     9000
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "fuel",
+     5000
+    ],
+    "expect": "a1"
+   },
+   {
+    "call": "capture",
+    "args": [
+     2,
+     "a1",
+     3000
+    ],
+    "expect": true
+   },
+   {
+    "call": "refund",
+    "args": [
+     3,
+     "a1",
+     3500
+    ],
+    "expect": false
+   },
+   {
+    "call": "refund",
+    "args": [
+     3,
+     "a1",
+     1000
+    ],
+    "expect": true
+   },
+   {
+    "call": "refund",
+    "args": [
+     4,
+     "a1",
+     2001
+    ],
+    "expect": false
+   },
+   {
+    "call": "refund",
+    "args": [
+     4,
+     "a1",
+     2000
+    ],
+    "expect": true
+   },
+   {
+    "call": "balance",
+    "args": [
+     5,
+     "c1"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "available",
+    "args": [
+     5,
+     "c1"
+    ],
+    "expect": 9000
+   }
+  ]
+ },
+ {
+  "name": "statement_per_card_in_order",
+  "steps": [
+   {
+    "new": "Issuer",
+    "args": []
+   },
+   {
+    "call": "issue_card",
+    "args": [
+     1,
+     "c1",
+     9000
+    ],
+    "expect": true
+   },
+   {
+    "call": "issue_card",
+    "args": [
+     1,
+     "c2",
+     9000
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "dining",
+     1200
+    ],
+    "expect": "a1"
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c2",
+     "dining",
+     700
+    ],
+    "expect": "a2"
+   },
+   {
+    "call": "authorize",
+    "args": [
+     3,
+     "c1",
+     "travel",
+     4000
+    ],
+    "expect": "a3"
+   },
+   {
+    "call": "capture",
+    "args": [
+     4,
+     "a3",
+     4000
+    ],
+    "expect": true
+   },
+   {
+    "call": "capture",
+    "args": [
+     4,
+     "a2",
+     700
+    ],
+    "expect": true
+   },
+   {
+    "call": "capture",
+    "args": [
+     5,
+     "a1",
+     1100
+    ],
+    "expect": true
+   },
+   {
+    "call": "refund",
+    "args": [
+     5,
+     "a3",
+     500
+    ],
+    "expect": true
+   },
+   {
+    "call": "statement",
+    "args": [
+     6,
+     "c1"
+    ],
+    "expect": [
+     "4:a3:charge:4000",
+     "5:a1:charge:1100",
+     "5:a3:refund:500"
+    ]
+   },
+   {
+    "call": "statement",
+    "args": [
+     6,
+     "c2"
+    ],
+    "expect": [
+     "4:a2:charge:700"
+    ]
+   },
+   {
+    "call": "statement",
+    "args": [
+     6,
+     "zz"
+    ],
+    "expect": []
+   },
+   {
+    "call": "balance",
+    "args": [
+     6,
+     "c1"
+    ],
+    "expect": 4600
+   },
+   {
+    "call": "balance",
+    "args": [
+     6,
+     "c2"
+    ],
+    "expect": 700
+   },
+   {
+    "call": "balance",
+    "args": [
+     6,
+     "zz"
+    ],
+    "expect": -1
+   }
+  ]
+ },
+ {
+  "name": "refund_restores_credit",
+  "steps": [
+   {
+    "new": "Issuer",
+    "args": []
+   },
+   {
+    "call": "issue_card",
+    "args": [
+     1,
+     "c1",
+     5000
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     1,
+     "c1",
+     "retail",
+     5000
+    ],
+    "expect": "a1"
+   },
+   {
+    "call": "capture",
+    "args": [
+     2,
+     "a1",
+     5000
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     3,
+     "c1",
+     "retail",
+     1
+    ],
+    "expect": ""
+   },
+   {
+    "call": "refund",
+    "args": [
+     4,
+     "a1",
+     1500
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     5,
+     "c1",
+     "retail",
+     1500
+    ],
+    "expect": "a2"
+   },
+   {
+    "call": "available",
+    "args": [
+     5,
+     "c1"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "balance",
+    "args": [
+     5,
+     "c1"
+    ],
+    "expect": 3500
+   },
+   {
+    "call": "statement",
+    "args": [
+     5,
+     "c1"
+    ],
+    "expect": [
+     "2:a1:charge:5000",
+     "4:a1:refund:1500"
+    ]
+   }
+  ]
+ }
+]

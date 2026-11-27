@@ -1,0 +1,166 @@
+{
+ "module": "loans",
+ "classes": {
+  "Lender": {
+   "init": [],
+   "methods": {
+    "originate": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "loan_id",
+       "string"
+      ],
+      [
+       "principal",
+       "int"
+      ],
+      [
+       "months",
+       "int"
+      ],
+      [
+       "rate_bp",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "schedule": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "loan_id",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 1
+    },
+    "amount_due": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "loan_id",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 1
+    },
+    "pay": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "loan_id",
+       "string"
+      ],
+      [
+       "amount",
+       "int"
+      ]
+     ],
+     "returns": "int",
+     "level": 2
+    },
+    "owed": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "loan_id",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 2
+    },
+    "principal_left": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "loan_id",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 2
+    },
+    "charge_late_fees": {
+     "params": [
+      [
+       "day",
+       "int"
+      ]
+     ],
+     "returns": "int",
+     "level": 3
+    },
+    "status": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "loan_id",
+       "string"
+      ]
+     ],
+     "returns": "string",
+     "level": 3
+    },
+    "payoff_quote": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "loan_id",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 4
+    },
+    "restructure": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "loan_id",
+       "string"
+      ],
+      [
+       "months",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    }
+   }
+  }
+ }
+}

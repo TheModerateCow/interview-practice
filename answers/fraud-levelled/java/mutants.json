@@ -1,0 +1,17 @@
+[
+ {"file": "RiskScreen.java", "old": "if (txns.containsKey(txnId) || amount <= 0)", "new": "if (amount <= 0)", "label": "a transaction id can be screened twice", "k": "test_l1_"},
+ {"file": "RiskScreen.java", "old": "if (txns.containsKey(txnId) || amount <= 0)", "new": "if (txns.containsKey(txnId) || amount < 0)", "label": "a zero amount is screened", "k": "test_l1_"},
+ {"file": "RiskScreen.java", "old": "if (!KINDS.contains(kind) || get(ts, name) != null)", "new": "if (get(ts, name) != null)", "label": "block accepts an unknown kind", "k": "test_l1_"},
+ {"file": "RiskScreen.java", "old": "o.ts > ts - r.window", "new": "o.ts >= ts - r.window", "label": "the window includes a transaction exactly window seconds old", "k": "test_l2_"},
+ {"file": "RiskScreen.java", "old": "if (used > r.limit)", "new": "if (used >= r.limit)", "label": "a rule fires at exactly its limit", "k": "test_l2_"},
+ {"file": "RiskScreen.java", "old": "if (o.card.equals(card) && o.ts", "new": "if (o.card.equals(card) && !\"decline\".equals(o.decision) && o.ts", "label": "declined attempts left out of the velocity window", "k": "test_l2_"},
+ {"file": "RiskScreen.java", "old": "|| limit <= 0 || window <= 0", "new": "|| limit < 0 || window <= 0", "label": "a rule with limit 0 is accepted", "k": "test_l2_"},
+ {"file": "RiskScreen.java", "old": "\"review\", 1, \"approve\", 2)", "new": "\"review\", 1, \"approve\", -1)", "label": "an allowlist entry wins a priority tie", "k": "test_l3_"},
+ {"file": "RiskScreen.java", "old": "return name.compareTo(o.name) < 0;", "new": "return name.compareTo(o.name) > 0;", "label": "equal rules tie-broken by name descending", "k": "test_l3_"},
+ {"file": "RiskScreen.java", "old": "if (!KINDS.contains(kind) || rules.containsKey(name))", "new": "if (!KINDS.contains(kind))", "label": "allow overwrites an existing allowlist entry", "k": "test_l3_"},
+ {"file": "RiskScreen.java", "old": "return priority > o.priority;", "new": "return priority < o.priority;", "label": "the lowest priority decides", "k": "test_l3_"},
+ {"file": "RiskScreen.java", "old": "if (t == null || !t.decision.equals(\"review\")) return false;\n        t.decision = \"approve\";", "new": "if (t == null) return false;\n        t.decision = \"approve\";", "label": "approve_review accepts a transaction that is not a pending review", "k": "test_l4_"},
+ {"file": "RiskScreen.java", "old": "r.until != null && ts >= r.until", "new": "r.until != null && ts > r.until", "label": "a temporary block still applies at its end time", "k": "test_l4_"},
+ {"file": "RiskScreen.java", "old": "r.until = Math.max(r.until, ts + blockFor);", "new": "r.until = ts + blockFor;", "label": "a second decline can shorten a temporary block", "k": "test_l4_"},
+ {"file": "RiskScreen.java", "old": "Rule r = get(ts, name);\n        if (r == null) {", "new": "Rule r = get(ts, name);\n        if (r == null || r.until == null) {", "label": "a decline turns a permanent card block into a temporary one", "k": "test_l4_"}
+]

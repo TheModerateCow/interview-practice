@@ -1,0 +1,798 @@
+[
+ {
+  "name": "review_queue_example",
+  "steps": [
+   {
+    "new": "RiskScreen",
+    "args": []
+   },
+   {
+    "call": "add_velocity_rule",
+    "args": [
+     1,
+     "v-amount",
+     "amount",
+     50000,
+     60
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     10,
+     "t1",
+     "4111",
+     "m-tv",
+     80000,
+     "GB"
+    ],
+    "expect": "review"
+   },
+   {
+    "call": "screen",
+    "args": [
+     20,
+     "t2",
+     "5500",
+     "m-tv",
+     70000,
+     "GB"
+    ],
+    "expect": "review"
+   },
+   {
+    "call": "pending_reviews",
+    "args": [
+     30
+    ],
+    "expect": [
+     "t1",
+     "t2"
+    ]
+   },
+   {
+    "call": "decline_review",
+    "args": [
+     40,
+     "t1",
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "decision",
+    "args": [
+     41,
+     "t1"
+    ],
+    "expect": "decline"
+   },
+   {
+    "call": "explain",
+    "args": [
+     41,
+     "t1"
+    ],
+    "expect": "analyst"
+   },
+   {
+    "call": "screen",
+    "args": [
+     50,
+     "t3",
+     "4111",
+     "m-books",
+     1000,
+     "GB"
+    ],
+    "expect": "decline"
+   },
+   {
+    "call": "explain",
+    "args": [
+     51,
+     "t3"
+    ],
+    "expect": "block:card:4111"
+   },
+   {
+    "call": "approve_review",
+    "args": [
+     60,
+     "t2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "pending_reviews",
+    "args": [
+     70
+    ],
+    "expect": []
+   },
+   {
+    "call": "screen",
+    "args": [
+     140,
+     "t4",
+     "4111",
+     "m-books",
+     1000,
+     "GB"
+    ],
+    "expect": "approve"
+   }
+  ]
+ },
+ {
+  "name": "queue_order_and_resolve_rules",
+  "steps": [
+   {
+    "new": "RiskScreen",
+    "args": []
+   },
+   {
+    "call": "add_velocity_rule",
+    "args": [
+     1,
+     "v1",
+     "count",
+     1,
+     1000
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     10,
+     "t1",
+     "4111",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "screen",
+    "args": [
+     20,
+     "t2",
+     "5500",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "screen",
+    "args": [
+     30,
+     "t9",
+     "5500",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "review"
+   },
+   {
+    "call": "screen",
+    "args": [
+     40,
+     "t4",
+     "4111",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "review"
+   },
+   {
+    "call": "screen",
+    "args": [
+     50,
+     "t5",
+     "7700",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "pending_reviews",
+    "args": [
+     60
+    ],
+    "expect": [
+     "t9",
+     "t4"
+    ]
+   },
+   {
+    "call": "approve_review",
+    "args": [
+     61,
+     "t1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "approve_review",
+    "args": [
+     62,
+     "t3"
+    ],
+    "expect": false
+   },
+   {
+    "call": "approve_review",
+    "args": [
+     63,
+     "t9"
+    ],
+    "expect": true
+   },
+   {
+    "call": "approve_review",
+    "args": [
+     64,
+     "t9"
+    ],
+    "expect": false
+   },
+   {
+    "call": "decline_review",
+    "args": [
+     65,
+     "t9",
+     10
+    ],
+    "expect": false
+   },
+   {
+    "call": "decline_review",
+    "args": [
+     66,
+     "t4",
+     0
+    ],
+    "expect": false
+   },
+   {
+    "call": "pending_reviews",
+    "args": [
+     67
+    ],
+    "expect": [
+     "t4"
+    ]
+   },
+   {
+    "call": "decision",
+    "args": [
+     68,
+     "t9"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "explain",
+    "args": [
+     69,
+     "t9"
+    ],
+    "expect": "analyst"
+   },
+   {
+    "call": "decline_review",
+    "args": [
+     70,
+     "t4",
+     5
+    ],
+    "expect": true
+   },
+   {
+    "call": "decline_review",
+    "args": [
+     71,
+     "t4",
+     5
+    ],
+    "expect": false
+   },
+   {
+    "call": "pending_reviews",
+    "args": [
+     72
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "temporary_block_expires",
+  "steps": [
+   {
+    "new": "RiskScreen",
+    "args": []
+   },
+   {
+    "call": "add_velocity_rule",
+    "args": [
+     1,
+     "v1",
+     "amount",
+     1000,
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     100,
+     "t1",
+     "4111",
+     "m-tv",
+     5000,
+     "GB"
+    ],
+    "expect": "review"
+   },
+   {
+    "call": "decline_review",
+    "args": [
+     110,
+     "t1",
+     50
+    ],
+    "expect": true
+   },
+   {
+    "call": "block",
+    "args": [
+     111,
+     "card",
+     "4111"
+    ],
+    "expect": false
+   },
+   {
+    "call": "screen",
+    "args": [
+     159,
+     "t2",
+     "4111",
+     "m-books",
+     10,
+     "GB"
+    ],
+    "expect": "decline"
+   },
+   {
+    "call": "set_priority",
+    "args": [
+     159,
+     "block:card:4111",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     160,
+     "t3",
+     "4111",
+     "m-books",
+     10,
+     "GB"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "unblock",
+    "args": [
+     161,
+     "card",
+     "4111"
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_priority",
+    "args": [
+     162,
+     "block:card:4111",
+     2
+    ],
+    "expect": false
+   },
+   {
+    "call": "block",
+    "args": [
+     163,
+     "card",
+     "4111"
+    ],
+    "expect": true
+   },
+   {
+    "call": "unblock",
+    "args": [
+     164,
+     "card",
+     "4111"
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     165,
+     "t4",
+     "4111",
+     "m-books",
+     10,
+     "GB"
+    ],
+    "expect": "approve"
+   }
+  ]
+ },
+ {
+  "name": "second_decline_extends_never_shortens",
+  "steps": [
+   {
+    "new": "RiskScreen",
+    "args": []
+   },
+   {
+    "call": "add_velocity_rule",
+    "args": [
+     1,
+     "v1",
+     "amount",
+     1000,
+     5
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     10,
+     "t1",
+     "4111",
+     "m-tv",
+     5000,
+     "GB"
+    ],
+    "expect": "review"
+   },
+   {
+    "call": "screen",
+    "args": [
+     20,
+     "t2",
+     "4111",
+     "m-tv",
+     5000,
+     "GB"
+    ],
+    "expect": "review"
+   },
+   {
+    "call": "decline_review",
+    "args": [
+     30,
+     "t2",
+     1000
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     40,
+     "t3",
+     "4111",
+     "m-books",
+     10,
+     "GB"
+    ],
+    "expect": "decline"
+   },
+   {
+    "call": "unblock",
+    "args": [
+     41,
+     "card",
+     "4111"
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     42,
+     "t4",
+     "4111",
+     "m-tv",
+     6000,
+     "GB"
+    ],
+    "expect": "review"
+   },
+   {
+    "call": "decline_review",
+    "args": [
+     50,
+     "t4",
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "decline_review",
+    "args": [
+     60,
+     "t1",
+     20
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     149,
+     "t5",
+     "4111",
+     "m-books",
+     10,
+     "GB"
+    ],
+    "expect": "decline"
+   },
+   {
+    "call": "screen",
+    "args": [
+     150,
+     "t6",
+     "4111",
+     "m-books",
+     10,
+     "GB"
+    ],
+    "expect": "approve"
+   }
+  ]
+ },
+ {
+  "name": "permanent_block_stays_allow_overrides_temporary",
+  "steps": [
+   {
+    "new": "RiskScreen",
+    "args": []
+   },
+   {
+    "call": "add_velocity_rule",
+    "args": [
+     1,
+     "v1",
+     "count",
+     1,
+     1000
+    ],
+    "expect": true
+   },
+   {
+    "call": "block",
+    "args": [
+     2,
+     "card",
+     "4111"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_priority",
+    "args": [
+     3,
+     "v1",
+     5
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     10,
+     "t1",
+     "4111",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "decline"
+   },
+   {
+    "call": "screen",
+    "args": [
+     20,
+     "t2",
+     "4111",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "review"
+   },
+   {
+    "call": "decline_review",
+    "args": [
+     30,
+     "t2",
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     50,
+     "t3",
+     "5500",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "set_priority",
+    "args": [
+     51,
+     "v1",
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     52,
+     "t4",
+     "4111",
+     "m-books",
+     1000,
+     "GB"
+    ],
+    "expect": "decline"
+   },
+   {
+    "call": "explain",
+    "args": [
+     53,
+     "t4"
+    ],
+    "expect": "block:card:4111"
+   },
+   {
+    "call": "screen",
+    "args": [
+     60,
+     "t5",
+     "5500",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "review"
+   },
+   {
+    "call": "decline_review",
+    "args": [
+     61,
+     "t5",
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "allow",
+    "args": [
+     62,
+     "card",
+     "5500",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     70,
+     "t6",
+     "5500",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "explain",
+    "args": [
+     71,
+     "t6"
+    ],
+    "expect": "allow:card:5500"
+   },
+   {
+    "call": "set_priority",
+    "args": [
+     72,
+     "block:card:5500",
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     80,
+     "t7",
+     "5500",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "decline"
+   },
+   {
+    "call": "explain",
+    "args": [
+     81,
+     "t7"
+    ],
+    "expect": "block:card:5500"
+   },
+   {
+    "call": "screen",
+    "args": [
+     161,
+     "t8",
+     "5500",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "explain",
+    "args": [
+     162,
+     "t8"
+    ],
+    "expect": "allow:card:5500"
+   },
+   {
+    "call": "decline_review",
+    "args": [
+     163,
+     "t3",
+     100
+    ],
+    "expect": false
+   }
+  ]
+ }
+]

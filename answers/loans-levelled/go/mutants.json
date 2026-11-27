@@ -1,0 +1,17 @@
+[
+ {"file": "lender.go", "old": "interest := (principal*rateBp + 5000) / 10000", "new": "interest := principal * rateBp / 10000", "label": "interest rounded down instead of half up", "k": "test_l1_"},
+ {"file": "lender.go", "old": "p = principal - base*(months-1)", "new": "p = base", "label": "the principal remainder is dropped from the last instalment", "k": "test_l1_"},
+ {"file": "lender.go", "old": "due: start + 30*k,", "new": "due: start + 30*(k-1),", "label": "first instalment due on the origination day", "k": "test_l1_"},
+ {"file": "lender.go", "old": "if i.due <= day {\n\t\t\tsum += i.left()", "new": "if i.due < day {\n\t\t\tsum += i.left()", "label": "an instalment isn't due on its own due day", "k": "test_l1_"},
+ {"file": "lender.go", "old": "[]*int{&i.fee, &i.interest, &i.principal}", "new": "[]*int{&i.fee, &i.principal, &i.interest}", "label": "principal paid before interest", "k": "test_l2_"},
+ {"file": "lender.go", "old": "if !ok || amount <= 0 {", "new": "if !ok || amount < 0 {", "label": "a payment of 0 is accepted", "k": "test_l2_"},
+ {"file": "lender.go", "old": "\tfor _, i := range ln.inst {\n\t\tfor _, part := range", "new": "\tfor _, i := range ln.inst {\n\t\tif i.due > day {\n\t\t\tbreak\n\t\t}\n\t\tfor _, part := range", "label": "payments never go ahead to instalments not yet due", "k": "test_l2_"},
+ {"file": "lender.go", "old": "if i.due+graceDays < day && i.left() > 0 && !i.charged {", "new": "if i.due+graceDays <= day && i.left() > 0 && !i.charged {", "label": "fee charged on the last day of grace", "k": "test_l3_"},
+ {"file": "lender.go", "old": "i.left() > 0 && !i.charged {", "new": "i.left() > 0 {", "label": "an instalment is charged a fee on every run", "k": "test_l3_"},
+ {"file": "lender.go", "old": "[]*int{&i.fee, &i.interest, &i.principal}", "new": "[]*int{&i.interest, &i.principal, &i.fee}", "label": "fees paid last instead of first", "k": "test_l3_"},
+ {"file": "lender.go", "old": "\t\t\tif i.due+graceDays < day {\n\t\t\t\tlate = true", "new": "\t\t\tif i.due+graceDays <= day {\n\t\t\t\tlate = true", "label": "status is late on the last day of grace", "k": "test_l3_"},
+ {"file": "lender.go", "old": "\t\tif i.due <= day {\n\t\t\tsum += i.fee + i.interest\n\t\t}", "new": "\t\tsum += i.fee + i.interest", "label": "payoff quote doesn't waive future interest", "k": "test_l4_"},
+ {"file": "lender.go", "old": "if i.due <= day {\n\t\t\tsum += i.fee + i.interest", "new": "if i.due < day {\n\t\t\tsum += i.fee + i.interest", "label": "interest falling due today left out of the quote", "k": "test_l4_"},
+ {"file": "lender.go", "old": "if i.left() != i.amount {\n\t\t\treturn false\n\t\t}", "new": "", "label": "restructures a loan that was paid ahead", "k": "test_l4_"},
+ {"file": "lender.go", "old": "instalments(day, rest, months, ln.rateBp)", "new": "instalments(ln.inst[0].due-30, rest, months, ln.rateBp)", "label": "new instalments dated from the original origination day", "k": "test_l4_"}
+]

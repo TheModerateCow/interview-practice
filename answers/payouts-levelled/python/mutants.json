@@ -1,0 +1,15 @@
+[
+ {"file": "payouts.py", "old": "return (amount * bps + 5000) // 10000", "new": "return amount * bps // 10000", "label": "fee rounds down instead of half up", "k": "test_l1_"},
+ {"file": "payouts.py", "old": "not 0 <= fee_bps <= 10000", "new": "not 0 <= fee_bps < 10000", "label": "a 10000 bps merchant is rejected", "k": "test_l1_"},
+ {"file": "payouts.py", "old": "if m is None or amount <= 0:", "new": "if m is None or amount < 0:", "label": "a sale of 0 is accepted and uses an id", "k": "test_l1_"},
+ {"file": "payouts.py", "old": "debit = amount - (s[\"fee\"] - new_fee)", "new": "debit = amount", "label": "refund keeps the platform's fee", "k": "test_l2_"},
+ {"file": "payouts.py", "old": "        s[\"fee\"] = new_fee\n", "new": "", "label": "sale's fee not updated after a refund", "k": "test_l2_"},
+ {"file": "payouts.py", "old": "amount > s[\"amount\"] - s[\"refunded\"]", "new": "amount > s[\"amount\"]", "label": "refund limit ignores earlier refunds", "k": "test_l2_"},
+ {"file": "payouts.py", "old": "if e[0] <= day)", "new": "if e[0] < day)", "label": "sale settles a day late", "k": "test_l3_"},
+ {"file": "payouts.py", "old": "if a > 0:", "new": "if a != 0:", "label": "negative available paid out as a negative payout", "k": "test_l3_"},
+ {"file": "payouts.py", "old": "                self._post(m, day, \"payout\", -a)\n", "new": "", "label": "payout not debited from the balance", "k": "test_l3_"},
+ {"file": "payouts.py", "old": "reserve = _fee(net, m[\"reserve_bps\"])", "new": "reserve = _fee(amount, m[\"reserve_bps\"])", "label": "reserve taken on the gross amount, not the net", "k": "test_l4_"},
+ {"file": "payouts.py", "old": "e[2] and e[0] > day", "new": "e[2] and e[0] >= day", "label": "reserve still counted as held on its release day", "k": "test_l4_"},
+ {"file": "payouts.py", "old": "debit = s[\"amount\"] - s[\"refunded\"] + CHARGEBACK_FEE", "new": "debit = s[\"amount\"] + CHARGEBACK_FEE", "label": "chargeback ignores earlier refunds", "k": "test_l4_"},
+ {"file": "payouts.py", "old": "if s is None or s[\"charged_back\"] or amount <= 0", "new": "if s is None or amount <= 0", "label": "refund allowed after a chargeback", "k": "test_l4_"}
+]
