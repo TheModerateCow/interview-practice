@@ -34,7 +34,9 @@ def problem(d):
             if cs is None: raise ValueError(f"cases/{stem}.json missing for tag {tag}")
             cases[tag] = cs
             for c in cs:
-                if c.get("data"): data[c["data"]] = jload(os.path.join(d, "cases", c["data"]))
+                if c.get("data"):
+                    data[c["data"]] = jload(os.path.join(d, "cases", c["data"]))
+                    if data[c["data"]] is None: raise ValueError(f"cases/{c['data']} missing (case {c.get('name')})")
     return meta, api, cases, data
 
 
