@@ -1,14 +1,13 @@
 <script>
   // The results dialog at the close: final grades, the event log, Export.
+  import { modal } from '../../lib/dialog.js';
   import GradeRow from '../../components/GradeRow.svelte';
   import { showFlash } from '../../app.svelte.js';
   import { round, closedAt, closeFinal, doExport } from './round.svelte.js';
   const st = $derived(round.st);
 </script>
 
-<svelte:window onkeydown={e => { if (e.key === 'Escape' && round.finalOpen) closeFinal(); }} />
-
-<div id="final" class:hidden={!round.finalOpen} role="dialog" aria-modal="true" aria-label="Results">
+<dialog id="final" class="overlay" aria-label="Results" use:modal={round.finalOpen} onclose={closeFinal}>
   {#if round.finalOpen && st}
     {@const g = st.final || {}}
     <div class="final-card">
@@ -27,4 +26,4 @@
         <button id="final-close" class="btn btn-ghost" type="button" onclick={closeFinal}>Close</button></div>
     </div>
   {/if}
-</div>
+</dialog>
