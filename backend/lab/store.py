@@ -4,6 +4,7 @@ import copy, json, os, re, threading, time
 from lab.errors import Conflict, Invalid, NotFound
 from sandbox import grade
 
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # the repo; /app in the image
 DATA = os.environ.get("ILAB_DATA", "/data")
 SETS, EXPORTS = os.path.join(DATA, "sets"), os.path.join(DATA, "exports")
 NAME_RE = re.compile(r"[a-z0-9][a-z0-9-]{0,63}")
