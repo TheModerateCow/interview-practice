@@ -384,6 +384,36 @@ test('Catalog: the language you choose is the one that opens', async ({ page, re
   expect((await page.locator('#lang-pick').boundingBox()).height).toBeLessThan(40);
 });
 
+test('Levelled: Run checks the examples, no stdin box, no My tests', async ({ page, request }) => {
+  const shot = n => page.screenshot({ path: `${OUT}/e2e-${n}.png` });
+  const at = await (await request.post(`${BASE}/api/catalog/parking-levelled/attempt`, { headers: H, data: { language: 'python' } })).json();
+  await page.goto(BASE);
+  await page.waitForLoadState('networkidle');
+  await openIfAsked(page);
+  await pickSet(page, at.name);
+  await page.click('#start-btn');
+  await expect(page.locator('#round')).toBeVisible();
+  await expect(page.locator('#editor .monaco-editor')).toBeVisible({ timeout: 60000 });
+  await expect(page.locator('#stdin')).toHaveCount(0);
+  await expect(page.locator('#mytests-btn')).toBeHidden();
+  await page.click('#run-btn');
+  await expect(page.locator('#results')).toContainText('Examples', { timeout: 120000 });
+  await expect(page.locator('#results .grade')).toHaveCount(1);
+  await expect(page.locator('#results .count')).toHaveText('0/1');
+  await expect(page.locator('#results .names')).toContainText('test_l1_');
+  await shot('levelled-run-starter');
+  const REF_L = '/work/answers/parking-levelled/python/reference';
+  for (const f of walk(REF_L)) await request.put(`${BASE}/api/sets/${at.name}/files/${f}`, { headers: H, data: fs.readFileSync(path.join(REF_L, f), 'utf8') });
+  await page.click('#run-btn');   // the editor is unedited, so its save before Run doesn't overwrite the PUT
+  await expect(page.locator('#results .count')).toHaveText('1/1', { timeout: 120000 });
+  await page.click('#submit-btn');
+  await expect(page.locator('#results')).toContainText('Hidden tests', { timeout: 180000 });
+  await page.click('#run-btn');
+  await expect(page.locator('#results .grade')).toHaveCount(2, { timeout: 120000 });
+  await shot('levelled-run-l2');
+  await request.post(`${BASE}/api/sets/${at.name}/end`, { headers: H });
+});
+
 test('panes resize and remember', async ({ page, request }) => {
   const api = async p => (await request.get(BASE + p, { headers: H })).json();
   await page.goto(BASE);
@@ -570,6 +600,30 @@ test('Code help: Python suggestions, hints and underlines', async ({ page, reque
   await page.click('#editor .view-lines');
   await newLine(); await page.keyboard.type('    l.bal');
   await expect(row('balance_at')).toBeVisible({ timeout: 15000 });
+});
+
+test('Code help: Go suggestions and underlines', async ({ page, request }) => {
+  const a = await (await request.post(`${BASE}/api/catalog/ledger-codebase/attempt`, { headers: H, data: { language: 'go' } })).json();
+  await request.post(`${BASE}/api/sets/${a.name}/start`, { headers: H, data: {} });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(BASE);
+  await page.waitForLoadState('networkidle');
+  await openIfAsked(page);
+  await pickSet(page, a.name);
+  await expect(page.locator('#editor .monaco-editor')).toBeVisible({ timeout: 60000 });
+  await expect.poll(async () => (await request.post(`${BASE}/api/sets/${a.name}/assist`, { headers: H, data: { op: 'complete', file: 'cmd/run/main.go', text: '' } })).json().then(j => j.state), { timeout: 30000 }).toBe('ready');
+  // cmd/run/main.go is open. Put the cursor on a new line before `switch {`, inside the command loop.
+  await page.evaluate(() => {
+    const e = window.monaco.editor.getEditors()[0], m = e.getModel(), i = m.getLinesContent().findIndex(l => l.trim().startsWith('switch {'));
+    e.executeEdits('t', [{ range: new window.monaco.Range(i + 1, 1, i + 1, 1), text: '\n' }]); e.setPosition({ lineNumber: i + 1, column: 1 }); e.focus();
+  });
+  await page.keyboard.type('l.Bal');
+  await expect(page.locator('.suggest-widget .monaco-list-row[aria-label="BalanceAt"]')).toBeVisible({ timeout: 5000 });   // ledger.go was never opened
+  await page.keyboard.press('Escape');
+  await page.keyboard.press('Shift+Home'); await page.keyboard.press('Delete');
+  await page.keyboard.type('_ = l.Balance("a")'); await page.keyboard.press('Escape');
+  await expect.poll(() => page.locator('.squiggly-error').count(), { timeout: 5000 }).toBeGreaterThan(0);
+  await expect(page.locator('#assist-status')).toHaveText('');
 });
 
 test('Code help: Java suggestions and underlines', async ({ page, request }) => {

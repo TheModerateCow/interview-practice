@@ -3,8 +3,8 @@ import fnmatch, io, os, shutil, time, zipfile
 
 from sandbox import grade, lsp, runner
 from lab.errors import Conflict, Invalid, NotFound
-from lab.store import (DATA, EXPORTS, closed, deadline, jload, jsave, late, lock, locked, log, manifest,
-                       minute, mutate, public, ready_info, require_started, reveal, run_lock, sdir, session, state, work_files, work_path)
+from lab.store import (DATA, EXPORTS, deadline, jload, jsave, late, lock, locked, log, manifest,
+                       minute, mutate, ready_info, require_started, reveal, run_lock, sdir, session, state, work_files, work_path)
 
 EXT_LANG = {".py": "python", ".go": "go", ".java": "java", ".ts": "typescript", ".js": "javascript", ".mjs": "javascript",
             ".c": "c", ".cpp": "cpp", ".cc": "cpp"}
@@ -35,8 +35,9 @@ def norm(t): return "\n".join(l.rstrip() for l in t.rstrip().splitlines())
 
 def run(n, body):
     t0 = time.time()
-    require_started(n)
-    m, f, stdin = manifest(n), body.get("file") or "", body.get("stdin") or ""
+    s, m = require_started(n), manifest(n)
+    if m.get("examples"): return run_examples(n, s, m, t0)
+    f, stdin = body.get("file") or "", body.get("stdin") or ""
     if not isinstance(f, str) or not isinstance(stdin, str): raise Invalid("file and stdin must be strings")
     lang = EXT_LANG.get(os.path.splitext(f)[1])
     if not lang: raise Invalid(f"can't run {f or 'this file'}: supported .py .go .java .ts .js .c .cpp")
@@ -67,9 +68,21 @@ def run(n, body):
     return out
 
 
-def grade_tags(n, tags, tree="work"):
+def run_examples(n, s, m, t0):
+    """Levelled: Run grades the visible examples (one case per level) for every unlocked level. Unlocks nothing."""
+    lk = busy(n)
+    try: res = grade_tags(n, [t for t in m.get("tags", ["test_"]) if t in s["unlocked"]], key="examples")
+    finally: lk.release()
+    mutate(n, lambda s, _: log(s, "run examples: " + summary(res), t0))
+    return {"examples": res}
+
+
+def summary(res): return ", ".join(f"{t} {r['passed']}/{r['total']}" if r["status"] == "graded" else f"{t} {r['status']}" for t, r in res.items())
+
+
+def grade_tags(n, tags, tree="work", key="hidden_tests"):
     m, d = manifest(n), sdir(n)
-    ht = m["hidden_tests"]; base = os.path.basename(ht)
+    ht = m[key]; base = os.path.basename(ht)
     files = grade.read_tree(os.path.join(d, tree)); files[base] = open(os.path.join(d, ht), "rb").read()
     lang = m["language"]; lim = m.get("grade_timeout_s", 45)
     return {t: grade.grade(files, [base], lang, t, lim, names=True) for t in tags}
@@ -93,16 +106,16 @@ def submit(n):
         allr = jload(rp, {})
         for t, r in res.items(): allr[t] = stamp(s, r, t0)
         jsave(rp, allr)
-        log(s, "submit: " + ", ".join(f"{t} {r['passed']}/{r['total']}" if r["status"] == "graded" else f"{t} {r['status']}" for t, r in res.items()), t0)
+        log(s, "submit: " + summary(res), t0)
         new = []
         if not s.get("ended"):
             for t, r in res.items():
                 if r["status"] == "graded" and r["total"] and r["passed"] == r["total"]:
                     for e in locked(s, m):
                         if e.get("after_tag") == t: reveal(s, e, f"{t} passed"); new.append(os.path.basename(e["file"]))
-        return allr, new, closed(s)
-    allr, new, names = mutate(n, apply)
-    return {"results": {t: public(allr[t], names) for t in res}, "revealed": new, "state": state(n)}
+        return allr, new
+    allr, new = mutate(n, apply)
+    return {"results": {t: allr[t] for t in res}, "revealed": new, "state": state(n)}
 
 
 def mytests(n):

@@ -1,5 +1,5 @@
 # user data and hidden reference solutions: never commit
-data/
+/data/
 .private/
 # test output and caches
 tests/out/
