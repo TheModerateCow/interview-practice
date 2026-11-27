@@ -1,5 +1,6 @@
 """Java backend for shared-case problems. Contract: docs/rounds/3-language-variants/CONTRACT.md. Pure stdlib."""
 import json, os
+from pathlib import Path
 
 TESTS_FILE = "HiddenTest.java"
 CHUNK = 30000
@@ -167,6 +168,6 @@ def tests_file(api, cases_by_tag, data):
     chunks = [doc[i:i + CHUNK] for i in range(0, len(doc), CHUNK)] or [""]
     tests = "".join(f'    static void {tag}{c["name"]}() {{ hiddenRun("{c["name"]}"); }}\n'
                     for tag, cs in cases_by_tag.items() for c in cs)
-    tmpl = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "java_harness.java.tmpl")).read()
+    tmpl = Path(os.path.join(os.path.dirname(os.path.abspath(__file__)), "java_harness.java.tmpl")).read_text()
     return (tmpl.replace("/*@@TESTS@@*/\n", tests)
                 .replace("/*@@CHUNKS@@*/\n", ",\n".join(f'        "{_esc(c)}"' for c in chunks) + "\n"))

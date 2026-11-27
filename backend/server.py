@@ -1,5 +1,6 @@
 """Interview Lab API on Flask, served by Waitress: routes and request guards only. Contract: API.md. Data layout: FORMAT.md."""
 import json, os, sys, threading, traceback
+from pathlib import Path
 from flask import Flask, Response, jsonify, request
 from waitress import serve
 from werkzeug.exceptions import Forbidden, HTTPException
@@ -98,7 +99,7 @@ def r_files(n, rel):
     p = work_path(n, rel)
     if request.method == "GET":
         if not os.path.isfile(p): raise NotFound("no such file")
-        return Response(open(p, "rb").read(), mimetype="text/plain; charset=utf-8")
+        return Response(Path(p).read_bytes(), mimetype="text/plain; charset=utf-8")
     data = body(MAX_FILE)
     os.makedirs(os.path.dirname(p), exist_ok=True)
     with open(p, "wb") as f: f.write(data)
