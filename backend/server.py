@@ -24,8 +24,8 @@ def body(limit):
     return request.get_data(cache=False)
 
 
-def json_body():
-    try: b = json.loads(body(MAX_FILE) or b"{}")
+def json_body(limit=MAX_FILE):
+    try: b = json.loads(body(limit) or b"{}")
     except ValueError: raise Invalid("request body is not valid JSON")
     if not isinstance(b, dict): raise Invalid("request body must be a JSON object")
     return b
@@ -110,7 +110,7 @@ def r_files(n, rel):
 @app.post("/api/sets/<n>/assist")
 def r_assist(n):
     sdir(n)
-    b = json.loads(body(MAX_FILE + 4096) or b"{}")
+    b = json_body(MAX_FILE + 4096)   # a whole file as text, plus the JSON around it
     op = b.get("op")
     if op not in lsp.OPS and op not in ("check", "stop"): raise Invalid("bad op")
     if op == "stop": lsp.stop(n); return {"state": "stopped"}
