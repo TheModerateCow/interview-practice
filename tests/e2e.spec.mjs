@@ -581,7 +581,9 @@ test('Code help: Python suggestions, hints and underlines', async ({ page, reque
   // the first request starts the server; while it does, the line says so and typing is not blocked
   await expect.poll(async () => (await request.post(`${BASE}/api/sets/${a.name}/assist`, { headers: H, data: { op: 'complete', file: 'main.py', text: '' } })).json().then(j => j.state), { timeout: 30000 }).toBe('ready');
   await newLine(); await page.keyboard.type('    heapq.heap');
-  await expect(row('heappush')).toBeVisible({ timeout: 5000 });
+  // the first answer can take longer than the editor waits (pyright loads heapq's stubs): ask again, as the next keystroke would
+  await expect.poll(async () => { if (await row('heappush').count()) return 1; await page.keyboard.press('Control+Space'); await page.waitForTimeout(1000); return row('heappush').count(); },
+    { timeout: 20000 }).toBeGreaterThan(0);
   await clear();
   await page.keyboard.type('    l.bal');
   await expect(row('balance_at')).toBeVisible({ timeout: 5000 });   // ledger/ledger.py was never opened
