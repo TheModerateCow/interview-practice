@@ -37,6 +37,10 @@ export function monacoTheme() {
   monaco.editor.setTheme('ilab');
 }
 
+// Code help level -> editor options. Words only keeps Monaco's defaults; the language-server providers go quiet in assist.js.
+const assistOpts = () => (LS.get('ilab-assist') === 'off'
+  ? { quickSuggestions: false, suggestOnTriggerCharacters: false, wordBasedSuggestions: 'off', parameterHints: { enabled: false }, hover: { enabled: false } }
+  : { quickSuggestions: true, suggestOnTriggerCharacters: true, wordBasedSuggestions: 'matchingDocuments', parameterHints: { enabled: true }, hover: { enabled: true } });
 const wrapOpt = () => (LS.get('ilab-wrap') === 'on' ? 'on' : 'off');
 
 /* ---------- Monaco: loaded once through its AMD loader (/vendor/monaco/vs/loader.js) ---------- */
@@ -55,7 +59,7 @@ export function loadMonaco(el, on) {
       monacoTheme();
       const ed = monaco.editor.create(el, { theme: 'ilab', automaticLayout: true, minimap: { enabled: false }, model: null,
         fontFamily: '"Geist Mono", ui-monospace, Menlo, Consolas, monospace', fontSize: 13, lineHeight: 21,
-        padding: { top: 12 }, scrollBeyondLastLine: false, renderLineHighlight: 'all', overviewRulerBorder: false, wordWrap: wrapOpt() });
+        padding: { top: 12 }, scrollBeyondLastLine: false, renderLineHighlight: 'all', overviewRulerBorder: false, wordWrap: wrapOpt(), ...assistOpts() });
       document.fonts && document.fonts.ready.then(() => monaco.editor.remeasureFonts());
       ed.onDidChangeModelContent(on.change);
       ed.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Quote, on.run);
@@ -68,3 +72,4 @@ export function loadMonaco(el, on) {
 
 // Display only: the text, autosave, Run and Submit never see the wrap. Before the editor exists, only the choice is saved.
 export function setWrap(on) { LS.set('ilab-wrap', on ? 'on' : 'off'); monacoP?.then(ed => ed.updateOptions({ wordWrap: wrapOpt() })); }
+export function setAssist(v) { LS.set('ilab-assist', v); monacoP?.then(ed => ed.updateOptions(assistOpts())); }
