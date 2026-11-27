@@ -3,9 +3,10 @@
 // nothing, so Monaco falls back to word suggestions and the round carries on.
 import { api } from './api.js';
 
-const LANGS = ['python', 'go'];   // languages with a server; one line per language as PRs add them
+const LANGS = ['python', 'go', 'java'];   // languages with a server; one line per language as PRs add them
 const ASSIST_LINE = { python: 'Code help: suggestions from your code and Python\'s standard library, parameter hints and error underlines.',
-  go: 'Code help: suggestions from your code and Go\'s standard library, parameter hints and error underlines.' };
+  go: 'Code help: suggestions from your code and Go\'s standard library, parameter hints and error underlines.',
+  java: 'Code help: suggestions from your code and Java\'s standard library, parameter hints and error underlines.' };
 export function assistLine(lang) {
   return ASSIST_LINE[lang] || 'Autocomplete: ' + (['javascript', 'typescript'].includes(lang)
     ? 'suggests methods and types as you type.' : 'suggests only words already in your files, not library functions or methods.');

@@ -8,7 +8,7 @@ docker compose version >/dev/null 2>&1 || { echo "docker compose plugin not foun
 
 mkdir -p data
 docker compose up -d --build
-docker compose build ilab-python ilab-lsp-python ilab-lsp-go
+docker compose build ilab-python ilab-lsp-python ilab-lsp-go ilab-lsp-java
 
 # Runner images: read the defaults from backend/sandbox/runner.py so a pin needs one edit.
 images=$(sed -n 's/.*os\.environ\.get("ILAB_IMG_[A-Z]*", *"\([^"]*\)").*/\1/p' backend/sandbox/runner.py | sort -u | grep -v '^ilab-' || true)

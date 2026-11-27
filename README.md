@@ -26,7 +26,7 @@ browser ──127.0.0.1:8765──> nginx (UI: Svelte + Monaco + marked, built a
                          512 MB, 2 CPUs, 256 pids, cap-drop ALL, no-new-privileges, auto-removed.
                          Code in / results out as tar.gz over the attach stream; no bind mounts.
                          plus, while a round is open, one language-server container for code help in the
-                         editor (Python: pyright, Go: gopls), with the same flags, spoken to over the same attach stream.
+                         editor (Python: pyright, Go: gopls, Java: jdtls), with the same flags, spoken to over the same attach stream.
 ```
 Only nginx publishes a port. The backend and proxy sit on internal networks. `/api` needs `X-ILab: 1` plus the
 127.0.0.1/localhost Host, and it rejects any foreign Origin.

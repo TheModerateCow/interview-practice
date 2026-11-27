@@ -872,5 +872,110 @@ def _():
     jreq("POST", f"/api/sets/{B}/end"); assist(B, "stop"); gone()
 
 
+@sec("code help: Java (jdtls)")
+def _():
+    def attempt(prob="ledger-codebase"):
+        a = jreq("POST", f"/api/catalog/{prob}/attempt", {"language": "java"})[1]["name"]; jreq("POST", f"/api/sets/{a}/start"); return a
+    def assist(n, op, file="Main.java", text=None, line=0, col=0, **k):
+        return jreq("POST", f"/api/sets/{n}/assist", {"op": op, "file": file, "text": text, "line": line, "col": col, **k})
+    def ready(n, secs=30):
+        for _ in range(int(secs * 2)):
+            if assist(n, "complete", text="")[1].get("state") == "ready": return True
+            time.sleep(0.5)
+        return False
+    def containers(): return subprocess.run(["docker", "ps", "-q", "--filter", "label=ilab.lsp=test"], capture_output=True, text=True).stdout.split()
+    def gone(secs=5):
+        for _ in range(secs * 2):
+            if not containers(): return True
+            time.sleep(0.5)
+        return False
+    seen = []
+    def at(n, op, text, line, col, **k):
+        s, j = assist(n, op, text=text, line=line, col=col, **k); seen.append(j); return j
+    def labels(j): r = j.get("result") or {}; return [i["label"] for i in (r.get("items") if isinstance(r, dict) else r) or []]
+    A = attempt()
+    check("Java: code help reaches ready within 30 s", ready(A))
+    main = req("GET", f"/api/sets/{A}/files/Main.java")[1].decode()
+    ln = main.split("\n").index("        int n = f.length - 1;") + 1   # the line after it, inside handle()
+    def with_line(extra): L = main.split("\n"); L.insert(ln, extra); return "\n".join(L)
+    def prime(): at(A, "check", main, 0, 0)   # open Main.java in the server, then let the project finish importing
+    def diags(text, file="Main.java", wait=20):   # a real answer for this text (jdtls publishes without a version), or None
+        end = time.time() + wait
+        while time.time() < end:
+            d = at(A, "check", text, 0, 0, file=file).get("diagnostics")
+            if d is not None: return d
+            time.sleep(0.5)
+    prime(); time.sleep(1)
+    j = at(A, "complete", with_line("        l.bal"), ln, 8 + len("l.bal"))
+    check("Java own type: l.bal lists balanceAt (Ledger.java never opened)", any(x.startswith("balanceAt(") for x in labels(j)), labels(j)[:6])
+    j = at(A, "complete", "import java.util.*; " + with_line("        Collections.unmod"), ln, 8 + len("Collections.unmod"))
+    check("Java stdlib: Collections.unmod lists unmodifiableList", any(x.startswith("unmodifiableList(") for x in labels(j)), labels(j)[:6])
+    t = with_line("        Map<String, Long> m = new HashMap<>();\n        m.computeIf"); j = at(A, "complete", t, ln + 1, 8 + len("m.computeIf"))
+    check("Java stdlib member: m.computeIf lists computeIfAbsent", any(x.startswith("computeIfAbsent(") for x in labels(j)), labels(j)[:6])
+    j = at(A, "signature", with_line("        Math.max("), ln, 8 + len("Math.max("))
+    check("Java signature help for Math.max(", any("max" in x.get("label", "") for x in (j.get("result") or {}).get("signatures", [])), j)
+    t0 = time.time(); j = diags(with_line('        l.balance("a");'))
+    d = [x for x in j or [] if x["range"]["start"]["line"] == ln]
+    print(f"       Java: first underline after {time.time() - t0:.1f} s")
+    check("Java: l.balance(\"a\") is underlined within 20 s, naming the method", len(d) == 1 and "balance" in d[0]["message"], (j, time.time() - t0))
+    j = diags(main)
+    check("Java: Main.java as shipped has no diagnostics (a real answer, not a timeout)", j == [], j)
+    ex = req("GET", f"/api/sets/{A}/files/ExampleTest.java")[1].decode()
+    check("Java: the untouched ExampleTest.java has no diagnostics (Expect resolves)", diags(ex, "ExampleTest.java") == [], None)
+    L = main.split("\n"); hl = next(i for i, x in enumerate(L) if "Ledger l = new Ledger();" in x)
+    for _ in range(20):
+        hv = json.dumps(at(A, "hover", main, hl, L[hl].index("new Ledger") + 6).get("result"))
+        if "Ledger" in hv: break
+        time.sleep(0.5)
+    check("Java hover names Ledger", "Ledger" in hv, hv[:200])
+    led = req("GET", f"/api/sets/{A}/files/Ledger.java")[1].decode()
+    req("PUT", f"/api/sets/{A}/files/Ledger.java", led.rstrip()[:-1] + "\n    public int zzProbe() { return 1; }\n}\n")
+    time.sleep(1)
+    j = at(A, "complete", with_line("        l.zzPr"), ln, 8 + len("l.zzPr"))
+    check("Java: a method saved in Ledger.java shows in Main.java's suggestions (Main.java not resent)", any(x.startswith("zzProbe(") for x in labels(j)), labels(j)[:6])
+    pr = "public class Probe {\n    HiddenT\n    void f() { test_p1_ }\n}\n"
+    j1 = at(A, "complete", pr, 1, 11, file="Probe.java"); j2 = at(A, "complete", pr, 2, 21, file="Probe.java")
+    bad = [x for x in labels(j1) + labels(j2) if x.startswith(("HiddenTest", "test_p1_"))]
+    check("Java: hidden test names are never offered", not bad, bad)
+    blob = json.dumps(seen)
+    check("Java: no container path, .hidden, file:// or link in any result", not any(m in blob for m in ("/tmp/w", ".hidden", "file://", "](")), [m for m in ("/tmp/w", ".hidden", "file://", "](") if m in blob])
+    req("PUT", f"/api/sets/{A}/files/build.gradle", "plugins { id 'java' }\nthis is not gradle {{{\n")
+    j = at(A, "check", main, 0, 0)
+    check("Java: a build.gradle the candidate creates is ignored (no new underline, no Gradle start)", j.get("diagnostics") == [] and "gradle" not in subprocess.run(["docker", "ps", "--format", "{{.Image}}"], capture_output=True, text=True).stdout, j)
+    ids = containers()
+    check("Java: exactly one language-server container", len(ids) == 1, ids)
+    if len(ids) == 1:
+        o = json.loads(subprocess.run(["docker", "inspect", ids[0]], capture_output=True, text=True).stdout)[0]
+        hc = o["HostConfig"]
+        check("Java: container is locked down", hc["NetworkMode"] == "none" and hc["ReadonlyRootfs"] is True and hc["Memory"] == 536870912
+              and hc["MemorySwap"] == 536870912 and hc["NanoCpus"] == 2000000000 and hc["PidsLimit"] == 256 and hc["CapDrop"] == ["ALL"]
+              and "no-new-privileges" in " ".join(hc["SecurityOpt"]) and not hc["PortBindings"] and not o["Mounts"] and not o["NetworkSettings"]["Ports"], hc)
+        peak = subprocess.run(["docker", "exec", ids[0], "cat", "/sys/fs/cgroup/memory.peak"], capture_output=True, text=True).stdout.strip()
+        mb = int(peak) / 2**20 if peak.isdigit() else None
+        print(f"       jdtls peak memory in {A}: {mb and round(mb)} MB (limit 512)")
+        check("Java: peak memory under 512 MB and no OOM kill", mb is not None and mb < 500 and json.loads(subprocess.run(["docker", "inspect", ids[0]], capture_output=True, text=True).stdout)[0]["State"]["OOMKilled"] is False, mb)
+    check("Java: stop: the container is gone within 5 s", assist(A, "stop")[0] == 200 and gone())
+    jreq("POST", f"/api/sets/{A}/end"); jreq("DELETE", f"/api/sets/{A}"); gone()
+    # every Java starter in the catalog: 0 errors on untouched files (a planted bug must never get an underline; no false positives)
+    probs = [p for p in jreq("GET", "/api/catalog")[1]["problems"] if "java" in p["languages"] and p.get("source") != "custom"]
+    total = {}
+    for pr_ in probs:
+        a = attempt(pr_["id"])
+        if not ready(a, 40): check(f"Java {pr_['id']}: code help ready", False); continue
+        files = [f for f in jreq("GET", f"/api/sets/{a}/state")[1]["files"] if f.endswith(".java")]
+        bad = {}
+        for f in files:
+            txt = req("GET", f"/api/sets/{a}/files/{f}")[1].decode(); d = None
+            for _ in range(8):
+                d = at(a, "check", txt, 0, 0, file=f).get("diagnostics")
+                if d is not None: break
+                time.sleep(1)
+            if d is None or d: bad[f] = [x["message"] for x in d] if d else "no answer"
+        total[pr_["id"]] = (len(files), len(bad))
+        check(f"Java {pr_['id']} ({pr_['round']}): {len(files)} untouched starter files, 0 diagnostics", not bad, bad)
+        jreq("POST", f"/api/sets/{a}/end"); assist(a, "stop")
+    print(f"       Java starters checked: {len(total)} problems, {sum(v[0] for v in total.values())} files, {sum(v[1] for v in total.values())} with diagnostics")
+    gone()
+
 print(f"\n{'ALL PASSED' if not fails else f'{fails} FAILED'}")
 sys.exit(1 if fails else 0)
