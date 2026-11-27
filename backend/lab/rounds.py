@@ -2,8 +2,9 @@
 import fnmatch, io, os, shutil, time, zipfile
 
 from sandbox import grade, runner
-from lab.store import (DATA, EXPORTS, HTTPError, _busy, deadline, jload, jsave, late, lock, locked, log, manifest,
-                       minute, mutate, ready_info, require_started, reveal, sdir, session, state, work_files, work_path)
+from lab.errors import Conflict, Invalid, NotFound
+from lab.store import (DATA, EXPORTS, deadline, jload, jsave, late, lock, locked, log, manifest,
+                       minute, mutate, ready_info, require_started, reveal, run_lock, sdir, session, state, work_files, work_path)
 
 EXT_LANG = {".py": "python", ".go": "go", ".java": "java", ".ts": "typescript", ".js": "javascript", ".mjs": "javascript",
             ".c": "c", ".cpp": "cpp", ".cc": "cpp"}
@@ -24,8 +25,8 @@ def start(n):
 
 
 def busy(n):
-    lk = lock(n, _busy)
-    if not lk.acquire(blocking=False): raise HTTPError(409, "another Run/Submit is still running for this set")
+    lk = run_lock(n)
+    if not lk.acquire(blocking=False): raise Conflict("another Run/Submit is still running for this set")
     return lk
 
 
@@ -37,11 +38,12 @@ def run(n, body):
     s, m = require_started(n), manifest(n)
     if m.get("examples"): return run_examples(n, s, m, t0)
     f, stdin = body.get("file") or "", body.get("stdin") or ""
+    if not isinstance(f, str) or not isinstance(stdin, str): raise Invalid("file and stdin must be strings")
     lang = EXT_LANG.get(os.path.splitext(f)[1])
-    if not lang: raise HTTPError(400, f"can't run {f or 'this file'}: supported .py .go .java .ts .js .c .cpp")
+    if not lang: raise Invalid(f"can't run {f or 'this file'}: supported .py .go .java .ts .js .c .cpp")
     work_path(n, f)
     files = work_files(n)
-    if f not in files: raise HTTPError(404, f"{f} not found")
+    if f not in files: raise NotFound(f"{f} not found")
     tcs = m.get("testcases", []) if f == m.get("run_entry") else []
     stdins = [stdin] + [t.get("stdin", "") for t in tcs]   # always one run with the stdin box, so Run always shows stdout
     lk = busy(n)
@@ -69,7 +71,7 @@ def run(n, body):
 def run_examples(n, s, m, t0):
     """Levelled: Run grades the visible examples (one case per level) for every unlocked level. Unlocks nothing."""
     lk = busy(n)
-    try: res = grade_tags(n, [t for t in m.get("tags", ["test_"]) if t in s["unlocked"]], "examples")
+    try: res = grade_tags(n, [t for t in m.get("tags", ["test_"]) if t in s["unlocked"]], key="examples")
     finally: lk.release()
     mutate(n, lambda s, _: log(s, "run examples: " + summary(res), t0))
     return {"examples": res}
@@ -78,10 +80,10 @@ def run_examples(n, s, m, t0):
 def summary(res): return ", ".join(f"{t} {r['passed']}/{r['total']}" if r["status"] == "graded" else f"{t} {r['status']}" for t, r in res.items())
 
 
-def grade_tags(n, tags, key="hidden_tests"):
+def grade_tags(n, tags, tree="work", key="hidden_tests"):
     m, d = manifest(n), sdir(n)
     ht = m[key]; base = os.path.basename(ht)
-    files = work_files(n); files[base] = open(os.path.join(d, ht), "rb").read()
+    files = grade.read_tree(os.path.join(d, tree)); files[base] = open(os.path.join(d, ht), "rb").read()
     lang = m["language"]; lim = m.get("grade_timeout_s", 45)
     return {t: grade.grade(files, [base], lang, t, lim, names=True) for t in tags}
 
@@ -92,7 +94,7 @@ def stamp(s, res, t): return res | {"at": minute(s, t), "after_time": late(s, t)
 def submit(n):
     t0 = time.time()
     s, m = require_started(n), manifest(n)
-    if not m.get("hidden_tests"): raise HTTPError(400, "this set has no hidden tests (Run only)")
+    if not m.get("hidden_tests"): raise Invalid("this set has no hidden tests (Run only)")
     lk = busy(n)
     try:
         tags = [t for t in m.get("tags", ["test_"]) if t in s["unlocked"]]
@@ -120,7 +122,7 @@ def mytests(n):
     t0 = time.time()
     s, m = require_started(n), manifest(n)
     pat = m.get("your_tests")
-    if not pat: raise HTTPError(400, "this set has no your_tests pattern")
+    if not pat: raise Invalid("this set has no your_tests pattern")
     files = work_files(n)
     tests = sorted(f for f in files if fnmatch.fnmatch(f, pat) or fnmatch.fnmatch(os.path.basename(f), pat))
     if not tests: r = {"status": "no tests selected", "k": None, "last_line": f"no files match {pat}"}
@@ -135,7 +137,7 @@ def mytests(n):
 def next_part(n):
     def f(s, m):
         lk = locked(s, m)
-        if not lk: raise HTTPError(409, "no locked part left")
+        if not lk: raise Conflict("no locked part left")
         reveal(s, lk[0], "asked to move on")
     mutate(n, f)
     return state(n)
@@ -151,8 +153,8 @@ def last_edit(n):
 def end(n):
     """The one close: idempotent; waits for an in-flight Run/Submit; grades the unlocked tags once."""
     require_started(n); m = manifest(n)
-    lk = lock(n, _busy)
-    if not lk.acquire(timeout=m.get("grade_timeout_s", 45) + 30): raise HTTPError(409, "a Run/Submit is still running")
+    lk = run_lock(n)
+    if not lk.acquire(timeout=m.get("grade_timeout_s", 45) + 30): raise Conflict("a Run/Submit is still running")
     try:
         def close(s, _):
             if s.get("ended"): return False
@@ -165,7 +167,9 @@ def end(n):
         s = session(n)
         rp = os.path.join(sdir(n), "results.json")
         if m.get("hidden_tests") and "final" not in jload(rp, {}):
-            res = grade_tags(n, [t for t in m.get("tags", ["test_"]) if t in s["unlocked"]])
+            # grade the snapshot, not work/: edits can still land in work/ after the close
+            tree = "final" if os.path.isdir(os.path.join(sdir(n), "final")) else "work"
+            res = grade_tags(n, [t for t in m.get("tags", ["test_"]) if t in s["unlocked"]], tree)
             after = last_edit(n) > deadline(s) + GRACE_S
             def apply(s, _):
                 allr = jload(rp, {})
@@ -193,12 +197,12 @@ def export(n):
 
 def delete(n):
     """Soft delete: move the set folder to data/deleted/<name>-<stamp>/. Nothing is erased; exports/ is untouched."""
-    wait = lock(n, _busy)   # a Run/Submit/grade holds this; refuse rather than move the folder under it
-    if not wait.acquire(blocking=False): raise HTTPError(409, "This round is in progress. End it first, then delete it.")
+    wait = run_lock(n)   # a Run/Submit/grade holds this; refuse rather than move the folder under it
+    if not wait.acquire(blocking=False): raise Conflict("This round is in progress. End it first, then delete it.")
     try:
         with lock(n):
             i = ready_info(n)
-            if i["status"] == "running": raise HTTPError(409, "This round is in progress. End it first, then delete it.")
+            if i["status"] == "running": raise Conflict("This round is in progress. End it first, then delete it.")
             dest = os.path.join(DATA, "deleted", f"{n}-{time.strftime('%Y%m%d-%H%M%S')}")
             while os.path.exists(dest): dest += "-x"
             os.makedirs(os.path.dirname(dest), exist_ok=True)
