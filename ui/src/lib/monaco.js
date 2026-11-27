@@ -1,6 +1,6 @@
 import { LS } from './util.js';
 // Monaco editor: language per file, the theme built from tokens.css, and the one-time AMD load.
-const LANG = { py: 'python', go: 'go', java: 'java', ts: 'typescript', js: 'javascript', c: 'c', h: 'c', cpp: 'cpp', cc: 'cpp', hpp: 'cpp', md: 'markdown', json: 'json', mod: 'plaintext' };
+const LANG = { py: 'python', go: 'go', java: 'java', c: 'c', h: 'c', cpp: 'cpp', cc: 'cpp', hpp: 'cpp', md: 'markdown', json: 'json', mod: 'plaintext' };
 export const langOf = p => LANG[(p.split('.').pop() || '').toLowerCase()] || 'plaintext';
 
 /* ---------- theme, shared with Monaco ---------- */

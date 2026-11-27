@@ -3,8 +3,8 @@ import json,os,shutil,subprocess,sys,tempfile
 #        python3 gate.py <set_dir> --build-starter      write starter/ = reference/ + every bugs.json edit
 #        python3 gate.py <set_dir> --tdd <their_tests>  score candidate tests against reference + mutants
 d=os.path.abspath(sys.argv[1]); ref=os.path.join(d,"reference")
-H=next((os.path.join(d,n) for n in ("tests_hidden.py","hidden_test.go","HiddenTest.java","hidden.test.ts","hidden.test.js") if os.path.exists(os.path.join(d,n))),None)
-assert H, "no hidden tests file: tests_hidden.py / hidden_test.go / HiddenTest.java / hidden.test.ts / hidden.test.js"
+H=next((os.path.join(d,n) for n in ("tests_hidden.py","hidden_test.go","HiddenTest.java") if os.path.exists(os.path.join(d,n))),None)
+assert H, "no hidden tests file: tests_hidden.py / hidden_test.go / HiddenTest.java"
 G=os.path.join(os.path.dirname(os.path.abspath(__file__)),"grade.py")
 def load(n):
     p=os.path.join(d,n); return json.load(open(p)) if os.path.exists(p) else []

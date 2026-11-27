@@ -11,7 +11,7 @@ def health():
         runner.api("GET", "/version", timeout=5); ok, err = True, None
     except runner.DockerError as e: ok, err = False, str(e)
     return {"ok": True, "docker": ok, "error": err,
-            "images": {lang: IMG_STATE.get(img, "missing") for lang, img in runner.IMAGES.items() if lang not in ("cpp", "typescript")},
+            "images": {lang: IMG_STATE.get(img, "missing") for lang, img in runner.IMAGES.items() if lang != "cpp"},
             "assist": {lang: IMG_STATE.get(img, "missing") for lang, img in runner.LSP_IMAGES.items()}}
 
 

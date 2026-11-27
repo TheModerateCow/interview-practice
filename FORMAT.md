@@ -9,7 +9,7 @@ An interview set is a zip that you drag onto Interview Lab (http://127.0.0.1:876
 manifest.json
 problem.md            shown after Start (never before)
 starter/...           copied to the candidate's work/ folder at import
-.hidden/<tests file>  hidden tests: tests_hidden.py · hidden_test.go · HiddenTest.java · hidden.test.ts · hidden.test.js
+.hidden/<tests file>  hidden tests: tests_hidden.py · hidden_test.go · HiddenTest.java
 .hidden/<part>.md     later parts (p3.md, l2.md ...), revealed by `reveal`
 ```
 The zip may also contain one top-level folder that holds all of these.
@@ -23,7 +23,7 @@ Limits: 2000 files, 50 MB unpacked, no absolute paths, no `..`, no symlinks.
 | `title` | yes | Shown on the ready screen |
 | `company`, `role` | no | Ready screen |
 | `round` | yes | `codebase` · `levelled` · `ai-assisted` · `tdd` |
-| `language` | yes | `python` · `go` · `java` · `typescript` · `javascript` (`c` · `cpp`: Run only, no hidden tests) |
+| `language` | yes | `python` · `go` · `java` (`c` · `cpp`: Run only, no hidden tests) |
 | `difficulty` | yes | `medium` · `hard` |
 | `minutes` | yes | Round length. The clock starts only when the candidate presses Start |
 | `rules` | no | Short markdown for the ready screen |
@@ -46,8 +46,7 @@ Limits: 2000 files, 50 MB unpacked, no absolute paths, no `..`, no symlinks.
 ## Runner images (write code for these)
 Pinned: `ilab-python:3.15.2-pytest9.2.0` (python:3.15.2-slim + pytest 9.2.0), `golang:1.27.4` (standard library only,
 `GOTOOLCHAIN=local`; put `go 1.22` in go.mod), `eclipse-temurin:21.0.13.1_2-jdk` (no JUnit: the `Runner` + `Expect`
-mini-runner from grade.py), `node:24.22.3-slim` (`node:test`; TypeScript through type stripping: no enums, namespaces or
-parameter properties; import local files with their extension), `gcc:14.4.0` (C/C++ Run only). Change them in one place:
+mini-runner from grade.py), `gcc:14.4.0` (C/C++ Run only). Change them in one place:
 `IMAGES` in `backend/sandbox/runner.py`. Write code that also runs on older toolchains (claude.ai gates with local ones).
 Containers have no network, a read-only root, a 256 MB `/tmp`, 512 MB RAM, 2 CPUs and 256 pids. Run cases get 5 s each.
 

@@ -17,6 +17,8 @@ print("PASS a good manifest has no errors")
 BAD = [({"name": "Bad_Name"}, "name:"),
        ({"format": "interview-set/2"}, "format:"),
        ({"language": "cobol"}, "language:"),
+       ({"language": "typescript"}, "language:"),
+       ({"language": "javascript"}, "language:"),
        ({"minutes": 0}, "minutes:"),
        ({"minutes": True}, "minutes:"),
        ({"hidden_tests": "tests/hidden_test.go"}, "hidden_tests: must be a path under .hidden/"),

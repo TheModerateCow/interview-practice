@@ -16,8 +16,6 @@ IMAGES = {
     "java": os.environ.get("ILAB_IMG_JAVA", "eclipse-temurin:21.0.13.1_2-jdk"),
     "c": os.environ.get("ILAB_IMG_GCC", "gcc:14.4.0"),
     "cpp": os.environ.get("ILAB_IMG_GCC", "gcc:14.4.0"),
-    "javascript": os.environ.get("ILAB_IMG_NODE", "node:24.22.3-slim"),
-    "typescript": os.environ.get("ILAB_IMG_NODE", "node:24.22.3-slim"),
 }
 # The runner's lock-down, shared with the language server (sandbox/lsp.py) so the two can't drift apart.
 LOCKED = {"AutoRemove": True, "NetworkMode": "none", "ReadonlyRootfs": True,

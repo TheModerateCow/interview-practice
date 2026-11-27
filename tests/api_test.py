@@ -112,9 +112,6 @@ PROGS = {
  "cpp": ("main.cpp", {"main.cpp": "#include <iostream>\n#include <string>\n#include <cctype>\nint main(){ std::string l; std::getline(std::cin,l);"
         " if(l.empty()){std::cout<<\"hello\\n\";return 0;} for(auto&c:l)c=toupper((unsigned char)c); std::cout<<l<<\"\\n\"; }\n"},
         "int main( {\n"),
- "javascript": ("main.js", {"main.js": "const l=require('fs').readFileSync(0,'utf8').split('\\n')[0].trim();\nconsole.log(l?l.toUpperCase():'hello');\n"}, None),
- "typescript": ("main.ts", {"main.ts": "import fs from 'node:fs';\nconst l: string = fs.readFileSync(0,'utf8').split('\\n')[0].trim();\nconsole.log(l ? l.toUpperCase() : 'hello');\n"},
-                "const x: number = ;\n"),
 }
 
 
@@ -139,10 +136,7 @@ def lang_test(lang):
     if broken:
         s, _ = req("PUT", f"/api/sets/{n}/files/{entry}", broken)
         r = runfile(n, entry, "\n")
-        if lang == "typescript":
-            check("typescript: syntax error is not Accepted", r["verdict"] != "Accepted", r["verdict"])
-        else:
-            check(f"{lang}: Compile Error", r["verdict"] == "Compile Error" and (r.get("compile") or {}).get("log", "").strip() != "", r)
+        check(f"{lang}: Compile Error", r["verdict"] == "Compile Error" and (r.get("compile") or {}).get("log", "").strip() != "", r)
 
 
 for L in PROGS:

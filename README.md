@@ -62,7 +62,7 @@ Re-grade an export (unzipped into `<export>`, with the set folder `<set>` that h
 `tests/unit/run.sh`: backend unit tests, no Docker, a few seconds (needs `pip install -r backend/requirements.txt`).
 One plain script per area in `tests/unit/test_*.py`: grading verdicts, test pruning, the clock, set validation, zip import.
 
-`tests/run_all.sh [--clean]`: gates every set in `tests/sets/`, then runs `tests/api_test.py` (all 7 languages,
+`tests/run_all.sh [--clean]`: gates every set in `tests/sets/`, then runs `tests/api_test.py` (all 5 languages,
 TLE/MLE/fork bomb/no network/read-only/truncation, leak check, grading flows, import validation, security), then
 `tests/e2e.sh` (Playwright: a real drop event → ready → Start → Run → Submit → reveal → End → Export).
 
