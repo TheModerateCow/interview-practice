@@ -1,0 +1,21 @@
+# ruff lint + format check (config: ruff.toml) on every PR that touches Python. Fix locally with:
+#   pip install ruff==0.17.6 && ruff check --fix . && ruff format .
+name: Lint
+on:
+  pull_request: {paths: ["**.py", "ruff.toml", ".github/workflows/lint.yml"]}
+  push: {branches: [main], paths: ["**.py", "ruff.toml", ".github/workflows/lint.yml"]}
+  workflow_dispatch:
+concurrency: {group: "lint-${{ github.ref }}", cancel-in-progress: true}
+permissions: {contents: read}
+
+jobs:
+  ruff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with: {python-version: "3.15"}
+      - run: pip install ruff==0.17.6
+      - run: ruff check --output-format=github .
+      - run: ruff format --check .

@@ -1,14 +1,23 @@
 """A real flow leaves no file unclosed (no ResourceWarning): render a catalog problem in each language, start an
 attempt, poll state, read a file through the API, export. Needs Flask. Run: python3 tests/unit/test_files_closed.py"""
-import gc, os, sys, tempfile, warnings
+
+import gc
+import os
+import sys
+import tempfile
+import warnings
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ["ILAB_DATA"] = tempfile.mkdtemp()
 os.environ["ILAB_CATALOG"] = os.path.join(ROOT, "catalog")
 sys.path.insert(0, os.path.join(ROOT, "backend"))
-try: from lab import pack  # noqa: F401
+try:
+    from lab import pack  # noqa: F401
 except ImportError:  # in the image tools/pack.py is copied into lab/; in a checkout it isn't
-    sys.path.insert(0, os.path.join(ROOT, "tools")); import pack; sys.modules["lab.pack"] = pack
+    sys.path.insert(0, os.path.join(ROOT, "tools"))
+    import pack
+
+    sys.modules["lab.pack"] = pack
 import server  # noqa: E402
 from lab import catalog, rounds, store, variants  # noqa: E402
 

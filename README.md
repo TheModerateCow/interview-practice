@@ -140,6 +140,8 @@ or `tests/e2e.sh`, then `tests/stack.sh down`.
   image) → the canaries in all three. One job per language. Re-gating the whole catalog is a manual run (Actions → Catalog).
 - `.github/workflows/ci.yml` builds the UI when `ui/**` changes.
 - `.github/workflows/backend.yml` runs `tests/unit/run.sh` on every PR that touches `backend/`, `tools/` or `tests/unit/`.
+- `.github/workflows/lint.yml` runs `ruff check` and `ruff format --check` (config: `ruff.toml`) on every PR that touches Python.
+  Fix locally with `pip install ruff==0.17.6 && ruff check --fix . && ruff format .`.
 - `.github/workflows/full.yml` runs `tests/run_all.sh` only on a merge to `main` that touches app code, on demand
   (Actions → Full suite → Run workflow), or on a PR when you add the `full-suite` label.
 

@@ -6,7 +6,12 @@ unchanged gate.py on it in the app's runner images, in an isolated compose proje
 --keep DIR: leave the rendered sets in DIR/<lang>/ (default: a temp dir, removed).
 Contract: docs/rounds/3-language-variants/CONTRACT.md.
 """
-import os, shutil, subprocess, sys, tempfile
+
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "backend"))
@@ -16,12 +21,16 @@ from lab import variants  # noqa: E402
 def stage(problem_dir, answers_dir, lang, dest):
     files = variants.render(problem_dir, lang)
     variants.write(files, dest)
-    hidden = [k for k in files if k.startswith(".hidden/") and not k.endswith(".md") and not k.startswith(".hidden/examples/")]
-    for k in hidden: shutil.copy(os.path.join(dest, k), os.path.join(dest, os.path.basename(k)))   # gate.py reads it at the set root
+    hidden = [
+        k for k in files if k.startswith(".hidden/") and not k.endswith(".md") and not k.startswith(".hidden/examples/")
+    ]
+    for k in hidden:
+        shutil.copy(os.path.join(dest, k), os.path.join(dest, os.path.basename(k)))  # gate.py reads it at the set root
     a = os.path.join(answers_dir, lang)
     shutil.copytree(os.path.join(a, "reference"), os.path.join(dest, "reference"))
     for f in ("mutants.json", "bugs.json"):
-        if os.path.isfile(os.path.join(a, f)): shutil.copy(os.path.join(a, f), os.path.join(dest, f))
+        if os.path.isfile(os.path.join(a, f)):
+            shutil.copy(os.path.join(a, f), os.path.join(dest, f))
 
 
 # Its own compose project ("ilab-gate", built from this checkout, empty data folder): gating never touches the dev stack
@@ -38,7 +47,8 @@ def gate(dest, extra=()):
 
 
 def main(a):
-    if len(a) < 2: sys.exit(__doc__)
+    if len(a) < 2:
+        sys.exit(__doc__)
     pd, ad = os.path.abspath(a[0]), os.path.abspath(a[1])
     langs = a[a.index("--lang") + 1].split(",") if "--lang" in a else variants.languages(pd)
     keep = os.path.abspath(a[a.index("--keep") + 1]) if "--keep" in a else None
@@ -51,17 +61,21 @@ def main(a):
         if "--build-starter" in a:
             print(gate(dest, ["--build-starter"]).strip().splitlines()[-1])
             st = os.path.join(pd, lang, "starter")
-            shutil.rmtree(st, ignore_errors=True); shutil.copytree(os.path.join(dest, "starter"), st)
+            shutil.rmtree(st, ignore_errors=True)
+            shutil.copytree(os.path.join(dest, "starter"), st)
             continue
         out = gate(dest)
         lines = [l for l in out.splitlines() if l.startswith(("PASS", "FAIL", "GATE"))]
         for l in lines:
-            if l.startswith("FAIL"): print(f"{lang}: {l}")
+            if l.startswith("FAIL"):
+                print(f"{lang}: {l}")
         passed = bool(lines) and lines[-1] == "GATE PASS"
-        if not lines: print(f"{lang}: no gate output:\n{out[-2000:]}")
+        if not lines:
+            print(f"{lang}: no gate output:\n{out[-2000:]}")
         print(f"{lang}: {'GATE PASS' if passed else 'GATE FAIL'}")
         ok &= passed
-    if not keep: shutil.rmtree(base, ignore_errors=True)
+    if not keep:
+        shutil.rmtree(base, ignore_errors=True)
     sys.exit(0 if ok else 1)
 
 

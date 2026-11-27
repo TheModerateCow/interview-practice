@@ -1,12 +1,18 @@
 """Set storage under data/sets/<name>/: manifest, session.json (clock, events, reveals) and the work folder."""
-import copy, json, os, re, threading, time
+
+import copy
+import json
+import os
+import re
+import threading
+import time
 from pathlib import Path
 
 from lab.errors import Conflict, Invalid, NotFound
-from lab.variants import jload   # noqa: F401  (one copy; lab modules import it from here)
+from lab.variants import jload  # noqa: F401  (one copy; lab modules import it from here)
 from sandbox import grade
 
-ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # the repo; /app in the image
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # the repo; /app in the image
 DATA = os.environ.get("ILAB_DATA", "/data")
 SETS, EXPORTS = os.path.join(DATA, "sets"), os.path.join(DATA, "exports")
 NAME_RE = re.compile(r"[a-z0-9][a-z0-9-]{0,63}")
@@ -19,11 +25,16 @@ _glock = threading.Lock()
 
 
 def _get(locks, key):
-    with _glock: return locks.setdefault(key, threading.Lock())
+    with _glock:
+        return locks.setdefault(key, threading.Lock())
 
 
-def lock(n): return _get(_locks, n)
-def run_lock(n): return _get(_run_locks, n)
+def lock(n):
+    return _get(_locks, n)
+
+
+def run_lock(n):
+    return _get(_run_locks, n)
 
 
 def sdir(n):
@@ -34,12 +45,17 @@ def sdir(n):
 
 def jsave(p, obj):
     t = p + ".tmp"
-    with open(t, "w") as f: json.dump(obj, f, indent=1)
+    with open(t, "w") as f:
+        json.dump(obj, f, indent=1)
     os.replace(t, p)
 
 
-def manifest(n): return upgrade_manifest(jload(os.path.join(sdir(n), "manifest.json")))
-def session(n): return upgrade_session(jload(os.path.join(sdir(n), "session.json")))
+def manifest(n):
+    return upgrade_manifest(jload(os.path.join(sdir(n), "manifest.json")))
+
+
+def session(n):
+    return upgrade_session(jload(os.path.join(sdir(n), "session.json")))
 
 
 # The only place older on-disk shapes are known. Upgrades happen in memory on load; the next write saves the new shape.
@@ -51,23 +67,28 @@ def upgrade_session(s):
     "ended", which is now the deadline (the close never comes after it)."""
     if isinstance(s, dict) and s.get("v", 0) < 1:
         s.pop("hints", None)
-        if s.get("start") and s.get("ended"): s["ended"] = min(s["ended"], deadline(s))
+        if s.get("start") and s.get("ended"):
+            s["ended"] = min(s["ended"], deadline(s))
         s["v"] = 1
     return s
 
 
 def upgrade_manifest(m):
     """Attempts made by the old Preset Library name their problem "preset"; today it's "problem"."""
-    if isinstance(m, dict) and "preset" in m: m.setdefault("problem", m.pop("preset"))
+    if isinstance(m, dict) and "preset" in m:
+        m.setdefault("problem", m.pop("preset"))
     return m
 
 
 def work_path(n, rel):
     work = os.path.realpath(os.path.join(sdir(n), "work"))
-    if not rel or "\x00" in rel or "\\" in rel or rel.startswith("/"): raise Invalid("bad path")
-    if rel.split("/")[0] == ".hidden": raise Invalid("bad path")
+    if not rel or "\x00" in rel or "\\" in rel or rel.startswith("/"):
+        raise Invalid("bad path")
+    if rel.split("/")[0] == ".hidden":
+        raise Invalid("bad path")
     p = os.path.realpath(os.path.join(work, rel))
-    if not p.startswith(work + os.sep): raise Invalid("path escapes the work folder")
+    if not p.startswith(work + os.sep):
+        raise Invalid("path escapes the work folder")
     return p
 
 
@@ -75,21 +96,36 @@ def work_files(n):
     return grade.read_tree(os.path.join(sdir(n), "work"))
 
 
-def deadline(s): return s["start"] + s["minutes"] * 60
-def cutoff(s): return s.get("ended") or deadline(s)          # ended is never after the deadline
-def late(s, t): return t > cutoff(s)                          # did an action that started at t come after the close?
-def minute(s, t): return round((t - s["start"]) / 60, 1)
+def deadline(s):
+    return s["start"] + s["minutes"] * 60
+
+
+def cutoff(s):
+    return s.get("ended") or deadline(s)  # ended is never after the deadline
+
+
+def late(s, t):
+    return t > cutoff(s)  # did an action that started at t come after the close?
+
+
+def minute(s, t):
+    return round((t - s["start"]) / 60, 1)
 
 
 def clock(s):
     """(minutes used now, minutes left, expired); left/expired freeze at the close."""
-    now = time.time(); stop = min(now, s["ended"]) if s.get("ended") else now
+    now = time.time()
+    stop = min(now, s["ended"]) if s.get("ended") else now
     left = s["minutes"] - (stop - s["start"]) / 60
     return (now - s["start"]) / 60, max(left, 0), left <= 0
 
 
-def closed(s): return bool(s.get("ended")) or clock(s)[2]    # the "ended" status only
-def left_s(s): return round(clock(s)[1] * 60, 1)             # the one rule for "left_s" in /state and /sets
+def closed(s):
+    return bool(s.get("ended")) or clock(s)[2]  # the "ended" status only
+
+
+def left_s(s):
+    return round(clock(s)[1] * 60, 1)  # the one rule for "left_s" in /state and /sets
 
 
 def set_names():
@@ -107,24 +143,29 @@ def mutate(n, fn):
     """Read-modify-write session.json under the set's lock; written only if fn changed it. fn(session, manifest) -> result."""
     with lock(n):
         s = session(n)
-        if not s or not s.get("start"): raise Conflict("not started")
+        if not s or not s.get("start"):
+            raise Conflict("not started")
         before = copy.deepcopy(s)
         r = fn(s, manifest(n))
-        if s != before: jsave(os.path.join(sdir(n), "session.json"), s)
+        if s != before:
+            jsave(os.path.join(sdir(n), "session.json"), s)
         return r
 
 
 def reveal(s, entry, reason):
     s["revealed"].append(entry["file"])
-    if entry.get("unlocks") and entry["unlocks"] not in s["unlocked"]: s["unlocked"].append(entry["unlocks"])
+    if entry.get("unlocks") and entry["unlocks"] not in s["unlocked"]:
+        s["unlocked"].append(entry["unlocks"])
     log(s, f"revealed {os.path.basename(entry['file'])} ({reason})")
 
 
-def locked(s, m): return [r for r in m.get("reveal", []) if r["file"] not in s["revealed"]]
+def locked(s, m):
+    return [r for r in m.get("reveal", []) if r["file"] not in s["revealed"]]
 
 
 def time_reveals(s, m):
-    if s.get("ended"): return
+    if s.get("ended"):
+        return
     left = clock(s)[1]
     for r in locked(s, m):
         if r.get("or_minutes_left") is not None and left <= r["or_minutes_left"]:
@@ -134,7 +175,9 @@ def time_reveals(s, m):
 def ready_info(n):
     m, s = manifest(n), session(n)
     st = "ready" if not s or not s.get("start") else ("ended" if closed(s) else "running")
-    return {k: m.get(k) for k in ("name", "title", "company", "role", "round", "language", "difficulty", "minutes", "rules")} | {"status": st}
+    return {
+        k: m.get(k) for k in ("name", "title", "company", "role", "round", "language", "difficulty", "minutes", "rules")
+    } | {"status": st}
 
 
 def state(n):
@@ -147,17 +190,29 @@ def state(n):
         p = os.path.join(d, f)
         parts.append({"file": os.path.basename(f), "md": Path(p).read_text() if os.path.isfile(p) else ""})
     return ready_info(n) | {
-        "start": s["start"], "now": time.time(), "left_s": left_s(s), "expired": expired, "ended": bool(s.get("ended")),
-        "problem": Path(os.path.join(d, "problem.md")).read_text(), "parts": parts,
-        "unlocked": s["unlocked"], "has_next": bool(locked(s, m)),
-        "has_submit": bool(m.get("hidden_tests")), "has_mytests": bool(m.get("your_tests")), "has_examples": bool(m.get("examples")),
-        "run_entry": m.get("run_entry"), "testcases_count": len(m.get("testcases", [])),
+        "start": s["start"],
+        "now": time.time(),
+        "left_s": left_s(s),
+        "expired": expired,
+        "ended": bool(s.get("ended")),
+        "problem": Path(os.path.join(d, "problem.md")).read_text(),
+        "parts": parts,
+        "unlocked": s["unlocked"],
+        "has_next": bool(locked(s, m)),
+        "has_submit": bool(m.get("hidden_tests")),
+        "has_mytests": bool(m.get("your_tests")),
+        "has_examples": bool(m.get("examples")),
+        "run_entry": m.get("run_entry"),
+        "testcases_count": len(m.get("testcases", [])),
         "files": sorted(work_files(n)),
         "results": {t: r for t, r in results.items() if t != "final"},
-        "final": results.get("final"), "events": s["events"]}
+        "final": results.get("final"),
+        "events": s["events"],
+    }
 
 
 def require_started(n):
     s = session(n)
-    if not s or not s.get("start"): raise Conflict("not started")
+    if not s or not s.get("start"):
+        raise Conflict("not started")
     return s
