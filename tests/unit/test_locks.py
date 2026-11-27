@@ -6,6 +6,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 os.environ["ILAB_DATA"] = tempfile.mkdtemp()
 sys.path.insert(0, os.path.join(ROOT, "backend"))
 from lab import rounds, store  # noqa: E402
+from lab.errors import Conflict  # noqa: E402
 
 d = os.path.join(os.environ["ILAB_DATA"], "sets", "s")
 os.makedirs(d)
@@ -14,7 +15,7 @@ json.dump({"name": "s", "title": "s", "minutes": 30}, open(f"{d}/manifest.json",
 
 def code(fn):
     try: fn(); return 200
-    except store.HTTPError as e: return e.code
+    except Conflict: return 409
 
 
 assert store.run_lock("s") is store.run_lock("s") and store.run_lock("s") is not store.lock("s")
