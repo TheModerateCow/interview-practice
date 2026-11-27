@@ -154,7 +154,8 @@ def container(lang, files, harness, limit, env=()):
                 timed_out = True
             s.close()
         finally:
-            try: api("POST", f"/containers/{cid}/kill")
+            # force-remove, not kill: a container whose attach or start failed never ran, so AutoRemove never fires
+            try: api("DELETE", f"/containers/{cid}?force=1")
             except DockerError: pass  # already gone (AutoRemove) — the normal case
         out, err = _demux(bytes(raw))
     try:
