@@ -7,7 +7,7 @@ cd "$(dirname "$0")/.."   # repo root; compose finds deploy/docker-compose.yml t
 base_images=$(sed -n 's/.*os\.environ\.get("ILAB_IMG_[A-Z]*", *"\([^"]*\)").*/\1/p' backend/sandbox/runner.py | sort -u | grep -v '^ilab-' || true)
 
 docker compose down --remove-orphans --rmi local || true
-docker rmi ilab-python:3.15.2-pytest9.2.0 ilab-lsp-python:pyright1.1.414 2>/dev/null || true
+docker rmi ilab-python:3.15.2-pytest9.2.0 ilab-lsp-python:pyright1.1.414 ilab-lsp-go:gopls0.24.0 2>/dev/null || true
 for v in $(docker volume ls -q | grep -E '(^|_)ilab-go-cache$' || true); do docker volume rm "$v" || true; done
 rm -f "$HOME/.local/share/applications/interview-lab.desktop"
 

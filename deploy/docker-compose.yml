@@ -43,6 +43,13 @@ services:
     entrypoint: ["true"]
     network_mode: none
     restart: "no"
+  # Build-only: gopls for code help in Go rounds.
+  ilab-lsp-go:
+    build: lsp-go
+    image: ilab-lsp-go:gopls0.24.0
+    entrypoint: ["true"]
+    network_mode: none
+    restart: "no"
 networks:
   front: {}
   web: {internal: true}

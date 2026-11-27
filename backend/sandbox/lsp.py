@@ -14,6 +14,10 @@ SERVERS = {   # language -> command, source extension, files for the server's wo
     "python": dict(cmd="pyright-langserver --stdio", ext=".py", settings={},
                    extra=lambda rnd: {"pyrightconfig.json": json.dumps({"pythonVersion": "3.15", "extraPaths": ["/opt/site"],
                                                                         "typeCheckingMode": "off" if rnd == "codebase" else "basic"}).encode()}),
+    # The runner's Go env, offline, with a private cache in /tmp (no shared volume). gopls reports 0 diagnostics on every untouched
+    # starter (tests/api_test.py checks all of them), so Codebase rounds need no switch here; a file that doesn't compile is underlined.
+    "go": dict(cmd="gopls", ext=".go", settings={"gopls": {"linksInHover": False}},
+               env=["GOTOOLCHAIN=local", "GOFLAGS=-mod=mod", "GOCACHE=/tmp/gocache", "GOPATH=/tmp/gopath", "CGO_ENABLED=0", "GOPROXY=off"], extra=lambda rnd: {}),
 }
 OPS = {"complete": "textDocument/completion", "resolve": "completionItem/resolve",
        "hover": "textDocument/hover", "signature": "textDocument/signatureHelp"}
@@ -60,7 +64,7 @@ class Session:
             files = store.work_files(self.n) | self.cfg["extra"](store.manifest(self.n).get("round"))
             payload = runner._tar(files)
             body = {"Image": runner.LSP_IMAGES[self.lang], "Entrypoint": ["sh", "-c", BOOT + self.cfg["cmd"]], "Cmd": [],
-                    "Env": runner.BASE_ENV + [f"ILAB_N={len(payload)}"], "WorkingDir": "/tmp",
+                    "Env": runner.BASE_ENV + [f"ILAB_N={len(payload)}"] + self.cfg.get("env", []), "WorkingDir": "/tmp",
                     "OpenStdin": True, "StdinOnce": True, "AttachStdin": True, "AttachStdout": True, "AttachStderr": True,
                     "Tty": False, "Labels": {"ilab.lsp": runner.INSTANCE}, "HostConfig": dict(runner.LOCKED)}
             try: self.cid = runner.api("POST", "/containers/create", body)["Id"]
@@ -192,7 +196,7 @@ def call(n, lang, op, rel, text=None, line=0, col=0, item=None):
             if rel not in s.docs: return {"state": "ready", "diagnostics": []}
             d = s.diagnostics(rel)
             if d is None: return {"state": s.state}   # nothing published for this text yet: say nothing, never a false "no errors"
-            return {"state": "ready", "diagnostics": clean(d)}
+            return {"state": "ready", "diagnostics": clean([{k: v for k, v in x.items() if k != "codeDescription"} for x in d])}   # codeDescription is a pkg.go.dev link: dropped
         res = s.request(OPS[op], item if op == "resolve" else pos)
     except OSError: return {"state": "unavailable", "reason": "The language server stopped."}
     return {"state": "ready", "result": clean(res)}

@@ -777,5 +777,100 @@ def _():
     jreq("POST", f"/api/sets/{B}/end"); assist(B, "stop"); gone()
 
 
+@sec("code help: Go (gopls)")
+def _():
+    def assist(n, op, file="cmd/run/main.go", text=None, line=0, col=0, **k):
+        return jreq("POST", f"/api/sets/{n}/assist", {"op": op, "file": file, "text": text, "line": line, "col": col, **k})
+    def ready(n, secs=30):
+        for _ in range(int(secs * 2)):
+            if assist(n, "complete", text="")[1].get("state") == "ready": return True
+            time.sleep(0.5)
+        return False
+    def containers(): return subprocess.run(["docker", "ps", "-q", "--filter", "label=ilab.lsp=test"], capture_output=True, text=True).stdout.split()
+    def gone(secs=5):
+        for _ in range(secs * 2):
+            if not containers(): return True
+            time.sleep(0.5)
+        return False
+    seen = []   # every response body, for the leak scan
+    def at(n, op, text, line, col, **k):
+        for _ in range(20):   # a check with no fresh answer yet carries no "diagnostics": ask again (up to ~10 s), so [] always means a real "no errors"
+            s, j = assist(n, op, text=text, line=line, col=col, **k); seen.append(j)
+            if op != "check" or "diagnostics" in j or j.get("state") != "ready": return j
+            time.sleep(0.5)
+        return j
+    def labels(j): r = j.get("result") or {}; return [i["label"] for i in (r.get("items") if isinstance(r, dict) else r) or []]
+    def start(prob):
+        a = jreq("POST", f"/api/catalog/{prob}/attempt", {"language": "go"})[1]["name"]; jreq("POST", f"/api/sets/{a}/start"); return a
+    A = start("ledger-codebase")
+    main = req("GET", f"/api/sets/{A}/files/cmd/run/main.go")[1].decode()
+    check("Go code help reaches ready within 30 s", ready(A))
+    L = main.split("\n"); ln = next(i for i, x in enumerate(L) if x.strip().startswith("switch {"))   # inside the command loop
+    def with_line(extra): M = list(L); M.insert(ln, extra); return "\n".join(M)
+    j = at(A, "complete", with_line("\t\tl.Bal"), ln, 7)
+    check("own type: l.Bal lists Balance and BalanceAt (ledger.go never opened)", {"Balance", "BalanceAt"} <= set(labels(j)), labels(j)[:10])
+    j = at(A, "complete", with_line("\t\tstrings.Has"), ln, 13)
+    check("stdlib: strings.Has lists HasPrefix and HasSuffix", {"HasPrefix", "HasSuffix"} <= set(labels(j)), labels(j)[:10])
+    t = with_line("\t\tvar b strings.Builder\n\t\tb.Wri"); j = at(A, "complete", t, ln + 1, 7)
+    check("b.Wri lists Write, WriteByte, WriteRune, WriteString", {"Write", "WriteByte", "WriteRune", "WriteString"} <= set(labels(j)), labels(j)[:10])
+    j = at(A, "signature", with_line("\t\t_ = l.Balance("), ln, 16)
+    check("signature help for l.Balance(", any("account" in x.get("label", "") for x in (j.get("result") or {}).get("signatures", [])), j)
+    k = next(i for i, x in enumerate(L) if "ledger.New()" in x); j = at(A, "hover", main, k, L[k].index("New") + 1)
+    hv = json.dumps(j.get("result"))
+    check("hover on New: signature and doc, no link", "New() *ledger.Ledger" in hv and "returns an empty ledger" in hv and "pkg.go.dev" not in hv, hv[:300])
+    t0 = time.time(); j = at(A, "check", with_line("\t\t_ = l.Balance(\"a\")"), 0, 0)
+    d = [x for x in j.get("diagnostics", []) if x["range"]["start"]["line"] == ln]
+    check("a call with too few arguments is underlined within 2 s, saying what is wanted",
+          len(d) == 1 and "not enough arguments" in d[0]["message"] and "want (string, string)" in d[0]["message"] and time.time() - t0 < 2.5, (j, time.time() - t0))
+    check("main.go as shipped has no diagnostics", at(A, "check", main, 0, 0).get("diagnostics") == [], None)
+    check("ledger_example_test.go as shipped has no diagnostics",
+          at(A, "check", req("GET", f"/api/sets/{A}/files/ledger_example_test.go")[1].decode(), 0, 0, file="ledger_example_test.go").get("diagnostics") == [], None)
+    req("PUT", f"/api/sets/{A}/files/extra.go", "package ledger\n\nfunc ZzProbe() int { return 1 }\n")
+    j = at(A, "complete", with_line("\t\tledger.Zz"), ln, 11)
+    check("a new file in package ledger: ledger.ZzProbe is offered from main.go (main.go not resent)", "ZzProbe" in labels(j), labels(j)[:10])
+    # leak: the hidden tests define Test_p1_... in .hidden/hidden_test.go
+    j1 = at(A, "complete", "package ledger\nfunc Test_p1", 1, 12, file="probe.go"); j2 = at(A, "complete", "package ledger\nfunc TestP1", 1, 11, file="probe.go")
+    bad = [x for x in labels(j1) + labels(j2) if "p1" in x.lower()]
+    check("hidden test names are never offered", not bad, bad)
+    blob = json.dumps(seen)
+    check("no container path, .hidden, link or pkg.go.dev in any result", "/tmp/w" not in blob and ".hidden" not in blob and "](" not in blob and "pkg.go.dev" not in blob,
+          [m for m in ("/tmp/w", ".hidden", "](", "pkg.go.dev") if m in blob])
+    ids = containers()
+    check("exactly one language-server container", len(ids) == 1, ids)
+    if len(ids) == 1:
+        o = json.loads(subprocess.run(["docker", "inspect", ids[0]], capture_output=True, text=True).stdout)[0]
+        hc = o["HostConfig"]
+        print("  docker inspect:", {k: hc[k] for k in ("NetworkMode", "ReadonlyRootfs", "Memory", "MemorySwap", "NanoCpus", "PidsLimit", "CapDrop", "SecurityOpt", "PortBindings")}, "mounts", o["Mounts"], flush=True)
+        check("container is locked down", hc["NetworkMode"] == "none" and hc["ReadonlyRootfs"] is True and hc["Memory"] == 536870912
+              and hc["MemorySwap"] == 536870912 and hc["NanoCpus"] == 2000000000 and hc["PidsLimit"] == 256 and hc["CapDrop"] == ["ALL"]
+              and "no-new-privileges" in " ".join(hc["SecurityOpt"]) and not hc["PortBindings"] and not o["Mounts"] and not o["NetworkSettings"]["Ports"], hc)
+    check("stop: the container is gone within 5 s", assist(A, "stop")[0] == 200 and gone())
+    check("a request after stop starts a new session", ready(A))
+    jreq("POST", f"/api/sets/{A}/end")
+    check("delete a set with a live session: the container is gone within 5 s", jreq("DELETE", f"/api/sets/{A}")[0] == 200 and gone())
+    # every untouched Go starter: 0 diagnostics at all (errors, warnings, hints) in the editor, in every round type
+    total = {}
+    for prob in sorted(os.path.basename(d) for d in glob.glob(os.path.join(ROOT, "catalog/*-*"))):
+        a = start(prob); ready(a)
+        gos = [f for f in jreq("GET", f"/api/sets/{a}/state")[1]["files"] if f.endswith(".go")]
+        bad = {}
+        for f in gos:
+            d = at(a, "check", req("GET", f"/api/sets/{a}/files/{f}")[1].decode(), 0, 0, file=f).get("diagnostics")
+            if d is None or d: bad[f] = "no answer" if d is None else [(x.get("severity"), x["message"]) for x in d]
+        total[prob] = (len(gos), len(bad))
+        check(f"{prob}: {len(gos)} untouched Go files, 0 diagnostics", bad == {}, bad)
+        jreq("POST", f"/api/sets/{a}/end")
+    print("  Go starters checked:", sum(v[0] for v in total.values()), "files in", len(total), "problems;", sum(v[1] for v in total.values()), "files with diagnostics", flush=True)
+    # stdin handover: a 100 KB file saved before the server starts
+    B = start("ledger-codebase")
+    big = "package ledger\n\n" + "".join(f"func BigFn{i:04d}(x int) int {{ return x + {i} }}\n\n" for i in range(3000)) + "func BigLastFn(x int) int { return x }\n"
+    req("PUT", f"/api/sets/{B}/files/big.go", big)
+    check("big.go is over 100 KB", len(big) > 100_000, len(big))
+    check("a 100 KB file before start: the server still reaches ready", ready(B))
+    j = at(B, "complete", with_line("\t\tledger.BigLast"), ln, 16)
+    check("and offers big.go's last function", "BigLastFn" in labels(j), labels(j)[:5])
+    jreq("POST", f"/api/sets/{B}/end"); assist(B, "stop"); gone()
+
+
 print(f"\n{'ALL PASSED' if not fails else f'{fails} FAILED'}")
 sys.exit(1 if fails else 0)
