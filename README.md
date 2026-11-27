@@ -25,6 +25,8 @@ browser ──127.0.0.1:8765──> nginx (UI: Svelte + Monaco + marked, built a
                          one runner container per Run / Submit: --network none, read-only root, tmpfs /tmp 256m,
                          512 MB, 2 CPUs, 256 pids, cap-drop ALL, no-new-privileges, auto-removed.
                          Code in / results out as tar.gz over the attach stream; no bind mounts.
+                         plus, while a round is open, one language-server container for code help in the
+                         editor (Python: pyright), with the same flags, spoken to over the same attach stream.
 ```
 Only nginx publishes a port. The backend and proxy sit on internal networks. `/api` needs `X-ILab: 1` plus the
 127.0.0.1/localhost Host, and it rejects any foreign Origin.
@@ -36,6 +38,7 @@ Only nginx publishes a port. The backend and proxy sit on internal networks. `/a
 | `backend/server.py` | The HTTP layer: routes, the Host/Origin/X-ILab guard, error mapping |
 | `backend/lab/` | `store.py` set files, session, clock and reveals; `catalog.py` problems and attempts; `importer.py` zip import; `rounds.py` Start/Run/Submit/My tests/Next/End/Export/Delete |
 | `backend/sandbox/runner.py` | DockerRunner (Run: verdicts, time, memory) + the pinned runner image list |
+| `backend/sandbox/lsp.py` | Code help: one language server per open round, in a runner-shaped container (`/api/sets/<n>/assist`) |
 | `backend/sandbox/grade.py` | Hidden-test grading in the runner, with the same CLI/JSON as the skill's grade.py |
 | `backend/sandbox/gate.py` | The skill's gate.py, unchanged |
 | `backend/sandbox/images.py` | `/api/health` and the thread that keeps runner images pulled |

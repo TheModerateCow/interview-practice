@@ -667,5 +667,115 @@ def _():
     check("typed stdin: shown and counted", (r2.get("stdin_case") or {}).get("stdout", "").strip() == "XY" and r2["verdict"] == "Accepted", r2)
 
 
+# ------------------------------------------------------------------ code help (language server)
+@sec("code help: Python (pyright)")
+def _():
+    def attempt():
+        a = jreq("POST", "/api/catalog/ledger-codebase/attempt", {"language": "python"})[1]["name"]; jreq("POST", f"/api/sets/{a}/start"); return a
+    def assist(n, op, file="main.py", text=None, line=0, col=0, **k):
+        return jreq("POST", f"/api/sets/{n}/assist", {"op": op, "file": file, "text": text, "line": line, "col": col, **k})
+    def ready(n, secs=20):
+        for _ in range(int(secs * 2)):
+            if assist(n, "complete", text="")[1].get("state") == "ready": return True
+            time.sleep(0.5)
+        return False
+    def containers(): return subprocess.run(["docker", "ps", "-q", "--filter", "label=ilab.lsp=test"], capture_output=True, text=True).stdout.split()
+    def gone(secs=5):
+        for _ in range(secs * 2):
+            if not containers(): return True
+            time.sleep(0.5)
+        return False
+    seen = []   # every response body, for the leak scan
+    def at(n, op, text, line, col, **k):
+        for _ in range(20):   # a check with no fresh answer yet carries no "diagnostics": ask again (up to ~10 s), so [] always means a real "no errors"
+            s, j = assist(n, op, text=text, line=line, col=col, **k); seen.append(j)
+            if op != "check" or "diagnostics" in j or j.get("state") != "ready": return j
+            time.sleep(0.5)
+        return j
+    def labels(j): r = j.get("result") or {}; return [i["label"] for i in (r.get("items") if isinstance(r, dict) else r) or []]
+    A = attempt()
+    main = req("GET", f"/api/sets/{A}/files/main.py")[1].decode()
+    s, _ = jreq("POST", f"/api/sets/{A}/assist", {"op": "complete", "file": "main.py", "text": "", "line": 0, "col": 0}); check("assist is accepted after Start", s == 200, s)
+    n0 = uniq("t-ca")
+    z = {"manifest.json": json.dumps(manifest(n0, "python")), "problem.md": "x", "starter/main.py": "print(1)\n"}
+    imp(mkzip(z))
+    check("assist before Start: 409", assist(n0, "complete", text="")[0] == 409)
+    check("code help reaches ready within 20 s", ready(A))
+    ln = main.split("\n").index('    return ["ok"]')   # inside handle()
+    def with_line(extra): L = main.split("\n"); L.insert(ln, extra); return "\n".join(L)
+    j = at(A, "complete", with_line("    l.bal"), ln, 9)
+    check("own type: l.bal lists balance_at (ledger.py never opened)", "balance_at" in labels(j), labels(j)[:10])
+    t = "import heapq\n" + with_line("    heapq.heap"); j = at(A, "complete", t, ln + 1, 14)
+    check("stdlib: heapq.heap lists heappush", "heappush" in labels(j), labels(j)[:10])
+    t = "import heapq\n" + with_line("    heapq.heappush("); j = at(A, "signature", t, ln + 1, 19)
+    sigs = ((j.get("result") or {}).get("signatures") or [])
+    check("signature help for heapq.heappush(", any("heap" in x.get("label", "") for x in sigs), j)
+    L = main.split("\n"); hl = next(i for i, x in enumerate(L) if x.startswith("def handle(l: Ledger"))
+    j = at(A, "hover", main, hl, 17)
+    hv = json.dumps(j.get("result"))
+    check("hover on Ledger names the class", "Ledger" in hv and "class" in hv, hv[:200])
+    t = with_line("    undefined_name()"); t0 = time.time(); j = at(A, "check", t, 0, 0)
+    d = [x for x in j.get("diagnostics", []) if x["range"]["start"]["line"] == ln]
+    check("codebase round: an undefined name is underlined within 2 s", len(d) == 1 and "undefined_name" in d[0]["message"] and time.time() - t0 < 2.5, (j, time.time() - t0))
+    j = at(A, "check", with_line("    l.balance('a')"), 0, 0)
+    check("codebase round: type errors are not underlined (they would give away the planted bugs)", j.get("diagnostics") == [], j)
+    j = at(A, "check", main + "\ndef broken(:\n", 0, 0)
+    check("codebase round: a syntax error is underlined", any(x.get("severity") == 1 for x in j.get("diagnostics", [])), j)
+    ex = req("GET", f"/api/sets/{A}/files/test_example.py")[1].decode()
+    check("the untouched starter test file has no diagnostics", at(A, "check", ex, 0, 0, file="test_example.py").get("diagnostics") == [], None)
+    check("main.py as shipped has no diagnostics", at(A, "check", main, 0, 0).get("diagnostics") == [], None)
+    req("PUT", f"/api/sets/{A}/files/ledger/ledger.py", req("GET", f"/api/sets/{A}/files/ledger/ledger.py")[1].decode() + "\n    def zz_probe(self):\n        return 1\n")
+    j = at(A, "complete", with_line("    l.zz_"), ln, 9)
+    check("a method saved in ledger.py shows in main.py's suggestions (main.py not resent)", "zz_probe" in labels(j), labels(j)[:10])
+    # leak: the hidden tests define test_p1_... in .hidden/tests_hidden.py
+    j1 = at(A, "complete", "import tests_h", 0, 14, file="probe.py"); j2 = at(A, "complete", "test_p1_", 0, 8, file="probe.py")
+    bad = [x for x in labels(j1) + labels(j2) if x.startswith(("test_p1_", "tests_hidden"))]
+    check("hidden test names are never offered", not bad, bad)
+    blob = json.dumps(seen)
+    check("no container path, .hidden or link in any result", "/tmp/w" not in blob and ".hidden" not in blob and "](" not in blob, [m for m in ("/tmp/w", ".hidden", "](") if m in blob])
+    ids = containers()
+    check("exactly one language-server container", len(ids) == 1, ids)
+    if len(ids) == 1:
+        o = json.loads(subprocess.run(["docker", "inspect", ids[0]], capture_output=True, text=True).stdout)[0]
+        hc = o["HostConfig"]
+        check("container is locked down", hc["NetworkMode"] == "none" and hc["ReadonlyRootfs"] is True and hc["Memory"] == 536870912
+              and hc["MemorySwap"] == 536870912 and hc["NanoCpus"] == 2000000000 and hc["PidsLimit"] == 256 and hc["CapDrop"] == ["ALL"]
+              and "no-new-privileges" in " ".join(hc["SecurityOpt"]) and not hc["PortBindings"] and not o["Mounts"] and not o["NetworkSettings"]["Ports"], hc)
+    check("bad op: 400", assist(A, "nope")[0] == 400)
+    check("file ../x: 400", assist(A, "complete", file="../x")[0] == 400)
+    check("file .hidden/x: 400", assist(A, "complete", file=".hidden/x")[0] == 400)
+    check("stop: the container is gone within 5 s", assist(A, "stop")[0] == 200 and gone())
+    check("a request after stop starts a new session", ready(A))
+    jreq("POST", f"/api/sets/{A}/end")
+    check("delete a set with a live session: the container is gone within 5 s", jreq("DELETE", f"/api/sets/{A}")[0] == 200 and gone())
+    def errors(n, rels):
+        out = {}
+        for f in rels:
+            d = at(n, "check", req("GET", f"/api/sets/{n}/files/{f}")[1].decode(), 0, 0, file=f).get("diagnostics")
+            e = [x["message"] for x in d or [] if x.get("severity") == 1]
+            if e or d is None: out[f] = e or "no answer"
+        return out
+    for prob in ("ledger-codebase", "jobqueue-codebase", "quota-codebase"):
+        a = jreq("POST", f"/api/catalog/{prob}/attempt", {"language": "python"})[1]["name"]; jreq("POST", f"/api/sets/{a}/start")
+        ready(a)
+        py = [f for f in jreq("GET", f"/api/sets/{a}/state")[1]["files"] if f.endswith(".py")]
+        check(f"{prob}: untouched starter files have 0 errors", errors(a, py) == {}, errors(a, py))
+        jreq("POST", f"/api/sets/{a}/end")
+    a = jreq("POST", "/api/catalog/invoice-tdd/attempt", {"language": "python"})[1]["name"]; jreq("POST", f"/api/sets/{a}/start"); ready(a)
+    check("invoice-tdd: untouched test_example.py has 0 errors (import pytest resolves)", errors(a, ["test_example.py"]) == {}, errors(a, ["test_example.py"]))
+    j = at(a, "check", "def f(a, b): return a\nf(1)\n", 0, 0, file="probe.py")
+    check("other rounds keep type checking: a missing argument is underlined", any("b" in x["message"] for x in j.get("diagnostics", [])), j)
+    jreq("POST", f"/api/sets/{a}/end")
+    # stdin handover: a 100 KB file saved before the server starts
+    B = attempt()
+    big = "".join(f"def big_fn_{i:04d}(x):\n    return x + {i}\n\n" for i in range(3500)) + "def big_last_fn(x):\n    return x\n"
+    req("PUT", f"/api/sets/{B}/files/big.py", big)
+    check("big.py is over 100 KB", len(big) > 100_000, len(big))
+    check("a 100 KB file before start: the server still reaches ready", ready(B))
+    j = at(B, "complete", "from big import big_last", 0, 24)
+    check("and offers big.py's last function", "big_last_fn" in labels(j), labels(j)[:5])
+    jreq("POST", f"/api/sets/{B}/end"); assist(B, "stop"); gone()
+
+
 print(f"\n{'ALL PASSED' if not fails else f'{fails} FAILED'}")
 sys.exit(1 if fails else 0)
