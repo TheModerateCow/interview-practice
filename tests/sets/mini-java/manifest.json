@@ -2,7 +2,7 @@
  "format": "interview-set/1",
  "name": "mini-java",
  "title": "Roman numerals (Java)",
- "round": "dsa",
+ "round": "tdd",
  "language": "java",
  "difficulty": "medium",
  "minutes": 20,

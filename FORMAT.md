@@ -22,7 +22,7 @@ Limits: 2000 files, 50 MB unpacked, no absolute paths, no `..`, no symlinks.
 | `name` | yes | `[a-z0-9-]`, max 64. This is the folder name under `data/sets/`. Re-importing replaces a set that hasn't started (the app says it replaced it); a started set refuses |
 | `title` | yes | Shown on the ready screen |
 | `company`, `role` | no | Ready screen |
-| `round` | yes | `codebase` · `levelled` · `ai-assisted` · `tdd` · `dsa` |
+| `round` | yes | `codebase` · `levelled` · `ai-assisted` · `tdd` |
 | `language` | yes | `python` · `go` · `java` · `typescript` · `javascript` (`c` · `cpp`: Run only, no hidden tests) |
 | `difficulty` | yes | `medium` · `hard` |
 | `minutes` | yes | Round length. The clock starts only when the candidate presses Start |
@@ -41,7 +41,7 @@ Limits: 2000 files, 50 MB unpacked, no absolute paths, no `..`, no symlinks.
   `reveal [{"file":".hidden/p3.md","after_tag":"test_p2_","or_minutes_left":15,"unlocks":"test_p3_"}]`.
 - **Levelled:** `tags ["test_l1_",…,"test_l4_"]`; problem.md = L1 only; `reveal` = l2.md, l3.md, l4.md, each
   `{"after_tag":"test_l<n-1>_","or_minutes_left":null,"unlocks":"test_l<n>_"}`; `examples` instead of `run_entry`/`your_tests`.
-- **DSA / TDD:** usually one tag, no `reveal`. Add `run_entry` + `testcases` for stdin/stdout practice.
+- **TDD:** usually one tag, no `reveal`. Add `run_entry` + `testcases` for stdin/stdout practice.
 
 ## Runner images (write code for these)
 Pinned: `ilab-python:3.15.2-pytest9.2.0` (python:3.15.2-slim + pytest 9.2.0), `golang:1.27.4` (standard library only,

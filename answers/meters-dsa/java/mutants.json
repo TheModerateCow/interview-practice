@@ -1,6 +1,0 @@
-[
- {"file": "Meters.java", "old": "Arrays.fill(best, 1, capacity + 1, unreachable);", "new": "Arrays.fill(best, 1, capacity + 1, 0);", "label": "the battery starts full of free energy", "k": "test_p1_"},
- {"file": "Meters.java", "old": "v = Math.max(v, best[c - 1] - p);", "new": "v = Math.max(v, next[c - 1] - p);", "label": "several kWh can be charged in one half-hour", "k": "test_p1_"},
- {"file": "Meters.java", "old": "v = Math.max(v, best[c + 1] + p - wear);", "new": "v = Math.max(v, best[c + 1] + p);", "label": "wear is never charged on discharge", "k": "test_p1_"},
- {"file": "Meters.java", "old": "return Arrays.stream(best).max().getAsInt();", "new": "return best[0];", "label": "the battery is forced to end the day empty", "k": "test_p1_"}
-]

@@ -1,6 +1,0 @@
-[
- {"file": "book.go", "old": "if e.Qty > total {", "new": "if e.Qty >= total {", "label": "quote for exactly the whole book returns -1", "k": "test_p1_"},
- {"file": "book.go", "old": "change(k, -part)", "new": "change(k, 0)", "label": "buy leaves the partly filled level untouched", "k": "test_p1_"},
- {"file": "book.go", "old": "q := min(e.Qty, total)", "new": "q := 0\n\t\t\tif e.Qty <= total {\n\t\t\t\tq = e.Qty\n\t\t\t}", "label": "buy larger than the book fills nothing", "k": "test_p1_"},
- {"file": "book.go", "old": "total -= e.Qty", "new": "total -= 0", "label": "cancels not taken off the book depth", "k": "test_p1_"}
-]

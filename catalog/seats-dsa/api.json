@@ -1,8 +1,0 @@
-{
- "module": "upgrades",
- "java_class": "Upgrades",
- "functions": {
-  "max_upgrades": {"params": [["cap", "list<int>"], ["requests", "list<list<int>>"]], "returns": "int"}
- },
- "errors": []
-}

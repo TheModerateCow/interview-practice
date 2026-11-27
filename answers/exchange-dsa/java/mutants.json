@@ -1,6 +1,0 @@
-[
- {"file": "Book.java", "old": "if (e.qty() > total) {", "new": "if (e.qty() >= total) {", "label": "quote for exactly the whole book returns -1", "k": "test_p1_"},
- {"file": "Book.java", "old": "lad.change(k, -s[2]);", "new": "lad.change(k, 0);", "label": "buy leaves the partly filled level untouched", "k": "test_p1_"},
- {"file": "Book.java", "old": "long q = Math.min(e.qty(), total);", "new": "long q = e.qty() <= total ? e.qty() : 0;", "label": "buy larger than the book fills nothing", "k": "test_p1_"},
- {"file": "Book.java", "old": "total -= e.qty();", "new": "total -= 0;", "label": "cancels not taken off the book depth", "k": "test_p1_"}
-]

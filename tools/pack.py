@@ -6,7 +6,7 @@ Packs manifest.json, problem.md, starter/** and every `.hidden/X` the manifest n
 import json, os, re, sys, zipfile
 
 LANGS = {"python": ".py", "go": ".go", "java": ".java", "typescript": ".ts", "javascript": ".js", "c": None, "cpp": None}
-ROUNDS = {"codebase", "levelled", "ai-assisted", "tdd", "dsa"}
+ROUNDS = {"codebase", "levelled", "ai-assisted", "tdd"}
 REFUSED = ("reference/", "mutants.json", "bugs.json")
 
 

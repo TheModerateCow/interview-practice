@@ -2,7 +2,7 @@
  "format": "interview-set/1",
  "name": "mini-js",
  "title": "Balanced brackets (JS)",
- "round": "dsa",
+ "round": "tdd",
  "language": "javascript",
  "difficulty": "medium",
  "minutes": 20,
