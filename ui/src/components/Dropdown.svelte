@@ -43,7 +43,8 @@
   <button {id} type="button" class="dropdown-btn" role="combobox" aria-label={label} aria-haspopup="listbox"
     aria-expanded={open} aria-controls="{id}-list" aria-activedescendant={open && active >= 0 ? oid(active) : undefined}
     onclick={() => (open ? (open = false) : show())} {onkeydown} onblur={() => (open = false)}>
-    <span class="dropdown-value">{current?.label ?? ''}</span>
+    <!-- every label sits in one grid cell, only the current one visible: the button is as wide as the widest, so picking never shifts the row -->
+    <span class="dropdown-value">{#each options as o (o.value)}<span class:on={o === current}>{o.label}</span>{/each}</span>
     {#if current?.meta}<span class="dropdown-meta">{current.meta}</span>{/if}
   </button>
   {#if open}
