@@ -1,7 +1,7 @@
 [
  {"file":"flags.go","old":"if e == nil || e.targets[userID] {","new":"if e == nil {","label":"targeting an already-targeted user succeeds","k":"test_l1_"},
  {"file":"flags.go","old":"bucket(flagID, userID) < e.rollout","new":"bucket(flagID, userID) <= e.rollout","label":"bucket equal to the rollout percent is let in","k":"test_l2_"},
- {"file":"flags.go","old":"\t\tif rows[i].count != rows[j].count {\n\t\t\treturn rows[i].count > rows[j].count\n\t\t}\n\t\treturn rows[i].id < rows[j].id","new":"\t\treturn rows[i].count > rows[j].count","label":"most_evaluated ties left in creation order","k":"test_l2_"},
+ {"file":"flags.go","old":"\t\tif rows[i].count != rows[j].count {\n\t\t\treturn rows[i].count > rows[j].count\n\t\t}\n\t\treturn rows[i].id < rows[j].id","new":"\t\tif rows[i].count != rows[j].count {\n\t\t\treturn rows[i].count > rows[j].count\n\t\t}\n\t\treturn rows[i].id > rows[j].id","label":"most_evaluated ties broken by id descending","k":"test_l2_"},
  {"file":"flags.go","old":"if !s.done && s.at <= ts {","new":"if !s.done && s.at < ts {","label":"a change due at ts is applied after the call at ts","k":"test_l3_"},
  {"file":"flags.go","old":"return out[i].seq < out[j].seq","new":"return out[i].seq > out[j].seq","label":"changes due at the same time applied newest first","k":"test_l3_"},
  {"file":"flags.go","old":"for _, s := range e.stateLog {\n\t\tif s.ts <= toTs {","new":"for _, s := range e.stateLog {\n\t\tif s.ts < toTs {","label":"rollback leaves out the on/off change made exactly at to_ts","k":"test_l4_"},

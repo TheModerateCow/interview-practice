@@ -3,6 +3,7 @@ import { tick as flush } from 'svelte';
 import { api, enc } from '../../lib/api.js';
 import { mmss, partName } from '../../lib/util.js';
 import { langOf, loadMonaco } from '../../lib/monaco.js';
+import { register, attach, detach, watch } from '../../lib/assist.js';
 import { app, showFlash } from '../../app.svelte.js';
 
 const unlockedMsg = tag => partName(tag) + ' unlocked. It\'s open in the problem pane.';
@@ -16,6 +17,7 @@ export const round = $state({
   busy: '',              // label of the running action; '' when idle
   edReady: false,        // Monaco has loaded
   saveStatus: '',
+  assist: { state: '', reason: '' },   // code help: '' (ready or none) | starting | unavailable
   askNext: false, askEnd: false,
   stdin: '',
 });
@@ -41,7 +43,7 @@ const editor = () => loadMonaco(editorEl, {
   change: () => { dirty = true; round.saveStatus = 'Unsaved'; clearTimeout(saveT); saveT = setTimeout(save, 800); },
   run: () => doRun(),
   submit: () => doSubmit(),
-}).then(e => { ed = e; round.edReady = true; });
+}).then(e => { ed = e; round.edReady = true; register(window.monaco); });
 
 export async function openFile(p) {
   await save();
@@ -54,6 +56,7 @@ export async function openFile(p) {
   models[p] = monaco.editor.createModel(text, langOf(p), monaco.Uri.parse('inmemory:///' + enc(p)));
   round.curFile = p; dirty = false;
   ed.setModel(models[p]);
+  watch(models[p]);
   round.saveStatus = 'Saved';
 }
 
@@ -83,6 +86,7 @@ export function stopTimers() { clearInterval(pollT); clearInterval(tickT); }
 // Save, then drop everything that belongs to the current set.
 export async function leaveRound() {
   await save();
+  detach();
   round.finalOpen = false; round.askNext = false; round.askEnd = false;
   Object.values(models).forEach(m => m.dispose()); models = {}; round.curFile = null; round.st = null;
   round.results = null;
@@ -95,7 +99,8 @@ export async function enterRound(s, my) {
   await flush();   // the round screen is visible before Monaco measures its box
   await editor(); if (my !== app.nav) return;
   const st = round.st;
-  const first = st.files.find(f => f === st.run_entry) || st.files[0];
+  attach(app.cur, st.language, a => { round.assist = a; });
+  const first = st.files.find(f => f === st.run_entry) || st.files.find(f => f !== 'go.mod') || st.files[0];
   if (first) await openFile(first);
   if (my !== app.nav) return;
   stopTimers();
@@ -149,6 +154,11 @@ export async function guarded(label, fn) {
 }
 
 export function doRun() {
+  if (round.st?.has_examples) return guarded('Running the examples', async () => {   // Levelled: one example test per unlocked level
+    round.results = { kind: 'loading', msg: 'Running the examples' };
+    const r = await api('/sets/' + app.cur + '/run', { method: 'POST' });
+    round.results = { kind: 'grades', title: 'Examples', rows: r.examples, names: true };
+  });
   guarded('Running', async () => {
     const file = round.st.run_entry || round.curFile;   // Run runs the run program, whichever tab is open
     round.results = { kind: 'loading', msg: 'Running ' + (file || 'your code') };
@@ -171,7 +181,7 @@ export function doSubmit() {
     const was = round.st.ended;
     round.results = { kind: 'loading', msg: 'Running hidden tests' };
     const r = await api('/sets/' + app.cur + '/submit', { method: 'POST' });
-    round.results = { kind: 'grades', title: 'Hidden tests', rows: r.results, names: false };
+    round.results = { kind: 'grades', title: 'Hidden tests', rows: r.results, names: true };
     setState(r.state);
     if ((r.revealed || []).length) showFlash(unlockedMsg(round.st.unlocked[round.st.unlocked.length - 1]));
     if (r.state.ended && !was) openFinal();
