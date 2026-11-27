@@ -528,6 +528,8 @@ test('Settings: word wrap, mid-round, and the clock keeps running', async ({ pag
   await expect(page.locator('#catalog')).toBeVisible();
 });
 
+// One language server runs per app, so the code-help tests must not overlap: run them one after the other.
+test.describe.serial('Code help', () => {
 test('Code help: Python suggestions, hints and underlines', async ({ page, request }) => {
   const a = await (await request.post(`${BASE}/api/catalog/ledger-codebase/attempt`, { headers: H, data: { language: 'python' } })).json();
   await request.post(`${BASE}/api/sets/${a.name}/start`, { headers: H, data: {} });
@@ -640,4 +642,5 @@ test('Settings: code help Full, Words only, Off', async ({ page, request }) => {
   await page.click('#editor .view-lines');
   await typeNew('heapq.heap');
   await expect(row('heappush')).toBeVisible({ timeout: 30000 });
+});
 });
