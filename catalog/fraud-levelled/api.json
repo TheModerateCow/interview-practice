@@ -1,0 +1,22 @@
+{
+ "module": "risk",
+ "classes": {
+  "RiskScreen": {
+   "init": [],
+   "methods": {
+    "block": {"params": [["ts", "int"], ["kind", "string"], ["value", "string"]], "returns": "bool", "level": 1},
+    "unblock": {"params": [["ts", "int"], ["kind", "string"], ["value", "string"]], "returns": "bool", "level": 1},
+    "screen": {"params": [["ts", "int"], ["txn_id", "string"], ["card", "string"], ["merchant", "string"], ["amount", "int"], ["country", "string"]], "returns": "string", "level": 1},
+    "decision": {"params": [["ts", "int"], ["txn_id", "string"]], "returns": "string", "level": 1},
+    "add_velocity_rule": {"params": [["ts", "int"], ["rule_id", "string"], ["metric", "string"], ["limit", "int"], ["window", "int"]], "returns": "bool", "level": 2},
+    "remove_rule": {"params": [["ts", "int"], ["rule_id", "string"]], "returns": "bool", "level": 2},
+    "allow": {"params": [["ts", "int"], ["kind", "string"], ["value", "string"], ["priority", "int"]], "returns": "bool", "level": 3},
+    "set_priority": {"params": [["ts", "int"], ["rule", "string"], ["priority", "int"]], "returns": "bool", "level": 3},
+    "explain": {"params": [["ts", "int"], ["txn_id", "string"]], "returns": "string", "level": 3},
+    "pending_reviews": {"params": [["ts", "int"]], "returns": "list<string>", "level": 4},
+    "approve_review": {"params": [["ts", "int"], ["txn_id", "string"]], "returns": "bool", "level": 4},
+    "decline_review": {"params": [["ts", "int"], ["txn_id", "string"], ["block_for", "int"]], "returns": "bool", "level": 4}
+   }
+  }
+ }
+}

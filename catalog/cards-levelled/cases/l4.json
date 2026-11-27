@@ -1,0 +1,632 @@
+[
+ {
+  "name": "category_limit_and_freeze",
+  "steps": [
+   {
+    "new": "Issuer",
+    "args": []
+   },
+   {
+    "call": "issue_card",
+    "args": [
+     1,
+     "c1",
+     50000
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_category_limit",
+    "args": [
+     1,
+     "c1",
+     "gambling",
+     10000
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "gambling",
+     6000
+    ],
+    "expect": "a1"
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "gambling",
+     5000
+    ],
+    "expect": ""
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "grocery",
+     5000
+    ],
+    "expect": "a2"
+   },
+   {
+    "call": "authorize",
+    "args": [
+     3,
+     "c1",
+     "gambling",
+     5000
+    ],
+    "expect": "a3"
+   },
+   {
+    "call": "freeze",
+    "args": [
+     4,
+     "c1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     4,
+     "c1",
+     "grocery",
+     100
+    ],
+    "expect": ""
+   },
+   {
+    "call": "capture",
+    "args": [
+     4,
+     "a1",
+     6000
+    ],
+    "expect": true
+   },
+   {
+    "call": "unfreeze",
+    "args": [
+     5,
+     "c1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     5,
+     "c1",
+     "grocery",
+     100
+    ],
+    "expect": "a4"
+   }
+  ]
+ },
+ {
+  "name": "category_limit_rules",
+  "steps": [
+   {
+    "new": "Issuer",
+    "args": []
+   },
+   {
+    "call": "issue_card",
+    "args": [
+     1,
+     "c1",
+     9000
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_category_limit",
+    "args": [
+     1,
+     "zz",
+     "fuel",
+     100
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_category_limit",
+    "args": [
+     1,
+     "c1",
+     "fuel",
+     -1
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_category_limit",
+    "args": [
+     1,
+     "c1",
+     "fuel",
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "fuel",
+     1
+    ],
+    "expect": ""
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "dining",
+     500
+    ],
+    "expect": "a1"
+   },
+   {
+    "call": "set_category_limit",
+    "args": [
+     3,
+     "c1",
+     "fuel",
+     800
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     3,
+     "c1",
+     "fuel",
+     800
+    ],
+    "expect": "a2"
+   },
+   {
+    "call": "authorize",
+    "args": [
+     3,
+     "c1",
+     "fuel",
+     1
+    ],
+    "expect": ""
+   },
+   {
+    "call": "set_category_limit",
+    "args": [
+     3,
+     "c1",
+     "fuel",
+     1000
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     3,
+     "c1",
+     "fuel",
+     200
+    ],
+    "expect": "a3"
+   },
+   {
+    "call": "authorize",
+    "args": [
+     3,
+     "c1",
+     "fuel",
+     1
+    ],
+    "expect": ""
+   }
+  ]
+ },
+ {
+  "name": "what_counts_toward_daily_spend",
+  "steps": [
+   {
+    "new": "Issuer",
+    "args": []
+   },
+   {
+    "call": "issue_card",
+    "args": [
+     1,
+     "c1",
+     90000
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "travel",
+     3000
+    ],
+    "expect": "a1"
+   },
+   {
+    "call": "set_category_limit",
+    "args": [
+     2,
+     "c1",
+     "travel",
+     5000
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "travel",
+     2001
+    ],
+    "expect": ""
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "travel",
+     1500
+    ],
+    "expect": "a2"
+   },
+   {
+    "call": "void_auth",
+    "args": [
+     2,
+     "a2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "capture",
+    "args": [
+     2,
+     "a1",
+     1000
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "travel",
+     4000
+    ],
+    "expect": "a3"
+   },
+   {
+    "call": "refund",
+    "args": [
+     2,
+     "a1",
+     1000
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "travel",
+     1
+    ],
+    "expect": ""
+   },
+   {
+    "call": "capture",
+    "args": [
+     3,
+     "a3",
+     2000
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     3,
+     "c1",
+     "travel",
+     5000
+    ],
+    "expect": "a4"
+   }
+  ]
+ },
+ {
+  "name": "frozen_card_rules",
+  "steps": [
+   {
+    "new": "Issuer",
+    "args": []
+   },
+   {
+    "call": "issue_card",
+    "args": [
+     1,
+     "c1",
+     9000
+    ],
+    "expect": true
+   },
+   {
+    "call": "freeze",
+    "args": [
+     1,
+     "zz"
+    ],
+    "expect": false
+   },
+   {
+    "call": "unfreeze",
+    "args": [
+     1,
+     "c1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "retail",
+     1000
+    ],
+    "expect": "a1"
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "retail",
+     2000
+    ],
+    "expect": "a2"
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "retail",
+     3000
+    ],
+    "expect": "a3"
+   },
+   {
+    "call": "freeze",
+    "args": [
+     3,
+     "c1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "freeze",
+    "args": [
+     3,
+     "c1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "authorize",
+    "args": [
+     3,
+     "c1",
+     "retail",
+     10
+    ],
+    "expect": ""
+   },
+   {
+    "call": "capture",
+    "args": [
+     3,
+     "a1",
+     1000
+    ],
+    "expect": true
+   },
+   {
+    "call": "void_auth",
+    "args": [
+     3,
+     "a2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "refund",
+    "args": [
+     4,
+     "a1",
+     400
+    ],
+    "expect": true
+   },
+   {
+    "call": "available",
+    "args": [
+     4,
+     "c1"
+    ],
+    "expect": 5400
+   },
+   {
+    "call": "holds",
+    "args": [
+     9,
+     "c1"
+    ],
+    "expect": []
+   },
+   {
+    "call": "statement",
+    "args": [
+     9,
+     "c1"
+    ],
+    "expect": [
+     "3:a1:charge:1000",
+     "4:a1:refund:400"
+    ]
+   },
+   {
+    "call": "unfreeze",
+    "args": [
+     9,
+     "c1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     9,
+     "c1",
+     "retail",
+     10
+    ],
+    "expect": "a4"
+   }
+  ]
+ },
+ {
+  "name": "limits_per_card_per_day",
+  "steps": [
+   {
+    "new": "Issuer",
+    "args": []
+   },
+   {
+    "call": "issue_card",
+    "args": [
+     1,
+     "c1",
+     9000
+    ],
+    "expect": true
+   },
+   {
+    "call": "issue_card",
+    "args": [
+     1,
+     "c2",
+     9000
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_category_limit",
+    "args": [
+     1,
+     "c1",
+     "dining",
+     1000
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     1,
+     "c1",
+     "dining",
+     1000
+    ],
+    "expect": "a1"
+   },
+   {
+    "call": "authorize",
+    "args": [
+     1,
+     "c2",
+     "dining",
+     3000
+    ],
+    "expect": "a2"
+   },
+   {
+    "call": "authorize",
+    "args": [
+     1,
+     "c1",
+     "dining",
+     1
+    ],
+    "expect": ""
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "dining",
+     1000
+    ],
+    "expect": "a3"
+   },
+   {
+    "call": "freeze",
+    "args": [
+     2,
+     "c2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "authorize",
+    "args": [
+     2,
+     "c1",
+     "dining",
+     1
+    ],
+    "expect": ""
+   },
+   {
+    "call": "authorize",
+    "args": [
+     3,
+     "c2",
+     "dining",
+     1
+    ],
+    "expect": ""
+   }
+  ]
+ }
+]

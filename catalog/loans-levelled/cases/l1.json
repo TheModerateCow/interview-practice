@@ -1,0 +1,528 @@
+[
+ {
+  "name": "schedule_and_amount_due",
+  "steps": [
+   {
+    "new": "Lender",
+    "args": []
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "car",
+     100000,
+     3,
+     150
+    ],
+    "expect": true
+   },
+   {
+    "call": "originate",
+    "args": [
+     2,
+     "car",
+     5000,
+     1,
+     0
+    ],
+    "expect": false
+   },
+   {
+    "call": "originate",
+    "args": [
+     3,
+     "bike",
+     100100,
+     2,
+     50
+    ],
+    "expect": true
+   },
+   {
+    "call": "schedule",
+    "args": [
+     4,
+     "car"
+    ],
+    "expect": [
+     "31:34833",
+     "61:34833",
+     "91:34834"
+    ]
+   },
+   {
+    "call": "schedule",
+    "args": [
+     4,
+     "bike"
+    ],
+    "expect": [
+     "33:50551",
+     "63:50551"
+    ]
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     30,
+     "car"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     31,
+     "car"
+    ],
+    "expect": 34833
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     70,
+     "car"
+    ],
+    "expect": 69666
+   }
+  ]
+ },
+ {
+  "name": "originate_rejects_bad_loans",
+  "steps": [
+   {
+    "new": "Lender",
+    "args": []
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "a",
+     0,
+     3,
+     100
+    ],
+    "expect": false
+   },
+   {
+    "call": "originate",
+    "args": [
+     2,
+     "a",
+     -500,
+     3,
+     100
+    ],
+    "expect": false
+   },
+   {
+    "call": "originate",
+    "args": [
+     3,
+     "a",
+     1000,
+     0,
+     100
+    ],
+    "expect": false
+   },
+   {
+    "call": "originate",
+    "args": [
+     4,
+     "a",
+     1000,
+     -2,
+     100
+    ],
+    "expect": false
+   },
+   {
+    "call": "originate",
+    "args": [
+     5,
+     "a",
+     1000,
+     2,
+     -1
+    ],
+    "expect": false
+   },
+   {
+    "call": "schedule",
+    "args": [
+     6,
+     "a"
+    ],
+    "expect": []
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     6,
+     "a"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "originate",
+    "args": [
+     7,
+     "a",
+     1000,
+     2,
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "schedule",
+    "args": [
+     8,
+     "a"
+    ],
+    "expect": [
+     "37:500",
+     "67:500"
+    ]
+   },
+   {
+    "call": "originate",
+    "args": [
+     9,
+     "a",
+     2000,
+     1,
+     0
+    ],
+    "expect": false
+   },
+   {
+    "call": "schedule",
+    "args": [
+     10,
+     "a"
+    ],
+    "expect": [
+     "37:500",
+     "67:500"
+    ]
+   },
+   {
+    "call": "schedule",
+    "args": [
+     10,
+     "zzz"
+    ],
+    "expect": []
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     10,
+     "zzz"
+    ],
+    "expect": -1
+   }
+  ]
+ },
+ {
+  "name": "principal_remainder_goes_to_last",
+  "steps": [
+   {
+    "new": "Lender",
+    "args": []
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "small",
+     100,
+     7,
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "schedule",
+    "args": [
+     2,
+     "small"
+    ],
+    "expect": [
+     "31:14",
+     "61:14",
+     "91:14",
+     "121:14",
+     "151:14",
+     "181:14",
+     "211:16"
+    ]
+   },
+   {
+    "call": "originate",
+    "args": [
+     3,
+     "tiny",
+     2,
+     3,
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "schedule",
+    "args": [
+     4,
+     "tiny"
+    ],
+    "expect": [
+     "33:0",
+     "63:0",
+     "93:2"
+    ]
+   },
+   {
+    "call": "originate",
+    "args": [
+     5,
+     "even",
+     90000,
+     3,
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "schedule",
+    "args": [
+     6,
+     "even"
+    ],
+    "expect": [
+     "35:30000",
+     "65:30000",
+     "95:30000"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "interest_rounds_half_up",
+  "steps": [
+   {
+    "new": "Lender",
+    "args": []
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "half",
+     100100,
+     1,
+     50
+    ],
+    "expect": true
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "below",
+     100099,
+     1,
+     50
+    ],
+    "expect": true
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "above",
+     100101,
+     1,
+     50
+    ],
+    "expect": true
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "cents",
+     3,
+     1,
+     5000
+    ],
+    "expect": true
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "flat",
+     100000,
+     4,
+     125
+    ],
+    "expect": true
+   },
+   {
+    "call": "schedule",
+    "args": [
+     2,
+     "half"
+    ],
+    "expect": [
+     "31:100601"
+    ]
+   },
+   {
+    "call": "schedule",
+    "args": [
+     2,
+     "below"
+    ],
+    "expect": [
+     "31:100599"
+    ]
+   },
+   {
+    "call": "schedule",
+    "args": [
+     2,
+     "above"
+    ],
+    "expect": [
+     "31:100602"
+    ]
+   },
+   {
+    "call": "schedule",
+    "args": [
+     2,
+     "cents"
+    ],
+    "expect": [
+     "31:5"
+    ]
+   },
+   {
+    "call": "schedule",
+    "args": [
+     2,
+     "flat"
+    ],
+    "expect": [
+     "31:26250",
+     "61:26250",
+     "91:26250",
+     "121:26250"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "due_days_count_from_origination",
+  "steps": [
+   {
+    "new": "Lender",
+    "args": []
+   },
+   {
+    "call": "originate",
+    "args": [
+     17,
+     "late-start",
+     40000,
+     2,
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "originate",
+    "args": [
+     20,
+     "other",
+     10000,
+     1,
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "schedule",
+    "args": [
+     21,
+     "late-start"
+    ],
+    "expect": [
+     "47:20400",
+     "77:20400"
+    ]
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     46,
+     "late-start"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     47,
+     "late-start"
+    ],
+    "expect": 20400
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     50,
+     "other"
+    ],
+    "expect": 10000
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     76,
+     "late-start"
+    ],
+    "expect": 20400
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     77,
+     "late-start"
+    ],
+    "expect": 40800
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     500,
+     "late-start"
+    ],
+    "expect": 40800
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     500,
+     "other"
+    ],
+    "expect": 10000
+   }
+  ]
+ }
+]

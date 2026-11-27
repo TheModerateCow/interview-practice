@@ -1,0 +1,685 @@
+[
+ {
+  "name": "reserve_and_chargeback",
+  "steps": [
+   {
+    "new": "Payouts",
+    "args": []
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "acme",
+     290
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_reserve",
+    "args": [
+     1,
+     "acme",
+     1000,
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     2,
+     "acme",
+     10000
+    ],
+    "expect": "s1"
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     3,
+     "acme",
+     2000
+    ],
+    "expect": "s2"
+   },
+   {
+    "call": "reserve_held",
+    "args": [
+     4,
+     "acme"
+    ],
+    "expect": 1165
+   },
+   {
+    "call": "chargeback",
+    "args": [
+     4,
+     "s2"
+    ],
+    "expect": 3500
+   },
+   {
+    "call": "available",
+    "args": [
+     5,
+     "acme"
+    ],
+    "expect": 5239
+   },
+   {
+    "call": "run_payouts",
+    "args": [
+     5
+    ],
+    "expect": [
+     "acme:5239"
+    ]
+   },
+   {
+    "call": "balance",
+    "args": [
+     5,
+     "acme"
+    ],
+    "expect": 2913
+   },
+   {
+    "call": "reserve_held",
+    "args": [
+     12,
+     "acme"
+    ],
+    "expect": 194
+   },
+   {
+    "call": "run_payouts",
+    "args": [
+     13
+    ],
+    "expect": [
+     "acme:2913"
+    ]
+   },
+   {
+    "call": "chargeback",
+    "args": [
+     14,
+     "s2"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "refund",
+    "args": [
+     14,
+     "s2",
+     100
+    ],
+    "expect": -1
+   }
+  ]
+ },
+ {
+  "name": "reserve_rules",
+  "steps": [
+   {
+    "new": "Payouts",
+    "args": []
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "acme",
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_reserve",
+    "args": [
+     1,
+     "ghost",
+     500,
+     5
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_reserve",
+    "args": [
+     1,
+     "acme",
+     10001,
+     5
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_reserve",
+    "args": [
+     1,
+     "acme",
+     -1,
+     5
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_reserve",
+    "args": [
+     1,
+     "acme",
+     500,
+     0
+    ],
+    "expect": false
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     2,
+     "acme",
+     1945
+    ],
+    "expect": "s1"
+   },
+   {
+    "call": "reserve_held",
+    "args": [
+     2,
+     "acme"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "set_reserve",
+    "args": [
+     3,
+     "acme",
+     1000,
+     30
+    ],
+    "expect": true
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     3,
+     "acme",
+     1945
+    ],
+    "expect": "s2"
+   },
+   {
+    "call": "reserve_held",
+    "args": [
+     3,
+     "acme"
+    ],
+    "expect": 195
+   },
+   {
+    "call": "set_reserve",
+    "args": [
+     4,
+     "acme",
+     0,
+     30
+    ],
+    "expect": true
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     4,
+     "acme",
+     1000
+    ],
+    "expect": "s3"
+   },
+   {
+    "call": "reserve_held",
+    "args": [
+     4,
+     "acme"
+    ],
+    "expect": 195
+   },
+   {
+    "call": "run_payouts",
+    "args": [
+     7
+    ],
+    "expect": [
+     "acme:4695"
+    ]
+   },
+   {
+    "call": "balance",
+    "args": [
+     8,
+     "acme"
+    ],
+    "expect": 195
+   }
+  ]
+ },
+ {
+  "name": "reserve_releases_on_hold_day",
+  "steps": [
+   {
+    "new": "Payouts",
+    "args": []
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "acme",
+     200
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_reserve",
+    "args": [
+     1,
+     "acme",
+     500,
+     7
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "fast",
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_reserve",
+    "args": [
+     1,
+     "fast",
+     2000,
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     10,
+     "acme",
+     5000
+    ],
+    "expect": "s1"
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     10,
+     "fast",
+     1000
+    ],
+    "expect": "s2"
+   },
+   {
+    "call": "available",
+    "args": [
+     13,
+     "acme"
+    ],
+    "expect": 4655
+   },
+   {
+    "call": "reserve_held",
+    "args": [
+     16,
+     "acme"
+    ],
+    "expect": 245
+   },
+   {
+    "call": "available",
+    "args": [
+     16,
+     "acme"
+    ],
+    "expect": 4655
+   },
+   {
+    "call": "reserve_held",
+    "args": [
+     17,
+     "acme"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "available",
+    "args": [
+     17,
+     "acme"
+    ],
+    "expect": 4900
+   },
+   {
+    "call": "available",
+    "args": [
+     11,
+     "fast"
+    ],
+    "expect": 200
+   },
+   {
+    "call": "run_payouts",
+    "args": [
+     11
+    ],
+    "expect": [
+     "fast:200"
+    ]
+   },
+   {
+    "call": "run_payouts",
+    "args": [
+     13
+    ],
+    "expect": [
+     "acme:4655",
+     "fast:800"
+    ]
+   },
+   {
+    "call": "payout_history",
+    "args": [
+     14,
+     "fast"
+    ],
+    "expect": [
+     "11:200",
+     "13:800"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "chargeback_rules",
+  "steps": [
+   {
+    "new": "Payouts",
+    "args": []
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "acme",
+     290
+    ],
+    "expect": true
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     1,
+     "acme",
+     4000
+    ],
+    "expect": "s1"
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     1,
+     "acme",
+     900
+    ],
+    "expect": "s2"
+   },
+   {
+    "call": "chargeback",
+    "args": [
+     2,
+     "s9"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "refund",
+    "args": [
+     2,
+     "s1",
+     1000
+    ],
+    "expect": 971
+   },
+   {
+    "call": "chargeback",
+    "args": [
+     3,
+     "s1"
+    ],
+    "expect": 4500
+   },
+   {
+    "call": "chargeback",
+    "args": [
+     3,
+     "s1"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "fee",
+    "args": [
+     4,
+     "s1"
+    ],
+    "expect": 87
+   },
+   {
+    "call": "refund",
+    "args": [
+     4,
+     "s1",
+     100
+    ],
+    "expect": -1
+   },
+   {
+    "call": "refund",
+    "args": [
+     5,
+     "s2",
+     900
+    ],
+    "expect": 874
+   },
+   {
+    "call": "chargeback",
+    "args": [
+     5,
+     "s2"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "balance",
+    "args": [
+     6,
+     "acme"
+    ],
+    "expect": -1587
+   },
+   {
+    "call": "activity",
+    "args": [
+     6,
+     "acme"
+    ],
+    "expect": [
+     "1:sale:3884",
+     "1:sale:874",
+     "2:refund:-971",
+     "3:chargeback:-4500",
+     "5:refund:-874"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "chargeback_clawed_back",
+  "steps": [
+   {
+    "new": "Payouts",
+    "args": []
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "acme",
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_merchant",
+    "args": [
+     1,
+     "bolt",
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     1,
+     "acme",
+     3000
+    ],
+    "expect": "s1"
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     1,
+     "bolt",
+     100
+    ],
+    "expect": "s2"
+   },
+   {
+    "call": "run_payouts",
+    "args": [
+     4
+    ],
+    "expect": [
+     "acme:3000",
+     "bolt:100"
+    ]
+   },
+   {
+    "call": "chargeback",
+    "args": [
+     5,
+     "s1"
+    ],
+    "expect": 4500
+   },
+   {
+    "call": "balance",
+    "args": [
+     5,
+     "acme"
+    ],
+    "expect": -4500
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     6,
+     "acme",
+     1000
+    ],
+    "expect": "s3"
+   },
+   {
+    "call": "run_payouts",
+    "args": [
+     9
+    ],
+    "expect": []
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     10,
+     "acme",
+     2000
+    ],
+    "expect": "s4"
+   },
+   {
+    "call": "run_payouts",
+    "args": [
+     13
+    ],
+    "expect": []
+   },
+   {
+    "call": "record_sale",
+    "args": [
+     14,
+     "acme",
+     2000
+    ],
+    "expect": "s5"
+   },
+   {
+    "call": "run_payouts",
+    "args": [
+     17
+    ],
+    "expect": [
+     "acme:500"
+    ]
+   },
+   {
+    "call": "payout_history",
+    "args": [
+     18,
+     "acme"
+    ],
+    "expect": [
+     "4:3000",
+     "17:500"
+    ]
+   },
+   {
+    "call": "activity",
+    "args": [
+     18,
+     "acme"
+    ],
+    "expect": [
+     "1:sale:3000",
+     "4:payout:-3000",
+     "5:chargeback:-4500",
+     "6:sale:1000",
+     "10:sale:2000",
+     "14:sale:2000",
+     "17:payout:-500"
+    ]
+   }
+  ]
+ }
+]

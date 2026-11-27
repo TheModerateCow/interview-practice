@@ -1,0 +1,17 @@
+[
+ {"file": "risk.py", "old": "if txn_id in self.txns or amount <= 0:", "new": "if amount <= 0:", "label": "a transaction id can be screened twice", "k": "test_l1_"},
+ {"file": "risk.py", "old": "if txn_id in self.txns or amount <= 0:", "new": "if txn_id in self.txns or amount < 0:", "label": "a zero amount is screened", "k": "test_l1_"},
+ {"file": "risk.py", "old": "if kind not in KINDS or self._rule(ts, name) is not None:", "new": "if self._rule(ts, name) is not None:", "label": "block accepts an unknown kind", "k": "test_l1_"},
+ {"file": "risk.py", "old": "inside = [t for t in same_card if t[\"ts\"] > ts - r[\"window\"]]", "new": "inside = [t for t in same_card if t[\"ts\"] >= ts - r[\"window\"]]", "label": "the window includes a transaction exactly window seconds old", "k": "test_l2_"},
+ {"file": "risk.py", "old": "if used > r[\"limit\"]:", "new": "if used >= r[\"limit\"]:", "label": "a rule fires at exactly its limit", "k": "test_l2_"},
+ {"file": "risk.py", "old": "same_card = [t for t in self.txns.values() if t[\"card\"] == card]", "new": "same_card = [t for t in self.txns.values() if t[\"card\"] == card and t.get(\"decision\") != \"decline\"]", "label": "declined attempts left out of the velocity window", "k": "test_l2_"},
+ {"file": "risk.py", "old": "or limit <= 0 or window <= 0", "new": "or limit < 0 or window <= 0", "label": "a rule with limit 0 is accepted", "k": "test_l2_"},
+ {"file": "risk.py", "old": "STRICTNESS = {\"decline\": 0, \"review\": 1, \"approve\": 2}", "new": "STRICTNESS = {\"decline\": 0, \"review\": 1, \"approve\": -1}", "label": "an allowlist entry wins a priority tie", "k": "test_l3_"},
+ {"file": "risk.py", "old": "key=lambda h: (-h[0], STRICTNESS[h[2]], h[1])", "new": "key=lambda h: (-h[0], STRICTNESS[h[2]])", "label": "equal rules tie-broken by evaluation order, not name", "k": "test_l3_"},
+ {"file": "risk.py", "old": "if kind not in KINDS or name in self.rules:", "new": "if kind not in KINDS:", "label": "allow overwrites an existing allowlist entry", "k": "test_l3_"},
+ {"file": "risk.py", "old": "key=lambda h: (-h[0], STRICTNESS[h[2]], h[1])", "new": "key=lambda h: (h[0], STRICTNESS[h[2]], h[1])", "label": "the lowest priority decides", "k": "test_l3_"},
+ {"file": "risk.py", "old": "return [i for i, t in self.txns.items() if t[\"decision\"] == \"review\"]", "new": "return sorted(i for i, t in self.txns.items() if t[\"decision\"] == \"review\")", "label": "review queue sorted by id instead of screen order", "k": "test_l4_"},
+ {"file": "risk.py", "old": "if r is None or (r.get(\"until\") is not None and ts >= r[\"until\"]):", "new": "if r is None or (r.get(\"until\") is not None and ts > r[\"until\"]):", "label": "a temporary block still applies at its end time", "k": "test_l4_"},
+ {"file": "risk.py", "old": "r[\"until\"] = max(r[\"until\"], ts + block_for)", "new": "r[\"until\"] = ts + block_for", "label": "a second decline can shorten a temporary block", "k": "test_l4_"},
+ {"file": "risk.py", "old": "        if r is None:\n            self.rules[name] = {\"type\": \"block\", \"priority\": 0, \"until\": ts + block_for}", "new": "        if r is None or r[\"until\"] is None:\n            self.rules[name] = {\"type\": \"block\", \"priority\": 0, \"until\": ts + block_for}", "label": "a decline turns a permanent card block into a temporary one", "k": "test_l4_"}
+]

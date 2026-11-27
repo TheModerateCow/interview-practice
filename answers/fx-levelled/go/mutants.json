@@ -1,0 +1,17 @@
+[
+ {"file": "wallets.go", "old": "if c[i] < 'A' || c[i] > 'Z' {", "new": "if c[i] < 'A' || c[i] > 'z' {", "label": "lowercase currency codes accepted", "k": "test_l1_"},
+ {"file": "wallets.go", "old": "if !ok || amount <= 0 || b[currency] < amount {", "new": "if !ok || amount <= 0 || b[currency] <= amount {", "label": "withdrawing the whole balance refused", "k": "test_l1_"},
+ {"file": "wallets.go", "old": "if a > 0 {\n\t\t\tcodes", "new": "if a >= 0 {\n\t\t\tcodes", "label": "holdings keeps currencies whose balance went back to 0", "k": "test_l1_"},
+ {"file": "wallets.go", "old": "if !ok || !isCode(currency) || amount <= 0 {", "new": "if !ok || !isCode(currency) || amount < 0 {", "label": "a deposit of 0 is accepted", "k": "test_l1_"},
+ {"file": "wallets.go", "old": "(100-feePercent) + d/2) / d", "new": "(100-feePercent)) / d", "label": "credited amount rounded down instead of half up", "k": "test_l2_"},
+ {"file": "wallets.go", "old": "if !ok || got <= 0 || b[source] < amount {", "new": "if !ok || got < 0 || b[source] < amount {", "label": "a conversion that credits 0 still takes the money", "k": "test_l2_"},
+ {"file": "wallets.go", "old": "if !okS || !okR || sender == receiver || amount <= 0", "new": "if !okS || !okR || amount <= 0", "label": "a transfer to the same wallet succeeds", "k": "test_l2_"},
+ {"file": "wallets.go", "old": "if atTs < p.ts+rateTTL {", "new": "if atTs <= p.ts+rateTTL {", "label": "a rate still in force at p + 100", "k": "test_l3_"},
+ {"file": "wallets.go", "old": "if p.ts <= atTs {", "new": "if p.ts <= atTs && rate < 0 {", "label": "the first rate ever published stays in force", "k": "test_l3_"},
+ {"file": "wallets.go", "old": "if a == 0 {\n\t\t\tcontinue", "new": "if a < 0 {\n\t\t\tcontinue", "label": "a currency whose balance went back to 0 makes TotalValue fail", "k": "test_l3_"},
+ {"file": "wallets.go", "old": "if c != currency {\n\t\t\tv = ", "new": "if true {\n\t\t\tv = ", "label": "the balance already in the chosen currency is quoted too (and fails)", "k": "test_l3_"},
+ {"file": "wallets.go", "old": "rate >= o.minRate {", "new": "rate > o.minRate {", "label": "an order doesn't run when the rate equals minRate", "k": "test_l4_"},
+ {"file": "wallets.go", "old": "o.source == source && o.target == target &&", "new": "(o.source == source || o.source == target) && (o.target == target || o.target == source) &&", "label": "orders also checked when the reverse pair is published", "k": "test_l4_"},
+ {"file": "wallets.go", "old": "o.status = \"cancelled\"\n\t\t\t} else {", "new": "o.status = \"open\"\n\t\t\t} else {", "label": "an order short of funds stays open", "k": "test_l4_"},
+ {"file": "wallets.go", "old": "if !ok || o.status != \"open\" {", "new": "if !ok {", "label": "a filled order can be cancelled", "k": "test_l4_"}
+]

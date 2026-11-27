@@ -1,0 +1,15 @@
+[
+ {"file":"Payouts.java","old":"return (int) (((long) amount * bps + 5000) / 10000);","new":"return (int) (((long) amount * bps) / 10000);","label":"fee rounds down instead of half up","k":"test_l1_"},
+ {"file":"Payouts.java","old":"feeBps < 0 || feeBps > 10000","new":"feeBps < 0 || feeBps >= 10000","label":"a 10000 bps merchant is rejected","k":"test_l1_"},
+ {"file":"Payouts.java","old":"if (m == null || amount <= 0) return \"\";","new":"if (m == null || amount < 0) return \"\";","label":"a sale of 0 is accepted and uses an id","k":"test_l1_"},
+ {"file":"Payouts.java","old":"int debit = amount - (s.fee - newFee);","new":"int debit = amount;","label":"refund keeps the platform's fee","k":"test_l2_"},
+ {"file":"Payouts.java","old":"        s.fee = newFee;\n","new":"","label":"sale's fee not updated after a refund","k":"test_l2_"},
+ {"file":"Payouts.java","old":"amount > s.amount - s.refunded","new":"amount > s.amount","label":"refund limit ignores earlier refunds","k":"test_l2_"},
+ {"file":"Payouts.java","old":"if (e.settle() <= day)","new":"if (e.settle() < day)","label":"sale settles a day late","k":"test_l3_"},
+ {"file":"Payouts.java","old":"if (a > 0) {","new":"if (a != 0) {","label":"negative available paid out as a negative payout","k":"test_l3_"},
+ {"file":"Payouts.java","old":"                post(m, day, \"payout\", -a);\n","new":"","label":"payout not debited from the balance","k":"test_l3_"},
+ {"file":"Payouts.java","old":"int reserve = feeOn(net, m.reserveBps);","new":"int reserve = feeOn(amount, m.reserveBps);","label":"reserve taken on the gross amount, not the net","k":"test_l4_"},
+ {"file":"Payouts.java","old":"e.reserve() && e.settle() > day","new":"e.reserve() && e.settle() >= day","label":"reserve still counted as held on its release day","k":"test_l4_"},
+ {"file":"Payouts.java","old":"int debit = s.amount - s.refunded + CHARGEBACK_FEE;","new":"int debit = s.amount + CHARGEBACK_FEE;","label":"chargeback ignores earlier refunds","k":"test_l4_"},
+ {"file":"Payouts.java","old":"if (s == null || s.chargedBack || amount <= 0","new":"if (s == null || amount <= 0","label":"refund allowed after a chargeback","k":"test_l4_"}
+]

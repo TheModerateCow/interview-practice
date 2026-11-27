@@ -1,0 +1,17 @@
+[
+ {"file": "Wallets.java", "old": "if (ch < 'A' || ch > 'Z') return false;", "new": "if (!Character.isLetter(ch)) return false;", "label": "lowercase currency codes accepted", "k": "test_l1_"},
+ {"file": "Wallets.java", "old": "if (w == null || amount <= 0 || w.getOrDefault(currency, 0L) < amount) return -1;", "new": "if (w == null || amount <= 0 || w.getOrDefault(currency, 0L) <= amount) return -1;", "label": "withdrawing the whole balance refused", "k": "test_l1_"},
+ {"file": "Wallets.java", "old": "if (e.getValue() > 0) out.add", "new": "if (e.getValue() >= 0) out.add", "label": "holdings keeps currencies whose balance went back to 0", "k": "test_l1_"},
+ {"file": "Wallets.java", "old": "if (w == null || !isCode(currency) || amount <= 0) return -1;", "new": "if (w == null || !isCode(currency) || amount < 0) return -1;", "label": "a deposit of 0 is accepted", "k": "test_l1_"},
+ {"file": "Wallets.java", "old": "(100 - FEE_PERCENT) + d / 2) / d", "new": "(100 - FEE_PERCENT)) / d", "label": "credited amount rounded down instead of half up", "k": "test_l2_"},
+ {"file": "Wallets.java", "old": "if (w == null || got <= 0 ||", "new": "if (w == null || got < 0 ||", "label": "a conversion that credits 0 still takes the money", "k": "test_l2_"},
+ {"file": "Wallets.java", "old": "if (s == null || r == null || sender.equals(receiver) || amount <= 0", "new": "if (s == null || r == null || amount <= 0", "label": "a transfer to the same wallet succeeds", "k": "test_l2_"},
+ {"file": "Wallets.java", "old": "rate = atTs < p.ts() + RATE_TTL ? p.rate() : -1;", "new": "rate = atTs <= p.ts() + RATE_TTL ? p.rate() : -1;", "label": "a rate still in force at p + 100", "k": "test_l3_"},
+ {"file": "Wallets.java", "old": "if (p.ts() <= atTs) {", "new": "if (p.ts() <= atTs && rate < 0) {", "label": "the first rate ever published stays in force", "k": "test_l3_"},
+ {"file": "Wallets.java", "old": "if (a == 0) continue;", "new": "if (a < 0) continue;", "label": "a currency whose balance went back to 0 makes totalValue fail", "k": "test_l3_"},
+ {"file": "Wallets.java", "old": "long v = e.getKey().equals(currency) ? a : quoteRaw(", "new": "long v = false ? a : quoteRaw(", "label": "the balance already in the chosen currency is quoted too (and fails)", "k": "test_l3_"},
+ {"file": "Wallets.java", "old": "&& rate >= o.minRate) {", "new": "&& rate > o.minRate) {", "label": "an order doesn't run when the rate equals minRate", "k": "test_l4_"},
+ {"file": "Wallets.java", "old": "o.source.equals(source) && o.target.equals(target)", "new": "java.util.Set.of(o.source, o.target).equals(java.util.Set.of(source, target))", "label": "orders also checked when the reverse pair is published", "k": "test_l4_"},
+ {"file": "Wallets.java", "old": "o.status = got < 0 ? \"cancelled\" : \"filled:\" + got;", "new": "o.status = got < 0 ? o.status : \"filled:\" + got;", "label": "an order short of funds stays open", "k": "test_l4_"},
+ {"file": "Wallets.java", "old": "if (o == null || !o.status.equals(\"open\")) return false;", "new": "if (o == null) return false;", "label": "a filled order can be cancelled", "k": "test_l4_"}
+]

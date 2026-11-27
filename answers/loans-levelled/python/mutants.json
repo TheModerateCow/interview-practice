@@ -1,0 +1,17 @@
+[
+ {"file": "loans.py", "old": "interest = (principal * rate_bp + 5000) // 10000", "new": "interest = principal * rate_bp // 10000", "label": "interest rounded down instead of half up", "k": "test_l1_"},
+ {"file": "loans.py", "old": "p = principal - base * (months - 1) if k == months else base", "new": "p = base", "label": "the principal remainder is dropped from the last instalment", "k": "test_l1_"},
+ {"file": "loans.py", "old": "\"due\": start + 30 * k,", "new": "\"due\": start + 30 * (k - 1),", "label": "first instalment due on the origination day", "k": "test_l1_"},
+ {"file": "loans.py", "old": "if i[\"due\"] <= day)", "new": "if i[\"due\"] < day)", "label": "an instalment isn't due on its own due day", "k": "test_l1_"},
+ {"file": "loans.py", "old": "PARTS = (\"fee\", \"interest\", \"principal\")", "new": "PARTS = (\"fee\", \"principal\", \"interest\")", "label": "principal paid before interest", "k": "test_l2_"},
+ {"file": "loans.py", "old": "if loan is None or amount <= 0:", "new": "if loan is None or amount < 0:", "label": "a payment of 0 is accepted", "k": "test_l2_"},
+ {"file": "loans.py", "old": "        for i in loan[\"inst\"]:\n            for part in PARTS:", "new": "        for i in (i for i in loan[\"inst\"] if i[\"due\"] <= day):\n            for part in PARTS:", "label": "payments never go ahead to instalments not yet due", "k": "test_l2_"},
+ {"file": "loans.py", "old": "if i[\"due\"] + GRACE_DAYS < day and _left(i) > 0 and not i[\"charged\"]:", "new": "if i[\"due\"] + GRACE_DAYS <= day and _left(i) > 0 and not i[\"charged\"]:", "label": "fee charged on the last day of grace", "k": "test_l3_"},
+ {"file": "loans.py", "old": "and _left(i) > 0 and not i[\"charged\"]:", "new": "and _left(i) > 0:", "label": "an instalment is charged a fee on every run", "k": "test_l3_"},
+ {"file": "loans.py", "old": "PARTS = (\"fee\", \"interest\", \"principal\")", "new": "PARTS = (\"interest\", \"principal\", \"fee\")", "label": "fees paid last instead of first", "k": "test_l3_"},
+ {"file": "loans.py", "old": "if any(i[\"due\"] + GRACE_DAYS < day", "new": "if any(i[\"due\"] + GRACE_DAYS <= day", "label": "status is late on the last day of grace", "k": "test_l3_"},
+ {"file": "loans.py", "old": "(i[\"fee\"] + i[\"interest\"] if i[\"due\"] <= day else 0)", "new": "(i[\"fee\"] + i[\"interest\"])", "label": "payoff quote doesn't waive future interest", "k": "test_l4_"},
+ {"file": "loans.py", "old": "(i[\"fee\"] + i[\"interest\"] if i[\"due\"] <= day else 0)", "new": "(i[\"fee\"] + i[\"interest\"] if i[\"due\"] < day else 0)", "label": "interest falling due today left out of the quote", "k": "test_l4_"},
+ {"file": "loans.py", "old": "if not future or any(_left(i) != i[\"amount\"] for i in future):", "new": "if not future:", "label": "restructures a loan that was paid ahead", "k": "test_l4_"},
+ {"file": "loans.py", "old": "loan[\"inst\"] = kept + _instalments(day, rest, months, loan[\"rate\"])", "new": "loan[\"inst\"] = kept + _instalments(loan[\"inst\"][0][\"due\"] - 30, rest, months, loan[\"rate\"])", "label": "new instalments dated from the original origination day", "k": "test_l4_"}
+]

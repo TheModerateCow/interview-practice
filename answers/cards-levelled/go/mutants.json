@@ -1,0 +1,16 @@
+[
+ {"file": "cards.go", "old": "amount > s.Available(day, cardID)", "new": "amount >= s.Available(day, cardID)", "label": "a purchase of exactly the available credit is declined", "k": "test_l1_"},
+ {"file": "cards.go", "old": "amount <= 0 || amount > a.amount {", "new": "amount <= 0 || amount >= a.amount {", "label": "capturing the full authorised amount is refused", "k": "test_l1_"},
+ {"file": "cards.go", "old": "a.captured = amount", "new": "a.captured = a.amount", "label": "partial capture posts the whole authorised amount", "k": "test_l1_"},
+ {"file": "cards.go", "old": "\ta.status = \"voided\"\n", "new": "", "label": "void returns true but keeps the hold", "k": "test_l1_"},
+ {"file": "cards.go", "old": "day >= a.day+holdDays", "new": "day > a.day+holdDays", "label": "hold expires a day late", "k": "test_l2_"},
+ {"file": "cards.go", "old": "return \"\"\n\t}\n\treturn status(day, a)\n}", "new": "return \"\"\n\t}\n\treturn a.status\n}", "label": "AuthStatus never reports expired", "k": "test_l2_"},
+ {"file": "cards.go", "old": "if a.card == cardID && status(day, a) == \"open\" {\n\t\t\tout = append", "new": "if a.card == cardID && a.status == \"open\" {\n\t\t\tout = append", "label": "Holds lists expired authorisations", "k": "test_l2_"},
+ {"file": "cards.go", "old": "amount > a.captured-a.refunded", "new": "amount > a.captured", "label": "refund cap ignores earlier refunds", "k": "test_l3_"},
+ {"file": "cards.go", "old": "amount > a.captured-a.refunded", "new": "amount > a.amount-a.refunded", "label": "refund capped by the authorised amount, not the captured one", "k": "test_l3_"},
+ {"file": "cards.go", "old": "total += a.captured - a.refunded", "new": "total += a.captured", "label": "refunds don't lower the posted total", "k": "test_l3_"},
+ {"file": "cards.go", "old": "s.spent(day, cardID, category)+amount > lim", "new": "s.spent(day, cardID, category)+amount >= lim", "label": "reaching the category limit exactly is declined", "k": "test_l4_"},
+ {"file": "cards.go", "old": "\t\t\tcase \"open\":\n", "new": "\t\t\tcase \"open\", \"voided\":\n", "label": "voided authorisations still count toward the daily category spend", "k": "test_l4_"},
+ {"file": "cards.go", "old": "\t\t\t\ttotal += a.captured\n", "new": "\t\t\t\ttotal += a.amount\n", "label": "a partial capture counts its authorised amount toward the category spend", "k": "test_l4_"},
+ {"file": "cards.go", "old": "!ok || c.frozen || amount <= 0", "new": "!ok || amount <= 0", "label": "frozen cards still approve purchases", "k": "test_l4_"}
+]

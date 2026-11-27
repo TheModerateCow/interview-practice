@@ -1,0 +1,220 @@
+{
+ "module": "cards",
+ "classes": {
+  "Issuer": {
+   "init": [],
+   "methods": {
+    "issue_card": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "card_id",
+       "string"
+      ],
+      [
+       "limit",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "authorize": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "card_id",
+       "string"
+      ],
+      [
+       "category",
+       "string"
+      ],
+      [
+       "amount",
+       "int"
+      ]
+     ],
+     "returns": "string",
+     "level": 1
+    },
+    "capture": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "auth_id",
+       "string"
+      ],
+      [
+       "amount",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "void_auth": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "auth_id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "available": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "card_id",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 1
+    },
+    "holds": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "card_id",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "auth_status": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "auth_id",
+       "string"
+      ]
+     ],
+     "returns": "string",
+     "level": 2
+    },
+    "refund": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "auth_id",
+       "string"
+      ],
+      [
+       "amount",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 3
+    },
+    "balance": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "card_id",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 3
+    },
+    "statement": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "card_id",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 3
+    },
+    "set_category_limit": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "card_id",
+       "string"
+      ],
+      [
+       "category",
+       "string"
+      ],
+      [
+       "limit",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    },
+    "freeze": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "card_id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    },
+    "unfreeze": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "card_id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    }
+   }
+  }
+ }
+}

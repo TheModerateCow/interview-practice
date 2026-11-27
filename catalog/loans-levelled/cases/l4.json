@@ -1,0 +1,586 @@
+[
+ {
+  "name": "payoff_and_restructure",
+  "steps": [
+   {
+    "new": "Lender",
+    "args": []
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "car",
+     120000,
+     4,
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "pay",
+    "args": [
+     31,
+     "car",
+     31200
+    ],
+    "expect": 0
+   },
+   {
+    "call": "pay",
+    "args": [
+     50,
+     "car",
+     1000
+    ],
+    "expect": 0
+   },
+   {
+    "call": "payoff_quote",
+    "args": [
+     50,
+     "car"
+    ],
+    "expect": 90000
+   },
+   {
+    "call": "restructure",
+    "args": [
+     50,
+     "car",
+     3
+    ],
+    "expect": false
+   },
+   {
+    "call": "payoff_quote",
+    "args": [
+     61,
+     "car"
+    ],
+    "expect": 90200
+   },
+   {
+    "call": "restructure",
+    "args": [
+     62,
+     "car",
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "schedule",
+    "args": [
+     63,
+     "car"
+    ],
+    "expect": [
+     "31:31200",
+     "61:31200",
+     "92:20600",
+     "122:20600",
+     "152:20600"
+    ]
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     63,
+     "car"
+    ],
+    "expect": 30200
+   }
+  ]
+ },
+ {
+  "name": "payoff_quote_includes_due_items",
+  "steps": [
+   {
+    "new": "Lender",
+    "args": []
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "loan",
+     60000,
+     3,
+     200
+    ],
+    "expect": true
+   },
+   {
+    "call": "payoff_quote",
+    "args": [
+     2,
+     "nope"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "payoff_quote",
+    "args": [
+     30,
+     "loan"
+    ],
+    "expect": 60000
+   },
+   {
+    "call": "payoff_quote",
+    "args": [
+     31,
+     "loan"
+    ],
+    "expect": 61200
+   },
+   {
+    "call": "charge_late_fees",
+    "args": [
+     45
+    ],
+    "expect": 1
+   },
+   {
+    "call": "payoff_quote",
+    "args": [
+     45,
+     "loan"
+    ],
+    "expect": 63700
+   },
+   {
+    "call": "pay",
+    "args": [
+     46,
+     "loan",
+     500
+    ],
+    "expect": 0
+   },
+   {
+    "call": "payoff_quote",
+    "args": [
+     46,
+     "loan"
+    ],
+    "expect": 63200
+   },
+   {
+    "call": "payoff_quote",
+    "args": [
+     61,
+     "loan"
+    ],
+    "expect": 64400
+   },
+   {
+    "call": "owed",
+    "args": [
+     61,
+     "loan"
+    ],
+    "expect": 65600
+   },
+   {
+    "call": "pay",
+    "args": [
+     62,
+     "loan",
+     70000
+    ],
+    "expect": 4400
+   },
+   {
+    "call": "payoff_quote",
+    "args": [
+     63,
+     "loan"
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "restructure_rejections",
+  "steps": [
+   {
+    "new": "Lender",
+    "args": []
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "loan",
+     30000,
+     3,
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "restructure",
+    "args": [
+     2,
+     "nope",
+     3
+    ],
+    "expect": false
+   },
+   {
+    "call": "restructure",
+    "args": [
+     3,
+     "loan",
+     0
+    ],
+    "expect": false
+   },
+   {
+    "call": "restructure",
+    "args": [
+     4,
+     "loan",
+     -2
+    ],
+    "expect": false
+   },
+   {
+    "call": "pay",
+    "args": [
+     5,
+     "loan",
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "restructure",
+    "args": [
+     6,
+     "loan",
+     3
+    ],
+    "expect": false
+   },
+   {
+    "call": "schedule",
+    "args": [
+     7,
+     "loan"
+    ],
+    "expect": [
+     "31:10300",
+     "61:10300",
+     "91:10300"
+    ]
+   },
+   {
+    "call": "originate",
+    "args": [
+     8,
+     "done",
+     20000,
+     2,
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "originate",
+    "args": [
+     9,
+     "paid",
+     20000,
+     2,
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "pay",
+    "args": [
+     10,
+     "paid",
+     20000
+    ],
+    "expect": 0
+   },
+   {
+    "call": "restructure",
+    "args": [
+     11,
+     "paid",
+     2
+    ],
+    "expect": false
+   },
+   {
+    "call": "status",
+    "args": [
+     11,
+     "paid"
+    ],
+    "expect": "paid_off"
+   },
+   {
+    "call": "restructure",
+    "args": [
+     68,
+     "done",
+     2
+    ],
+    "expect": false
+   },
+   {
+    "call": "schedule",
+    "args": [
+     69,
+     "done"
+    ],
+    "expect": [
+     "38:10000",
+     "68:10000"
+    ]
+   },
+   {
+    "call": "restructure",
+    "args": [
+     69,
+     "done",
+     2
+    ],
+    "expect": false
+   }
+  ]
+ },
+ {
+  "name": "restructure_keeps_arrears",
+  "steps": [
+   {
+    "new": "Lender",
+    "args": []
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "loan",
+     90150,
+     3,
+     50
+    ],
+    "expect": true
+   },
+   {
+    "call": "schedule",
+    "args": [
+     2,
+     "loan"
+    ],
+    "expect": [
+     "31:30501",
+     "61:30501",
+     "91:30501"
+    ]
+   },
+   {
+    "call": "charge_late_fees",
+    "args": [
+     42
+    ],
+    "expect": 1
+   },
+   {
+    "call": "restructure",
+    "args": [
+     50,
+     "loan",
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "schedule",
+    "args": [
+     51,
+     "loan"
+    ],
+    "expect": [
+     "31:30501",
+     "80:20334",
+     "110:20334",
+     "140:20335"
+    ]
+   },
+   {
+    "call": "principal_left",
+    "args": [
+     51,
+     "loan"
+    ],
+    "expect": 90150
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     51,
+     "loan"
+    ],
+    "expect": 33001
+   },
+   {
+    "call": "status",
+    "args": [
+     51,
+     "loan"
+    ],
+    "expect": "late"
+   },
+   {
+    "call": "owed",
+    "args": [
+     51,
+     "loan"
+    ],
+    "expect": 94004
+   },
+   {
+    "call": "payoff_quote",
+    "args": [
+     51,
+     "loan"
+    ],
+    "expect": 93101
+   }
+  ]
+ },
+ {
+  "name": "restructured_schedule_takes_payments_and_fees",
+  "steps": [
+   {
+    "new": "Lender",
+    "args": []
+   },
+   {
+    "call": "originate",
+    "args": [
+     1,
+     "loan",
+     60000,
+     2,
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "restructure",
+    "args": [
+     10,
+     "loan",
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "schedule",
+    "args": [
+     11,
+     "loan"
+    ],
+    "expect": [
+     "40:15600",
+     "70:15600",
+     "100:15600",
+     "130:15600"
+    ]
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     40,
+     "loan"
+    ],
+    "expect": 15600
+   },
+   {
+    "call": "pay",
+    "args": [
+     40,
+     "loan",
+     15150
+    ],
+    "expect": 0
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     41,
+     "loan"
+    ],
+    "expect": 450
+   },
+   {
+    "call": "charge_late_fees",
+    "args": [
+     81
+    ],
+    "expect": 2
+   },
+   {
+    "call": "charge_late_fees",
+    "args": [
+     82
+    ],
+    "expect": 0
+   },
+   {
+    "call": "amount_due",
+    "args": [
+     82,
+     "loan"
+    ],
+    "expect": 21050
+   },
+   {
+    "call": "restructure",
+    "args": [
+     83,
+     "loan",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "schedule",
+    "args": [
+     84,
+     "loan"
+    ],
+    "expect": [
+     "40:15600",
+     "70:15600",
+     "113:30300"
+    ]
+   },
+   {
+    "call": "owed",
+    "args": [
+     84,
+     "loan"
+    ],
+    "expect": 51350
+   },
+   {
+    "call": "status",
+    "args": [
+     84,
+     "loan"
+    ],
+    "expect": "late"
+   }
+  ]
+ }
+]

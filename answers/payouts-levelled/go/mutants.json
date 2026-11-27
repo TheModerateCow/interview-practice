@@ -1,0 +1,15 @@
+[
+ {"file":"payouts.go","old":"return (amount*bps + 5000) / 10000","new":"return amount * bps / 10000","label":"fee rounds down instead of half up","k":"test_l1_"},
+ {"file":"payouts.go","old":"feeBps < 0 || feeBps > 10000","new":"feeBps < 0 || feeBps >= 10000","label":"a 10000 bps merchant is rejected","k":"test_l1_"},
+ {"file":"payouts.go","old":"if !ok || amount <= 0 {\n\t\treturn \"\"","new":"if !ok || amount < 0 {\n\t\treturn \"\"","label":"a sale of 0 is accepted and uses an id","k":"test_l1_"},
+ {"file":"payouts.go","old":"debit := amount - (s.fee - newFee)","new":"debit := amount","label":"refund keeps the platform's fee","k":"test_l2_"},
+ {"file":"payouts.go","old":"\ts.fee = newFee\n","new":"","label":"sale's fee not updated after a refund","k":"test_l2_"},
+ {"file":"payouts.go","old":"amount > s.amount-s.refunded","new":"amount > s.amount","label":"refund limit ignores earlier refunds","k":"test_l2_"},
+ {"file":"payouts.go","old":"if e.settle <= day {","new":"if e.settle < day {","label":"sale settles a day late","k":"test_l3_"},
+ {"file":"payouts.go","old":"a > 0 {","new":"a != 0 {","label":"negative available paid out as a negative payout","k":"test_l3_"},
+ {"file":"payouts.go","old":"\t\t\tpost(m, day, \"payout\", -a)\n","new":"","label":"payout not debited from the balance","k":"test_l3_"},
+ {"file":"payouts.go","old":"reserve := fee(net, m.reserveBps)","new":"reserve := fee(amount, m.reserveBps)","label":"reserve taken on the gross amount, not the net","k":"test_l4_"},
+ {"file":"payouts.go","old":"e.reserve && e.settle > day","new":"e.reserve && e.settle >= day","label":"reserve still counted as held on its release day","k":"test_l4_"},
+ {"file":"payouts.go","old":"debit := s.amount - s.refunded + chargebackFee","new":"debit := s.amount + chargebackFee","label":"chargeback ignores earlier refunds","k":"test_l4_"},
+ {"file":"payouts.go","old":"if !ok || s.chargedBack || amount <= 0","new":"if !ok || amount <= 0","label":"refund allowed after a chargeback","k":"test_l4_"}
+]

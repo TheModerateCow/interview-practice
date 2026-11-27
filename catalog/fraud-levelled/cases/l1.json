@@ -1,0 +1,515 @@
+[
+ {
+  "name": "blocklist_example",
+  "steps": [
+   {
+    "new": "RiskScreen",
+    "args": []
+   },
+   {
+    "call": "block",
+    "args": [
+     1,
+     "card",
+     "4111"
+    ],
+    "expect": true
+   },
+   {
+    "call": "block",
+    "args": [
+     2,
+     "card",
+     "4111"
+    ],
+    "expect": false
+   },
+   {
+    "call": "block",
+    "args": [
+     3,
+     "bank",
+     "b-1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "screen",
+    "args": [
+     4,
+     "t1",
+     "4111",
+     "m-shoes",
+     2500,
+     "GB"
+    ],
+    "expect": "decline"
+   },
+   {
+    "call": "screen",
+    "args": [
+     5,
+     "t2",
+     "5500",
+     "m-shoes",
+     2500,
+     "GB"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "block",
+    "args": [
+     6,
+     "country",
+     "ZZ"
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     7,
+     "t3",
+     "5500",
+     "m-books",
+     900,
+     "ZZ"
+    ],
+    "expect": "decline"
+   },
+   {
+    "call": "unblock",
+    "args": [
+     8,
+     "card",
+     "4111"
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     9,
+     "t4",
+     "4111",
+     "m-books",
+     1200,
+     "GB"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "decision",
+    "args": [
+     10,
+     "t1"
+    ],
+    "expect": "decline"
+   },
+   {
+    "call": "screen",
+    "args": [
+     11,
+     "t4",
+     "5500",
+     "m-books",
+     1200,
+     "GB"
+    ],
+    "expect": ""
+   }
+  ]
+ },
+ {
+  "name": "kinds_are_separate",
+  "steps": [
+   {
+    "new": "RiskScreen",
+    "args": []
+   },
+   {
+    "call": "block",
+    "args": [
+     1,
+     "merchant",
+     "x1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     2,
+     "t1",
+     "x1",
+     "m-shoes",
+     500,
+     "GB"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "screen",
+    "args": [
+     3,
+     "t2",
+     "4111",
+     "m-shoes",
+     500,
+     "x1"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "screen",
+    "args": [
+     4,
+     "t3",
+     "4111",
+     "x1",
+     500,
+     "GB"
+    ],
+    "expect": "decline"
+   },
+   {
+    "call": "block",
+    "args": [
+     5,
+     "card",
+     "x1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "unblock",
+    "args": [
+     6,
+     "country",
+     "x1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "unblock",
+    "args": [
+     7,
+     "merchant",
+     "x1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     8,
+     "t4",
+     "4111",
+     "x1",
+     500,
+     "GB"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "screen",
+    "args": [
+     9,
+     "t5",
+     "x1",
+     "m-shoes",
+     500,
+     "GB"
+    ],
+    "expect": "decline"
+   }
+  ]
+ },
+ {
+  "name": "screen_rejects",
+  "steps": [
+   {
+    "new": "RiskScreen",
+    "args": []
+   },
+   {
+    "call": "screen",
+    "args": [
+     1,
+     "t1",
+     "4111",
+     "m-shoes",
+     0,
+     "GB"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "screen",
+    "args": [
+     2,
+     "t1",
+     "4111",
+     "m-shoes",
+     -300,
+     "GB"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "decision",
+    "args": [
+     3,
+     "t1"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "screen",
+    "args": [
+     4,
+     "t1",
+     "4111",
+     "m-shoes",
+     1,
+     "GB"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "block",
+    "args": [
+     5,
+     "card",
+     "4111"
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     6,
+     "t1",
+     "4111",
+     "m-shoes",
+     700,
+     "GB"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "decision",
+    "args": [
+     7,
+     "t1"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "decision",
+    "args": [
+     8,
+     "t9"
+    ],
+    "expect": ""
+   }
+  ]
+ },
+ {
+  "name": "unblock_rules",
+  "steps": [
+   {
+    "new": "RiskScreen",
+    "args": []
+   },
+   {
+    "call": "unblock",
+    "args": [
+     1,
+     "card",
+     "4111"
+    ],
+    "expect": false
+   },
+   {
+    "call": "block",
+    "args": [
+     2,
+     "country",
+     "ZZ"
+    ],
+    "expect": true
+   },
+   {
+    "call": "unblock",
+    "args": [
+     3,
+     "country",
+     "zz"
+    ],
+    "expect": false
+   },
+   {
+    "call": "unblock",
+    "args": [
+     4,
+     "country",
+     "ZZ"
+    ],
+    "expect": true
+   },
+   {
+    "call": "unblock",
+    "args": [
+     5,
+     "country",
+     "ZZ"
+    ],
+    "expect": false
+   },
+   {
+    "call": "unblock",
+    "args": [
+     6,
+     "bank",
+     "ZZ"
+    ],
+    "expect": false
+   },
+   {
+    "call": "block",
+    "args": [
+     7,
+     "country",
+     "ZZ"
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     8,
+     "t1",
+     "4111",
+     "m-shoes",
+     100,
+     "ZZ"
+    ],
+    "expect": "decline"
+   },
+   {
+    "call": "screen",
+    "args": [
+     9,
+     "t2",
+     "4111",
+     "m-shoes",
+     100,
+     "zz"
+    ],
+    "expect": "approve"
+   }
+  ]
+ },
+ {
+  "name": "decisions_are_kept",
+  "steps": [
+   {
+    "new": "RiskScreen",
+    "args": []
+   },
+   {
+    "call": "block",
+    "args": [
+     1,
+     "merchant",
+     "m-casino"
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     2,
+     "t1",
+     "4111",
+     "m-casino",
+     5000,
+     "GB"
+    ],
+    "expect": "decline"
+   },
+   {
+    "call": "screen",
+    "args": [
+     3,
+     "t2",
+     "4111",
+     "m-shoes",
+     5000,
+     "GB"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "unblock",
+    "args": [
+     4,
+     "merchant",
+     "m-casino"
+    ],
+    "expect": true
+   },
+   {
+    "call": "block",
+    "args": [
+     5,
+     "card",
+     "4111"
+    ],
+    "expect": true
+   },
+   {
+    "call": "decision",
+    "args": [
+     6,
+     "t1"
+    ],
+    "expect": "decline"
+   },
+   {
+    "call": "decision",
+    "args": [
+     7,
+     "t2"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "screen",
+    "args": [
+     8,
+     "t3",
+     "4111",
+     "m-casino",
+     5000,
+     "GB"
+    ],
+    "expect": "decline"
+   },
+   {
+    "call": "screen",
+    "args": [
+     9,
+     "t4",
+     "5500",
+     "m-casino",
+     5000,
+     "GB"
+    ],
+    "expect": "approve"
+   }
+  ]
+ }
+]

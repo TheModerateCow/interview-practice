@@ -1,0 +1,716 @@
+[
+ {
+  "name": "priority_example",
+  "steps": [
+   {
+    "new": "RiskScreen",
+    "args": []
+   },
+   {
+    "call": "block",
+    "args": [
+     1,
+     "merchant",
+     "m-casino"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_velocity_rule",
+    "args": [
+     2,
+     "v-count",
+     "count",
+     1,
+     600
+    ],
+    "expect": true
+   },
+   {
+    "call": "allow",
+    "args": [
+     3,
+     "card",
+     "4111",
+     5
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     10,
+     "t1",
+     "4111",
+     "m-casino",
+     1000,
+     "GB"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "explain",
+    "args": [
+     11,
+     "t1"
+    ],
+    "expect": "allow:card:4111"
+   },
+   {
+    "call": "set_priority",
+    "args": [
+     12,
+     "block:merchant:m-casino",
+     9
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     13,
+     "t2",
+     "4111",
+     "m-casino",
+     1000,
+     "GB"
+    ],
+    "expect": "decline"
+   },
+   {
+    "call": "explain",
+    "args": [
+     14,
+     "t2"
+    ],
+    "expect": "block:merchant:m-casino"
+   },
+   {
+    "call": "screen",
+    "args": [
+     15,
+     "t3",
+     "5500",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "screen",
+    "args": [
+     16,
+     "t4",
+     "5500",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "review"
+   },
+   {
+    "call": "explain",
+    "args": [
+     17,
+     "t3"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "explain",
+    "args": [
+     18,
+     "t4"
+    ],
+    "expect": "v-count"
+   }
+  ]
+ },
+ {
+  "name": "ties_go_to_the_stricter_outcome",
+  "steps": [
+   {
+    "new": "RiskScreen",
+    "args": []
+   },
+   {
+    "call": "allow",
+    "args": [
+     1,
+     "merchant",
+     "m-shoes",
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     2,
+     "t1",
+     "4111",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "explain",
+    "args": [
+     3,
+     "t1"
+    ],
+    "expect": "allow:merchant:m-shoes"
+   },
+   {
+    "call": "block",
+    "args": [
+     4,
+     "card",
+     "4111"
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     5,
+     "t2",
+     "4111",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "decline"
+   },
+   {
+    "call": "explain",
+    "args": [
+     6,
+     "t2"
+    ],
+    "expect": "block:card:4111"
+   },
+   {
+    "call": "add_velocity_rule",
+    "args": [
+     7,
+     "v1",
+     "count",
+     1,
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     8,
+     "t3",
+     "5500",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "screen",
+    "args": [
+     9,
+     "t4",
+     "5500",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "review"
+   },
+   {
+    "call": "explain",
+    "args": [
+     10,
+     "t4"
+    ],
+    "expect": "v1"
+   },
+   {
+    "call": "set_priority",
+    "args": [
+     11,
+     "allow:merchant:m-shoes",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     12,
+     "t5",
+     "5500",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "screen",
+    "args": [
+     13,
+     "t6",
+     "4111",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "explain",
+    "args": [
+     14,
+     "t6"
+    ],
+    "expect": "allow:merchant:m-shoes"
+   }
+  ]
+ },
+ {
+  "name": "same_priority_same_outcome_by_name",
+  "steps": [
+   {
+    "new": "RiskScreen",
+    "args": []
+   },
+   {
+    "call": "add_velocity_rule",
+    "args": [
+     1,
+     "v2",
+     "count",
+     1,
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_velocity_rule",
+    "args": [
+     2,
+     "v1",
+     "amount",
+     100,
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     10,
+     "t1",
+     "4111",
+     "m-shoes",
+     60,
+     "GB"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "screen",
+    "args": [
+     20,
+     "t2",
+     "4111",
+     "m-shoes",
+     60,
+     "GB"
+    ],
+    "expect": "review"
+   },
+   {
+    "call": "explain",
+    "args": [
+     21,
+     "t2"
+    ],
+    "expect": "v1"
+   },
+   {
+    "call": "set_priority",
+    "args": [
+     22,
+     "v2",
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     30,
+     "t3",
+     "4111",
+     "m-shoes",
+     60,
+     "GB"
+    ],
+    "expect": "review"
+   },
+   {
+    "call": "explain",
+    "args": [
+     31,
+     "t3"
+    ],
+    "expect": "v2"
+   },
+   {
+    "call": "block",
+    "args": [
+     40,
+     "country",
+     "GB"
+    ],
+    "expect": true
+   },
+   {
+    "call": "block",
+    "args": [
+     41,
+     "card",
+     "5500"
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     42,
+     "t4",
+     "5500",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "decline"
+   },
+   {
+    "call": "explain",
+    "args": [
+     43,
+     "t4"
+    ],
+    "expect": "block:card:5500"
+   }
+  ]
+ },
+ {
+  "name": "allow_and_set_priority_rules",
+  "steps": [
+   {
+    "new": "RiskScreen",
+    "args": []
+   },
+   {
+    "call": "allow",
+    "args": [
+     1,
+     "bank",
+     "b-1",
+     5
+    ],
+    "expect": false
+   },
+   {
+    "call": "allow",
+    "args": [
+     2,
+     "card",
+     "4111",
+     5
+    ],
+    "expect": true
+   },
+   {
+    "call": "allow",
+    "args": [
+     3,
+     "card",
+     "4111",
+     9
+    ],
+    "expect": false
+   },
+   {
+    "call": "allow",
+    "args": [
+     4,
+     "country",
+     "GB",
+     -2
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_priority",
+    "args": [
+     5,
+     "block:card:4111",
+     3
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_priority",
+    "args": [
+     6,
+     "v1",
+     3
+    ],
+    "expect": false
+   },
+   {
+    "call": "block",
+    "args": [
+     7,
+     "card",
+     "4111"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_priority",
+    "args": [
+     8,
+     "block:card:4111",
+     7
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     9,
+     "t1",
+     "4111",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "decline"
+   },
+   {
+    "call": "explain",
+    "args": [
+     10,
+     "t1"
+    ],
+    "expect": "block:card:4111"
+   },
+   {
+    "call": "unblock",
+    "args": [
+     11,
+     "card",
+     "4111"
+    ],
+    "expect": true
+   },
+   {
+    "call": "block",
+    "args": [
+     12,
+     "card",
+     "4111"
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     13,
+     "t2",
+     "4111",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "explain",
+    "args": [
+     14,
+     "t2"
+    ],
+    "expect": "allow:card:4111"
+   },
+   {
+    "call": "explain",
+    "args": [
+     15,
+     "t9"
+    ],
+    "expect": ""
+   }
+  ]
+ },
+ {
+  "name": "explain_is_fixed_at_screen_time",
+  "steps": [
+   {
+    "new": "RiskScreen",
+    "args": []
+   },
+   {
+    "call": "block",
+    "args": [
+     1,
+     "merchant",
+     "m-casino"
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     2,
+     "t1",
+     "4111",
+     "m-casino",
+     1000,
+     "GB"
+    ],
+    "expect": "decline"
+   },
+   {
+    "call": "unblock",
+    "args": [
+     3,
+     "merchant",
+     "m-casino"
+    ],
+    "expect": true
+   },
+   {
+    "call": "explain",
+    "args": [
+     4,
+     "t1"
+    ],
+    "expect": "block:merchant:m-casino"
+   },
+   {
+    "call": "add_velocity_rule",
+    "args": [
+     5,
+     "v1",
+     "count",
+     1,
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "allow",
+    "args": [
+     6,
+     "country",
+     "GB",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     7,
+     "t2",
+     "5500",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "screen",
+    "args": [
+     8,
+     "t3",
+     "5500",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "approve"
+   },
+   {
+    "call": "explain",
+    "args": [
+     9,
+     "t3"
+    ],
+    "expect": "allow:country:GB"
+   },
+   {
+    "call": "set_priority",
+    "args": [
+     10,
+     "v1",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "screen",
+    "args": [
+     11,
+     "t4",
+     "5500",
+     "m-shoes",
+     1000,
+     "GB"
+    ],
+    "expect": "review"
+   },
+   {
+    "call": "explain",
+    "args": [
+     12,
+     "t4"
+    ],
+    "expect": "v1"
+   },
+   {
+    "call": "remove_rule",
+    "args": [
+     13,
+     "v1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "explain",
+    "args": [
+     14,
+     "t4"
+    ],
+    "expect": "v1"
+   },
+   {
+    "call": "remove_rule",
+    "args": [
+     15,
+     "allow:country:GB"
+    ],
+    "expect": false
+   }
+  ]
+ }
+]

@@ -1,0 +1,536 @@
+[
+ {
+  "name": "wallet_basics",
+  "steps": [
+   {
+    "new": "Wallets",
+    "args": []
+   },
+   {
+    "call": "open_wallet",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "open_wallet",
+    "args": [
+     2,
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "deposit",
+    "args": [
+     3,
+     "ana",
+     "USD",
+     5000
+    ],
+    "expect": 5000
+   },
+   {
+    "call": "deposit",
+    "args": [
+     4,
+     "ana",
+     "EUR",
+     1200
+    ],
+    "expect": 1200
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     5,
+     "ana",
+     "USD",
+     1500
+    ],
+    "expect": 3500
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     6,
+     "ana",
+     "EUR",
+     2000
+    ],
+    "expect": -1
+   },
+   {
+    "call": "balance",
+    "args": [
+     7,
+     "ana",
+     "GBP"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "holdings",
+    "args": [
+     8,
+     "ana"
+    ],
+    "expect": [
+     "EUR:1200",
+     "USD:3500"
+    ]
+   },
+   {
+    "call": "balance",
+    "args": [
+     9,
+     "bob",
+     "USD"
+    ],
+    "expect": -1
+   }
+  ]
+ },
+ {
+  "name": "currency_codes",
+  "steps": [
+   {
+    "new": "Wallets",
+    "args": []
+   },
+   {
+    "call": "open_wallet",
+    "args": [
+     1,
+     "w"
+    ],
+    "expect": true
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "w",
+     "usd",
+     100
+    ],
+    "expect": -1
+   },
+   {
+    "call": "deposit",
+    "args": [
+     3,
+     "w",
+     "US",
+     100
+    ],
+    "expect": -1
+   },
+   {
+    "call": "deposit",
+    "args": [
+     4,
+     "w",
+     "USDT",
+     100
+    ],
+    "expect": -1
+   },
+   {
+    "call": "deposit",
+    "args": [
+     5,
+     "w",
+     "U5D",
+     100
+    ],
+    "expect": -1
+   },
+   {
+    "call": "deposit",
+    "args": [
+     6,
+     "w",
+     "",
+     100
+    ],
+    "expect": -1
+   },
+   {
+    "call": "deposit",
+    "args": [
+     7,
+     "w",
+     "JPY",
+     100
+    ],
+    "expect": 100
+   },
+   {
+    "call": "holdings",
+    "args": [
+     8,
+     "w"
+    ],
+    "expect": [
+     "JPY:100"
+    ]
+   },
+   {
+    "call": "balance",
+    "args": [
+     9,
+     "w",
+     "usd"
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "withdraw_to_zero",
+  "steps": [
+   {
+    "new": "Wallets",
+    "args": []
+   },
+   {
+    "call": "open_wallet",
+    "args": [
+     1,
+     "w"
+    ],
+    "expect": true
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "w",
+     "USD",
+     100
+    ],
+    "expect": 100
+   },
+   {
+    "call": "deposit",
+    "args": [
+     3,
+     "w",
+     "CHF",
+     40
+    ],
+    "expect": 40
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     4,
+     "w",
+     "USD",
+     100
+    ],
+    "expect": 0
+   },
+   {
+    "call": "holdings",
+    "args": [
+     5,
+     "w"
+    ],
+    "expect": [
+     "CHF:40"
+    ]
+   },
+   {
+    "call": "balance",
+    "args": [
+     6,
+     "w",
+     "USD"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     7,
+     "w",
+     "USD",
+     1
+    ],
+    "expect": -1
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     8,
+     "w",
+     "GBP",
+     1
+    ],
+    "expect": -1
+   },
+   {
+    "call": "deposit",
+    "args": [
+     9,
+     "w",
+     "USD",
+     7
+    ],
+    "expect": 7
+   },
+   {
+    "call": "holdings",
+    "args": [
+     10,
+     "w"
+    ],
+    "expect": [
+     "CHF:40",
+     "USD:7"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "bad_amounts_and_unknown_wallets",
+  "steps": [
+   {
+    "new": "Wallets",
+    "args": []
+   },
+   {
+    "call": "open_wallet",
+    "args": [
+     1,
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "deposit",
+    "args": [
+     2,
+     "ana",
+     "USD",
+     0
+    ],
+    "expect": -1
+   },
+   {
+    "call": "deposit",
+    "args": [
+     3,
+     "ana",
+     "USD",
+     -5
+    ],
+    "expect": -1
+   },
+   {
+    "call": "deposit",
+    "args": [
+     4,
+     "ana",
+     "USD",
+     30
+    ],
+    "expect": 30
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     5,
+     "ana",
+     "USD",
+     0
+    ],
+    "expect": -1
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     6,
+     "ana",
+     "USD",
+     -1
+    ],
+    "expect": -1
+   },
+   {
+    "call": "deposit",
+    "args": [
+     7,
+     "Ana",
+     "USD",
+     10
+    ],
+    "expect": -1
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     8,
+     "Ana",
+     "USD",
+     10
+    ],
+    "expect": -1
+   },
+   {
+    "call": "holdings",
+    "args": [
+     9,
+     "Ana"
+    ],
+    "expect": []
+   },
+   {
+    "call": "open_wallet",
+    "args": [
+     10,
+     "Ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "balance",
+    "args": [
+     11,
+     "Ana",
+     "USD"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "balance",
+    "args": [
+     12,
+     "ana",
+     "USD"
+    ],
+    "expect": 30
+   }
+  ]
+ },
+ {
+  "name": "wallets_are_separate",
+  "steps": [
+   {
+    "new": "Wallets",
+    "args": []
+   },
+   {
+    "call": "open_wallet",
+    "args": [
+     1,
+     "a"
+    ],
+    "expect": true
+   },
+   {
+    "call": "open_wallet",
+    "args": [
+     2,
+     "b"
+    ],
+    "expect": true
+   },
+   {
+    "call": "deposit",
+    "args": [
+     3,
+     "a",
+     "USD",
+     500
+    ],
+    "expect": 500
+   },
+   {
+    "call": "deposit",
+    "args": [
+     4,
+     "a",
+     "CHF",
+     70
+    ],
+    "expect": 70
+   },
+   {
+    "call": "deposit",
+    "args": [
+     5,
+     "a",
+     "AUD",
+     9
+    ],
+    "expect": 9
+   },
+   {
+    "call": "deposit",
+    "args": [
+     6,
+     "a",
+     "USD",
+     250
+    ],
+    "expect": 750
+   },
+   {
+    "call": "deposit",
+    "args": [
+     7,
+     "b",
+     "USD",
+     1
+    ],
+    "expect": 1
+   },
+   {
+    "call": "holdings",
+    "args": [
+     8,
+     "a"
+    ],
+    "expect": [
+     "AUD:9",
+     "CHF:70",
+     "USD:750"
+    ]
+   },
+   {
+    "call": "holdings",
+    "args": [
+     9,
+     "b"
+    ],
+    "expect": [
+     "USD:1"
+    ]
+   },
+   {
+    "call": "withdraw",
+    "args": [
+     10,
+     "b",
+     "USD",
+     2
+    ],
+    "expect": -1
+   },
+   {
+    "call": "balance",
+    "args": [
+     11,
+     "a",
+     "USD"
+    ],
+    "expect": 750
+   }
+  ]
+ }
+]
