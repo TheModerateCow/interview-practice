@@ -12,7 +12,7 @@
 
 Any `ui/` change that adds or restyles a screen, component or on-screen text is built to the design system in [`design/system/project/`](design/system/project/).
 - Read its [`README.md`](design/system/project/README.md) (copy, color, type, layout, states, motion) before building, and build to every rule in it.
-- Reuse a component from [`components/`](design/system/project/components/) whenever one fits; each folder's `README.md` gives its usage.
+- Reuse a component from [`components/`](design/system/project/components/) whenever one fits; each folder's `preview.html` shows it and its `README.md` gives usage.
 - Style only with the role tokens in `ui/src/styles/tokens.css`: colors, the `s-*` 4px spacing grid, `r-*` radii, `dur`/`dur-slow`, `--font-sans`/`--font-mono`.
 - A pattern the system doesn't cover yet joins the system in the same PR: a rule in its README and a component folder. After changing `ui/src/styles/tokens.css` or `style.css`, run `tools/design-bundle.sh`.
 
