@@ -1,0 +1,148 @@
+{
+ "module": "book",
+ "java_class": "OrderBook",
+ "records": {},
+ "functions": {},
+ "classes": {
+  "OrderBook": {
+   "init": [],
+   "methods": {
+    "add_order": {
+     "params": [
+      [
+       "order_id",
+       "string"
+      ],
+      [
+       "price",
+       "int"
+      ],
+      [
+       "qty",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "cancel_order": {
+     "params": [
+      [
+       "order_id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "best_ask": {
+     "params": [],
+     "returns": "optional<int>",
+     "level": 1
+    },
+    "depth_at": {
+     "params": [
+      [
+       "price",
+       "int"
+      ]
+     ],
+     "returns": "long",
+     "level": 1
+    },
+    "amend_order": {
+     "params": [
+      [
+       "order_id",
+       "string"
+      ],
+      [
+       "qty",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 2
+    },
+    "queue_at": {
+     "params": [
+      [
+       "price",
+       "int"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "top_levels": {
+     "params": [
+      [
+       "n",
+       "int"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "quote_buy": {
+     "params": [
+      [
+       "qty",
+       "long"
+      ]
+     ],
+     "returns": "optional<long>",
+     "level": 3
+    },
+    "market_buy": {
+     "params": [
+      [
+       "qty",
+       "long"
+      ]
+     ],
+     "returns": "long",
+     "level": 3
+    },
+    "submit": {
+     "params": [
+      [
+       "order_id",
+       "string"
+      ],
+      [
+       "side",
+       "string"
+      ],
+      [
+       "price",
+       "int"
+      ],
+      [
+       "qty",
+       "int"
+      ]
+     ],
+     "returns": "optional<int>",
+     "level": 4
+    },
+    "best_bid": {
+     "params": [],
+     "returns": "optional<int>",
+     "level": 4
+    },
+    "order_status": {
+     "params": [
+      [
+       "order_id",
+       "string"
+      ]
+     ],
+     "returns": "string",
+     "level": 4
+    }
+   }
+  }
+ },
+ "errors": []
+}

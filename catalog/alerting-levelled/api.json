@@ -1,0 +1,200 @@
+{
+ "module": "slo",
+ "java_class": "SloMonitor",
+ "records": {},
+ "functions": {},
+ "classes": {
+  "SloMonitor": {
+   "init": [],
+   "methods": {
+    "add_service": {
+     "params": [
+      [
+       "service",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "ingest": {
+     "params": [
+      [
+       "service",
+       "string"
+      ],
+      [
+       "first_minute",
+       "int"
+      ],
+      [
+       "requests",
+       "list<int>"
+      ],
+      [
+       "errors",
+       "list<int>"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "error_rate": {
+     "params": [
+      [
+       "service",
+       "string"
+      ],
+      [
+       "start",
+       "int"
+      ],
+      [
+       "end",
+       "int"
+      ]
+     ],
+     "returns": "optional<int>",
+     "level": 1
+    },
+    "latest_minute": {
+     "params": [
+      [
+       "service",
+       "string"
+      ]
+     ],
+     "returns": "optional<int>",
+     "level": 1
+    },
+    "set_budget": {
+     "params": [
+      [
+       "service",
+       "string"
+      ],
+      [
+       "budget_ppm",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 2
+    },
+    "budget_left": {
+     "params": [
+      [
+       "service",
+       "string"
+      ],
+      [
+       "start",
+       "int"
+      ],
+      [
+       "end",
+       "int"
+      ]
+     ],
+     "returns": "optional<long>",
+     "level": 2
+    },
+    "over_budget": {
+     "params": [
+      [
+       "end",
+       "int"
+      ],
+      [
+       "window",
+       "int"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "longest_within_budget": {
+     "params": [
+      [
+       "service",
+       "string"
+      ],
+      [
+       "start",
+       "int"
+      ],
+      [
+       "end",
+       "int"
+      ]
+     ],
+     "returns": "optional<string>",
+     "level": 3
+    },
+    "amend": {
+     "params": [
+      [
+       "service",
+       "string"
+      ],
+      [
+       "minute",
+       "int"
+      ],
+      [
+       "requests",
+       "int"
+      ],
+      [
+       "errors",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    },
+    "set_alert": {
+     "params": [
+      [
+       "service",
+       "string"
+      ],
+      [
+       "long_window",
+       "int"
+      ],
+      [
+       "short_window",
+       "int"
+      ],
+      [
+       "burn",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    },
+    "alert_timeline": {
+     "params": [
+      [
+       "service",
+       "string"
+      ],
+      [
+       "start",
+       "int"
+      ],
+      [
+       "end",
+       "int"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 4
+    }
+   }
+  }
+ },
+ "errors": []
+}

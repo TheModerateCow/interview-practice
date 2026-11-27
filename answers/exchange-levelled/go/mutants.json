@@ -1,0 +1,22 @@
+[
+ {"file": "book.go", "old": "\tif _, ok := b.orders[orderID]; ok {\n\t\treturn 0, false", "new": "\tif o, ok := b.orders[orderID]; ok && o.state == \"open\" {\n\t\treturn 0, false", "label": "ids of orders that are gone can be used again", "k": "test_l1_"},
+ {"file": "book.go", "old": "if !ok || o.state != \"open\" {\n\t\treturn nil", "new": "if !ok {\n\t\treturn nil", "label": "cancelling an order that is gone succeeds again", "k": "test_l1_"},
+ {"file": "book.go", "old": "\to.elem = lv.q.PushBack(o)\n\tlv.shares += o.left", "new": "\to.elem = lv.q.PushBack(o)\n\tlv.shares = o.left", "label": "a new order at a price replaces that price's depth", "k": "test_l1_"},
+ {"file": "book.go", "old": "\tif lv.q.Len() == 0 {\n\t\ts.drop(o.price)", "new": "\tif lv.q.Len() == 0 && false {\n\t\ts.drop(o.price)", "label": "an emptied price level stays as the best ask", "k": "test_l1_"},
+ {"file": "book.go", "old": "if qty > o.left { // more shares: back of the queue", "new": "if qty >= o.left { // more shares: back of the queue", "label": "amending to the same size loses the order's place", "k": "test_l2_"},
+ {"file": "book.go", "old": "if qty > o.left { // more shares: back of the queue", "new": "if qty < o.left { // more shares: back of the queue", "label": "smaller orders go to the back instead of bigger ones", "k": "test_l2_"},
+ {"file": "book.go", "old": "\t\ts.levels[o.price].shares -= o.left - qty\n", "new": "", "label": "shrinking an order leaves the level's depth unchanged", "k": "test_l2_"},
+ {"file": "book.go", "old": "for i := 0; i < n && i < len(b.asks.keys); i++ {", "new": "for i := 0; i <= n && i < len(b.asks.keys); i++ {", "label": "top levels returns one level too many", "k": "test_l2_"},
+ {"file": "book.go", "old": "\t\t\treturn cost, true\n\t\t}\n\t}\n\treturn 0, false", "new": "\t\t\treturn cost, true\n\t\t}\n\t}\n\treturn cost, true", "label": "a quote for more than the book prices what is there", "k": "test_l3_"},
+ {"file": "book.go", "old": "\t_, cost := b.asks.take(qty, 0, false)\n\treturn cost", "new": "\tif _, ok := b.QuoteBuy(qty); !ok {\n\t\treturn 0\n\t}\n\t_, cost := b.asks.take(qty, 0, false)\n\treturn cost", "label": "a buy bigger than the book fills nothing", "k": "test_l3_"},
+ {"file": "book.go", "old": "\t\t\t\tlv.q.Remove(o.elem)\n\t\t\t\to.elem = nil\n\t\t\t}\n\t\t}", "new": "\t\t\t\tlv.q.Remove(o.elem)\n\t\t\t\to.elem = nil\n\t\t\t} else {\n\t\t\t\tlv.q.MoveToBack(o.elem)\n\t\t\t}\n\t\t}", "label": "a part-filled order goes to the back of its queue", "k": "test_l3_"},
+ {"file": "book.go", "old": "\t\t\tcost += t * p\n", "new": "\t\t\tcost += t * s.key(s.keys[len(s.keys)-1])\n", "label": "every share is paid at the worst price level", "k": "test_l3_"},
+ {"file": "book.go", "old": "\t\t\tlv.shares -= t\n", "new": "", "label": "sweeps don't reduce the level's depth", "k": "test_l3_"},
+ {"file": "book.go", "old": "\t\t\t\to.state = \"filled\"\n\t\t\t\tlv.q.Remove(o.elem)", "new": "\t\t\t\tlv.q.Remove(o.elem)", "label": "filled orders can still be cancelled", "k": "test_l3_"},
+ {"file": "book.go", "old": "(!hasLimit || s.keys[0] <= s.key(limit))", "new": "(!hasLimit || s.keys[0] < s.key(limit))", "label": "an order doesn't trade at exactly its own price", "k": "test_l4_"},
+ {"file": "book.go", "old": "\tif s.desc {\n\t\treturn -p\n\t}", "new": "\tif s.desc && false {\n\t\treturn -p\n\t}", "label": "bids are kept cheapest first", "k": "test_l4_"},
+ {"file": "book.go", "old": "\to.left -= got\n\to.filled += got\n", "new": "\to.left -= got\n", "label": "shares traded on arrival don't count as filled", "k": "test_l4_"},
+ {"file": "book.go", "old": "\tif o.left == 0 {\n\t\to.state = \"filled\"\n\t} else {\n\t\tb.sideOf(o).add(o)\n\t}", "new": "\tb.sideOf(o).add(o)", "label": "a fully traded order still rests with 0 shares", "k": "test_l4_"},
+ {"file": "book.go", "old": "\topp := b.asks\n\tif o.sell {", "new": "\topp := b.asks\n\tif !o.sell {", "label": "orders match against their own side", "k": "test_l4_"},
+ {"file": "book.go", "old": "\to.state = \"cancelled\"\n", "new": "", "label": "a cancelled order still reports open", "k": "test_l4_"}
+]

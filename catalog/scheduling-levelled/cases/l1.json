@@ -1,0 +1,674 @@
+[
+{
+ "name": "add_and_check",
+ "steps": [
+  {
+   "new": "TeamCalendar",
+   "args": []
+  },
+  {
+   "call": "add_attendee",
+   "args": [
+    "ana",
+    0,
+    540,
+    1020
+   ],
+   "expect": true
+  },
+  {
+   "call": "add_attendee",
+   "args": [
+    "raj",
+    330,
+    540,
+    1080
+   ],
+   "expect": true
+  },
+  {
+   "call": "add_attendee",
+   "args": [
+    "ana",
+    60,
+    0,
+    1440
+   ],
+   "expect": false
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ana",
+    600,
+    660
+   ],
+   "expect": "busy1"
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "raj",
+    700,
+    650
+   ],
+   "expect": null
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "zoe",
+    600,
+    660
+   ],
+   "expect": null
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    599
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    600
+   ],
+   "expect": false
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    660
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "raj",
+    209
+   ],
+   "expect": false
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "raj",
+    210
+   ],
+   "expect": true
+  },
+  {
+   "call": "remove_busy",
+   "args": [
+    "raj",
+    "busy1"
+   ],
+   "expect": false
+  },
+  {
+   "call": "remove_busy",
+   "args": [
+    "ana",
+    "busy1"
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    600
+   ],
+   "expect": true
+  }
+ ]
+},
+{
+ "name": "working_hours_edges",
+ "steps": [
+  {
+   "new": "TeamCalendar",
+   "args": []
+  },
+  {
+   "call": "add_attendee",
+   "args": [
+    "ana",
+    0,
+    540,
+    1020
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    539
+   ],
+   "expect": false
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    540
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    1019
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    1020
+   ],
+   "expect": false
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    1980
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    3899
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "bob",
+    600
+   ],
+   "expect": false
+  }
+ ]
+},
+{
+ "name": "east_and_west_of_utc",
+ "steps": [
+  {
+   "new": "TeamCalendar",
+   "args": []
+  },
+  {
+   "call": "add_attendee",
+   "args": [
+    "raj",
+    330,
+    540,
+    1080
+   ],
+   "expect": true
+  },
+  {
+   "call": "add_attendee",
+   "args": [
+    "kim",
+    -300,
+    1200,
+    1440
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "raj",
+    749
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "raj",
+    750
+   ],
+   "expect": false
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "kim",
+    0
+   ],
+   "expect": false
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "kim",
+    100
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "kim",
+    299
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "kim",
+    300
+   ],
+   "expect": false
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "kim",
+    2639
+   ],
+   "expect": false
+  }
+ ]
+},
+{
+ "name": "overnight_shift",
+ "steps": [
+  {
+   "new": "TeamCalendar",
+   "args": []
+  },
+  {
+   "call": "add_attendee",
+   "args": [
+    "sam",
+    0,
+    1320,
+    360
+   ],
+   "expect": true
+  },
+  {
+   "call": "add_attendee",
+   "args": [
+    "lee",
+    -480,
+    1320,
+    360
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "sam",
+    0
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "sam",
+    359
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "sam",
+    360
+   ],
+   "expect": false
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "sam",
+    1319
+   ],
+   "expect": false
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "sam",
+    1320
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "sam",
+    1440
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "sam",
+    1799
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "lee",
+    359
+   ],
+   "expect": false
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "lee",
+    360
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "lee",
+    839
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "lee",
+    840
+   ],
+   "expect": false
+  }
+ ]
+},
+{
+ "name": "overlapping_busy_blocks",
+ "steps": [
+  {
+   "new": "TeamCalendar",
+   "args": []
+  },
+  {
+   "call": "add_attendee",
+   "args": [
+    "ana",
+    0,
+    0,
+    1440
+   ],
+   "expect": true
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ana",
+    100,
+    300
+   ],
+   "expect": "busy1"
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ana",
+    200,
+    400
+   ],
+   "expect": "busy2"
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ana",
+    150,
+    150
+   ],
+   "expect": null
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ana",
+    1000,
+    3000
+   ],
+   "expect": "busy3"
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    99
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    250
+   ],
+   "expect": false
+  },
+  {
+   "call": "remove_busy",
+   "args": [
+    "ana",
+    "busy1"
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    150
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    250
+   ],
+   "expect": false
+  },
+  {
+   "call": "remove_busy",
+   "args": [
+    "ana",
+    "busy1"
+   ],
+   "expect": false
+  },
+  {
+   "call": "remove_busy",
+   "args": [
+    "ana",
+    "busy4"
+   ],
+   "expect": false
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    2000
+   ],
+   "expect": false
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    3000
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    400
+   ],
+   "expect": true
+  }
+ ]
+},
+{
+ "name": "ids_across_attendees",
+ "steps": [
+  {
+   "new": "TeamCalendar",
+   "args": []
+  },
+  {
+   "call": "add_attendee",
+   "args": [
+    "ana",
+    0,
+    540,
+    1020
+   ],
+   "expect": true
+  },
+  {
+   "call": "add_attendee",
+   "args": [
+    "Ana",
+    0,
+    0,
+    1440
+   ],
+   "expect": true
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "Ana",
+    10,
+    20
+   ],
+   "expect": "busy1"
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "nobody",
+    10,
+    20
+   ],
+   "expect": null
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ana",
+    600,
+    700
+   ],
+   "expect": "busy2"
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ana",
+    700,
+    700
+   ],
+   "expect": null
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "Ana",
+    30,
+    40
+   ],
+   "expect": "busy3"
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "Ana",
+    15
+   ],
+   "expect": false
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    15
+   ],
+   "expect": false
+  },
+  {
+   "call": "remove_busy",
+   "args": [
+    "ana",
+    "busy3"
+   ],
+   "expect": false
+  },
+  {
+   "call": "remove_busy",
+   "args": [
+    "nobody",
+    "busy1"
+   ],
+   "expect": false
+  },
+  {
+   "call": "remove_busy",
+   "args": [
+    "Ana",
+    "busy1"
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "Ana",
+    15
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    650
+   ],
+   "expect": false
+  }
+ ]
+}
+]

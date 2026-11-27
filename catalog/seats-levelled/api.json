@@ -1,0 +1,22 @@
+{
+ "module": "flight",
+ "java_class": "Flight",
+ "records": {},
+ "functions": {},
+ "classes": {
+  "Flight": {
+   "init": [["seats", "list<int>"]],
+   "methods": {
+    "book": {"params": [["passenger", "string"], ["board", "int"], ["alight", "int"]], "returns": "bool", "level": 1},
+    "cancel": {"params": [["passenger", "string"]], "returns": "bool", "level": 1},
+    "free_seats": {"params": [["leg", "int"]], "returns": "optional<int>", "level": 1},
+    "request_upgrade": {"params": [["passenger", "string"], ["board", "int"], ["alight", "int"]], "returns": "string", "level": 2},
+    "status": {"params": [["passenger", "string"]], "returns": "string", "level": 2},
+    "promote": {"params": [], "returns": "list<string>", "level": 2},
+    "busiest": {"params": [["from_stop", "int"], ["to_stop", "int"]], "returns": "optional<int>", "level": 3},
+    "best_plan": {"params": [], "returns": "int", "level": 4}
+   }
+  }
+ },
+ "errors": []
+}

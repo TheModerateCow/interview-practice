@@ -1,0 +1,636 @@
+[
+ {
+  "name": "waitlist_example",
+  "steps": [
+   {
+    "new": "Flight",
+    "args": [
+     [
+      1,
+      1,
+      1,
+      1
+     ]
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     "ana",
+     1,
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "request_upgrade",
+    "args": [
+     "ben",
+     0,
+     4
+    ],
+    "expect": "waitlisted"
+   },
+   {
+    "call": "request_upgrade",
+    "args": [
+     "cy",
+     3,
+     4
+    ],
+    "expect": "upgraded"
+   },
+   {
+    "call": "request_upgrade",
+    "args": [
+     "dee",
+     0,
+     2
+    ],
+    "expect": "waitlisted"
+   },
+   {
+    "call": "request_upgrade",
+    "args": [
+     "ana",
+     0,
+     1
+    ],
+    "expect": ""
+   },
+   {
+    "call": "cancel",
+    "args": [
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "status",
+    "args": [
+     "ben"
+    ],
+    "expect": "waitlisted"
+   },
+   {
+    "call": "promote",
+    "args": [],
+    "expect": [
+     "dee"
+    ]
+   },
+   {
+    "call": "status",
+    "args": [
+     "dee"
+    ],
+    "expect": "upgraded"
+   },
+   {
+    "call": "cancel",
+    "args": [
+     "ben"
+    ],
+    "expect": true
+   },
+   {
+    "call": "status",
+    "args": [
+     "ben"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "promote",
+    "args": [],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "request_results_and_status",
+  "steps": [
+   {
+    "new": "Flight",
+    "args": [
+     [
+      1,
+      1
+     ]
+    ]
+   },
+   {
+    "call": "request_upgrade",
+    "args": [
+     "ana",
+     0,
+     1
+    ],
+    "expect": "upgraded"
+   },
+   {
+    "call": "request_upgrade",
+    "args": [
+     "ben",
+     0,
+     2
+    ],
+    "expect": "waitlisted"
+   },
+   {
+    "call": "request_upgrade",
+    "args": [
+     "ben",
+     1,
+     2
+    ],
+    "expect": ""
+   },
+   {
+    "call": "book",
+    "args": [
+     "ben",
+     1,
+     2
+    ],
+    "expect": false
+   },
+   {
+    "call": "request_upgrade",
+    "args": [
+     "cy",
+     2,
+     2
+    ],
+    "expect": ""
+   },
+   {
+    "call": "request_upgrade",
+    "args": [
+     "cy",
+     0,
+     3
+    ],
+    "expect": ""
+   },
+   {
+    "call": "request_upgrade",
+    "args": [
+     "cy",
+     -1,
+     1
+    ],
+    "expect": ""
+   },
+   {
+    "call": "status",
+    "args": [
+     "ana"
+    ],
+    "expect": "upgraded"
+   },
+   {
+    "call": "status",
+    "args": [
+     "ben"
+    ],
+    "expect": "waitlisted"
+   },
+   {
+    "call": "status",
+    "args": [
+     "cy"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "book",
+    "args": [
+     "eve",
+     1,
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "status",
+    "args": [
+     "eve"
+    ],
+    "expect": "booked"
+   },
+   {
+    "call": "request_upgrade",
+    "args": [
+     "eve",
+     0,
+     1
+    ],
+    "expect": ""
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     1
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "promote_oldest_first_skips_misfits",
+  "steps": [
+   {
+    "new": "Flight",
+    "args": [
+     [
+      1,
+      1,
+      1
+     ]
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     "x",
+     0,
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "request_upgrade",
+    "args": [
+     "ana",
+     0,
+     2
+    ],
+    "expect": "waitlisted"
+   },
+   {
+    "call": "request_upgrade",
+    "args": [
+     "ben",
+     1,
+     3
+    ],
+    "expect": "waitlisted"
+   },
+   {
+    "call": "request_upgrade",
+    "args": [
+     "cy",
+     2,
+     3
+    ],
+    "expect": "waitlisted"
+   },
+   {
+    "call": "cancel",
+    "args": [
+     "x"
+    ],
+    "expect": true
+   },
+   {
+    "call": "promote",
+    "args": [],
+    "expect": [
+     "ana",
+     "cy"
+    ]
+   },
+   {
+    "call": "status",
+    "args": [
+     "ben"
+    ],
+    "expect": "waitlisted"
+   },
+   {
+    "call": "status",
+    "args": [
+     "cy"
+    ],
+    "expect": "upgraded"
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     2
+    ],
+    "expect": 0
+   },
+   {
+    "call": "promote",
+    "args": [],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "promote_seats_each_before_the_next",
+  "steps": [
+   {
+    "new": "Flight",
+    "args": [
+     [
+      2,
+      2
+     ]
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     "x",
+     0,
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     "y",
+     0,
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "request_upgrade",
+    "args": [
+     "ana",
+     0,
+     2
+    ],
+    "expect": "waitlisted"
+   },
+   {
+    "call": "request_upgrade",
+    "args": [
+     "ben",
+     0,
+     1
+    ],
+    "expect": "waitlisted"
+   },
+   {
+    "call": "request_upgrade",
+    "args": [
+     "cy",
+     1,
+     2
+    ],
+    "expect": "waitlisted"
+   },
+   {
+    "call": "cancel",
+    "args": [
+     "x"
+    ],
+    "expect": true
+   },
+   {
+    "call": "promote",
+    "args": [],
+    "expect": [
+     "ana"
+    ]
+   },
+   {
+    "call": "status",
+    "args": [
+     "ben"
+    ],
+    "expect": "waitlisted"
+   },
+   {
+    "call": "cancel",
+    "args": [
+     "y"
+    ],
+    "expect": true
+   },
+   {
+    "call": "promote",
+    "args": [],
+    "expect": [
+     "ben",
+     "cy"
+    ]
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     0
+    ],
+    "expect": 0
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     1
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "withdrawn_request_rejoins_the_end",
+  "steps": [
+   {
+    "new": "Flight",
+    "args": [
+     [
+      1
+     ]
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     "x",
+     0,
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "request_upgrade",
+    "args": [
+     "ana",
+     0,
+     1
+    ],
+    "expect": "waitlisted"
+   },
+   {
+    "call": "request_upgrade",
+    "args": [
+     "ben",
+     0,
+     1
+    ],
+    "expect": "waitlisted"
+   },
+   {
+    "call": "cancel",
+    "args": [
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "status",
+    "args": [
+     "ana"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "request_upgrade",
+    "args": [
+     "ana",
+     0,
+     1
+    ],
+    "expect": "waitlisted"
+   },
+   {
+    "call": "cancel",
+    "args": [
+     "x"
+    ],
+    "expect": true
+   },
+   {
+    "call": "promote",
+    "args": [],
+    "expect": [
+     "ben"
+    ]
+   },
+   {
+    "call": "status",
+    "args": [
+     "ana"
+    ],
+    "expect": "waitlisted"
+   },
+   {
+    "call": "status",
+    "args": [
+     "ben"
+    ],
+    "expect": "upgraded"
+   }
+  ]
+ },
+ {
+  "name": "freed_seats_wait_for_promote",
+  "steps": [
+   {
+    "new": "Flight",
+    "args": [
+     [
+      1,
+      1
+     ]
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     "x",
+     0,
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "request_upgrade",
+    "args": [
+     "ana",
+     0,
+     2
+    ],
+    "expect": "waitlisted"
+   },
+   {
+    "call": "cancel",
+    "args": [
+     "x"
+    ],
+    "expect": true
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "book",
+    "args": [
+     "y",
+     0,
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "request_upgrade",
+    "args": [
+     "ben",
+     1,
+     2
+    ],
+    "expect": "upgraded"
+   },
+   {
+    "call": "promote",
+    "args": [],
+    "expect": []
+   },
+   {
+    "call": "status",
+    "args": [
+     "ana"
+    ],
+    "expect": "waitlisted"
+   },
+   {
+    "call": "cancel",
+    "args": [
+     "ben"
+    ],
+    "expect": true
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     1
+    ],
+    "expect": 1
+   },
+   {
+    "call": "status",
+    "args": [
+     "ben"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "cancel",
+    "args": [
+     "zed"
+    ],
+    "expect": false
+   }
+  ]
+ }
+]

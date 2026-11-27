@@ -1,0 +1,82 @@
+[
+ {"name": "samples_and_rates", "steps": [
+  {"new": "SloMonitor", "args": []},
+  {"call": "add_service", "args": ["checkout"], "expect": true},
+  {"call": "add_service", "args": ["checkout"], "expect": false},
+  {"call": "ingest", "args": ["checkout", 0, [100, 200, 50], [1, 4, 0]], "expect": true},
+  {"call": "ingest", "args": ["checkout", 2, [80], [2]], "expect": false},
+  {"call": "ingest", "args": ["checkout", 5, [100, 40], [3, 0]], "expect": true},
+  {"call": "latest_minute", "args": ["checkout"], "expect": 6},
+  {"call": "error_rate", "args": ["checkout", 0, 1], "expect": 16666},
+  {"call": "error_rate", "args": ["checkout", 3, 4], "expect": null},
+  {"call": "error_rate", "args": ["checkout", 0, 9], "expect": 16326},
+  {"call": "ingest", "args": ["search", 0, [10], [0]], "expect": false}
+ ]},
+ {"name": "ingest_rejects_bad_batches", "steps": [
+  {"new": "SloMonitor", "args": []},
+  {"call": "add_service", "args": ["api"], "expect": true},
+  {"call": "ingest", "args": ["api", 0, [10, 10], [1]], "expect": false},
+  {"call": "ingest", "args": ["api", 0, [], []], "expect": false},
+  {"call": "ingest", "args": ["api", 0, [10, 5, 10], [1, 6, 0]], "expect": false},
+  {"call": "latest_minute", "args": ["api"], "expect": null},
+  {"call": "error_rate", "args": ["api", 0, 5], "expect": null},
+  {"call": "ingest", "args": ["api", 0, [10, 5, 10], [1, 5, 0]], "expect": true},
+  {"call": "ingest", "args": ["api", 2, [10], [0]], "expect": false},
+  {"call": "ingest", "args": ["api", 1, [10], [0]], "expect": false},
+  {"call": "latest_minute", "args": ["api"], "expect": 2},
+  {"call": "error_rate", "args": ["api", 0, 2], "expect": 240000},
+  {"call": "ingest", "args": ["api", 3, [0], [0]], "expect": true},
+  {"call": "latest_minute", "args": ["api"], "expect": 3}
+ ]},
+ {"name": "gaps_have_no_traffic", "steps": [
+  {"new": "SloMonitor", "args": []},
+  {"call": "add_service", "args": ["api"], "expect": true},
+  {"call": "ingest", "args": ["api", 0, [40, 60], [2, 3]], "expect": true},
+  {"call": "ingest", "args": ["api", 10, [100], [1]], "expect": true},
+  {"call": "latest_minute", "args": ["api"], "expect": 10},
+  {"call": "error_rate", "args": ["api", 2, 9], "expect": null},
+  {"call": "error_rate", "args": ["api", 1, 10], "expect": 25000},
+  {"call": "error_rate", "args": ["api", 0, 1], "expect": 50000},
+  {"call": "error_rate", "args": ["api", 9, 9], "expect": null},
+  {"call": "ingest", "args": ["api", 9, [5], [0]], "expect": false},
+  {"call": "ingest", "args": ["api", 11, [5], [5]], "expect": true},
+  {"call": "error_rate", "args": ["api", 11, 11], "expect": 1000000}
+ ]},
+ {"name": "rate_rounds_down", "steps": [
+  {"new": "SloMonitor", "args": []},
+  {"call": "add_service", "args": ["api"], "expect": true},
+  {"call": "ingest", "args": ["api", 0, [3, 3, 7, 1000000, 9], [1, 2, 0, 1, 9]], "expect": true},
+  {"call": "error_rate", "args": ["api", 0, 0], "expect": 333333},
+  {"call": "error_rate", "args": ["api", 1, 1], "expect": 666666},
+  {"call": "error_rate", "args": ["api", 2, 2], "expect": 0},
+  {"call": "error_rate", "args": ["api", 3, 3], "expect": 1},
+  {"call": "error_rate", "args": ["api", 4, 4], "expect": 1000000},
+  {"call": "error_rate", "args": ["api", 0, 4], "expect": 12},
+  {"call": "error_rate", "args": ["api", 0, 2], "expect": 230769}
+ ]},
+ {"name": "services_are_separate", "steps": [
+  {"new": "SloMonitor", "args": []},
+  {"call": "add_service", "args": ["api"], "expect": true},
+  {"call": "add_service", "args": ["API"], "expect": true},
+  {"call": "ingest", "args": ["api", 0, [100, 100], [10, 0]], "expect": true},
+  {"call": "ingest", "args": ["API", 5, [50], [25]], "expect": true},
+  {"call": "error_rate", "args": ["api", 0, 5], "expect": 50000},
+  {"call": "error_rate", "args": ["API", 0, 5], "expect": 500000},
+  {"call": "latest_minute", "args": ["api"], "expect": 1},
+  {"call": "latest_minute", "args": ["API"], "expect": 5},
+  {"call": "error_rate", "args": ["Api", 0, 5], "expect": null},
+  {"call": "latest_minute", "args": ["Api"], "expect": null}
+ ]},
+ {"name": "first_batch_can_start_late", "steps": [
+  {"new": "SloMonitor", "args": []},
+  {"call": "add_service", "args": ["api"], "expect": true},
+  {"call": "latest_minute", "args": ["api"], "expect": null},
+  {"call": "error_rate", "args": ["api", 0, 100], "expect": null},
+  {"call": "ingest", "args": ["api", 7, [20, 30], [1, 1]], "expect": true},
+  {"call": "latest_minute", "args": ["api"], "expect": 8},
+  {"call": "error_rate", "args": ["api", 0, 6], "expect": null},
+  {"call": "error_rate", "args": ["api", 0, 7], "expect": 50000},
+  {"call": "error_rate", "args": ["api", 8, 500], "expect": 33333},
+  {"call": "ingest", "args": ["api", 0, [20], [0]], "expect": false}
+ ]}
+]

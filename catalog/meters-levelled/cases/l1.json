@@ -1,0 +1,697 @@
+[
+ {
+  "name": "register_and_trade",
+  "steps": [
+   {
+    "new": "Fleet",
+    "args": []
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "home-1",
+     2,
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     1,
+     [
+      12,
+      9,
+      25,
+      14
+     ]
+    ],
+    "expect": true
+   },
+   {
+    "call": "charge",
+    "args": [
+     "home-1",
+     1,
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "charge",
+    "args": [
+     "home-1",
+     1,
+     1
+    ],
+    "expect": 2
+   },
+   {
+    "call": "charge",
+    "args": [
+     "home-1",
+     1,
+     2
+    ],
+    "expect": null
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "home-1",
+     1,
+     2
+    ],
+    "expect": 1
+   },
+   {
+    "call": "stored",
+    "args": [
+     "home-1"
+    ],
+    "expect": 1
+   },
+   {
+    "call": "cash",
+    "args": [
+     "home-1"
+    ],
+    "expect": 1
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "home-1",
+     1,
+     1
+    ],
+    "expect": null
+   },
+   {
+    "call": "stored",
+    "args": [
+     "home-9"
+    ],
+    "expect": null
+   }
+  ]
+ },
+ {
+  "name": "duplicates_refused",
+  "steps": [
+   {
+    "new": "Fleet",
+    "args": []
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "home-1",
+     2,
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "HOME-1",
+     9,
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     1,
+     [
+      10,
+      20
+     ]
+    ],
+    "expect": true
+   },
+   {
+    "call": "charge",
+    "args": [
+     "home-1",
+     1,
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "charge",
+    "args": [
+     "home-1",
+     1,
+     1
+    ],
+    "expect": 2
+   },
+   {
+    "call": "charge",
+    "args": [
+     "home-1",
+     1,
+     1
+    ],
+    "expect": null
+   }
+  ]
+ },
+ {
+  "name": "bad_actions_change_nothing",
+  "steps": [
+   {
+    "new": "Fleet",
+    "args": []
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "home-1",
+     3,
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     4,
+     [
+      7,
+      8,
+      9
+     ]
+    ],
+    "expect": true
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "home-1",
+     4,
+     0
+    ],
+    "expect": null
+   },
+   {
+    "call": "charge",
+    "args": [
+     "home-2",
+     4,
+     0
+    ],
+    "expect": null
+   },
+   {
+    "call": "charge",
+    "args": [
+     "home-1",
+     5,
+     0
+    ],
+    "expect": null
+   },
+   {
+    "call": "charge",
+    "args": [
+     "home-1",
+     4,
+     3
+    ],
+    "expect": null
+   },
+   {
+    "call": "charge",
+    "args": [
+     "home-1",
+     4,
+     -1
+    ],
+    "expect": null
+   },
+   {
+    "call": "stored",
+    "args": [
+     "home-1"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "cash",
+    "args": [
+     "home-1"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "charge",
+    "args": [
+     "home-1",
+     4,
+     2
+    ],
+    "expect": 1
+   },
+   {
+    "call": "cash",
+    "args": [
+     "home-1"
+    ],
+    "expect": -9
+   },
+   {
+    "call": "cash",
+    "args": [
+     "home-2"
+    ],
+    "expect": null
+   }
+  ]
+ },
+ {
+  "name": "actions_move_forward",
+  "steps": [
+   {
+    "new": "Fleet",
+    "args": []
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "b",
+     5,
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     1,
+     [
+      5,
+      6,
+      7
+     ]
+    ],
+    "expect": true
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     2,
+     [
+      3,
+      4,
+      5
+     ]
+    ],
+    "expect": true
+   },
+   {
+    "call": "charge",
+    "args": [
+     "b",
+     2,
+     1
+    ],
+    "expect": 1
+   },
+   {
+    "call": "charge",
+    "args": [
+     "b",
+     2,
+     1
+    ],
+    "expect": null
+   },
+   {
+    "call": "charge",
+    "args": [
+     "b",
+     2,
+     0
+    ],
+    "expect": null
+   },
+   {
+    "call": "charge",
+    "args": [
+     "b",
+     1,
+     2
+    ],
+    "expect": null
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "b",
+     2,
+     2
+    ],
+    "expect": 0
+   },
+   {
+    "call": "charge",
+    "args": [
+     "b",
+     2,
+     2
+    ],
+    "expect": null
+   },
+   {
+    "call": "stored",
+    "args": [
+     "b"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "cash",
+    "args": [
+     "b"
+    ],
+    "expect": 1
+   }
+  ]
+ },
+ {
+  "name": "energy_carries_over_days",
+  "steps": [
+   {
+    "new": "Fleet",
+    "args": []
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "b",
+     2,
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     1,
+     [
+      10,
+      11
+     ]
+    ],
+    "expect": true
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     3,
+     [
+      30,
+      5
+     ]
+    ],
+    "expect": true
+   },
+   {
+    "call": "charge",
+    "args": [
+     "b",
+     1,
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "charge",
+    "args": [
+     "b",
+     1,
+     1
+    ],
+    "expect": 2
+   },
+   {
+    "call": "charge",
+    "args": [
+     "b",
+     3,
+     0
+    ],
+    "expect": null
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "b",
+     3,
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "b",
+     3,
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "b",
+     3,
+     1
+    ],
+    "expect": null
+   },
+   {
+    "call": "stored",
+    "args": [
+     "b"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "cash",
+    "args": [
+     "b"
+    ],
+    "expect": 10
+   }
+  ]
+ },
+ {
+  "name": "negative_prices_and_full",
+  "steps": [
+   {
+    "new": "Fleet",
+    "args": []
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "b",
+     1,
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     1,
+     [
+      -6,
+      -9,
+      2,
+      -1
+     ]
+    ],
+    "expect": true
+   },
+   {
+    "call": "charge",
+    "args": [
+     "b",
+     1,
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "charge",
+    "args": [
+     "b",
+     1,
+     1
+    ],
+    "expect": null
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "b",
+     1,
+     2
+    ],
+    "expect": 0
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "b",
+     1,
+     3
+    ],
+    "expect": null
+   },
+   {
+    "call": "charge",
+    "args": [
+     "b",
+     1,
+     3
+    ],
+    "expect": 1
+   },
+   {
+    "call": "cash",
+    "args": [
+     "b"
+    ],
+    "expect": 5
+   },
+   {
+    "call": "stored",
+    "args": [
+     "b"
+    ],
+    "expect": 1
+   }
+  ]
+ },
+ {
+  "name": "batteries_independent_and_tariff_final",
+  "steps": [
+   {
+    "new": "Fleet",
+    "args": []
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "a",
+     1,
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "b",
+     1,
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     1,
+     [
+      10,
+      40
+     ]
+    ],
+    "expect": true
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     1,
+     [
+      99,
+      1
+     ]
+    ],
+    "expect": false
+   },
+   {
+    "call": "charge",
+    "args": [
+     "a",
+     1,
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "charge",
+    "args": [
+     "b",
+     1,
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "b",
+     1,
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "charge",
+    "args": [
+     "a",
+     1,
+     1
+    ],
+    "expect": null
+   },
+   {
+    "call": "cash",
+    "args": [
+     "a"
+    ],
+    "expect": -10
+   },
+   {
+    "call": "cash",
+    "args": [
+     "b"
+    ],
+    "expect": 30
+   },
+   {
+    "call": "stored",
+    "args": [
+     "a"
+    ],
+    "expect": 1
+   },
+   {
+    "call": "stored",
+    "args": [
+     "b"
+    ],
+    "expect": 0
+   }
+  ]
+ }
+]

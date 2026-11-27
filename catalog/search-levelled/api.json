@@ -1,0 +1,102 @@
+{
+ "module": "autocomplete",
+ "java_class": "SearchBox",
+ "records": {},
+ "functions": {},
+ "classes": {
+  "SearchBox": {
+   "init": [],
+   "methods": {
+    "log_query": {
+     "params": [
+      [
+       "query",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 1
+    },
+    "popularity": {
+     "params": [
+      [
+       "query",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 1
+    },
+    "suggest": {
+     "params": [
+      [
+       "prefix",
+       "string"
+      ]
+     ],
+     "returns": "optional<string>",
+     "level": 1
+    },
+    "delete_query": {
+     "params": [
+      [
+       "query",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 2
+    },
+    "merge_queries": {
+     "params": [
+      [
+       "from",
+       "string"
+      ],
+      [
+       "into",
+       "string"
+      ]
+     ],
+     "returns": "optional<int>",
+     "level": 2
+    },
+    "import_log": {
+     "params": [
+      [
+       "log",
+       "list<string>"
+      ]
+     ],
+     "returns": "int",
+     "level": 3
+    },
+    "top_suggestions": {
+     "params": [
+      [
+       "prefix",
+       "string"
+      ],
+      [
+       "k",
+       "int"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 3
+    },
+    "fewest_keystrokes": {
+     "params": [
+      [
+       "target",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 4
+    }
+   }
+  }
+ },
+ "errors": []
+}

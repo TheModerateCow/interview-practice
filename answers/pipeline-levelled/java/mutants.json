@@ -1,0 +1,21 @@
+[
+ {"file": "Pipeline.java", "old": "if (j == null || c == null || c.done) return false;", "new": "if (j == null || c == null) return false;", "label": "a finished job takes new inputs", "k": "test_l1_"},
+ {"file": "Pipeline.java", "old": "if (j.consumer != null) jobs.get(j.consumer).inputs.remove(name);", "new": "", "label": "relinking leaves the job feeding its old consumer", "k": "test_l1_"},
+ {"file": "Pipeline.java", "old": "for (String i : j.inputs) if (!jobs.get(i).done) return false;\n        return true;", "new": "for (String i : j.inputs) if (jobs.get(i).done) return true;\n        return j.inputs.isEmpty();", "label": "one finished input is enough to be ready", "k": "test_l1_"},
+ {"file": "Pipeline.java", "old": "if (j == null || !isReady(j)) return false;", "new": "if (j == null || j.done) return false;", "label": "finish skips the readiness check", "k": "test_l1_"},
+ {"file": "Pipeline.java", "old": "PriorityQueue<String> heap = new PriorityQueue<>();", "new": "java.util.ArrayDeque<String> heap = new java.util.ArrayDeque<>(); List<String> unused = new ArrayList<>();", "label": "ready jobs run first come, first served", "k": "test_l2_"},
+ {"file": "Pipeline.java", "old": "walk.subList(walk.indexOf(v), walk.size())", "new": "walk.subList(walk.indexOf(v) + 1, walk.size())", "label": "the job where a loop closes isn't reported stuck", "k": "test_l2_"},
+ {"file": "Pipeline.java", "old": "            if (e.getValue().done) continue;\n            int w = 0;", "new": "            int w = 0;", "label": "finished jobs are listed again", "k": "test_l2_"},
+ {"file": "Pipeline.java", "old": "&& i.compareTo(next) < 0", "new": "&& i.compareTo(next) > 0", "label": "critical path ties go to the name that comes last", "k": "test_l3_"},
+ {"file": "Pipeline.java", "old": "for (String i : jobs.get(v).inputs) if (!jobs.get(i).done) longest = Math.max(longest, t.get(i));", "new": "for (String i : jobs.get(v).inputs) longest = Math.max(longest, jobs.get(i).done ? jobs.get(i).minutes : t.get(i));", "label": "finished inputs still cost their minutes", "k": "test_l3_"},
+ {"file": "Pipeline.java", "old": "longest = Math.max(longest, t.get(i));", "new": "longest += t.get(i);", "label": "inputs run one after another", "k": "test_l3_"},
+ {"file": "Pipeline.java", "old": "        if (j.done) return 0;\n        Map<String, Integer> t = times(name);", "new": "        if (j.done) return j.minutes;\n        Map<String, Integer> t = times(name);", "label": "a finished job still reports its minutes", "k": "test_l3_"},
+ {"file": "Pipeline.java", "old": "        Collections.reverse(path);", "new": "", "label": "critical path listed from the job back to the start", "k": "test_l3_"},
+ {"file": "Pipeline.java", "old": "            int longest = 0;", "new": "            int longest = jobs.get(v).minutes;", "label": "a job counts its own minutes twice when its inputs are quicker", "k": "test_l3_"},
+ {"file": "Pipeline.java", "old": "Math.max(g[a], fc[b - a])", "new": "g[a] + fc[b - a]", "label": "warm planning runs inputs one after another", "k": "test_l4_"},
+ {"file": "Pipeline.java", "old": "warm + g[b - 1]", "new": "warm + g[b]", "label": "warming a job doesn't use up a slot", "k": "test_l4_"},
+ {"file": "Pipeline.java", "old": "k = Math.min(k, order.size());", "new": "k = Math.min(k, order.size() - 1);", "label": "can never warm every job", "k": "test_l4_"},
+ {"file": "Pipeline.java", "old": "minutes > j.minutes) return false;", "new": "minutes >= j.minutes) return false;", "label": "a warm time equal to the normal time is refused", "k": "test_l4_"},
+ {"file": "Pipeline.java", "old": "int warm = jv.warm == null ? jv.minutes : jv.warm;", "new": "int warm = jv.warm == null ? 0 : jv.warm;", "label": "a job with no warm time warms to 0 minutes", "k": "test_l4_"},
+ {"file": "Pipeline.java", "old": "        if (j.done) return 0;\n        List<String> order = upstream(name);", "new": "        if (j.done) return j.minutes;\n        List<String> order = upstream(name);", "label": "a finished job is planned from scratch", "k": "test_l4_"}
+]
