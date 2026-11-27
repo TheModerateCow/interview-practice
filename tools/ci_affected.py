@@ -15,7 +15,8 @@ Output: {"include": [{"lang": "go", "problems": "catalog/a catalog/b"}, â€¦]} â€
 import json, os, subprocess, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LANGS = ("go", "java", "python")
+sys.path.insert(0, os.path.join(ROOT, "backend"))
+from lab.variants import LANGS  # noqa: E402  (the catalog languages: one list)
 CORE = ("backend/lab/variants.py", "backend/lab/langs/__init__.py", "backend/sandbox/", "deploy/backend/",
         "deploy/docker-compose.yml", "tests/compose.test.yml", "tools/gate_problem.py")
 FIXTURE = "tests/fixture"

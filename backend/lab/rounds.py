@@ -7,8 +7,8 @@ from lab.errors import Conflict, Invalid, NotFound
 from lab.store import (DATA, EXPORTS, deadline, jload, jsave, late, lock, locked, log, manifest,
                        minute, mutate, ready_info, require_started, reveal, run_lock, SESSION_V, sdir, session, state, work_files, work_path)
 
-EXT_LANG = {".py": "python", ".go": "go", ".java": "java", ".ts": "typescript", ".js": "javascript", ".mjs": "javascript",
-            ".c": "c", ".cpp": "cpp", ".cc": "cpp"}
+from sandbox.toolchains import BY_EXT
+EXT_LANG = {e: t.name for e, t in BY_EXT.items()}   # what Run can run, by file extension
 GRACE_S = 5   # ponytail: autosave lag + one request; raise if real rounds show false "after time" on the final grade
 
 
@@ -41,7 +41,7 @@ def run(n, body):
     f, stdin = body.get("file") or "", body.get("stdin") or ""
     if not isinstance(f, str) or not isinstance(stdin, str): raise Invalid("file and stdin must be strings")
     lang = EXT_LANG.get(os.path.splitext(f)[1])
-    if not lang: raise Invalid(f"can't run {f or 'this file'}: supported .py .go .java .ts .js .c .cpp")
+    if not lang: raise Invalid(f"can't run {f or 'this file'}: supported " + " ".join(EXT_LANG))
     work_path(n, f)
     files = work_files(n)
     if f not in files: raise NotFound(f"{f} not found")
