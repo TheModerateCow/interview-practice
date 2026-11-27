@@ -1,0 +1,606 @@
+[
+ {
+  "name": "drivers_and_nearest",
+  "steps": [
+   {
+    "new": "Dispatcher",
+    "args": []
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     1,
+     "d1",
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     2,
+     "d2",
+     30
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     3,
+     "d1",
+     50
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_rider",
+    "args": [
+     4,
+     "r1",
+     18
+    ],
+    "expect": true
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     5,
+     "r1"
+    ],
+    "expect": "d1"
+   },
+   {
+    "call": "move_driver",
+    "args": [
+     6,
+     "d2",
+     24
+    ],
+    "expect": true
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     7,
+     "r1"
+    ],
+    "expect": "d2"
+   },
+   {
+    "call": "remove_driver",
+    "args": [
+     8,
+     "d2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     9,
+     "r1"
+    ],
+    "expect": "d1"
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     10,
+     "r9"
+    ],
+    "expect": null
+   }
+  ]
+ },
+ {
+  "name": "nearest_tie_breaks",
+  "steps": [
+   {
+    "new": "Dispatcher",
+    "args": []
+   },
+   {
+    "call": "add_rider",
+    "args": [
+     1,
+     "r1",
+     20
+    ]
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     2,
+     "zed",
+     23
+    ]
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     3,
+     "amy",
+     17
+    ]
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     4,
+     "r1"
+    ],
+    "expect": "amy"
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     5,
+     "bob",
+     17
+    ]
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     6,
+     "r1"
+    ],
+    "expect": "amy"
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     7,
+     "Cal",
+     17
+    ]
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     8,
+     "r1"
+    ],
+    "expect": "Cal"
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     9,
+     "eve",
+     20
+    ]
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     10,
+     "r1"
+    ],
+    "expect": "eve"
+   },
+   {
+    "call": "remove_driver",
+    "args": [
+     11,
+     "eve"
+    ],
+    "expect": true
+   },
+   {
+    "call": "remove_driver",
+    "args": [
+     12,
+     "Cal"
+    ],
+    "expect": true
+   },
+   {
+    "call": "remove_driver",
+    "args": [
+     13,
+     "amy"
+    ],
+    "expect": true
+   },
+   {
+    "call": "remove_driver",
+    "args": [
+     14,
+     "bob"
+    ],
+    "expect": true
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     15,
+     "r1"
+    ],
+    "expect": "zed"
+   }
+  ]
+ },
+ {
+  "name": "no_idle_driver",
+  "steps": [
+   {
+    "new": "Dispatcher",
+    "args": []
+   },
+   {
+    "call": "add_rider",
+    "args": [
+     1,
+     "r1",
+     5
+    ]
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     2,
+     "r1"
+    ],
+    "expect": null
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     3,
+     "d1",
+     900
+    ],
+    "expect": true
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     4,
+     "r1"
+    ],
+    "expect": "d1"
+   },
+   {
+    "call": "remove_driver",
+    "args": [
+     5,
+     "d1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "remove_driver",
+    "args": [
+     6,
+     "d1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     7,
+     "r1"
+    ],
+    "expect": null
+   },
+   {
+    "call": "remove_driver",
+    "args": [
+     8,
+     "ghost"
+    ],
+    "expect": false
+   }
+  ]
+ },
+ {
+  "name": "duplicates_and_ids",
+  "steps": [
+   {
+    "new": "Dispatcher",
+    "args": []
+   },
+   {
+    "call": "add_rider",
+    "args": [
+     1,
+     "r1",
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_rider",
+    "args": [
+     2,
+     "r1",
+     0
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     3,
+     "near0",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     4,
+     "near100",
+     97
+    ],
+    "expect": true
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     5,
+     "r1"
+    ],
+    "expect": "near100"
+   },
+   {
+    "call": "add_rider",
+    "args": [
+     6,
+     "R1",
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     7,
+     "R1"
+    ],
+    "expect": "near0"
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     8,
+     "r1",
+     50
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_rider",
+    "args": [
+     9,
+     "near0",
+     50
+    ],
+    "expect": true
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     10,
+     "near0"
+    ],
+    "expect": "r1"
+   }
+  ]
+ },
+ {
+  "name": "cancel_rider",
+  "steps": [
+   {
+    "new": "Dispatcher",
+    "args": []
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     1,
+     "d1",
+     40
+    ]
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     2,
+     "d2",
+     70
+    ]
+   },
+   {
+    "call": "add_rider",
+    "args": [
+     3,
+     "r1",
+     45
+    ],
+    "expect": true
+   },
+   {
+    "call": "cancel_rider",
+    "args": [
+     4,
+     "r1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     5,
+     "r1"
+    ],
+    "expect": null
+   },
+   {
+    "call": "cancel_rider",
+    "args": [
+     6,
+     "r1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_rider",
+    "args": [
+     7,
+     "r1",
+     66
+    ],
+    "expect": true
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     8,
+     "r1"
+    ],
+    "expect": "d2"
+   },
+   {
+    "call": "cancel_rider",
+    "args": [
+     9,
+     "nobody"
+    ],
+    "expect": false
+   }
+  ]
+ },
+ {
+  "name": "move_and_rejoin",
+  "steps": [
+   {
+    "new": "Dispatcher",
+    "args": []
+   },
+   {
+    "call": "add_rider",
+    "args": [
+     1,
+     "r1",
+     500
+    ]
+   },
+   {
+    "call": "move_driver",
+    "args": [
+     2,
+     "d1",
+     10
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     3,
+     "d1",
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     4,
+     "d2",
+     800
+    ],
+    "expect": true
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     5,
+     "r1"
+    ],
+    "expect": "d2"
+   },
+   {
+    "call": "move_driver",
+    "args": [
+     6,
+     "d2",
+     600
+    ],
+    "expect": true
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     7,
+     "r1"
+    ],
+    "expect": "d2"
+   },
+   {
+    "call": "move_driver",
+    "args": [
+     8,
+     "d1",
+     400
+    ],
+    "expect": true
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     9,
+     "r1"
+    ],
+    "expect": "d1"
+   },
+   {
+    "call": "remove_driver",
+    "args": [
+     10,
+     "d1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "move_driver",
+    "args": [
+     11,
+     "d1",
+     500
+    ],
+    "expect": false
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     12,
+     "r1"
+    ],
+    "expect": "d2"
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     13,
+     "d1",
+     499
+    ],
+    "expect": true
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     14,
+     "r1"
+    ],
+    "expect": "d1"
+   }
+  ]
+ }
+]

@@ -1,0 +1,128 @@
+[
+ {
+  "file": "autocomplete.go",
+  "old": "\tn := s.count[query] + 1\n\ts.set(query, n)",
+  "new": "\tn := 1\n\ts.set(query, n)",
+  "label": "repeated searches don't add to popularity",
+  "k": "test_l1_"
+ },
+ {
+  "file": "autocomplete.go",
+  "old": "\t\treturn a.count > b.count",
+  "new": "\t\treturn a.count < b.count",
+  "label": "least popular query suggested first",
+  "k": "test_l1_"
+ },
+ {
+  "file": "autocomplete.go",
+  "old": "\treturn a.query < b.query",
+  "new": "\treturn a.query > b.query",
+  "label": "ties go to the alphabetically last query",
+  "k": "test_l1_"
+ },
+ {
+  "file": "autocomplete.go",
+  "old": "\tfor _, nd := range s.path(query) {\n\t\tif old > 0 {",
+  "new": "\tfor _, nd := range s.path(query)[:len(query)] {\n\t\tif old > 0 {",
+  "label": "a query isn't suggested for its own full text",
+  "k": "test_l1_"
+ },
+ {
+  "file": "autocomplete.go",
+  "old": "\tif _, ok := s.count[query]; !ok {\n\t\treturn false",
+  "new": "\tif _, ok := s.count[query]; !ok {\n\t\treturn true",
+  "label": "deleting an unlogged query reports success",
+  "k": "test_l2_"
+ },
+ {
+  "file": "autocomplete.go",
+  "old": "\t} else {\n\t\tdelete(s.count, query)\n\t}",
+  "new": "\t}",
+  "label": "deleted queries keep their popularity",
+  "k": "test_l2_"
+ },
+ {
+  "file": "autocomplete.go",
+  "old": "\tn := s.count[into] + moved",
+  "new": "\tn := moved",
+  "label": "merge overwrites the target's own searches",
+  "k": "test_l2_"
+ },
+ {
+  "file": "autocomplete.go",
+  "old": "if !ok || from == into {",
+  "new": "if !ok {",
+  "label": "merging a query into itself deletes it",
+  "k": "test_l2_"
+ },
+ {
+  "file": "autocomplete.go",
+  "old": "for i := 0; i < k && i < len(n.ranked); i++ {",
+  "new": "for i := 0; i <= k && i < len(n.ranked); i++ {",
+  "label": "top list returns one extra entry",
+  "k": "test_l3_"
+ },
+ {
+  "file": "autocomplete.go",
+  "old": "\t\tn := s.count[q] + c\n\t\ts.count[q] = n",
+  "new": "\t\tn := c\n\t\ts.count[q] = n",
+  "label": "import overwrites earlier counts instead of adding",
+  "k": "test_l3_"
+ },
+ {
+  "file": "autocomplete.go",
+  "old": "\t\tbatch[q]++",
+  "new": "\t\tbatch[q] = 1",
+  "label": "import counts each query once",
+  "k": "test_l3_"
+ },
+ {
+  "file": "autocomplete.go",
+  "old": "\t\tsort.Slice(nd.ranked, func(i, j int) bool { return before(nd.ranked[i], nd.ranked[j]) })",
+  "new": "\t\t_ = nd",
+  "label": "imported entries left unsorted in the rankings",
+  "k": "test_l3_"
+ },
+ {
+  "file": "autocomplete.go",
+  "old": "\treturn len(s.count)\n}",
+  "new": "\treturn len(batch)\n}",
+  "label": "import returns the batch's distinct queries, not the whole log's",
+  "k": "test_l3_"
+ },
+ {
+  "file": "autocomplete.go",
+  "old": "\t\t\tnexts = append(nexts, cur[:len(cur)-1])",
+  "new": "\t\t\t_ = nexts",
+  "label": "no Backspace",
+  "k": "test_l4_"
+ },
+ {
+  "file": "autocomplete.go",
+  "old": "\t\t\tnexts = append(nexts, n.ranked[0].query) // Tab",
+  "new": "\t\t\t// Tab",
+  "label": "no Tab",
+  "k": "test_l4_"
+ },
+ {
+  "file": "autocomplete.go",
+  "old": "if n := s.find(cur); n != nil && len(n.ranked) > 0 {",
+  "new": "if n := s.find(cur); n != nil && len(n.ranked) > 0 && cur != \"\" {",
+  "label": "Tab does nothing in an empty box",
+  "k": "test_l4_"
+ },
+ {
+  "file": "autocomplete.go",
+  "old": "if len(cur) < len(target) && strings.HasPrefix(target, cur) {",
+  "new": "if len(cur) < len(target) && strings.HasPrefix(target, cur) && s.find(cur) == nil {",
+  "label": "can't type the target's next letter while the box is on a logged prefix",
+  "k": "test_l4_"
+ },
+ {
+  "file": "autocomplete.go",
+  "old": "\t\tcur := todo[0]\n\t\ttodo = todo[1:]",
+  "new": "\t\tcur := todo[len(todo)-1]\n\t\ttodo = todo[:len(todo)-1]",
+  "label": "box texts visited depth-first instead of breadth-first",
+  "k": "test_l4_"
+ }
+]

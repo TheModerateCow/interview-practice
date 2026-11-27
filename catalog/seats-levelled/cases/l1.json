@@ -1,0 +1,626 @@
+[
+ {
+  "name": "bookings_example",
+  "steps": [
+   {
+    "new": "Flight",
+    "args": [
+     [
+      2,
+      1,
+      2
+     ]
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     "ana",
+     0,
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "book",
+    "args": [
+     "ben",
+     1,
+     3
+    ],
+    "expect": false
+   },
+   {
+    "call": "book",
+    "args": [
+     "ben",
+     2,
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     "ana",
+     2,
+     3
+    ],
+    "expect": false
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     2
+    ],
+    "expect": 1
+   },
+   {
+    "call": "cancel",
+    "args": [
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     "cy",
+     1,
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     0
+    ],
+    "expect": 2
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     3
+    ],
+    "expect": null
+   },
+   {
+    "call": "book",
+    "args": [
+     "dee",
+     2,
+     2
+    ],
+    "expect": false
+   }
+  ]
+ },
+ {
+  "name": "invalid_trips",
+  "steps": [
+   {
+    "new": "Flight",
+    "args": [
+     [
+      1,
+      1,
+      1
+     ]
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     "ana",
+     -1,
+     1
+    ],
+    "expect": false
+   },
+   {
+    "call": "book",
+    "args": [
+     "ana",
+     0,
+     4
+    ],
+    "expect": false
+   },
+   {
+    "call": "book",
+    "args": [
+     "ana",
+     2,
+     1
+    ],
+    "expect": false
+   },
+   {
+    "call": "book",
+    "args": [
+     "ana",
+     3,
+     3
+    ],
+    "expect": false
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "book",
+    "args": [
+     "ana",
+     0,
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     0
+    ],
+    "expect": 0
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     2
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "full_leg_changes_nothing",
+  "steps": [
+   {
+    "new": "Flight",
+    "args": [
+     [
+      2,
+      1,
+      2
+     ]
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     "ana",
+     1,
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     "ben",
+     0,
+     3
+    ],
+    "expect": false
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     0
+    ],
+    "expect": 2
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     2
+    ],
+    "expect": 2
+   },
+   {
+    "call": "book",
+    "args": [
+     "ben",
+     0,
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     "cy",
+     2,
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     2
+    ],
+    "expect": 1
+   }
+  ]
+ },
+ {
+  "name": "leg_with_no_seats",
+  "steps": [
+   {
+    "new": "Flight",
+    "args": [
+     [
+      1,
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     "ana",
+     0,
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     "ben",
+     0,
+     2
+    ],
+    "expect": false
+   },
+   {
+    "call": "book",
+    "args": [
+     "cy",
+     2,
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     "dee",
+     1,
+     2
+    ],
+    "expect": false
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "book",
+    "args": [
+     "eve",
+     0,
+     1
+    ],
+    "expect": false
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     0
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "cancel_and_rebook",
+  "steps": [
+   {
+    "new": "Flight",
+    "args": [
+     [
+      2,
+      2
+     ]
+    ]
+   },
+   {
+    "call": "cancel",
+    "args": [
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "book",
+    "args": [
+     "ana",
+     0,
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     "Ana",
+     0,
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "cancel",
+    "args": [
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "cancel",
+    "args": [
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     1
+    ],
+    "expect": 1
+   },
+   {
+    "call": "book",
+    "args": [
+     "ana",
+     1,
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "cancel",
+    "args": [
+     "ANA"
+    ],
+    "expect": false
+   }
+  ]
+ },
+ {
+  "name": "alight_frees_seat_for_boarder",
+  "steps": [
+   {
+    "new": "Flight",
+    "args": [
+     [
+      1,
+      1,
+      1,
+      1
+     ]
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     "ana",
+     0,
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     "ben",
+     2,
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     "cy",
+     1,
+     3
+    ],
+    "expect": false
+   },
+   {
+    "call": "cancel",
+    "args": [
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     "cy",
+     1,
+     3
+    ],
+    "expect": false
+   },
+   {
+    "call": "cancel",
+    "args": [
+     "ben"
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     "cy",
+     1,
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     -1
+    ],
+    "expect": null
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     4
+    ],
+    "expect": null
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     3
+    ],
+    "expect": 1
+   }
+  ]
+ },
+ {
+  "name": "single_leg_flight",
+  "steps": [
+   {
+    "new": "Flight",
+    "args": [
+     [
+      3
+     ]
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     "a",
+     0,
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     "b",
+     0,
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     "c",
+     0,
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     "d",
+     0,
+     1
+    ],
+    "expect": false
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     0
+    ],
+    "expect": 0
+   },
+   {
+    "call": "cancel",
+    "args": [
+     "b"
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     "d",
+     0,
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "free_seats",
+    "args": [
+     0
+    ],
+    "expect": 0
+   }
+  ]
+ }
+]

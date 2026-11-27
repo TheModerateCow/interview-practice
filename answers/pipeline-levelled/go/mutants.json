@@ -1,0 +1,21 @@
+[
+ {"file": "pipeline.go", "old": "if !ok || !ok2 || c.done {", "new": "if !ok || !ok2 {", "label": "a finished job takes new inputs", "k": "test_l1_"},
+ {"file": "pipeline.go", "old": "\t\tdelete(p.jobs[j.consumer].inputs, name)", "new": "\t\t_ = name", "label": "relinking leaves the job feeding its old consumer", "k": "test_l1_"},
+ {"file": "pipeline.go", "old": "\t\tif !p.jobs[i].done {\n\t\t\treturn false\n\t\t}", "new": "\t\tif p.jobs[i].done {\n\t\t\treturn true\n\t\t}", "label": "readiness ignores unfinished inputs", "k": "test_l1_"},
+ {"file": "pipeline.go", "old": "if !ok || !p.isReady(j) {", "new": "if !ok || j.done {", "label": "finish skips the readiness check", "k": "test_l1_"},
+ {"file": "pipeline.go", "old": "\t\t\t\theap.Push(h, j.consumer)", "new": "\t\t\t\t*h = append(*h, j.consumer)", "label": "newly ready jobs wait behind the ones already ready", "k": "test_l2_"},
+ {"file": "pipeline.go", "old": "out = append(out, walk[i:]...)", "new": "out = append(out, walk[i+1:]...)", "label": "the job where a loop closes isn't reported stuck", "k": "test_l2_"},
+ {"file": "pipeline.go", "old": "\t\tif j.done {\n\t\t\tcontinue\n\t\t}\n\t\tw := 0", "new": "\t\tw := 0", "label": "finished jobs are listed again", "k": "test_l2_"},
+ {"file": "pipeline.go", "old": "t[i] == t[next] && i < next", "new": "t[i] == t[next] && i > next", "label": "critical path ties go to the name that comes last", "k": "test_l3_"},
+ {"file": "pipeline.go", "old": "\t\t\tif !p.jobs[i].done {\n\t\t\t\tlongest = max(longest, t[i])\n\t\t\t}", "new": "\t\t\tif !p.jobs[i].done {\n\t\t\t\tlongest = max(longest, t[i])\n\t\t\t} else {\n\t\t\t\tlongest = max(longest, p.jobs[i].minutes)\n\t\t\t}", "label": "finished inputs still cost their minutes", "k": "test_l3_"},
+ {"file": "pipeline.go", "old": "longest = max(longest, t[i])", "new": "longest += t[i]", "label": "inputs run one after another", "k": "test_l3_"},
+ {"file": "pipeline.go", "old": "\tif j.done {\n\t\treturn 0, true\n\t}\n\tt, ok := p.times(name)", "new": "\tif j.done {\n\t\treturn j.minutes, true\n\t}\n\tt, ok := p.times(name)", "label": "a finished job still reports its minutes", "k": "test_l3_"},
+ {"file": "pipeline.go", "old": "\tfor a, b := 0, len(path)-1; a < b; a, b = a+1, b-1 {", "new": "\tfor a, b := 0, len(path)-1; a < 0; a, b = a+1, b-1 {", "label": "critical path listed from the job back to the start", "k": "test_l3_"},
+ {"file": "pipeline.go", "old": "\t\tlongest := 0", "new": "\t\tlongest := p.jobs[v].minutes", "label": "a job counts its own minutes twice when its inputs are quicker", "k": "test_l3_"},
+ {"file": "pipeline.go", "old": "max(g[a], fc[b-a])", "new": "g[a] + fc[b-a]", "label": "warm planning runs inputs one after another", "k": "test_l4_"},
+ {"file": "pipeline.go", "old": "warm+g[b-1]", "new": "warm+g[b]", "label": "warming a job doesn't use up a slot", "k": "test_l4_"},
+ {"file": "pipeline.go", "old": "k = min(k, len(order))", "new": "k = min(k, len(order)-1)", "label": "can never warm every job", "k": "test_l4_"},
+ {"file": "pipeline.go", "old": "minutes > j.minutes {", "new": "minutes >= j.minutes {", "label": "a warm time equal to the normal time is refused", "k": "test_l4_"},
+ {"file": "pipeline.go", "old": "\t\twarm := jv.minutes\n", "new": "\t\twarm := 0\n", "label": "a job with no warm time warms to 0 minutes", "k": "test_l4_"},
+ {"file": "pipeline.go", "old": "\tif j.done {\n\t\treturn 0, true\n\t}\n\torder, ok := p.upstream(name)", "new": "\tif j.done {\n\t\treturn j.minutes, true\n\t}\n\torder, ok := p.upstream(name)", "label": "a finished job is planned from scratch", "k": "test_l4_"}
+]

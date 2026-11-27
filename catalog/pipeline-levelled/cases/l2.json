@@ -1,0 +1,606 @@
+[
+ {
+  "name": "order_and_cycles",
+  "steps": [
+   {
+    "new": "Pipeline",
+    "args": []
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "compile",
+     4
+    ]
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "docs",
+     1
+    ]
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "bundle",
+     6
+    ]
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "release",
+     2
+    ]
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "gen-a",
+     1
+    ]
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "gen-b",
+     1
+    ]
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "proto",
+     3
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "compile",
+     "bundle"
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "bundle",
+     "release"
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "docs",
+     "release"
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "gen-a",
+     "gen-b"
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "gen-b",
+     "gen-a"
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "proto",
+     "gen-a"
+    ]
+   },
+   {
+    "call": "run_order",
+    "args": [],
+    "expect": [
+     "compile",
+     "bundle",
+     "docs",
+     "proto",
+     "release"
+    ]
+   },
+   {
+    "call": "stuck",
+    "args": [],
+    "expect": [
+     "gen-a",
+     "gen-b"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "empty_and_acyclic",
+  "steps": [
+   {
+    "new": "Pipeline",
+    "args": []
+   },
+   {
+    "call": "stuck",
+    "args": [],
+    "expect": []
+   },
+   {
+    "call": "run_order",
+    "args": [],
+    "expect": []
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "b",
+     1
+    ]
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "a",
+     1
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "b",
+     "a"
+    ]
+   },
+   {
+    "call": "stuck",
+    "args": [],
+    "expect": []
+   },
+   {
+    "call": "run_order",
+    "args": [],
+    "expect": [
+     "b",
+     "a"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "self_loop_and_its_feeders",
+  "steps": [
+   {
+    "new": "Pipeline",
+    "args": []
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "feed",
+     1
+    ]
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "loop",
+     1
+    ]
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "free",
+     1
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "loop",
+     "loop"
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "feed",
+     "loop"
+    ]
+   },
+   {
+    "call": "stuck",
+    "args": [],
+    "expect": [
+     "loop"
+    ]
+   },
+   {
+    "call": "run_order",
+    "args": [],
+    "expect": [
+     "feed",
+     "free"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "finished_jobs_left_out",
+  "steps": [
+   {
+    "new": "Pipeline",
+    "args": []
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "a",
+     1
+    ]
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "b",
+     1
+    ]
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "c",
+     1
+    ]
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "d",
+     1
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "a",
+     "d"
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "b",
+     "c"
+    ]
+   },
+   {
+    "call": "finish",
+    "args": [
+     "a"
+    ],
+    "expect": true
+   },
+   {
+    "call": "finish",
+    "args": [
+     "b"
+    ],
+    "expect": true
+   },
+   {
+    "call": "run_order",
+    "args": [],
+    "expect": [
+     "c",
+     "d"
+    ]
+   },
+   {
+    "call": "ready",
+    "args": [],
+    "expect": [
+     "c",
+     "d"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "relink_breaks_cycle",
+  "steps": [
+   {
+    "new": "Pipeline",
+    "args": []
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "x",
+     1
+    ]
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "y",
+     1
+    ]
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "z",
+     1
+    ]
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "out",
+     1
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "x",
+     "y"
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "y",
+     "z"
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "z",
+     "x"
+    ]
+   },
+   {
+    "call": "stuck",
+    "args": [],
+    "expect": [
+     "x",
+     "y",
+     "z"
+    ]
+   },
+   {
+    "call": "run_order",
+    "args": [],
+    "expect": [
+     "out"
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "z",
+     "out"
+    ]
+   },
+   {
+    "call": "stuck",
+    "args": [],
+    "expect": []
+   },
+   {
+    "call": "run_order",
+    "args": [],
+    "expect": [
+     "x",
+     "y",
+     "z",
+     "out"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "two_cycles_sorted",
+  "steps": [
+   {
+    "new": "Pipeline",
+    "args": []
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "q2",
+     1
+    ]
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "B",
+     1
+    ]
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "q1",
+     1
+    ]
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "a",
+     1
+    ]
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "m",
+     1
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "q1",
+     "q2"
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "q2",
+     "q1"
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "a",
+     "B"
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "B",
+     "a"
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "m",
+     "q1"
+    ]
+   },
+   {
+    "call": "stuck",
+    "args": [],
+    "expect": [
+     "B",
+     "a",
+     "q1",
+     "q2"
+    ]
+   },
+   {
+    "call": "run_order",
+    "args": [],
+    "expect": [
+     "m"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "order_follows_links_not_names",
+  "steps": [
+   {
+    "new": "Pipeline",
+    "args": []
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "z",
+     1
+    ]
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "y",
+     1
+    ]
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "x",
+     1
+    ]
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "w",
+     1
+    ]
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "a",
+     1
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "z",
+     "y"
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "y",
+     "x"
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "x",
+     "w"
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "a",
+     "w"
+    ]
+   },
+   {
+    "call": "run_order",
+    "args": [],
+    "expect": [
+     "a",
+     "z",
+     "y",
+     "x",
+     "w"
+    ]
+   },
+   {
+    "call": "finish",
+    "args": [
+     "z"
+    ],
+    "expect": true
+   },
+   {
+    "call": "run_order",
+    "args": [],
+    "expect": [
+     "a",
+     "y",
+     "x",
+     "w"
+    ]
+   }
+  ]
+ }
+]

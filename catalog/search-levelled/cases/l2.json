@@ -1,0 +1,577 @@
+[
+{
+ "name": "delete_and_merge",
+ "steps": [
+  {
+   "new": "SearchBox",
+   "args": []
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "shoes"
+   ]
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "shoes"
+   ]
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "shoes"
+   ]
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "sheos"
+   ]
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "sheos"
+   ]
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "shirt"
+   ]
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "shirt"
+   ]
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "shirt"
+   ]
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "shirt"
+   ]
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "sh"
+   ],
+   "expect": "shirt"
+  },
+  {
+   "call": "merge_queries",
+   "args": [
+    "sheos",
+    "shoes"
+   ],
+   "expect": 5
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "sh"
+   ],
+   "expect": "shoes"
+  },
+  {
+   "call": "popularity",
+   "args": [
+    "sheos"
+   ],
+   "expect": 0
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "she"
+   ],
+   "expect": null
+  },
+  {
+   "call": "delete_query",
+   "args": [
+    "shoes"
+   ],
+   "expect": true
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "sh"
+   ],
+   "expect": "shirt"
+  },
+  {
+   "call": "delete_query",
+   "args": [
+    "shoes"
+   ],
+   "expect": false
+  },
+  {
+   "call": "merge_queries",
+   "args": [
+    "shirt",
+    "shirt"
+   ],
+   "expect": null
+  },
+  {
+   "call": "merge_queries",
+   "args": [
+    "boots",
+    "shirt"
+   ],
+   "expect": null
+  },
+  {
+   "call": "merge_queries",
+   "args": [
+    "shirt",
+    "shirts"
+   ],
+   "expect": 4
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "shirt"
+   ],
+   "expect": "shirts"
+  }
+ ]
+},
+{
+ "name": "delete_then_log_again",
+ "steps": [
+  {
+   "new": "SearchBox",
+   "args": []
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "kayak"
+   ]
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "kayak"
+   ]
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "kettle"
+   ]
+  },
+  {
+   "call": "delete_query",
+   "args": [
+    "kayak"
+   ],
+   "expect": true
+  },
+  {
+   "call": "popularity",
+   "args": [
+    "kayak"
+   ],
+   "expect": 0
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "k"
+   ],
+   "expect": "kettle"
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "ka"
+   ],
+   "expect": null
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "kayak"
+   ],
+   "expect": 1
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "k"
+   ],
+   "expect": "kayak"
+  },
+  {
+   "call": "delete_query",
+   "args": [
+    "kayaks"
+   ],
+   "expect": false
+  },
+  {
+   "call": "delete_query",
+   "args": [
+    "kay"
+   ],
+   "expect": false
+  }
+ ]
+},
+{
+ "name": "merge_into_existing",
+ "steps": [
+  {
+   "new": "SearchBox",
+   "args": []
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "mug"
+   ]
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "mugs"
+   ]
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "mugs"
+   ]
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "mug"
+   ]
+  },
+  {
+   "call": "merge_queries",
+   "args": [
+    "mugs",
+    "mug"
+   ],
+   "expect": 4
+  },
+  {
+   "call": "popularity",
+   "args": [
+    "mug"
+   ],
+   "expect": 4
+  },
+  {
+   "call": "popularity",
+   "args": [
+    "mugs"
+   ],
+   "expect": 0
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "mugs"
+   ],
+   "expect": null
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "mugs"
+   ],
+   "expect": 1
+  },
+  {
+   "call": "merge_queries",
+   "args": [
+    "mug",
+    "mugs"
+   ],
+   "expect": 5
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "m"
+   ],
+   "expect": "mugs"
+  }
+ ]
+},
+{
+ "name": "merge_moves_between_prefixes",
+ "steps": [
+  {
+   "new": "SearchBox",
+   "args": []
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "tv"
+   ]
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "tv"
+   ]
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "television"
+   ]
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "te"
+   ],
+   "expect": "television"
+  },
+  {
+   "call": "merge_queries",
+   "args": [
+    "tv",
+    "television"
+   ],
+   "expect": 3
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "t"
+   ],
+   "expect": "television"
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "tv"
+   ],
+   "expect": null
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "te"
+   ],
+   "expect": "television"
+  },
+  {
+   "call": "merge_queries",
+   "args": [
+    "tv",
+    "tvs"
+   ],
+   "expect": null
+  },
+  {
+   "call": "popularity",
+   "args": [
+    "television"
+   ],
+   "expect": 3
+  }
+ ]
+},
+{
+ "name": "ties_after_merge",
+ "steps": [
+  {
+   "new": "SearchBox",
+   "args": []
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "bat"
+   ]
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "bag"
+   ]
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "bag"
+   ]
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "ban"
+   ]
+  },
+  {
+   "call": "merge_queries",
+   "args": [
+    "ban",
+    "bat"
+   ],
+   "expect": 2
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "ba"
+   ],
+   "expect": "bag"
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "bat"
+   ],
+   "expect": 3
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "ba"
+   ],
+   "expect": "bat"
+  },
+  {
+   "call": "delete_query",
+   "args": [
+    "bat"
+   ],
+   "expect": true
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "ba"
+   ],
+   "expect": "bag"
+  },
+  {
+   "call": "delete_query",
+   "args": [
+    "bag"
+   ],
+   "expect": true
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "ba"
+   ],
+   "expect": null
+  },
+  {
+   "call": "suggest",
+   "args": [
+    ""
+   ],
+   "expect": null
+  }
+ ]
+},
+{
+ "name": "delete_keeps_others",
+ "steps": [
+  {
+   "new": "SearchBox",
+   "args": []
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "pen"
+   ]
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "pencil"
+   ]
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "pencil"
+   ]
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "pens"
+   ]
+  },
+  {
+   "call": "delete_query",
+   "args": [
+    "pen"
+   ],
+   "expect": true
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "pen"
+   ],
+   "expect": "pencil"
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "pens"
+   ],
+   "expect": "pens"
+  },
+  {
+   "call": "delete_query",
+   "args": [
+    "pencil"
+   ],
+   "expect": true
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "pen"
+   ],
+   "expect": "pens"
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "penc"
+   ],
+   "expect": null
+  },
+  {
+   "call": "popularity",
+   "args": [
+    "pens"
+   ],
+   "expect": 1
+  }
+ ]
+}
+]

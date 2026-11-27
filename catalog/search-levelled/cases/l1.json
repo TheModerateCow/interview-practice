@@ -1,0 +1,431 @@
+[
+{
+ "name": "log_and_suggest",
+ "steps": [
+  {
+   "new": "SearchBox",
+   "args": []
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "shoes"
+   ],
+   "expect": 1
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "shirts"
+   ],
+   "expect": 1
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "shoes"
+   ],
+   "expect": 2
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "shirt"
+   ],
+   "expect": 1
+  },
+  {
+   "call": "popularity",
+   "args": [
+    "shoes"
+   ],
+   "expect": 2
+  },
+  {
+   "call": "popularity",
+   "args": [
+    "sandals"
+   ],
+   "expect": 0
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "sh"
+   ],
+   "expect": "shoes"
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "shi"
+   ],
+   "expect": "shirt"
+  },
+  {
+   "call": "suggest",
+   "args": [
+    ""
+   ],
+   "expect": "shoes"
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "shirts"
+   ],
+   "expect": "shirts"
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "x"
+   ],
+   "expect": null
+  }
+ ]
+},
+{
+ "name": "repeats_count",
+ "steps": [
+  {
+   "new": "SearchBox",
+   "args": []
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "lamp"
+   ],
+   "expect": 1
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "lamp"
+   ],
+   "expect": 2
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "lamp"
+   ],
+   "expect": 3
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "lampshade"
+   ],
+   "expect": 1
+  },
+  {
+   "call": "popularity",
+   "args": [
+    "lamp"
+   ],
+   "expect": 3
+  },
+  {
+   "call": "popularity",
+   "args": [
+    "lampshade"
+   ],
+   "expect": 1
+  },
+  {
+   "call": "popularity",
+   "args": [
+    "lam"
+   ],
+   "expect": 0
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "lamps"
+   ],
+   "expect": "lampshade"
+  }
+ ]
+},
+{
+ "name": "ties_alphabetical",
+ "steps": [
+  {
+   "new": "SearchBox",
+   "args": []
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "beta"
+   ],
+   "expect": 1
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "alpha"
+   ],
+   "expect": 1
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "alphabet"
+   ],
+   "expect": 1
+  },
+  {
+   "call": "suggest",
+   "args": [
+    ""
+   ],
+   "expect": "alpha"
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "alpha"
+   ],
+   "expect": "alpha"
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "b"
+   ],
+   "expect": "beta"
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "alphabet"
+   ],
+   "expect": 2
+  },
+  {
+   "call": "suggest",
+   "args": [
+    ""
+   ],
+   "expect": "alphabet"
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "alpha"
+   ],
+   "expect": "alphabet"
+  }
+ ]
+},
+{
+ "name": "prefix_itself_counts",
+ "steps": [
+  {
+   "new": "SearchBox",
+   "args": []
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "car"
+   ],
+   "expect": 1
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "car"
+   ],
+   "expect": 2
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "cart"
+   ],
+   "expect": 1
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "carts"
+   ],
+   "expect": 1
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "carts"
+   ],
+   "expect": 2
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "car"
+   ],
+   "expect": "car"
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "cart"
+   ],
+   "expect": "carts"
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "carts"
+   ],
+   "expect": "carts"
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "cartsx"
+   ],
+   "expect": null
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "ca"
+   ],
+   "expect": "car"
+  }
+ ]
+},
+{
+ "name": "suggestion_moves",
+ "steps": [
+  {
+   "new": "SearchBox",
+   "args": []
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "tent"
+   ]
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "tent"
+   ]
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "torch"
+   ]
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "t"
+   ],
+   "expect": "tent"
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "torch"
+   ],
+   "expect": 2
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "t"
+   ],
+   "expect": "tent"
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "torch"
+   ],
+   "expect": 3
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "t"
+   ],
+   "expect": "torch"
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "te"
+   ],
+   "expect": "tent"
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "to"
+   ],
+   "expect": "torch"
+  }
+ ]
+},
+{
+ "name": "empty_log",
+ "steps": [
+  {
+   "new": "SearchBox",
+   "args": []
+  },
+  {
+   "call": "suggest",
+   "args": [
+    ""
+   ],
+   "expect": null
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "a"
+   ],
+   "expect": null
+  },
+  {
+   "call": "popularity",
+   "args": [
+    "a"
+   ],
+   "expect": 0
+  },
+  {
+   "call": "log_query",
+   "args": [
+    "a"
+   ],
+   "expect": 1
+  },
+  {
+   "call": "suggest",
+   "args": [
+    ""
+   ],
+   "expect": "a"
+  },
+  {
+   "call": "suggest",
+   "args": [
+    "b"
+   ],
+   "expect": null
+  }
+ ]
+}
+]

@@ -1,0 +1,626 @@
+[
+ {
+  "name": "daily_report",
+  "steps": [
+   {
+    "new": "Fleet",
+    "args": []
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "home-a",
+     2,
+     0
+    ]
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "home-b",
+     2,
+     0
+    ]
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "home-c",
+     2,
+     0
+    ]
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     1,
+     [
+      10,
+      30,
+      20
+     ]
+    ]
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     2,
+     [
+      25,
+      5
+     ]
+    ]
+   },
+   {
+    "call": "charge",
+    "args": [
+     "home-a",
+     1,
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "home-a",
+     1,
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "charge",
+    "args": [
+     "home-b",
+     1,
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "charge",
+    "args": [
+     "home-b",
+     1,
+     2
+    ],
+    "expect": 2
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "home-b",
+     2,
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "home-a",
+     2,
+     1
+    ],
+    "expect": null
+   },
+   {
+    "call": "day_profit",
+    "args": [
+     "home-b",
+     1
+    ],
+    "expect": -30
+   },
+   {
+    "call": "day_profit",
+    "args": [
+     "home-b",
+     2
+    ],
+    "expect": 25
+   },
+   {
+    "call": "top_earners",
+    "args": [
+     1,
+     2
+    ],
+    "expect": [
+     "home-a:20",
+     "home-c:0"
+    ]
+   },
+   {
+    "call": "top_earners",
+    "args": [
+     2,
+     5
+    ],
+    "expect": [
+     "home-b:25",
+     "home-a:0",
+     "home-c:0"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "profit_of_quiet_days",
+  "steps": [
+   {
+    "new": "Fleet",
+    "args": []
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "b",
+     3,
+     1
+    ]
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     1,
+     [
+      4,
+      9
+     ]
+    ]
+   },
+   {
+    "call": "day_profit",
+    "args": [
+     "b",
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "day_profit",
+    "args": [
+     "b",
+     7
+    ],
+    "expect": 0
+   },
+   {
+    "call": "day_profit",
+    "args": [
+     "x",
+     1
+    ],
+    "expect": null
+   },
+   {
+    "call": "charge",
+    "args": [
+     "b",
+     1,
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "b",
+     1,
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "day_profit",
+    "args": [
+     "b",
+     1
+    ],
+    "expect": 4
+   },
+   {
+    "call": "day_profit",
+    "args": [
+     "b",
+     2
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "ties_by_id",
+  "steps": [
+   {
+    "new": "Fleet",
+    "args": []
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "b2",
+     1,
+     0
+    ]
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "B1",
+     1,
+     0
+    ]
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "a3",
+     1,
+     0
+    ]
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "c4",
+     1,
+     0
+    ]
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     1,
+     [
+      5,
+      12
+     ]
+    ]
+   },
+   {
+    "call": "charge",
+    "args": [
+     "b2",
+     1,
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "b2",
+     1,
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "charge",
+    "args": [
+     "a3",
+     1,
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "a3",
+     1,
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "top_earners",
+    "args": [
+     1,
+     4
+    ],
+    "expect": [
+     "a3:7",
+     "b2:7",
+     "B1:0",
+     "c4:0"
+    ]
+   },
+   {
+    "call": "top_earners",
+    "args": [
+     1,
+     0
+    ],
+    "expect": []
+   },
+   {
+    "call": "top_earners",
+    "args": [
+     1,
+     10
+    ],
+    "expect": [
+     "a3:7",
+     "b2:7",
+     "B1:0",
+     "c4:0"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "losses_rank_last",
+  "steps": [
+   {
+    "new": "Fleet",
+    "args": []
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "loss",
+     2,
+     0
+    ]
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "idle",
+     2,
+     0
+    ]
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "gain",
+     2,
+     0
+    ]
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     1,
+     [
+      -3,
+      20,
+      8
+     ]
+    ]
+   },
+   {
+    "call": "charge",
+    "args": [
+     "loss",
+     1,
+     1
+    ],
+    "expect": 1
+   },
+   {
+    "call": "charge",
+    "args": [
+     "gain",
+     1,
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "top_earners",
+    "args": [
+     1,
+     3
+    ],
+    "expect": [
+     "gain:3",
+     "idle:0",
+     "loss:-20"
+    ]
+   },
+   {
+    "call": "top_earners",
+    "args": [
+     2,
+     3
+    ],
+    "expect": [
+     "gain:0",
+     "idle:0",
+     "loss:0"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "failed_actions_not_counted",
+  "steps": [
+   {
+    "new": "Fleet",
+    "args": []
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "b",
+     1,
+     2
+    ]
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     1,
+     [
+      10,
+      20,
+      30
+     ]
+    ]
+   },
+   {
+    "call": "charge",
+    "args": [
+     "b",
+     1,
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "charge",
+    "args": [
+     "b",
+     1,
+     1
+    ],
+    "expect": null
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "b",
+     1,
+     2
+    ],
+    "expect": 0
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "b",
+     1,
+     2
+    ],
+    "expect": null
+   },
+   {
+    "call": "day_profit",
+    "args": [
+     "b",
+     1
+    ],
+    "expect": 18
+   },
+   {
+    "call": "cash",
+    "args": [
+     "b"
+    ],
+    "expect": 18
+   }
+  ]
+ },
+ {
+  "name": "profit_split_across_days",
+  "steps": [
+   {
+    "new": "Fleet",
+    "args": []
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "b",
+     3,
+     1
+    ]
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     5,
+     [
+      10,
+      12
+     ]
+    ]
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     6,
+     [
+      40,
+      1
+     ]
+    ]
+   },
+   {
+    "call": "charge",
+    "args": [
+     "b",
+     5,
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "charge",
+    "args": [
+     "b",
+     5,
+     1
+    ],
+    "expect": 2
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "b",
+     6,
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "b",
+     6,
+     1
+    ],
+    "expect": 0
+   },
+   {
+    "call": "day_profit",
+    "args": [
+     "b",
+     5
+    ],
+    "expect": -22
+   },
+   {
+    "call": "day_profit",
+    "args": [
+     "b",
+     6
+    ],
+    "expect": 39
+   },
+   {
+    "call": "cash",
+    "args": [
+     "b"
+    ],
+    "expect": 17
+   },
+   {
+    "call": "top_earners",
+    "args": [
+     5,
+     1
+    ],
+    "expect": [
+     "b:-22"
+    ]
+   }
+  ]
+ }
+]
