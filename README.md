@@ -1,22 +1,67 @@
 # Interview Lab
 
-A local, Docker-only app for timed coding-interview practice. Claude (`/interview-practice`) sends you a set `.zip`.
-Drag it onto http://127.0.0.1:8765. The app says "Imported <title> (<name>)" and shows the name under the title; press **Start** only if the name matches. If it says "Not imported", paste the message back to Claude. Run, Submit, Next part, End, then Export.
-Send `export.zip` back to Claude for the debrief.
+**Timed coding-interview practice that runs on your own machine.** Pick a problem, start the clock, write code in a
+real editor, and get graded by hidden tests in a locked-down sandbox. Then send the export to Claude for a debrief.
 
-Home is a **catalog of problems** to pick from: the built-in ones in `catalog/` plus every set you've imported (marked Yours). Each built-in problem comes in Go, Java and/or Python: click the problem to open it in your usual language, or a language chip for another. Filter by round, language and difficulty. Picking opens your round in progress in that language, an unstarted attempt, or a fresh attempt (`<id>-<lang>-1`, `-2`, …) on the ready screen, so you can retake any problem. Past attempts stay listed under Not started / Finished.
+Local and Docker-only: nothing leaves your machine unless you send the export. Every number you see (time left, N/M passed, "after time") is true.
 
-To add a built-in problem or a language to one: `docs/rounds/3-language-variants/` (`CONTRACT.md` the format, `CONVERT.md`, `PORT.md`). Check it with `python3 tools/gate_problem.py catalog/<id> answers/<id>` (every language, in the runner images) and rebuild.
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/home-dark.png">
+    <img src="docs/screenshots/home-light.png" alt="Interview Lab home: a catalog of 21 problems, filterable by language, round and difficulty" width="900">
+  </picture>
+</p>
 
-## Install / remove
-```
+## Highlights
+
+- **A catalog of 21 built-in problems** in Go, Java and Python: Levelled, Codebase (debug, implement, optimise) and TDD
+  rounds, Medium or Hard. Filter by round, language and difficulty, and retake any problem as often as you like.
+- **A realistic round.** You see nothing about the problem until you press Start. After that the clock runs, and each
+  level opens when the previous one's hidden tests pass, or when you ask for the next part.
+- **A real editor.** Monaco with language-server code help (pyright, gopls, jdtls), multiple files, and Run / Submit shortcuts.
+- **Honest grading.** Hidden tests run in a throwaway container with no network, a read-only root, and memory, CPU and
+  pid limits. Results show per test group, with the failing assertion.
+- **A debrief loop.** End the round, see where the time went, then Export `export.zip` and send it back to Claude.
+- **Dark and light themes**, following your system setting.
+
+## Screenshots
+
+| Ready to start | In the round |
+|---|---|
+| ![Ready screen: title, language, difficulty, time limit and a Start interview button](docs/screenshots/ready-dark.png) | ![Round screen: file list, Monaco editor, example results and the problem statement](docs/screenshots/round-dark.png) |
+| **Submitting against hidden tests** | **Interview ended** |
+| ![Submit results: the hidden tests for level 1 with the failing assertion](docs/screenshots/submit-light.png) | ![Results dialog: score, where the time went, and Export](docs/screenshots/final-dark.png) |
+
+## Quick start
+
+```sh
 deploy/install.sh      # docker compose up -d --build, pre-pulls runner images, adds an "Interview Lab" launcher
+```
+
+Open **http://127.0.0.1:8765**. The services restart by themselves after a reboot or a Docker restart (`restart: unless-stopped`).
+
+```sh
 deploy/uninstall.sh    # removes containers, built images, the Go cache volume and the launcher; KEEPS data/
                        # --images also removes the pinned base images
 ```
-The services restart by themselves after a reboot or a Docker restart (`restart: unless-stopped`).
+
+## Using it
+
+**From the catalog.** Home is a catalog of problems: the built-in ones in `catalog/` plus every set you've imported
+(marked *Yours*). Click a problem to open it in your usual language, or pick a language chip for another. Picking opens
+your round in progress in that language, an unstarted attempt, or a fresh attempt (`<id>-<lang>-1`, `-2`, …) on the
+ready screen. Past attempts stay listed under *Not started* / *Finished*.
+
+**From Claude.** `/interview-practice` sends you a set `.zip`:
+
+1. Drag it onto the app. It says "Imported &lt;title&gt; (&lt;name&gt;)" and shows the name under the title.
+   If it says "Not imported", paste the message back to Claude.
+2. Press **Start** only if the name matches.
+3. **Run** (`Ctrl '`), **Submit** (`Ctrl ↵`), **Next part**, then **End**.
+4. **Export**, and send `export.zip` back to Claude for the debrief.
 
 ## How it fits together
+
 ```
 browser ──127.0.0.1:8765──> nginx (UI: Svelte + Monaco + marked, built at image build; offline; CSP) ──/api──> backend (Python, Flask on Waitress)
                                                                             │ DOCKER_HOST=tcp://docker-proxy:2375
@@ -28,8 +73,12 @@ browser ──127.0.0.1:8765──> nginx (UI: Svelte + Monaco + marked, built a
                          plus, while a round is open, one language-server container for code help in the
                          editor (Python: pyright, Go: gopls, Java: jdtls), with the same flags, spoken to over the same attach stream.
 ```
+
 Only nginx publishes a port. The backend and proxy sit on internal networks. `/api` needs `X-ILab: 1` plus the
 127.0.0.1/localhost Host, and it rejects any foreign Origin.
+
+<details>
+<summary><b>Repository layout</b></summary>
 
 | Path | What |
 |---|---|
@@ -40,6 +89,7 @@ Only nginx publishes a port. The backend and proxy sit on internal networks. `/a
 | `backend/sandbox/runner.py` | DockerRunner (Run: verdicts, time, memory) + the pinned runner image list |
 | `backend/sandbox/lsp.py` | Code help: one language server per open round, in a runner-shaped container (`/api/sets/<n>/assist`) |
 | `backend/sandbox/grade.py` | Hidden-test grading in the runner, with the same CLI/JSON as the skill's grade.py |
+| `backend/sandbox/toolchains.py` | One class per language: extensions, Run build/command, hidden-test command and report parser |
 | `backend/sandbox/gate.py` | The skill's gate.py, unchanged |
 | `backend/sandbox/images.py` | `/api/health` and the thread that keeps runner images pulled |
 | `ui/src/` | `App.svelte` the shell (header, screens, toasts); `nav.js` navigation between screens; `app.svelte.js` app-wide state; `features/` one folder per screen (`home`, `catalog`, `ready`, `round`, `import`, `health`), `round/round.svelte.js` holds the round's state and actions; `components/` shared pieces; `lib/` API, Monaco and helpers; `styles/` CSS |
@@ -49,28 +99,40 @@ Only nginx publishes a port. The backend and proxy sit on internal networks. `/a
 | `tools/pack.py` | Packs a set dir into a zip (refuses reference/, mutants.json, bugs.json) |
 | `tools/status.py` | `python3 tools/status.py data/sets/<name>` → time left, from session.json |
 | `data/` | Your attempts (`sets/`), your own problems (`catalog/`) and exports (bind-mounted; never deleted by uninstall). Home's Delete moves a set to `data/deleted/<name>-<stamp>/`; restore by moving it back to `data/sets/` |
+| `docs/screenshots/` | The pictures in this README |
 
-## Building a set by hand
-```
+</details>
+
+## Adding problems
+
+**A built-in problem, or a new language for one:** see `docs/rounds/3-language-variants/` (`CONTRACT.md` the format,
+`CONVERT.md`, `PORT.md`). Check it with `python3 tools/gate_problem.py catalog/<id> answers/<id>` (every language, in
+the runner images) and rebuild.
+
+**A set by hand:**
+```sh
 docker compose run --rm -T -v "$PWD/<set>:/set:ro" backend python3 gate.py /set     # must print GATE PASS
 python3 tools/pack.py <set> ~/Downloads/<name>.zip
 ```
-Re-grade an export (unzipped into `<export>`, with the set folder `<set>` that holds the hidden tests; `final/` is the code at the close, `submission/` the latest code, older exports have only `submission/`): `docker compose run --rm -T -v <export>:/c:ro -v <set>:/s:ro backend python3 grade.py /c/final /s/<hidden tests file> -k test_l1_ --names`.
+Re-grade an export (unzipped into `<export>`, with the set folder `<set>` that holds the hidden tests; `final/` is the
+code at the close, `submission/` the latest code, older exports have only `submission/`):
+`docker compose run --rm -T -v <export>:/c:ro -v <set>:/s:ro backend python3 grade.py /c/final /s/<hidden tests file> -k test_l1_ --names`.
 
 ## Tests
-`tests/unit/run.sh`: backend unit tests, no Docker, a few seconds (needs `pip install -r backend/requirements.txt`).
-One plain script per area in `tests/unit/test_*.py`: grading verdicts, test pruning, the clock, set validation, zip import.
 
-`tests/run_all.sh [--clean]`: gates every set in `tests/sets/`, then runs `tests/api_test.py` (all 7 languages,
-TLE/MLE/fork bomb/no network/read-only/truncation, leak check, grading flows, import validation, security), then
-`tests/e2e.sh` (Playwright: a real drop event → ready → Start → Run → Submit → reveal → End → Export).
+| Command | What it runs |
+|---|---|
+| `tests/unit/run.sh` | Backend unit tests, no Docker, a few seconds (needs `pip install -r backend/requirements.txt`). One plain script per area in `tests/unit/test_*.py`: grading verdicts, test pruning, the clock, set validation, zip import |
+| `tests/run_all.sh [--clean]` | Gates every set in `tests/sets/`, then `tests/api_test.py` (all 5 languages, TLE/MLE/fork bomb/no network/read-only/truncation, leak check, grading flows, import validation, security), then `tests/e2e.sh` (Playwright: a real drop event → ready → Start → Run → Submit → reveal → End → Export) |
 
 Tests never touch the stack you use or `data/`. `run_all.sh` builds a separate stack from the checkout it runs in
 (compose project `ilab-test` on 127.0.0.1:8766, an empty data folder in `tests/out/stack-data`, its own images, runners
 and Go cache) and removes it at the end. To run one suite by hand: `tests/stack.sh up`, then `python3 tests/api_test.py`
 or `tests/e2e.sh`, then `tests/stack.sh down`.
 
-CI (GitHub Actions) runs only what a change can affect:
+<details>
+<summary><b>CI (GitHub Actions) runs only what a change can affect</b></summary>
+
 - `.github/workflows/catalog.yml` gates catalog problems per language in the runner images. `tools/ci_affected.py` maps the changed
   files to the gates: a problem's `<lang>/` files → that problem in that language; its shared files (`api.json`, `cases/`,
   statement) → that problem in every language; a language backend (`backend/lab/langs/<lang>*`) → the canaries (`tests/fixture`, which covers every
@@ -78,5 +140,9 @@ CI (GitHub Actions) runs only what a change can affect:
   image) → the canaries in all three. One job per language. Re-gating the whole catalog is a manual run (Actions → Catalog).
 - `.github/workflows/ci.yml` builds the UI when `ui/**` changes.
 - `.github/workflows/backend.yml` runs `tests/unit/run.sh` on every PR that touches `backend/`, `tools/` or `tests/unit/`.
+- `.github/workflows/lint.yml` runs `ruff check` and `ruff format --check` (config: `ruff.toml`) on every PR that touches Python.
+  Fix locally with `pip install ruff==0.17.6 && ruff check --fix . && ruff format .`.
 - `.github/workflows/full.yml` runs `tests/run_all.sh` only on a merge to `main` that touches app code, on demand
   (Actions → Full suite → Run workflow), or on a PR when you add the `full-suite` label.
+
+</details>

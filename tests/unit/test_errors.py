@@ -1,6 +1,11 @@
 """Lab refusals keep their HTTP statuses (403/404/409/400), and nothing under backend/lab/ knows HTTP.
 Needs Flask (pip install -r backend/requirements.txt). Run: python3 tests/unit/test_errors.py"""
-import glob, json, os, sys, tempfile
+
+import glob
+import json
+import os
+import sys
+import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ["ILAB_DATA"] = tempfile.mkdtemp()
@@ -14,11 +19,12 @@ os.makedirs(f"{d}/work")
 json.dump({"name": "s", "title": "s", "minutes": 30}, open(f"{d}/manifest.json", "w"))
 
 for method, path, headers, want in [
-        ("GET", "/api/sets/s", {"Host": "evil.com", "X-ILab": "1"}, (403, "forbidden host")),
-        ("GET", "/api/sets/nope", H, (404, "no set named")),
-        ("GET", "/api/sets/s/state", H, (409, "not started")),
-        ("POST", "/api/catalog/nope/attempt", H, (404, "no problem named")),
-        ("POST", "/api/import", H, (400, "not a zip file"))]:
+    ("GET", "/api/sets/s", {"Host": "evil.com", "X-ILab": "1"}, (403, "forbidden host")),
+    ("GET", "/api/sets/nope", H, (404, "no set named")),
+    ("GET", "/api/sets/s/state", H, (409, "not started")),
+    ("POST", "/api/catalog/nope/attempt", H, (404, "no problem named")),
+    ("POST", "/api/import", H, (400, "not a zip file")),
+]:
     r = c.open(path, method=method, headers=headers, data=b"x" if path.endswith("import") else None)
     got = (r.status_code, r.get_json()["error"])
     assert got[0] == want[0] and got[1].startswith(want[1]), (path, got)

@@ -1,6 +1,0 @@
-[
- {"file":"upgrades.go","old":"byAlight[i][1] < byAlight[j][1]","new":"byAlight[i][0] < byAlight[j][0]","label":"handles passengers in boarding order","k":"test_p1_"},
- {"file":"upgrades.go","old":"byAlight[i][1] < byAlight[j][1]","new":"byAlight[i][1]-byAlight[i][0] < byAlight[j][1]-byAlight[j][0]","label":"handles shortest trips first","k":"test_p1_"},
- {"file":"upgrades.go","old":"lo, hi := r[0], r[1]-1","new":"lo, hi := r[0], r[1]","label":"also takes a seat on the leg after the passenger alights","k":"test_p1_"},
- {"file":"upgrades.go","old":"t.mn[x] = t.lz[x] + min(t.mn[2*x], t.mn[2*x+1])","new":"t.mn[x] = min(t.mn[2*x], t.mn[2*x+1])","label":"range update loses the node's pending decrement","k":"test_p1_"}
-]

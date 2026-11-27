@@ -153,7 +153,7 @@ says what to do (A-35). The screen should say "All parts pass. End now, or keep 
 
 **Runner and grading** (`backend/sandbox/runner.py`, `backend/sandbox/grade.py`). One container per Run/Submit with the full lock-down
 (no network, read-only root, tmpfs, 512 MB, 2 CPUs, 256 pids, cap-drop ALL). Verdicts Accepted / Wrong Answer / Compile /
-Runtime / TLE / MLE with time and peak memory. Grading for Python (pytest), Go, Java (mini-runner), TS/JS (`node:test`),
+Runtime / TLE / MLE with time and peak memory. Grading for Python (pytest), Go, Java (mini-runner),
 per tag, with `last_error`/`last_line` and Go/Java pruning of later levels. Fast (Run ~50 ms, grade ~1.2 s per B).
 
 **Set format and validation** (`tools/pack.py` `validate`, shared by the importer). Field-level messages; refuses

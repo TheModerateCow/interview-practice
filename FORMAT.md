@@ -9,7 +9,7 @@ An interview set is a zip that you drag onto Interview Lab (http://127.0.0.1:876
 manifest.json
 problem.md            shown after Start (never before)
 starter/...           copied to the candidate's work/ folder at import
-.hidden/<tests file>  hidden tests: tests_hidden.py · hidden_test.go · HiddenTest.java · hidden.test.ts · hidden.test.js
+.hidden/<tests file>  hidden tests: tests_hidden.py · hidden_test.go · HiddenTest.java
 .hidden/<part>.md     later parts (p3.md, l2.md ...), revealed by `reveal`
 ```
 The zip may also contain one top-level folder that holds all of these.
@@ -22,8 +22,8 @@ Limits: 2000 files, 50 MB unpacked, no absolute paths, no `..`, no symlinks.
 | `name` | yes | `[a-z0-9-]`, max 64. This is the folder name under `data/sets/`. Re-importing replaces a set that hasn't started (the app says it replaced it); a started set refuses |
 | `title` | yes | Shown on the ready screen |
 | `company`, `role` | no | Ready screen |
-| `round` | yes | `codebase` · `levelled` · `ai-assisted` · `tdd` · `dsa` |
-| `language` | yes | `python` · `go` · `java` · `typescript` · `javascript` (`c` · `cpp`: Run only, no hidden tests) |
+| `round` | yes | `codebase` · `levelled` · `ai-assisted` · `tdd` |
+| `language` | yes | `python` · `go` · `java` (`c` · `cpp`: Run only, no hidden tests) |
 | `difficulty` | yes | `medium` · `hard` |
 | `minutes` | yes | Round length. The clock starts only when the candidate presses Start |
 | `rules` | no | Short markdown for the ready screen |
@@ -41,13 +41,12 @@ Limits: 2000 files, 50 MB unpacked, no absolute paths, no `..`, no symlinks.
   `reveal [{"file":".hidden/p3.md","after_tag":"test_p2_","or_minutes_left":15,"unlocks":"test_p3_"}]`.
 - **Levelled:** `tags ["test_l1_",…,"test_l4_"]`; problem.md = L1 only; `reveal` = l2.md, l3.md, l4.md, each
   `{"after_tag":"test_l<n-1>_","or_minutes_left":null,"unlocks":"test_l<n>_"}`; `examples` instead of `run_entry`/`your_tests`.
-- **DSA / TDD:** usually one tag, no `reveal`. Add `run_entry` + `testcases` for stdin/stdout practice.
+- **TDD:** usually one tag, no `reveal`. Add `run_entry` + `testcases` for stdin/stdout practice.
 
 ## Runner images (write code for these)
 Pinned: `ilab-python:3.15.2-pytest9.2.0` (python:3.15.2-slim + pytest 9.2.0), `golang:1.27.4` (standard library only,
 `GOTOOLCHAIN=local`; put `go 1.22` in go.mod), `eclipse-temurin:21.0.13.1_2-jdk` (no JUnit: the `Runner` + `Expect`
-mini-runner from grade.py), `node:24.22.3-slim` (`node:test`; TypeScript through type stripping: no enums, namespaces or
-parameter properties; import local files with their extension), `gcc:14.4.0` (C/C++ Run only). Change them in one place:
+mini-runner from grade.py), `gcc:14.4.0` (C/C++ Run only). Change them in one place:
 `IMAGES` in `backend/sandbox/runner.py`. Write code that also runs on older toolchains (claude.ai gates with local ones).
 Containers have no network, a read-only root, a 256 MB `/tmp`, 512 MB RAM, 2 CPUs and 256 pids. Run cases get 5 s each.
 
@@ -57,10 +56,10 @@ used outside level tests, and keep gofmt layout (a Go test ends at `}` in column
 
 ## Data written by the app (`data/sets/<name>/`)
 - `work/`: the candidate's code (autosaved).
-- `session.json`: `{"start": epoch_s|null, "minutes", "hints": [], "events": [[minute, "text"], …], "ended": epoch_s|null,
-  "unlocked": [tags], "revealed": [files]}`. `ended` is the close (End or time up) and is never later than the deadline `start + minutes*60`; a close requested after the deadline logs "time up" at the last minute, otherwise "end". "(after time)" on an event means it started after the close. This is clock.py's shape, so time left = `minutes - (now - start)/60`.
-- `final/`: copy of `work/` taken once at the close (End or time up); never rewritten. Absent for sets closed before this existed.
+- `session.json`: `{"v": 1, "start": epoch_s|null, "minutes", "events": [[minute, "text"], …], "ended": epoch_s|null,
+  "unlocked": [tags], "revealed": [files]}`. `ended` is the close (End or time up) and is never later than the deadline `start + minutes*60`; a close requested after the deadline logs "time up" at the last minute, otherwise "end". "(after time)" on an event means it started after the close. This is clock.py's shape, so time left = `minutes - (now - start)/60`. Older files (no `v`) are upgraded when read: `store.upgrade_session`.
+- `final/`: copy of `work/` taken once at the close (End or time up); never rewritten. Older rounds have none.
 - `results.json`: `{"<tag>": {grade.py JSON, failing test names in "failed", + "at": minute, "after_time": bool}}` (latest Submit per tag; `at`/`after_time` are taken when the action started), and `"final"` after the close (graded once; `at` = close minute, `after_time` = code edited after the deadline + 5 s).
-- Every attempt's `manifest.json` carries `"problem": "<catalog id>"` and its `language`; a built-in attempt is named `<id>-<lang>-<k>`, an imported one `<id>-<k>`. Attempts from the earlier Library carry `"preset"` instead.
+- Every attempt's `manifest.json` carries `"problem": "<catalog id>"` and its `language`; a built-in attempt is named `<id>-<lang>-<k>`, an imported one `<id>-<k>`. Older attempts with `"preset"` are read as `"problem"` (`store.upgrade_manifest`).
 - `data/catalog/<id>/` (your own problems, one per imported set): `manifest.json`, `problem.md`, `starter/`, `.hidden/`. Built-in problems (`catalog/<id>/`) are language-neutral and rendered into this format per attempt: `docs/rounds/3-language-variants/CONTRACT.md`.
 - Export → `export.zip` = `submission/` (work/ now), `final/` (the code at the close, when present), `session.json`, `results.json`, `manifest.json`.

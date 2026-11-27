@@ -1,6 +1,8 @@
 """A runner container whose attach fails is force-removed, not just killed (it never started, so AutoRemove never
 fires). No Docker: the Docker API is stubbed. Run: python3 tests/unit/test_container_cleanup.py"""
-import os, sys
+
+import os
+import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(ROOT, "backend"))
@@ -14,7 +16,8 @@ def api(method, path, body=None, **k):
     return {"Id": "c1"} if path == "/containers/create" else None
 
 
-def attach(cid, timeout): raise runner.DockerError("attach: connection closed")
+def attach(cid, timeout):
+    raise runner.DockerError("attach: connection closed")
 
 
 runner.api, runner._attach = api, attach

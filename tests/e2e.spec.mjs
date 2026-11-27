@@ -321,18 +321,18 @@ test('Home: delete a finished and an unstarted set', async ({ page, request }) =
 
 test('Catalog: filter, then pick a problem to open an attempt', async ({ page, request }) => {
   const cat = await (await request.get(`${BASE}/api/catalog`, { headers: H })).json();
-  const dsa = cat.problems.filter(p => p.round === 'dsa');
-  const p = dsa[0];
+  const lev = cat.problems.filter(p => p.round === 'levelled');
+  const p = lev[0];
   await page.goto(BASE);
   await page.waitForLoadState('networkidle');
   await openIfAsked(page);
   if (await page.locator('#home-btn').isVisible()) await page.click('#home-btn');
   await expect(page.locator('#catalog h2')).toContainText('Problems');
   await page.click('#f-round');
-  await page.click('#f-round-list [data-value="dsa"]');
+  await page.click('#f-round-list [data-value="levelled"]');
   // other tests import sets in parallel (each joins the catalog), so check the filter by content, not an exact count
-  await expect.poll(async () => (await page.locator('#catalog .set-meta').allTextContents()).every(t => t.startsWith('DSA round'))).toBe(true);
-  expect(await page.locator('#catalog .set-row').count()).toBeGreaterThanOrEqual(dsa.length);
+  await expect.poll(async () => (await page.locator('#catalog .set-meta').allTextContents()).every(t => t.startsWith('Levelled round'))).toBe(true);
+  expect(await page.locator('#catalog .set-row').count()).toBeGreaterThanOrEqual(lev.length);
   await page.click(`#catalog [data-problem="${p.id}"]`);
   await expect(page.locator('#ready')).toBeVisible();
   await expect(page.locator('#ready h1')).toHaveText(p.title);
@@ -682,8 +682,9 @@ test('Settings: code help Full, Words only, Off', async ({ page, request }) => {
   const row = t => page.locator(`.suggest-widget .monaco-list-row[aria-label="${t}"]`);
   const level = async v => { await page.click('#settings-btn'); await page.click(`#assist-pick [data-assist="${v}"]`); await expect(page.locator(`#assist-pick [data-assist="${v}"]`)).toHaveAttribute('aria-pressed', 'true'); await page.keyboard.press('Escape'); };
   const typeNew = async txt => {
-    await page.evaluate(() => { const e = window.monaco.editor.getEditors()[0], m = e.getModel(), n = m.getLineCount();
-      e.executeEdits('t', [{ range: new window.monaco.Range(n, 1, n, 1), text: '\n' }]); e.setPosition({ lineNumber: n + 1, column: 1 }); e.focus(); });
+    // a new line after the last one: break at the END of the last line, or the text lands in front of what's there
+    await page.evaluate(() => { const e = window.monaco.editor.getEditors()[0], m = e.getModel(), n = m.getLineCount(), c = m.getLineMaxColumn(n);
+      e.executeEdits('t', [{ range: new window.monaco.Range(n, c, n, c), text: '\n' }]); e.setPosition({ lineNumber: n + 1, column: 1 }); e.focus(); });
     await page.keyboard.type(txt);
   };
   await page.click('#editor .view-lines');

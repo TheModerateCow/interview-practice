@@ -15,8 +15,7 @@ export function assistLine(lang, level = 'full') {
   if (LEVEL_LINE[level]) return LEVEL_LINE[level] + ' Change it in Settings.';
   const s = ASSIST_LINE[lang];
   if (s) return 'Code help: Full. ' + s.charAt(11).toUpperCase() + s.slice(12) + ' Change it in Settings.';
-  return 'Autocomplete: ' + (['javascript', 'typescript'].includes(lang)
-    ? 'suggests methods and types as you type.' : 'suggests only words already in your files, not library functions or methods.');
+  return 'Autocomplete: suggests only words already in your files, not library functions or methods.';
 }
 
 const KINDS = ['', 'Text', 'Method', 'Function', 'Constructor', 'Field', 'Variable', 'Class', 'Interface', 'Module', 'Property', 'Unit', 'Value',

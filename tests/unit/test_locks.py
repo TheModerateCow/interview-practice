@@ -1,6 +1,10 @@
 """While a Run/Submit holds run_lock: a second one and a delete are refused (409); after it, delete works.
 Run: python3 tests/unit/test_locks.py"""
-import json, os, sys, tempfile
+
+import json
+import os
+import sys
+import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ["ILAB_DATA"] = tempfile.mkdtemp()
@@ -14,8 +18,11 @@ json.dump({"name": "s", "title": "s", "minutes": 30}, open(f"{d}/manifest.json",
 
 
 def code(fn):
-    try: fn(); return 200
-    except Conflict: return 409
+    try:
+        fn()
+        return 200
+    except Conflict:
+        return 409
 
 
 assert store.run_lock("s") is store.run_lock("s") and store.run_lock("s") is not store.lock("s")

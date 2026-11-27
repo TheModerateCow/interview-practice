@@ -1,2 +1,2 @@
-{"title": "Harness fixture", "company": "Interview Lab (test fixture)", "round": "dsa", "difficulty": "medium",
+{"title": "Harness fixture", "company": "Interview Lab (test fixture)", "round": "tdd", "difficulty": "medium",
  "minutes": 10, "tags": ["test_l1_", "test_l2_"], "grade_timeout_s": 60}
