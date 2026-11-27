@@ -22,6 +22,7 @@
     <button id="end-confirm" class="btn btn-danger strong" type="button" onclick={endRound}>End interview</button><button id="end-no" bind:this={endNoEl} class="btn btn-ghost" type="button" onclick={() => (round.askEnd = false)}>Keep going</button></span>
   <span class="spacer"></span>
   <span id="busy" class="busy" aria-live="polite">{#if busy && round.results?.kind !== 'loading'}<span class="loading">{busy}…</span>{/if}</span>
+  <span id="assist-status" class="saved" title={round.assist.reason}>{round.assist.state === 'starting' ? 'Code help starting…' : round.assist.state === 'unavailable' ? 'Code help unavailable' : ''}</span>
   <span id="save-status" class="saved">{round.saveStatus}</span>
   <button id="export-btn" class="btn btn-ghost" type="button" aria-label="Export" disabled={!!busy} onclick={() => guarded('Exporting', doExport)}>Export</button>
 </div>

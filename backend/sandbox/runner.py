@@ -17,6 +17,14 @@ IMAGES = {
     "javascript": os.environ.get("ILAB_IMG_NODE", "node:24.22.3-slim"),
     "typescript": os.environ.get("ILAB_IMG_NODE", "node:24.22.3-slim"),
 }
+# The runner's lock-down, shared with the language server (sandbox/lsp.py) so the two can't drift apart.
+LOCKED = {"AutoRemove": True, "NetworkMode": "none", "ReadonlyRootfs": True,
+          "Tmpfs": {"/tmp": "rw,exec,nosuid,size=256m"}, "Memory": 512 << 20, "MemorySwap": 512 << 20,
+          "NanoCpus": 2_000_000_000, "PidsLimit": 256, "CapDrop": ["ALL"], "SecurityOpt": ["no-new-privileges"]}
+# Code-help images: built locally at install (deploy/lsp-<lang>/), never pulled. One line per language.
+LSP_IMAGES = {"python": os.environ.get("ILAB_IMG_LSP_PYTHON", "ilab-lsp-python:pyright1.1.414"),
+              "go": os.environ.get("ILAB_IMG_LSP_GO", "ilab-lsp-go:gopls0.24.0"),
+              "java": os.environ.get("ILAB_IMG_LSP_JAVA", "ilab-lsp-java:jdtls1.61.0")}
 GO_ENV = ["GOTOOLCHAIN=local", "GOFLAGS=-mod=mod", "GOCACHE=/gocache", "GOPATH=/tmp/gopath", "CGO_ENABLED=0"]
 BASE_ENV = ["HOME=/tmp", "PYTHONDONTWRITEBYTECODE=1", "NODE_NO_WARNINGS=1"]
 OUT_CAP = 65536  # bytes kept per stream per case
@@ -122,9 +130,7 @@ def container(lang, files, harness, limit, env=()):
     """Run harness.sh over files in a fresh locked-down container. Returns ({name: bytes} from /tmp/out, timed_out)."""
     files = dict(files); files["_harness.sh"] = harness
     payload = _tar(files)
-    hc = {"AutoRemove": True, "NetworkMode": "none", "ReadonlyRootfs": True,
-          "Tmpfs": {"/tmp": "rw,exec,nosuid,size=256m"}, "Memory": 512 << 20, "MemorySwap": 512 << 20,
-          "NanoCpus": 2_000_000_000, "PidsLimit": 256, "CapDrop": ["ALL"], "SecurityOpt": ["no-new-privileges"]}
+    hc = dict(LOCKED)
     envs = BASE_ENV + [f"ILAB_N={len(payload)}", f"ILAB_LIMIT={int(limit)}"] + list(env)
     if lang == "go":
         hc["Mounts"] = [{"Type": "volume", "Source": GO_CACHE, "Target": "/gocache"}]
@@ -154,7 +160,8 @@ def container(lang, files, harness, limit, env=()):
                 timed_out = True
             s.close()
         finally:
-            try: api("POST", f"/containers/{cid}/kill")
+            # force-remove, not kill: a container whose attach or start failed never ran, so AutoRemove never fires
+            try: api("DELETE", f"/containers/{cid}?force=1")
             except DockerError: pass  # already gone (AutoRemove) — the normal case
         out, err = _demux(bytes(raw))
     try:

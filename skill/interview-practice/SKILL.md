@@ -289,6 +289,8 @@ def validate(m, exists, read=None):
         # ponytail: text match, the grader's case-insensitive substring rule; a tag only in a comment passes. The gate's run is the exact check.
         e += [f"tags: {t} matches no test in {ht}" for t in tags if t.lower() not in text]
     s("your_tests", False)
+    ex = s("examples", False)
+    if ex and (not ex.startswith(".hidden/") or ".." in ex or not exists(ex)): e.append(f"examples: {ex} missing or not under .hidden/")
     re_ = s("run_entry", False)
     if re_ and (".." in re_ or not exists("starter/" + re_)): e.append(f"run_entry: starter/{re_} missing")
     tc = m.get("testcases", [])
@@ -300,7 +302,7 @@ def validate(m, exists, read=None):
 
 def pack(d, out):
     m = json.load(open(os.path.join(d, "manifest.json")))
-    hidden = [m.get("hidden_tests")] + [r.get("file") for r in m.get("reveal", []) if isinstance(r, dict)]
+    hidden = [m.get("hidden_tests"), m.get("examples")] + [r.get("file") for r in m.get("reveal", []) if isinstance(r, dict)]
     src = {}
     for h in filter(None, hidden):
         x = h[len(".hidden/"):] if isinstance(h, str) and h.startswith(".hidden/") else None
@@ -382,6 +384,7 @@ Every coding round (Codebase, Levelled, AI-assisted, TDD, DSA) is delivered thro
 | `tags` | Every test-name tag in order, e.g. `["test_p1_","test_p2_","test_p3_"]`; default `["test_"]`. At Start, the tags unlocked are those no `reveal` entry `unlocks` |
 | `hidden_tests` | `.hidden/<hidden tests file>`; Submit runs it once per unlocked tag |
 | `reveal` | `[{"file","after_tag","or_minutes_left","unlocks"}]`, in order. `file` (`.hidden/<part>.md`) is shown and tag `unlocks` is graded once every test in `after_tag` passes, or when `or_minutes_left` minutes are left (null = never), or when the user presses *Next part* ("asked to move on", logged by the app) |
+| `examples` | `.hidden/examples/<hidden tests file name>`: a few visible-by-name tests (e.g. one per level) in the same harness; Run grades them for every unlocked tag (Levelled) |
 | `your_tests` | Glob over their code for their own tests, e.g. `test_*.py`, `*_test.go`, `*Test.java`, `*.test.ts` (TDD) |
 | `run_entry` | File in `starter/` that `testcases` run against |
 | `testcases` | `[{"stdin","expected"}]`, shown as pass/fail per case for `run_entry` (DSA) |
@@ -390,7 +393,7 @@ Every coding round (Codebase, Levelled, AI-assisted, TDD, DSA) is delivered thro
 - **Codebase pattern:** `tags ["test_p1_","test_p2_","test_p3_"]`. `problem.md` holds the overview, bug report and phase 2 spec; `p3.md` is revealed after `test_p2_` passes or 15 minutes are left: `reveal [{"file":".hidden/p3.md","after_tag":"test_p2_","or_minutes_left":15,"unlocks":"test_p3_"}]`.
 - **Levelled pattern:** `tags ["test_l1_",…,"test_l4_"]`. `problem.md` holds L1 only; `l2.md`–`l4.md` each reveal after the previous level's tag with `or_minutes_left` null, unlocking the next.
 - **DSA / TDD:** usually one tag and no `reveal`. Add `run_entry` + `testcases` for stdin/stdout practice.
-- **Every set gives the candidate a way to check their code besides Submit.** Always set `your_tests` to the language's convention (table above) and put one small example test in `starter/` for them to copy; it must not reveal hidden test names or cases. For Levelled and Codebase rounds also add a thin `run_entry` program that drives the class from stdin (Go: `cmd/run/main.go` in `package main` importing the module; Java: `Main.java`; Python/JS/TS: `main.py` / `main.js` / `main.ts`), with 1-2 `testcases` for L1 only.
+- **Every set gives the candidate a way to check their code besides Submit.** Always set `your_tests` to the language's convention (table above) and put one small example test in `starter/` for them to copy; it must not reveal hidden test names or cases. For Levelled rounds set `examples` instead (one test per level, same file name and harness as the hidden tests, under `.hidden/examples/`): Run then checks the code with no driver and no tests to write, so skip `your_tests` and `run_entry`. For Codebase rounds also add a thin `run_entry` program that drives the class from stdin (Go: `cmd/run/main.go` in `package main` importing the module; Java: `Main.java`; Python/JS/TS: `main.py` / `main.js` / `main.ts`), with 1-2 `testcases` for L1 only.
 
 Example (Codebase, Python):
 ```json

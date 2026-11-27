@@ -92,6 +92,7 @@ body.over:not(:has(#dropzone:not(.hidden)))::after { content: "Release to import
 .editor-box { position: relative; flex: 1; display: flex; flex-direction: column; min-height: 120px; }
 .loading.cover { position: absolute; inset: 0; z-index: 1; background: var(--bg); }   /* over the editor until Monaco loads */
 #bottom { display: grid; grid-template-columns: minmax(160px, 30%) minmax(0, 1fr); height: var(--bottom-h, 36%); background: var(--surface); }
+#bottom.solo { grid-template-columns: minmax(0, 1fr); }
 .stdin-wrap { display: grid; grid-template-rows: auto 1fr; gap: var(--s-1); padding: var(--s-3); border-right: 1px solid var(--line); min-height: 0; }
 #stdin { resize: none; padding: var(--s-2); font: var(--t-code)/var(--t-code-lh) var(--font-mono); min-height: 0; }
 #results { overflow: auto; padding: var(--s-3) var(--s-4); display: grid; align-content: start; gap: var(--s-3); min-width: 0; }

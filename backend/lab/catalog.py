@@ -7,10 +7,10 @@ import json, os, shutil
 
 from lab import variants
 from lab.errors import Invalid, NotFound
-from lab.store import (DATA, NAME_RE, SETS, jload, jsave, left_s, lock, manifest, ready_info, session, set_names,
+from lab.store import (DATA, NAME_RE, ROOT, SETS, jload, jsave, left_s, lock, manifest, ready_info, session, set_names,
                        upgrade_manifest)
 
-BUILTIN = os.environ.get("ILAB_CATALOG", "/app/catalog")
+BUILTIN = os.environ.get("ILAB_CATALOG", os.path.join(ROOT, "catalog"))
 CUSTOM = os.path.join(DATA, "catalog")
 FIELDS = ("title", "company", "round", "difficulty", "minutes")
 SET_FILES = ("manifest.json", "problem.md", "starter", ".hidden")
