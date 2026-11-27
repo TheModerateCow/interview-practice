@@ -34,7 +34,7 @@ async function ask(model, op, pos, extra = {}) {
   try {
     const r = await api('/sets/' + set + '/assist', { method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ op, file: fileOf(model), text: model.getValue(), line: pos ? pos.lineNumber - 1 : 0, col: pos ? pos.column - 1 : 0, ...extra }),
-      signal: AbortSignal.timeout(1500) });
+      signal: AbortSignal.timeout(op === 'check' ? 4000 : 3000) });   // longer than the backend's own waits (2 s check, 2.5 s request), so a slow answer still lands
     return ctx && ctx.set === set ? report(r) : null;
   } catch (e) { return null; }
 }

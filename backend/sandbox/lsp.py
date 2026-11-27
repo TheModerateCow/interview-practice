@@ -132,7 +132,7 @@ class Session:
             try: self._send({"jsonrpc": "2.0", "id": msg["id"], "result": None if items is None else [self.cfg["settings"].get(i.get("section")) for i in items]})
             except OSError: pass
 
-    def request(self, method, params, timeout=1.5, raw=False):
+    def request(self, method, params, timeout=2.5, raw=False):
         """The result, or None on timeout / error (a timed-out request is cancelled). raw: True for a null result too."""
         with self.cv:
             self.nid += 1; i = self.nid
