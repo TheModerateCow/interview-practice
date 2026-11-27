@@ -662,7 +662,11 @@ def _():
         return False
     seen = []   # every response body, for the leak scan
     def at(n, op, text, line, col, **k):
-        s, j = assist(n, op, text=text, line=line, col=col, **k); seen.append(j); return j
+        for _ in range(20):   # a check with no fresh answer yet carries no "diagnostics": ask again (up to ~10 s), so [] always means a real "no errors"
+            s, j = assist(n, op, text=text, line=line, col=col, **k); seen.append(j)
+            if op != "check" or "diagnostics" in j or j.get("state") != "ready": return j
+            time.sleep(0.5)
+        return j
     def labels(j): r = j.get("result") or {}; return [i["label"] for i in (r.get("items") if isinstance(r, dict) else r) or []]
     A = attempt()
     main = req("GET", f"/api/sets/{A}/files/main.py")[1].decode()
