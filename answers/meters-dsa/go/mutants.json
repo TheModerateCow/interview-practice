@@ -1,6 +1,0 @@
-[
- {"file":"battery.go","old":"\t\tbest[c] = unreachable","new":"\t\tbest[c] = 0","label":"the battery starts full of free energy","k":"test_p1_"},
- {"file":"battery.go","old":"v = max(v, best[c-1]-p)","new":"v = max(v, next[c-1]-p)","label":"several kWh can be charged in one half-hour","k":"test_p1_"},
- {"file":"battery.go","old":"best[c+1]+p-wear","new":"best[c+1]+p","label":"wear is never charged on discharge","k":"test_p1_"},
- {"file":"battery.go","old":"return slices.Max(best)","new":"return best[0]","label":"the battery is forced to end the day empty","k":"test_p1_"}
-]

@@ -47,7 +47,7 @@ def uniq(p): return f"{p}-{random.randrange(16**6):06x}"
 
 
 def manifest(name, lang, **kw):
-    m = {"format": "interview-set/1", "name": name, "title": "T " + name, "round": "dsa", "language": lang,
+    m = {"format": "interview-set/1", "name": name, "title": "T " + name, "round": "tdd", "language": lang,
          "difficulty": "medium", "minutes": 30}
     m.update(kw); return m
 

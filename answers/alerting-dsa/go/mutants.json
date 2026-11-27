@@ -1,6 +1,0 @@
-[
- {"file":"budget.go","old":"prefix[starts[len(starts)-1]] >= prefix[j]","new":"prefix[starts[len(starts)-1]] > prefix[j]","label":"a window exactly on budget is treated as over budget","k":"test_p1_"},
- {"file":"budget.go","old":"for i := 0; i <= n; i++ {","new":"for i := 1; i <= n; i++ {","label":"windows starting at minute 0 are never considered","k":"test_p1_"},
- {"file":"budget.go","old":"\t\tfor len(starts) > 0 && prefix[starts[len(starts)-1]] >= prefix[j] {","new":"\t\tif len(starts) > 0 && prefix[starts[len(starts)-1]] >= prefix[j] {","label":"each window end is matched with only one candidate start","k":"test_p1_"},
- {"file":"budget.go","old":"best = max(best, j-starts[len(starts)-1])","new":"best = j - starts[len(starts)-1]","label":"a later, shorter match overwrites the longest window found","k":"test_p1_"}
-]

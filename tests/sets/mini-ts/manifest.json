@@ -2,7 +2,7 @@
  "format": "interview-set/1",
  "name": "mini-ts",
  "title": "Top K words (TS)",
- "round": "dsa",
+ "round": "tdd",
  "language": "typescript",
  "difficulty": "medium",
  "minutes": 20,

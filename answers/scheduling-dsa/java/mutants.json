@@ -1,6 +1,0 @@
-[
- {"file": "Scheduler.java", "old": "int base = d * DAY - a.offset();", "new": "int base = d * DAY + a.offset();", "label": "time-zone offset applied the wrong way", "k": "test_p1_"},
- {"file": "Scheduler.java", "old": "if (last != null && s <= last[1])", "new": "if (last != null && s < last[1])", "label": "touching working windows not merged across midnight", "k": "test_p1_"},
- {"file": "Scheduler.java", "old": "cur = Math.max(cur, busy[i][1]);", "new": "cur = busy[i][1];", "label": "nested busy block moves the cursor backwards", "k": "test_p1_"},
- {"file": "Scheduler.java", "old": "events.add(new int[]{e - duration + 1, -1});", "new": "events.add(new int[]{e - duration, -1});", "label": "exact-fit slot rejected", "k": "test_p1_"}
-]

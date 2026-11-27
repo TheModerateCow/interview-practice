@@ -6,7 +6,7 @@ export const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '
 // marked is a global from /vendor/marked.min.js; without it, show the text as-is.
 export const md = s => (window.marked ? window.marked.parse(String(s || '')) : '<pre>' + esc(s) + '</pre>');
 
-export const ROUND = { codebase: 'Codebase round', levelled: 'Levelled round', 'ai-assisted': 'AI-assisted round', tdd: 'TDD round', dsa: 'DSA round' };
+export const ROUND = { codebase: 'Codebase round', levelled: 'Levelled round', 'ai-assisted': 'AI-assisted round', tdd: 'TDD round' };
 export const LANGNAME = { python: 'Python', go: 'Go', java: 'Java', typescript: 'TypeScript', javascript: 'JavaScript', c: 'C', cpp: 'C++' };
 export const cap = s => s ? s[0].toUpperCase() + s.slice(1) : '';
 // "test_p2_" -> "Part 2", "test_l3_" -> "Level 3", anything else -> "Tests"
