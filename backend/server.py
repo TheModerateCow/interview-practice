@@ -7,8 +7,8 @@ from werkzeug.exceptions import Forbidden, HTTPException
 
 from lab import catalog, importer, rounds
 from lab.errors import Conflict, Invalid, NotFound, Refused
-from sandbox import images, runner
-from lab.store import EXPORTS, SETS, ready_info, require_started, sdir, state, work_path
+from sandbox import images, lsp, runner
+from lab.store import EXPORTS, SETS, manifest, ready_info, require_started, sdir, state, work_path
 
 PORT = os.environ.get("ILAB_PORT", "8765")   # the port nginx publishes; the Host/Origin allowlist follows it
 HOSTS = {f"127.0.0.1:{PORT}", f"localhost:{PORT}"}
@@ -103,7 +103,25 @@ def r_files(n, rel):
     data = body(MAX_FILE)
     os.makedirs(os.path.dirname(p), exist_ok=True)
     with open(p, "wb") as f: f.write(data)
+    lsp.file_saved(n, os.path.relpath(p, os.path.realpath(os.path.join(sdir(n), "work"))), data)
     return {"ok": True}
+
+
+@app.post("/api/sets/<n>/assist")
+def r_assist(n):
+    sdir(n)
+    b = json.loads(body(MAX_FILE + 4096) or b"{}")
+    op = b.get("op")
+    if op not in lsp.OPS and op not in ("check", "stop"): raise Invalid("bad op")
+    if op == "stop": lsp.stop(n); return {"state": "stopped"}
+    require_started(n)
+    if not isinstance(b.get("file"), str): raise Invalid("bad path")
+    rel = os.path.relpath(work_path(n, b.get("file")), os.path.realpath(os.path.join(sdir(n), "work")))
+    text = b.get("text")
+    if text is not None and (not isinstance(text, str) or len(text) > MAX_FILE): raise Invalid("bad text")
+    line, col = b.get("line", 0), b.get("col", 0)
+    if not all(isinstance(x, int) and 0 <= x < 10**7 for x in (line, col)): raise Invalid("bad position")
+    return lsp.call(n, manifest(n)["language"], op, rel, text, line, col, b.get("item"))
 
 
 @app.get("/api/sets/<n>/state")

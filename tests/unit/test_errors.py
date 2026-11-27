@@ -5,9 +5,6 @@ import glob, json, os, sys, tempfile
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ["ILAB_DATA"] = tempfile.mkdtemp()
 sys.path.insert(0, os.path.join(ROOT, "backend"))
-try: from lab import pack  # noqa: F401
-except ImportError:  # in the image tools/pack.py is copied into lab/; in a checkout it isn't
-    sys.path.insert(0, os.path.join(ROOT, "tools")); import pack; sys.modules["lab.pack"] = pack
 import server  # noqa: E402
 
 H = {"Host": "127.0.0.1:8765", "X-ILab": "1"}

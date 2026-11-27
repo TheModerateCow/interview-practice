@@ -30,6 +30,7 @@ Limits: 2000 files, 50 MB unpacked, no absolute paths, no `..`, no symlinks.
 | `tags` | no | Every test-name tag in order, e.g. `["test_p1_","test_p2_","test_p3_"]` or `["test_l1_",…,"test_l4_"]`. Default `["test_"]`. Each tag must appear in the hidden tests file (pack.py and the importer check, case-insensitive). At Start, the unlocked tags are the ones that no `reveal` entry `unlocks` |
 | `hidden_tests` | no | `.hidden/<tests file>`. Submit runs it once per unlocked tag (`-k <tag>`) |
 | `reveal` | no | `[{"file", "after_tag", "or_minutes_left", "unlocks"}]`, in order. `file` (`.hidden/…md`) is shown and tag `unlocks` is graded once every test in `after_tag` passes, **or** once `or_minutes_left` minutes are left (null = never), **or** when the candidate presses *Next part* (the next locked entry, logged "asked to move on"). Locked parts are hidden and not graded. Each `file` and each `unlocks` may appear once, and `after_tag` must be unlocked at Start or by another entry (not by its own); pack.py and the importer refuse otherwise |
+| `examples` | no | `.hidden/examples/<tests file>`: a small tests file with the same name and harness as `hidden_tests`, for example one case per level. When set, Run grades it once per unlocked tag (failing names shown) instead of running a program, and unlocks nothing. Built-in Levelled problems get one generated (the first case of each level) |
 | `your_tests` | no | Glob over work/ for the candidate's own tests (*My tests*), e.g. `test_*.py`, `*_test.go`, `*Test.java`, `*.test.ts` |
 | `run_entry` | no | Path in starter/ that the `testcases` run against, e.g. `main.py`, `cmd/run/main.go`, `Main.java` |
 | `testcases` | no | `[{"stdin": "...", "expected": "..."}]`. Run shows ✓/✗ per case for `run_entry`. Trailing whitespace on each line and at the end is ignored |
@@ -39,7 +40,7 @@ Limits: 2000 files, 50 MB unpacked, no absolute paths, no `..`, no symlinks.
 - **Codebase:** `tags ["test_p1_","test_p2_","test_p3_"]`; problem.md = overview + bug report + phase 2 spec;
   `reveal [{"file":".hidden/p3.md","after_tag":"test_p2_","or_minutes_left":15,"unlocks":"test_p3_"}]`.
 - **Levelled:** `tags ["test_l1_",…,"test_l4_"]`; problem.md = L1 only; `reveal` = l2.md, l3.md, l4.md, each
-  `{"after_tag":"test_l<n-1>_","or_minutes_left":null,"unlocks":"test_l<n>_"}`.
+  `{"after_tag":"test_l<n-1>_","or_minutes_left":null,"unlocks":"test_l<n>_"}`; `examples` instead of `run_entry`/`your_tests`.
 - **DSA / TDD:** usually one tag, no `reveal`. Add `run_entry` + `testcases` for stdin/stdout practice.
 
 ## Runner images (write code for these)
@@ -50,7 +51,7 @@ parameter properties; import local files with their extension), `gcc:14.4.0` (C/
 `IMAGES` in `backend/sandbox/runner.py`. Write code that also runs on older toolchains (claude.ai gates with local ones).
 Containers have no network, a read-only root, a 256 MB `/tmp`, 512 MB RAM, 2 CPUs and 256 pids. Run cases get 5 s each.
 
-**Levelled Go/Java:** when Submit grades one tag, the app drops the other tags' test functions from its copy of the
+**Levelled Go/Java:** when Submit (or Run on `examples`) grades one tag, the app drops the other tags' test functions from its copy of the
 hidden tests before compiling. This is so code without later levels' methods still compiles. Keep helpers to the L1 API, keep every import
 used outside level tests, and keep gofmt layout (a Go test ends at `}` in column 0; a Java test ends at `}` at its own indent).
 
@@ -59,7 +60,7 @@ used outside level tests, and keep gofmt layout (a Go test ends at `}` in column
 - `session.json`: `{"start": epoch_s|null, "minutes", "hints": [], "events": [[minute, "text"], …], "ended": epoch_s|null,
   "unlocked": [tags], "revealed": [files]}`. `ended` is the close (End or time up) and is never later than the deadline `start + minutes*60`; a close requested after the deadline logs "time up" at the last minute, otherwise "end". "(after time)" on an event means it started after the close. This is clock.py's shape, so time left = `minutes - (now - start)/60`.
 - `final/`: copy of `work/` taken once at the close (End or time up); never rewritten. Absent for sets closed before this existed.
-- `results.json`: `{"<tag>": {grade.py JSON + "at": minute, "after_time": bool}}` (latest Submit per tag; `at`/`after_time` are taken when the action started), and `"final"` after the close (graded once; `at` = close minute, `after_time` = code edited after the deadline + 5 s).
+- `results.json`: `{"<tag>": {grade.py JSON, failing test names in "failed", + "at": minute, "after_time": bool}}` (latest Submit per tag; `at`/`after_time` are taken when the action started), and `"final"` after the close (graded once; `at` = close minute, `after_time` = code edited after the deadline + 5 s).
 - Every attempt's `manifest.json` carries `"problem": "<catalog id>"` and its `language`; a built-in attempt is named `<id>-<lang>-<k>`, an imported one `<id>-<k>`. Attempts from the earlier Library carry `"preset"` instead.
 - `data/catalog/<id>/` (your own problems, one per imported set): `manifest.json`, `problem.md`, `starter/`, `.hidden/`. Built-in problems (`catalog/<id>/`) are language-neutral and rendered into this format per attempt: `docs/rounds/3-language-variants/CONTRACT.md`.
 - Export → `export.zip` = `submission/` (work/ now), `final/` (the code at the close, when present), `session.json`, `results.json`, `manifest.json`.

@@ -87,7 +87,9 @@ def render(d, lang, name=None):
     tests_file = be.TESTS_FILE if api else CODEBASE_TESTS[lang]
     m.update(format="interview-set/1", name=name or os.path.basename(d.rstrip("/")), language=lang,
              hidden_tests=".hidden/" + tests_file)
-    m.setdefault("your_tests", YOUR_TESTS[lang])
+    levelled = bool(api) and m.get("round") == "levelled"
+    if levelled: m["examples"] = ".hidden/examples/" + tests_file   # Run grades these: the first case of each level
+    else: m.setdefault("your_tests", YOUR_TESTS[lang])
     out = {}
     md = Path(_pick(d, lang, "problem.md")).read_text()
     md = render_md(md, api, be, m)
@@ -98,7 +100,9 @@ def render(d, lang, name=None):
         src = _pick(d, lang, os.path.join("levels", f)) or _pick(d, lang, f)
         if not src: raise ValueError(f"reveal file {f} missing")
         out[".hidden/" + f] = render_md(Path(src).read_text(), api, be, m).encode()
-    if api: out[".hidden/" + tests_file] = be.tests_file(api, cases, data).encode()
+    if api:
+        out[".hidden/" + tests_file] = be.tests_file(api, cases, data).encode()
+        if levelled: out[m["examples"]] = be.tests_file(api, {t: cs[:1] for t, cs in cases.items()}, data).encode()
     else:
         src = os.path.join(d, lang, "hidden", tests_file)
         if not os.path.isfile(src): raise ValueError(f"{lang}/hidden/{tests_file} missing")
