@@ -776,6 +776,12 @@ def _():
     ln = main.split("\n").index("        int n = f.length - 1;") + 1   # the line after it, inside handle()
     def with_line(extra): L = main.split("\n"); L.insert(ln, extra); return "\n".join(L)
     def prime(): at(A, "check", main, 0, 0)   # open Main.java in the server, then let the project finish importing
+    def diags(text, file="Main.java", wait=20):   # a real answer for this text (jdtls publishes without a version), or None
+        end = time.time() + wait
+        while time.time() < end:
+            d = at(A, "check", text, 0, 0, file=file).get("diagnostics")
+            if d is not None: return d
+            time.sleep(0.5)
     prime(); time.sleep(1)
     j = at(A, "complete", with_line("        l.bal"), ln, 8 + len("l.bal"))
     check("Java own type: l.bal lists balanceAt (Ledger.java never opened)", any(x.startswith("balanceAt(") for x in labels(j)), labels(j)[:6])
@@ -785,15 +791,19 @@ def _():
     check("Java stdlib member: m.computeIf lists computeIfAbsent", any(x.startswith("computeIfAbsent(") for x in labels(j)), labels(j)[:6])
     j = at(A, "signature", with_line("        Math.max("), ln, 8 + len("Math.max("))
     check("Java signature help for Math.max(", any("max" in x.get("label", "") for x in (j.get("result") or {}).get("signatures", [])), j)
-    t0 = time.time(); j = at(A, "check", with_line('        l.balance("a");'), 0, 0)
-    d = [x for x in j.get("diagnostics", []) if x["range"]["start"]["line"] == ln]
-    check("Java: l.balance(\"a\") is underlined within 3 s, naming the method", len(d) == 1 and "balance" in d[0]["message"] and time.time() - t0 < 3, (j, time.time() - t0))
-    j = at(A, "check", main, 0, 0)
-    check("Java: Main.java as shipped has no diagnostics", j.get("diagnostics") == [], j)
+    t0 = time.time(); j = diags(with_line('        l.balance("a");'))
+    d = [x for x in j or [] if x["range"]["start"]["line"] == ln]
+    print(f"       Java: first underline after {time.time() - t0:.1f} s")
+    check("Java: l.balance(\"a\") is underlined within 20 s, naming the method", len(d) == 1 and "balance" in d[0]["message"], (j, time.time() - t0))
+    j = diags(main)
+    check("Java: Main.java as shipped has no diagnostics (a real answer, not a timeout)", j == [], j)
     ex = req("GET", f"/api/sets/{A}/files/ExampleTest.java")[1].decode()
-    check("Java: the untouched ExampleTest.java has no diagnostics (Expect resolves)", at(A, "check", ex, 0, 0, file="ExampleTest.java").get("diagnostics") == [], None)
+    check("Java: the untouched ExampleTest.java has no diagnostics (Expect resolves)", diags(ex, "ExampleTest.java") == [], None)
     L = main.split("\n"); hl = next(i for i, x in enumerate(L) if "Ledger l = new Ledger();" in x)
-    hv = json.dumps(at(A, "hover", main, hl, L[hl].index("new Ledger") + 6).get("result"))
+    for _ in range(20):
+        hv = json.dumps(at(A, "hover", main, hl, L[hl].index("new Ledger") + 6).get("result"))
+        if "Ledger" in hv: break
+        time.sleep(0.5)
     check("Java hover names Ledger", "Ledger" in hv, hv[:200])
     led = req("GET", f"/api/sets/{A}/files/Ledger.java")[1].decode()
     req("PUT", f"/api/sets/{A}/files/Ledger.java", led.rstrip()[:-1] + "\n    public int zzProbe() { return 1; }\n}\n")

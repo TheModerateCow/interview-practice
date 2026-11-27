@@ -116,9 +116,10 @@ export function detach(quiet) {
   ctx = null;
 }
 
-async function check(model) {
+async function check(model, tries = 0) {
   const r = await ask(model, 'check');
   if (!r || model.isDisposed()) return;
+  if (!r.diagnostics) { if (tries < 8) setTimeout(() => check(model, tries + 1), 1500); return; }   // the server is still checking this text
   monaco.editor.setModelMarkers(model, 'ilab-assist', (r.diagnostics || []).map(d => ({
     severity: monaco.MarkerSeverity[SEVERITY[d.severity || 1]], message: d.message, source: d.source, code: d.code && String(d.code),
     startLineNumber: d.range.start.line + 1, startColumn: d.range.start.character + 1, endLineNumber: d.range.end.line + 1, endColumn: d.range.end.character + 1 })));
