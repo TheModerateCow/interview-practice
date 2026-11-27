@@ -159,7 +159,7 @@ code, kbd, pre, .mono { font-family: var(--font-mono); font-variant-numeric: tab
   border: solid var(--fg-2); border-width: 0 1.5px 1.5px 0; transform: rotate(45deg);
   transition: transform var(--dur) var(--ease), margin-top var(--dur) var(--ease); }   /* chevron: a border, not a glyph */
 .dropdown-btn[aria-expanded="true"]::after { margin-top: -1px; transform: rotate(-135deg); }
-.dropdown-value { display: grid; min-width: 0; }
+.dropdown-value { display: grid; min-width: 0; text-align: start; }
 .dropdown-value > * { grid-area: 1 / 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dropdown-value > :not(.on) { visibility: hidden; }   /* hidden labels still size the button to the widest option */
 .dropdown-meta { color: var(--fg-3); white-space: nowrap; }
