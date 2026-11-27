@@ -33,7 +33,7 @@ mkdir -p /tmp/pw && cd /tmp/pw
 npm init -y >/dev/null && npm i @playwright/test@1.56.0 >/dev/null
 cp /work/tests/e2e.spec.mjs .
 cat > playwright.config.mjs <<CFG
-export default { testMatch: "e2e.spec.mjs", timeout: 300000, workers: 2, fullyParallel: true, reporter: "line",
+export default { testMatch: "e2e.spec.mjs", timeout: 300000, workers: 1, fullyParallel: true, reporter: "line",
   use: { headless: true, viewport: { width: 1400, height: 900 }, acceptDownloads: true } };
 CFG
 npx playwright test --config playwright.config.mjs
