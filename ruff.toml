@@ -1,0 +1,21 @@
+# Lint and format for the backend, tools and tests: `ruff check --fix . && ruff format .` (CI: .github/workflows/lint.yml).
+line-length = 120
+target-version = "py314"
+extend-exclude = [
+  "catalog", "answers", "tests/sets", "tests/fixture", "ui", "design",   # candidate-facing code and non-Python trees
+  "tools/pack.py", "backend/sandbox/gate.py",                              # embedded byte for byte in SKILL.md
+  "*.md",                                                                   # code blocks in docs stay as written
+]
+
+[lint]
+# pyflakes (unused/undefined names), pycodestyle statements (one per line), imports, syntax, whitespace. Pinned
+# explicitly: ruff's own default set changes between versions. Width is the formatter's job: what it can't wrap is
+# a long string or comment (embedded shell, Java, test data), so E501 isn't selected.
+select = ["F", "E4", "E7", "E9", "W"]
+ignore = ["E741"]   # `l` for a line is used throughout
+
+[lint.per-file-ignores]
+"tests/**" = ["E731"]   # tests name small lambdas on purpose (row = lambda: ...)
+
+[format]
+quote-style = "preserve"

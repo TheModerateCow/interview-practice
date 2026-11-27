@@ -12,13 +12,25 @@ problem, so a harness change never re-gates the whole catalog. A full re-gate is
 Output: {"include": [{"lang": "go", "problems": "catalog/a catalog/b"}, …]} — one CI job per language with work;
 {"include": []} when nothing needs gating.
 """
-import json, os, subprocess, sys
+
+import json
+import os
+import subprocess
+import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "backend"))
 from lab.variants import LANGS  # noqa: E402  (the catalog languages: one list)
-CORE = ("backend/lab/variants.py", "backend/lab/langs/__init__.py", "backend/sandbox/", "deploy/backend/",
-        "deploy/docker-compose.yml", "tests/compose.test.yml", "tools/gate_problem.py")
+
+CORE = (
+    "backend/lab/variants.py",
+    "backend/lab/langs/__init__.py",
+    "backend/sandbox/",
+    "deploy/backend/",
+    "deploy/docker-compose.yml",
+    "tests/compose.test.yml",
+    "tools/gate_problem.py",
+)
 FIXTURE = "tests/fixture"
 CANARIES = (FIXTURE, "catalog/quota-codebase")
 
@@ -28,27 +40,34 @@ def problems(root=ROOT):
     out = {}
     for d in [FIXTURE] + sorted("catalog/" + n for n in os.listdir(os.path.join(root, "catalog"))):
         langs = [l for l in LANGS if os.path.isdir(os.path.join(root, d, l, "starter"))]
-        if langs: out[d] = langs
+        if langs:
+            out[d] = langs
     return out
 
 
 def affected(changed, probs):
     """changed: relative paths; probs: problem dir -> languages. Returns {lang: set(problem dirs)}."""
     want = {l: set() for l in LANGS}
+
     def add(p, langs):
         for l in langs:
-            if l in probs.get(p, []): want[l].add(p)
+            if l in probs.get(p, []):
+                want[l].add(p)
+
     for f in changed:
         if f.startswith(CORE):
-            for p in CANARIES: add(p, LANGS)
+            for p in CANARIES:
+                add(p, LANGS)
             continue
         for l in LANGS:
             if f.startswith(f"backend/lab/langs/{l}") or (l == "python" and f.startswith("deploy/runner-python/")):
-                for p in CANARIES: add(p, [l])
+                for p in CANARIES:
+                    add(p, [l])
         parts = f.split("/")
         if f.startswith(FIXTURE + "/"):
             p, rest = FIXTURE, parts[2:]
-            if rest[:1] == ["answers"]: rest = rest[1:]
+            if rest[:1] == ["answers"]:
+                rest = rest[1:]
         elif parts[0] in ("catalog", "answers") and len(parts) > 2:
             p, rest = "catalog/" + parts[1], parts[2:]
         else:
@@ -59,16 +78,23 @@ def affected(changed, probs):
 
 def main(a):
     probs = problems()
-    if a[:1] == ["--all"] or not a: want = {l: {p for p, ls in probs.items() if l in ls} for l in LANGS}
+    if a[:1] == ["--all"] or not a:
+        want = {l: {p for p, ls in probs.items() if l in ls} for l in LANGS}
     else:
-        changed = subprocess.run(["git", "diff", "--name-only", f"{a[0]}...HEAD"], cwd=ROOT, capture_output=True,
-                                 text=True, check=True).stdout.split()
+        changed = subprocess.run(
+            ["git", "diff", "--name-only", f"{a[0]}...HEAD"], cwd=ROOT, capture_output=True, text=True, check=True
+        ).stdout.split()
         want = affected(changed, probs)
     print(json.dumps({"include": [{"lang": l, "problems": " ".join(sorted(ps))} for l, ps in want.items() if ps]}))
 
 
 def _check():
-    probs = {"tests/fixture": list(LANGS), "catalog/a": list(LANGS), "catalog/b": ["go"], "catalog/quota-codebase": list(LANGS)}
+    probs = {
+        "tests/fixture": list(LANGS),
+        "catalog/a": list(LANGS),
+        "catalog/b": ["go"],
+        "catalog/quota-codebase": list(LANGS),
+    }
     assert affected(["README.md", "ui/src/App.svelte"], probs) == {}
     assert affected(["catalog/a/go/starter/x.go"], probs) == {"go": {"catalog/a"}}
     assert affected(["answers/a/java/reference/X.java"], probs) == {"java": {"catalog/a"}}
@@ -77,11 +103,18 @@ def _check():
     assert affected(["backend/lab/langs/go_harness.go.tmpl"], probs) == {"go": canary}
     assert affected(["deploy/runner-python/Dockerfile"], probs) == {"python": canary}
     assert affected(["backend/sandbox/grade.py"], probs) == {l: canary for l in LANGS}
-    assert affected(["backend/sandbox/grade.py", "catalog/b/go/starter/x.go"], probs) == {"go": canary | {"catalog/b"}, "java": canary, "python": canary}
+    assert affected(["backend/sandbox/grade.py", "catalog/b/go/starter/x.go"], probs) == {
+        "go": canary | {"catalog/b"},
+        "java": canary,
+        "python": canary,
+    }
     assert affected(["tests/fixture/answers/java/mutants.json"], probs) == {"java": {"tests/fixture"}}
-    assert affected(["catalog/gone/problem.md"], probs) == {}   # a deleted problem gates nothing
+    assert affected(["catalog/gone/problem.md"], probs) == {}  # a deleted problem gates nothing
 
 
 if __name__ == "__main__":
-    if sys.argv[1:] == ["--self-check"]: _check(); print("ok")
-    else: main(sys.argv[1:])
+    if sys.argv[1:] == ["--self-check"]:
+        _check()
+        print("ok")
+    else:
+        main(sys.argv[1:])

@@ -1,6 +1,11 @@
 """Bad request bodies are 400s; a bug in our own code (a KeyError/ValueError) is a 500, not a "bad request".
 Needs Flask (pip install -r backend/requirements.txt). Run: python3 tests/unit/test_bad_request.py"""
-import json, os, sys, tempfile, time
+
+import json
+import os
+import sys
+import tempfile
+import time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ["ILAB_DATA"] = tempfile.mkdtemp()
@@ -18,18 +23,24 @@ def post(path, data):
 
 def write(p, data):
     os.makedirs(os.path.dirname(p), exist_ok=True)
-    with open(p, "w") as f: f.write(json.dumps(data))
+    with open(p, "w") as f:
+        f.write(json.dumps(data))
 
 
 d = os.path.join(os.environ["ILAB_DATA"], "sets")
 write(f"{d}/ok/manifest.json", {"name": "ok", "minutes": 30})
-write(f"{d}/ok/session.json", {"start": time.time(), "minutes": 30, "events": [], "ended": None, "unlocked": [], "revealed": []})
-write(f"{d}/broken/manifest.json", {"name": "broken"})   # no "minutes": Start hits a KeyError in our code
+write(
+    f"{d}/ok/session.json",
+    {"start": time.time(), "minutes": 30, "events": [], "ended": None, "unlocked": [], "revealed": []},
+)
+write(f"{d}/broken/manifest.json", {"name": "broken"})  # no "minutes": Start hits a KeyError in our code
 
-for path, data, want in [("/api/catalog/x/attempt", b"not json", "not valid JSON"),
-                         ("/api/catalog/x/attempt", b"[1]", "JSON object"),
-                         ("/api/sets/ok/run", b"{\"file\": 5}", "must be strings"),
-                         ("/api/sets/ok/assist", b"not json", "not valid JSON")]:
+for path, data, want in [
+    ("/api/catalog/x/attempt", b"not json", "not valid JSON"),
+    ("/api/catalog/x/attempt", b"[1]", "JSON object"),
+    ("/api/sets/ok/run", b"{\"file\": 5}", "must be strings"),
+    ("/api/sets/ok/assist", b"not json", "not valid JSON"),
+]:
     s, j = post(path, data)
     assert s == 400 and want in j["error"], (path, data, s, j)
 print("PASS bad bodies -> 400 naming the problem")
