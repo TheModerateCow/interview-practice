@@ -60,6 +60,8 @@ class Toolchain:
     name, exts = None, ()
     grades = True  # has a hidden-test runner (Submit / My tests); False: Run only
     test_start = None  # Go/Java: line -> (test name, the line that ends it), so grade.prune can drop unselected tests
+    env = ()  # extra environment for this language's containers
+    cache = None  # (named volume, mount point) kept between runs, e.g. Go's build cache
 
     def build(self, entry, files):
         """Run's compile step: (script, files) for one build container, or None to run the sources directly."""
@@ -100,6 +102,9 @@ class Python(Toolchain):
 
 class Go(Toolchain):
     name, exts = "go", (".go",)
+    env = ("GOTOOLCHAIN=local", "GOFLAGS=-mod=mod", "GOCACHE=/gocache", "GOPATH=/tmp/gopath", "CGO_ENABLED=0")
+    # one stack's Go cache, kept apart from any other stack on the same Docker daemon (the test stack sets this)
+    cache = (os.environ.get("ILAB_GO_CACHE", "ilab-go-cache"), "/gocache")
 
     def test_start(self, line):
         m = re.match(r"func (Test\w*)\(", line)  # gofmt: a test ends at the next "}" in column 0

@@ -47,7 +47,6 @@ LSP_IMAGES = {
     "go": os.environ.get("ILAB_IMG_LSP_GO", "ilab-lsp-go:gopls0.24.0"),
     "java": os.environ.get("ILAB_IMG_LSP_JAVA", "ilab-lsp-java:jdtls1.61.0"),
 }
-GO_ENV = ["GOTOOLCHAIN=local", "GOFLAGS=-mod=mod", "GOCACHE=/gocache", "GOPATH=/tmp/gopath", "CGO_ENABLED=0"]
 BASE_ENV = ["HOME=/tmp", "PYTHONDONTWRITEBYTECODE=1", "NODE_NO_WARNINGS=1"]
 OUT_CAP = 65536  # bytes kept per stream per case
 CASE_TL = 5  # seconds per Run case
@@ -58,9 +57,8 @@ BOOT = (
     'timeout -k 2 "$ILAB_LIMIT" sh /tmp/w/_harness.sh >/tmp/out/_harness.log 2>&1; '
     'echo $? >/tmp/out/_rc; cd /tmp/out && tar cz .'
 )
-# One stack's runners and Go cache, kept apart from any other stack on the same Docker daemon (the test stack sets these).
+# One stack's runners, kept apart from any other stack on the same Docker daemon (the test stack sets this).
 INSTANCE = os.environ.get("ILAB_INSTANCE", "1")
-GO_CACHE = os.environ.get("ILAB_GO_CACHE", "ilab-go-cache")
 _sem = threading.Semaphore(int(os.environ.get("ILAB_PARALLEL", "3")))
 
 
@@ -178,10 +176,10 @@ def container(lang, files, harness, limit, env=()):
     files["_harness.sh"] = harness
     payload = _tar(files)
     hc = dict(LOCKED)
-    envs = BASE_ENV + [f"ILAB_N={len(payload)}", f"ILAB_LIMIT={int(limit)}"] + list(env)
-    if lang == "go":
-        hc["Mounts"] = [{"Type": "volume", "Source": GO_CACHE, "Target": "/gocache"}]
-        envs += GO_ENV
+    tc = TOOLCHAINS[lang]
+    envs = BASE_ENV + [f"ILAB_N={len(payload)}", f"ILAB_LIMIT={int(limit)}"] + list(env) + list(tc.env)
+    if tc.cache:
+        hc["Mounts"] = [{"Type": "volume", "Source": tc.cache[0], "Target": tc.cache[1]}]
     body = {
         "Image": IMAGES[lang],
         "Entrypoint": ["sh", "-c", BOOT],
