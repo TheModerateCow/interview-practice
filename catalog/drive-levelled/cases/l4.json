@@ -1,0 +1,605 @@
+[
+ {
+  "name": "versions_and_trash",
+  "steps": [
+   {
+    "new": "Drive",
+    "args": []
+   },
+   {
+    "call": "add_user",
+    "args": [
+     "ana",
+     1000
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file_by",
+    "args": [
+     "ana",
+     "/ana/draft.doc",
+     300
+    ],
+    "expect": 700
+   },
+   {
+    "call": "overwrite_file",
+    "args": [
+     "/ana/draft.doc",
+     400
+    ],
+    "expect": 2
+   },
+   {
+    "call": "get_file_size",
+    "args": [
+     "/ana/draft.doc"
+    ],
+    "expect": 400
+   },
+   {
+    "call": "remaining",
+    "args": [
+     "ana"
+    ],
+    "expect": 300
+   },
+   {
+    "call": "restore_version",
+    "args": [
+     "/ana/draft.doc",
+     1
+    ],
+    "expect": 300
+   },
+   {
+    "call": "remaining",
+    "args": [
+     "ana"
+    ],
+    "expect": 700
+   },
+   {
+    "call": "delete_file",
+    "args": [
+     "/ana/draft.doc"
+    ],
+    "expect": 300
+   },
+   {
+    "call": "remaining",
+    "args": [
+     "ana"
+    ],
+    "expect": 1000
+   },
+   {
+    "call": "restore_file",
+    "args": [
+     "/ana/draft.doc"
+    ],
+    "expect": true
+   },
+   {
+    "call": "remaining",
+    "args": [
+     "ana"
+    ],
+    "expect": 700
+   },
+   {
+    "call": "empty_trash",
+    "args": [],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "overwrite_rules",
+  "steps": [
+   {
+    "new": "Drive",
+    "args": []
+   },
+   {
+    "call": "add_user",
+    "args": [
+     "ana",
+     1000
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file_by",
+    "args": [
+     "ana",
+     "/ana/a.doc",
+     300
+    ],
+    "expect": 700
+   },
+   {
+    "call": "overwrite_file",
+    "args": [
+     "/missing.doc",
+     10
+    ],
+    "expect": -1
+   },
+   {
+    "call": "overwrite_file",
+    "args": [
+     "/ana/a.doc",
+     -1
+    ],
+    "expect": -1
+   },
+   {
+    "call": "overwrite_file",
+    "args": [
+     "/ana/a.doc",
+     800
+    ],
+    "expect": -1
+   },
+   {
+    "call": "overwrite_file",
+    "args": [
+     "/ana/a.doc",
+     700
+    ],
+    "expect": 2
+   },
+   {
+    "call": "remaining",
+    "args": [
+     "ana"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "overwrite_file",
+    "args": [
+     "/ana/a.doc",
+     0
+    ],
+    "expect": 3
+   },
+   {
+    "call": "get_file_size",
+    "args": [
+     "/ana/a.doc"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "folder_size",
+    "args": [
+     "/ana/"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "largest_files",
+    "args": [
+     "/ana/",
+     5
+    ],
+    "expect": [
+     "/ana/a.doc(0)"
+    ]
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/free.bin",
+     5
+    ],
+    "expect": true
+   },
+   {
+    "call": "overwrite_file",
+    "args": [
+     "/free.bin",
+     99999
+    ],
+    "expect": 2
+   },
+   {
+    "call": "overwrite_file",
+    "args": [
+     "/free.bin",
+     6
+    ],
+    "expect": 3
+   }
+  ]
+ },
+ {
+  "name": "copy_takes_current_version",
+  "steps": [
+   {
+    "new": "Drive",
+    "args": []
+   },
+   {
+    "call": "add_user",
+    "args": [
+     "ana",
+     1000
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_user",
+    "args": [
+     "ben",
+     1000
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file_by",
+    "args": [
+     "ana",
+     "/ana/a.doc",
+     100
+    ],
+    "expect": 900
+   },
+   {
+    "call": "overwrite_file",
+    "args": [
+     "/ana/a.doc",
+     200
+    ],
+    "expect": 2
+   },
+   {
+    "call": "overwrite_file",
+    "args": [
+     "/ana/a.doc",
+     300
+    ],
+    "expect": 3
+   },
+   {
+    "call": "copy_file_by",
+    "args": [
+     "ben",
+     "/ana/a.doc",
+     "/ben/a.doc"
+    ],
+    "expect": 700
+   },
+   {
+    "call": "overwrite_file",
+    "args": [
+     "/ben/a.doc",
+     50
+    ],
+    "expect": 2
+   },
+   {
+    "call": "restore_version",
+    "args": [
+     "/ben/a.doc",
+     1
+    ],
+    "expect": 300
+   },
+   {
+    "call": "copy_file",
+    "args": [
+     "/ana/a.doc",
+     "/ana/b.doc"
+    ],
+    "expect": true
+   },
+   {
+    "call": "remaining",
+    "args": [
+     "ana"
+    ],
+    "expect": 100
+   },
+   {
+    "call": "remaining",
+    "args": [
+     "ben"
+    ],
+    "expect": 700
+   }
+  ]
+ },
+ {
+  "name": "restore_version_rules",
+  "steps": [
+   {
+    "new": "Drive",
+    "args": []
+   },
+   {
+    "call": "add_user",
+    "args": [
+     "ana",
+     1000
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file_by",
+    "args": [
+     "ana",
+     "/ana/a.doc",
+     100
+    ],
+    "expect": 900
+   },
+   {
+    "call": "overwrite_file",
+    "args": [
+     "/ana/a.doc",
+     200
+    ],
+    "expect": 2
+   },
+   {
+    "call": "overwrite_file",
+    "args": [
+     "/ana/a.doc",
+     300
+    ],
+    "expect": 3
+   },
+   {
+    "call": "restore_version",
+    "args": [
+     "/ana/a.doc",
+     0
+    ],
+    "expect": -1
+   },
+   {
+    "call": "restore_version",
+    "args": [
+     "/ana/a.doc",
+     4
+    ],
+    "expect": -1
+   },
+   {
+    "call": "restore_version",
+    "args": [
+     "/missing.doc",
+     1
+    ],
+    "expect": -1
+   },
+   {
+    "call": "restore_version",
+    "args": [
+     "/ana/a.doc",
+     3
+    ],
+    "expect": 300
+   },
+   {
+    "call": "remaining",
+    "args": [
+     "ana"
+    ],
+    "expect": 400
+   },
+   {
+    "call": "restore_version",
+    "args": [
+     "/ana/a.doc",
+     2
+    ],
+    "expect": 200
+   },
+   {
+    "call": "remaining",
+    "args": [
+     "ana"
+    ],
+    "expect": 700
+   },
+   {
+    "call": "overwrite_file",
+    "args": [
+     "/ana/a.doc",
+     50
+    ],
+    "expect": 3
+   },
+   {
+    "call": "restore_version",
+    "args": [
+     "/ana/a.doc",
+     3
+    ],
+    "expect": 50
+   },
+   {
+    "call": "restore_version",
+    "args": [
+     "/ana/a.doc",
+     1
+    ],
+    "expect": 100
+   },
+   {
+    "call": "remaining",
+    "args": [
+     "ana"
+    ],
+    "expect": 900
+   }
+  ]
+ },
+ {
+  "name": "trash_restore_and_empty",
+  "steps": [
+   {
+    "new": "Drive",
+    "args": []
+   },
+   {
+    "call": "add_user",
+    "args": [
+     "ana",
+     1000
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file_by",
+    "args": [
+     "ana",
+     "/ana/a.doc",
+     100
+    ],
+    "expect": 900
+   },
+   {
+    "call": "overwrite_file",
+    "args": [
+     "/ana/a.doc",
+     200
+    ],
+    "expect": 2
+   },
+   {
+    "call": "restore_file",
+    "args": [
+     "/ana/a.doc"
+    ],
+    "expect": false
+   },
+   {
+    "call": "delete_file",
+    "args": [
+     "/ana/a.doc"
+    ],
+    "expect": 200
+   },
+   {
+    "call": "largest_files",
+    "args": [
+     "/ana/",
+     5
+    ],
+    "expect": []
+   },
+   {
+    "call": "add_file_by",
+    "args": [
+     "ana",
+     "/ana/a.doc",
+     700
+    ],
+    "expect": 300
+   },
+   {
+    "call": "restore_file",
+    "args": [
+     "/ana/a.doc"
+    ],
+    "expect": false
+   },
+   {
+    "call": "remaining",
+    "args": [
+     "ana"
+    ],
+    "expect": 300
+   },
+   {
+    "call": "delete_file",
+    "args": [
+     "/ana/a.doc"
+    ],
+    "expect": 700
+   },
+   {
+    "call": "add_file_by",
+    "args": [
+     "ana",
+     "/ana/big.bin",
+     800
+    ],
+    "expect": 200
+   },
+   {
+    "call": "restore_file",
+    "args": [
+     "/ana/a.doc"
+    ],
+    "expect": false
+   },
+   {
+    "call": "delete_file",
+    "args": [
+     "/ana/big.bin"
+    ],
+    "expect": 800
+   },
+   {
+    "call": "restore_file",
+    "args": [
+     "/ana/a.doc"
+    ],
+    "expect": true
+   },
+   {
+    "call": "get_file_size",
+    "args": [
+     "/ana/a.doc"
+    ],
+    "expect": 700
+   },
+   {
+    "call": "overwrite_file",
+    "args": [
+     "/ana/a.doc",
+     10
+    ],
+    "expect": 2
+   },
+   {
+    "call": "remaining",
+    "args": [
+     "ana"
+    ],
+    "expect": 290
+   },
+   {
+    "call": "restore_file",
+    "args": [
+     "/missing.doc"
+    ],
+    "expect": false
+   },
+   {
+    "call": "empty_trash",
+    "args": [],
+    "expect": 2
+   },
+   {
+    "call": "restore_file",
+    "args": [
+     "/ana/big.bin"
+    ],
+    "expect": false
+   },
+   {
+    "call": "empty_trash",
+    "args": [],
+    "expect": 0
+   }
+  ]
+ }
+]

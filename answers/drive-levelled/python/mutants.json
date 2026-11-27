@@ -1,0 +1,100 @@
+[
+ {
+  "file": "drive.py",
+  "old": "if path in self.files or size < 0 or",
+  "new": "if path in self.files or size <= 0 or",
+  "label": "an empty file is refused",
+  "k": "test_l1_"
+ },
+ {
+  "file": "drive.py",
+  "old": "f = self.files.pop(path, None)",
+  "new": "f = self.files.get(path)",
+  "label": "delete leaves the file in place",
+  "k": "test_l1_"
+ },
+ {
+  "file": "drive.py",
+  "old": "return -1 if f is None else f[\"versions\"][-1]",
+  "new": "return 0 if f is None else f[\"versions\"][-1]",
+  "label": "a missing file reports size 0",
+  "k": "test_l1_"
+ },
+ {
+  "file": "drive.py",
+  "old": "key=lambda ps: (-ps[1], ps[0]))",
+  "new": "key=lambda ps: ps[1], reverse=True)",
+  "label": "largest files ties not broken by path",
+  "k": "test_l2_"
+ },
+ {
+  "file": "drive.py",
+  "old": "if p.startswith(prefix)]",
+  "new": "if prefix in p]",
+  "label": "prefix matched anywhere in the path",
+  "k": "test_l2_"
+ },
+ {
+  "file": "drive.py",
+  "old": "order[: max(n, 0)]",
+  "new": "order[: max(n + 1, 0)]",
+  "label": "largest files returns one too many",
+  "k": "test_l2_"
+ },
+ {
+  "file": "drive.py",
+  "old": "if u[\"used\"] + size > u[\"capacity\"]:",
+  "new": "if u[\"used\"] + size >= u[\"capacity\"]:",
+  "label": "filling a quota exactly is refused",
+  "k": "test_l3_"
+ },
+ {
+  "file": "drive.py",
+  "old": "if user_id in self.users or capacity <= 0:",
+  "new": "if user_id in self.users or capacity < 0:",
+  "label": "a user with capacity 0 is accepted",
+  "k": "test_l3_"
+ },
+ {
+  "file": "drive.py",
+  "old": "return self._add(owner, dest, self.files[source][\"versions\"][-1])",
+  "new": "return self._add(self.files[source][\"owner\"], dest, self.files[source][\"versions\"][-1])",
+  "label": "a copy is charged to the source's owner, not the copier",
+  "k": "test_l3_"
+ },
+ {
+  "file": "drive.py",
+  "old": "self._copy(self.files[source][\"owner\"], source, dest)",
+  "new": "self._copy(None, source, dest)",
+  "label": "copy_file of an owned file makes a free copy",
+  "k": "test_l3_"
+ },
+ {
+  "file": "drive.py",
+  "old": "not self._charge(f[\"owner\"], size):",
+  "new": "not self._charge(f[\"owner\"], size - f[\"versions\"][-1]):",
+  "label": "overwrite charges only the size difference",
+  "k": "test_l4_"
+ },
+ {
+  "file": "drive.py",
+  "old": "sum(f[\"versions\"][version:])",
+  "new": "sum(f[\"versions\"][version + 1 :])",
+  "label": "restore_version keeps charging the first discarded version",
+  "k": "test_l4_"
+ },
+ {
+  "file": "drive.py",
+  "old": "for i in range(len(self.trash) - 1, -1, -1):",
+  "new": "for i in range(len(self.trash)):",
+  "label": "restore_file brings back the oldest deleted file",
+  "k": "test_l4_"
+ },
+ {
+  "file": "drive.py",
+  "old": "self._free(f[\"owner\"], sum(f[\"versions\"]))",
+  "new": "self._free(f[\"owner\"], f[\"versions\"][-1])",
+  "label": "delete gives back only the current version's bytes",
+  "k": "test_l4_"
+ }
+]

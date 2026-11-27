@@ -1,0 +1,186 @@
+{
+ "module": "helpdesk",
+ "classes": {
+  "Desk": {
+   "init": [],
+   "methods": {
+    "add_agent": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "agent",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "open_ticket": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "customer",
+       "string"
+      ],
+      [
+       "priority",
+       "string"
+      ]
+     ],
+     "returns": "string",
+     "level": 1
+    },
+    "assign": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "ticket_id",
+       "string"
+      ],
+      [
+       "agent",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "set_status": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "ticket_id",
+       "string"
+      ],
+      [
+       "status",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "get_ticket": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "ticket_id",
+       "string"
+      ]
+     ],
+     "returns": "string",
+     "level": 1
+    },
+    "queue": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "agent",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "auto_assign": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "ticket_id",
+       "string"
+      ]
+     ],
+     "returns": "string",
+     "level": 2
+    },
+    "due_at": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "ticket_id",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 3
+    },
+    "overdue": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 3
+    },
+    "end_shift": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "agent",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 4
+    },
+    "start_shift": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "agent",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    },
+    "history": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "ticket_id",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 4
+    }
+   }
+  }
+ }
+}

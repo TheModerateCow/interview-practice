@@ -1,0 +1,646 @@
+[
+ {
+  "name": "credits_and_refunds",
+  "steps": [
+   {
+    "new": "Studio",
+    "args": []
+   },
+   {
+    "call": "add_class",
+    "args": [
+     1,
+     "spin",
+     600,
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_price",
+    "args": [
+     2,
+     "spin",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_credits",
+    "args": [
+     3,
+     "maya",
+     5
+    ],
+    "expect": 5
+   },
+   {
+    "call": "book",
+    "args": [
+     4,
+     "spin",
+     "maya"
+    ],
+    "expect": true
+   },
+   {
+    "call": "credits",
+    "args": [
+     5,
+     "maya"
+    ],
+    "expect": 3
+   },
+   {
+    "call": "cancel",
+    "args": [
+     540,
+     "spin",
+     "maya"
+    ],
+    "expect": true
+   },
+   {
+    "call": "credits",
+    "args": [
+     541,
+     "maya"
+    ],
+    "expect": 5
+   },
+   {
+    "call": "book",
+    "args": [
+     542,
+     "spin",
+     "maya"
+    ],
+    "expect": true
+   },
+   {
+    "call": "cancel",
+    "args": [
+     560,
+     "spin",
+     "maya"
+    ],
+    "expect": true
+   },
+   {
+    "call": "credits",
+    "args": [
+     561,
+     "maya"
+    ],
+    "expect": 3
+   }
+  ]
+ },
+ {
+  "name": "credit_and_price_rules",
+  "steps": [
+   {
+    "new": "Studio",
+    "args": []
+   },
+   {
+    "call": "add_class",
+    "args": [
+     1,
+     "box",
+     500,
+     5
+    ]
+   },
+   {
+    "call": "add_class",
+    "args": [
+     2,
+     "free",
+     500,
+     5
+    ]
+   },
+   {
+    "call": "add_credits",
+    "args": [
+     3,
+     "ana",
+     0
+    ],
+    "expect": -1
+   },
+   {
+    "call": "add_credits",
+    "args": [
+     4,
+     "ana",
+     -3
+    ],
+    "expect": -1
+   },
+   {
+    "call": "credits",
+    "args": [
+     5,
+     "ana"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "add_credits",
+    "args": [
+     6,
+     "ana",
+     2
+    ],
+    "expect": 2
+   },
+   {
+    "call": "add_credits",
+    "args": [
+     7,
+     "ana",
+     1
+    ],
+    "expect": 3
+   },
+   {
+    "call": "set_price",
+    "args": [
+     8,
+     "nope",
+     1
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_price",
+    "args": [
+     9,
+     "box",
+     -1
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_price",
+    "args": [
+     10,
+     "box",
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     11,
+     "box",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "credits",
+    "args": [
+     12,
+     "ana"
+    ],
+    "expect": 3
+   },
+   {
+    "call": "spots_left",
+    "args": [
+     13,
+     "box"
+    ],
+    "expect": 5
+   },
+   {
+    "call": "book",
+    "args": [
+     14,
+     "free",
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "credits",
+    "args": [
+     15,
+     "bo"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "set_price",
+    "args": [
+     16,
+     "box",
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     17,
+     "box",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "credits",
+    "args": [
+     18,
+     "ana"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "set_price",
+    "args": [
+     500,
+     "box",
+     1
+    ],
+    "expect": false
+   }
+  ]
+ },
+ {
+  "name": "refund_what_was_paid",
+  "steps": [
+   {
+    "new": "Studio",
+    "args": []
+   },
+   {
+    "call": "add_class",
+    "args": [
+     1,
+     "yoga",
+     1000,
+     5
+    ]
+   },
+   {
+    "call": "set_price",
+    "args": [
+     2,
+     "yoga",
+     2
+    ]
+   },
+   {
+    "call": "add_credits",
+    "args": [
+     3,
+     "ana",
+     10
+    ]
+   },
+   {
+    "call": "add_credits",
+    "args": [
+     4,
+     "bo",
+     10
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     5,
+     "yoga",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_price",
+    "args": [
+     6,
+     "yoga",
+     5
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     7,
+     "yoga",
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "credits",
+    "args": [
+     8,
+     "bo"
+    ],
+    "expect": 5
+   },
+   {
+    "call": "cancel",
+    "args": [
+     9,
+     "yoga",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "credits",
+    "args": [
+     10,
+     "ana"
+    ],
+    "expect": 10
+   },
+   {
+    "call": "cancel",
+    "args": [
+     941,
+     "yoga",
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "credits",
+    "args": [
+     942,
+     "bo"
+    ],
+    "expect": 5
+   }
+  ]
+ },
+ {
+  "name": "waitlist_pays_on_promotion",
+  "steps": [
+   {
+    "new": "Studio",
+    "args": []
+   },
+   {
+    "call": "add_class",
+    "args": [
+     1,
+     "spin",
+     800,
+     1
+    ]
+   },
+   {
+    "call": "set_price",
+    "args": [
+     2,
+     "spin",
+     3
+    ]
+   },
+   {
+    "call": "add_credits",
+    "args": [
+     3,
+     "ana",
+     3
+    ]
+   },
+   {
+    "call": "add_credits",
+    "args": [
+     4,
+     "bo",
+     2
+    ]
+   },
+   {
+    "call": "add_credits",
+    "args": [
+     5,
+     "cy",
+     3
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     6,
+     "spin",
+     "ana"
+    ]
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     7,
+     "spin",
+     "bo"
+    ],
+    "expect": 1
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     8,
+     "spin",
+     "cy"
+    ],
+    "expect": 2
+   },
+   {
+    "call": "credits",
+    "args": [
+     9,
+     "cy"
+    ],
+    "expect": 3
+   },
+   {
+    "call": "cancel",
+    "args": [
+     10,
+     "spin",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "upcoming",
+    "args": [
+     11,
+     "bo"
+    ],
+    "expect": []
+   },
+   {
+    "call": "upcoming",
+    "args": [
+     12,
+     "cy"
+    ],
+    "expect": [
+     "spin"
+    ]
+   },
+   {
+    "call": "credits",
+    "args": [
+     13,
+     "bo"
+    ],
+    "expect": 2
+   },
+   {
+    "call": "credits",
+    "args": [
+     14,
+     "cy"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "credits",
+    "args": [
+     15,
+     "ana"
+    ],
+    "expect": 3
+   },
+   {
+    "call": "waitlist",
+    "args": [
+     16,
+     "spin"
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "late_cancel_and_no_show",
+  "steps": [
+   {
+    "new": "Studio",
+    "args": []
+   },
+   {
+    "call": "add_class",
+    "args": [
+     1,
+     "hiit",
+     300,
+     1
+    ]
+   },
+   {
+    "call": "set_price",
+    "args": [
+     2,
+     "hiit",
+     1
+    ]
+   },
+   {
+    "call": "add_credits",
+    "args": [
+     3,
+     "ana",
+     1
+    ]
+   },
+   {
+    "call": "add_credits",
+    "args": [
+     4,
+     "bo",
+     1
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     5,
+     "hiit",
+     "ana"
+    ]
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     6,
+     "hiit",
+     "bo"
+    ]
+   },
+   {
+    "call": "cancel",
+    "args": [
+     250,
+     "hiit",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "credits",
+    "args": [
+     251,
+     "ana"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "credits",
+    "args": [
+     252,
+     "bo"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "upcoming",
+    "args": [
+     253,
+     "bo"
+    ],
+    "expect": [
+     "hiit"
+    ]
+   },
+   {
+    "call": "cancel",
+    "args": [
+     300,
+     "hiit",
+     "bo"
+    ],
+    "expect": false
+   },
+   {
+    "call": "credits",
+    "args": [
+     301,
+     "bo"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "spots_left",
+    "args": [
+     302,
+     "hiit"
+    ],
+    "expect": 0
+   }
+  ]
+ }
+]

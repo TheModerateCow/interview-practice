@@ -1,0 +1,100 @@
+[
+ {
+  "file": "drive.go",
+  "old": "; ok || size < 0 ||",
+  "new": "; ok || size <= 0 ||",
+  "label": "an empty file is refused",
+  "k": "test_l1_"
+ },
+ {
+  "file": "drive.go",
+  "old": "\tdelete(d.files, path)\n",
+  "new": "",
+  "label": "delete leaves the file in place",
+  "k": "test_l1_"
+ },
+ {
+  "file": "drive.go",
+  "old": "return -1\n\t}\n\treturn f.size()\n}\n\nfunc (d *Drive) CopyFile",
+  "new": "return 0\n\t}\n\treturn f.size()\n}\n\nfunc (d *Drive) CopyFile",
+  "label": "a missing file reports size 0",
+  "k": "test_l1_"
+ },
+ {
+  "file": "drive.go",
+  "old": "return es[i].path < es[j].path",
+  "new": "return es[i].path > es[j].path",
+  "label": "largest files ties broken by path descending",
+  "k": "test_l2_"
+ },
+ {
+  "file": "drive.go",
+  "old": "strings.HasPrefix(p, prefix)",
+  "new": "strings.Contains(p, prefix)",
+  "label": "prefix matched anywhere in the path",
+  "k": "test_l2_"
+ },
+ {
+  "file": "drive.go",
+  "old": "i < len(es) && i < n;",
+  "new": "i < len(es) && i <= n;",
+  "label": "largest files returns one too many",
+  "k": "test_l2_"
+ },
+ {
+  "file": "drive.go",
+  "old": "u.used+size > u.capacity",
+  "new": "u.used+size >= u.capacity",
+  "label": "filling a quota exactly is refused",
+  "k": "test_l3_"
+ },
+ {
+  "file": "drive.go",
+  "old": "ok || capacity <= 0",
+  "new": "ok || capacity < 0",
+  "label": "a user with capacity 0 is accepted",
+  "k": "test_l3_"
+ },
+ {
+  "file": "drive.go",
+  "old": "return d.add(owner, dest, src.size())",
+  "new": "return d.add(src.owner, dest, src.size())",
+  "label": "a copy is charged to the source's owner, not the copier",
+  "k": "test_l3_"
+ },
+ {
+  "file": "drive.go",
+  "old": "ok && d.copy(src.owner, source, dest)",
+  "new": "ok && d.copy(nil, source, dest)",
+  "label": "CopyFile of an owned file makes a free copy",
+  "k": "test_l3_"
+ },
+ {
+  "file": "drive.go",
+  "old": "!charge(f.owner, size)",
+  "new": "!charge(f.owner, size-f.size())",
+  "label": "overwrite charges only the size difference",
+  "k": "test_l4_"
+ },
+ {
+  "file": "drive.go",
+  "old": "sum(f.versions[version:])",
+  "new": "sum(f.versions[version+1:])",
+  "label": "RestoreVersion keeps charging the first discarded version",
+  "k": "test_l4_"
+ },
+ {
+  "file": "drive.go",
+  "old": "for i := len(d.trash) - 1; i >= 0; i-- {",
+  "new": "for i := 0; i < len(d.trash); i++ {",
+  "label": "RestoreFile brings back the oldest deleted file",
+  "k": "test_l4_"
+ },
+ {
+  "file": "drive.go",
+  "old": "free(f.owner, sum(f.versions))",
+  "new": "free(f.owner, f.size())",
+  "label": "delete gives back only the current version's bytes",
+  "k": "test_l4_"
+ }
+]

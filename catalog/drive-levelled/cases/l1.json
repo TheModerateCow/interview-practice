@@ -1,0 +1,355 @@
+[
+ {
+  "name": "files_by_path",
+  "steps": [
+   {
+    "new": "Drive",
+    "args": []
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/docs/cv.pdf",
+     300
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/docs/cv.pdf",
+     500
+    ],
+    "expect": false
+   },
+   {
+    "call": "get_file_size",
+    "args": [
+     "/docs/cv.pdf"
+    ],
+    "expect": 300
+   },
+   {
+    "call": "copy_file",
+    "args": [
+     "/docs/cv.pdf",
+     "/backup/cv.pdf"
+    ],
+    "expect": true
+   },
+   {
+    "call": "copy_file",
+    "args": [
+     "/docs/cv.pdf",
+     "/backup/cv.pdf"
+    ],
+    "expect": false
+   },
+   {
+    "call": "delete_file",
+    "args": [
+     "/docs/cv.pdf"
+    ],
+    "expect": 300
+   },
+   {
+    "call": "get_file_size",
+    "args": [
+     "/docs/cv.pdf"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "get_file_size",
+    "args": [
+     "/backup/cv.pdf"
+    ],
+    "expect": 300
+   }
+  ]
+ },
+ {
+  "name": "add_file_rules",
+  "steps": [
+   {
+    "new": "Drive",
+    "args": []
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/empty.txt",
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "get_file_size",
+    "args": [
+     "/empty.txt"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/bad.txt",
+     -1
+    ],
+    "expect": false
+   },
+   {
+    "call": "get_file_size",
+    "args": [
+     "/bad.txt"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/a.txt",
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/a.txt",
+     10
+    ],
+    "expect": false
+   },
+   {
+    "call": "get_file_size",
+    "args": [
+     "/a.txt"
+    ],
+    "expect": 10
+   },
+   {
+    "call": "get_file_size",
+    "args": [
+     "/missing.txt"
+    ],
+    "expect": -1
+   }
+  ]
+ },
+ {
+  "name": "copy_rules",
+  "steps": [
+   {
+    "new": "Drive",
+    "args": []
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/a.txt",
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/b.txt",
+     20
+    ],
+    "expect": true
+   },
+   {
+    "call": "copy_file",
+    "args": [
+     "/missing.txt",
+     "/c.txt"
+    ],
+    "expect": false
+   },
+   {
+    "call": "get_file_size",
+    "args": [
+     "/c.txt"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "copy_file",
+    "args": [
+     "/a.txt",
+     "/a.txt"
+    ],
+    "expect": false
+   },
+   {
+    "call": "copy_file",
+    "args": [
+     "/a.txt",
+     "/b.txt"
+    ],
+    "expect": false
+   },
+   {
+    "call": "get_file_size",
+    "args": [
+     "/b.txt"
+    ],
+    "expect": 20
+   },
+   {
+    "call": "copy_file",
+    "args": [
+     "/a.txt",
+     "/c.txt"
+    ],
+    "expect": true
+   },
+   {
+    "call": "copy_file",
+    "args": [
+     "/c.txt",
+     "/d.txt"
+    ],
+    "expect": true
+   },
+   {
+    "call": "get_file_size",
+    "args": [
+     "/d.txt"
+    ],
+    "expect": 10
+   }
+  ]
+ },
+ {
+  "name": "copies_are_independent",
+  "steps": [
+   {
+    "new": "Drive",
+    "args": []
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/a.txt",
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "copy_file",
+    "args": [
+     "/a.txt",
+     "/b.txt"
+    ],
+    "expect": true
+   },
+   {
+    "call": "delete_file",
+    "args": [
+     "/a.txt"
+    ],
+    "expect": 10
+   },
+   {
+    "call": "get_file_size",
+    "args": [
+     "/a.txt"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "get_file_size",
+    "args": [
+     "/b.txt"
+    ],
+    "expect": 10
+   },
+   {
+    "call": "copy_file",
+    "args": [
+     "/a.txt",
+     "/c.txt"
+    ],
+    "expect": false
+   },
+   {
+    "call": "copy_file",
+    "args": [
+     "/b.txt",
+     "/a.txt"
+    ],
+    "expect": true
+   },
+   {
+    "call": "get_file_size",
+    "args": [
+     "/a.txt"
+    ],
+    "expect": 10
+   }
+  ]
+ },
+ {
+  "name": "delete_rules",
+  "steps": [
+   {
+    "new": "Drive",
+    "args": []
+   },
+   {
+    "call": "delete_file",
+    "args": [
+     "/missing.txt"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/a.txt",
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "delete_file",
+    "args": [
+     "/a.txt"
+    ],
+    "expect": 10
+   },
+   {
+    "call": "delete_file",
+    "args": [
+     "/a.txt"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/a.txt",
+     25
+    ],
+    "expect": true
+   },
+   {
+    "call": "get_file_size",
+    "args": [
+     "/a.txt"
+    ],
+    "expect": 25
+   },
+   {
+    "call": "delete_file",
+    "args": [
+     "/a.txt"
+    ],
+    "expect": 25
+   }
+  ]
+ }
+]

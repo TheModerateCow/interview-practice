@@ -1,0 +1,14 @@
+[
+ {"file":"Studio.java","old":"c.cancelled || ts >= c.start","new":"c.cancelled || ts > c.start","label":"a class can still be booked or cancelled at its start time","k":"test_l1_"},
+ {"file":"Studio.java","old":"capacity <= 0 || start <= ts","new":"capacity <= 0 || start < ts","label":"a class starting right now can be added","k":"test_l1_"},
+ {"file":"Studio.java","old":"return a.compareTo(b);","new":"return b.compareTo(a);","label":"classes with the same start ordered by id descending","k":"test_l1_"},
+ {"file":"Studio.java","old":"c.waiting.remove(0);","new":"c.waiting.remove(c.waiting.size() - 1);","label":"the last member on the waitlist is promoted first","k":"test_l2_"},
+ {"file":"Studio.java","old":"return c.waiting.size();","new":"return c.waiting.size() - 1;","label":"waitlist positions count from 0","k":"test_l2_"},
+ {"file":"Studio.java","old":"c.booked.containsKey(member) || c.waiting.contains(member) ||","new":"c.booked.containsKey(member) ||","label":"a member can join the same waitlist twice","k":"test_l2_"},
+ {"file":"Studio.java","old":"c.start - ts >= REFUND_WINDOW","new":"c.start - ts > REFUND_WINDOW","label":"cancelling exactly 60 minutes before the start gets no refund","k":"test_l3_"},
+ {"file":"Studio.java","old":"credits.put(member, balance(member) + paid);","new":"credits.put(member, balance(member) + c.price);","label":"a cancellation refunds today's price, not what was paid","k":"test_l3_"},
+ {"file":"Studio.java","old":"if (balance(m) >= c.price)","new":"if (balance(m) > c.price)","label":"a waiting member with exactly the price in credits is skipped","k":"test_l3_"},
+ {"file":"Studio.java","old":"new GymClass(firstStart + k * WEEK, capacity)","new":"new GymClass(firstStart + (k + 1) * WEEK, capacity)","label":"a series starts a week late","k":"test_l4_"},
+ {"file":"Studio.java","old":"c -> c.start <= ts","new":"c -> c.start < ts","label":"history leaves out a class starting right now","k":"test_l4_"},
+ {"file":"Studio.java","old":"balance(e.getKey()) + e.getValue()","new":"balance(e.getKey())","label":"cancelling a class refunds nobody","k":"test_l4_"}
+]

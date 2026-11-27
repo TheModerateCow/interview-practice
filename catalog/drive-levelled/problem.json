@@ -1,0 +1,35 @@
+{
+ "title": "Cloud drive: files, quotas, versions and trash",
+ "company": "Cloud storage (practice domain)",
+ "round": "levelled",
+ "difficulty": "medium",
+ "minutes": 90,
+ "rules": "Four levels, revealed one at a time. Each opens when the previous level's hidden tests all pass, or when you press Next part. Standard library only. Hints are free: ask in the chat.",
+ "tags": [
+  "test_l1_",
+  "test_l2_",
+  "test_l3_",
+  "test_l4_"
+ ],
+ "reveal": [
+  {
+   "file": ".hidden/l2.md",
+   "after_tag": "test_l1_",
+   "or_minutes_left": null,
+   "unlocks": "test_l2_"
+  },
+  {
+   "file": ".hidden/l3.md",
+   "after_tag": "test_l2_",
+   "or_minutes_left": null,
+   "unlocks": "test_l3_"
+  },
+  {
+   "file": ".hidden/l4.md",
+   "after_tag": "test_l3_",
+   "or_minutes_left": null,
+   "unlocks": "test_l4_"
+  }
+ ],
+ "grade_timeout_s": 45
+}

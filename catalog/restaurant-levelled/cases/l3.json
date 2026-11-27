@@ -1,0 +1,625 @@
+[
+ {
+  "name": "join_two_linked_tables",
+  "steps": [
+   {
+    "new": "Restaurant",
+    "args": []
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T1",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T2",
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T3",
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "link_tables",
+    "args": [
+     2,
+     "T1",
+     "T2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "link_tables",
+    "args": [
+     3,
+     "T2",
+     "T3"
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     4,
+     "maya",
+     7,
+     1140
+    ],
+    "expect": "r1"
+   },
+   {
+    "call": "table_of",
+    "args": [
+     5,
+     "r1"
+    ],
+    "expect": "T2+T3"
+   },
+   {
+    "call": "party_at",
+    "args": [
+     6,
+     "T3",
+     1140
+    ],
+    "expect": "maya"
+   },
+   {
+    "call": "book",
+    "args": [
+     7,
+     "leo",
+     5,
+     1140
+    ],
+    "expect": ""
+   },
+   {
+    "call": "cancel",
+    "args": [
+     8,
+     "r1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     9,
+     "leo",
+     5,
+     1140
+    ],
+    "expect": "r2"
+   },
+   {
+    "call": "table_of",
+    "args": [
+     10,
+     "r2"
+    ],
+    "expect": "T1+T2"
+   }
+  ]
+ },
+ {
+  "name": "link_rules",
+  "steps": [
+   {
+    "new": "Restaurant",
+    "args": []
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T1",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T2",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "link_tables",
+    "args": [
+     2,
+     "T1",
+     "T9"
+    ],
+    "expect": false
+   },
+   {
+    "call": "link_tables",
+    "args": [
+     3,
+     "T9",
+     "T1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "link_tables",
+    "args": [
+     4,
+     "T1",
+     "T1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "book",
+    "args": [
+     5,
+     "maya",
+     4,
+     1140
+    ],
+    "expect": ""
+   },
+   {
+    "call": "link_tables",
+    "args": [
+     6,
+     "T2",
+     "T1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "link_tables",
+    "args": [
+     7,
+     "T1",
+     "T2"
+    ],
+    "expect": false
+   },
+   {
+    "call": "link_tables",
+    "args": [
+     8,
+     "T2",
+     "T1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "book",
+    "args": [
+     9,
+     "maya",
+     4,
+     1140
+    ],
+    "expect": "r1"
+   },
+   {
+    "call": "table_of",
+    "args": [
+     10,
+     "r1"
+    ],
+    "expect": "T1+T2"
+   },
+   {
+    "call": "book",
+    "args": [
+     11,
+     "leo",
+     5,
+     1260
+    ],
+    "expect": ""
+   }
+  ]
+ },
+ {
+  "name": "a_single_table_beats_a_join",
+  "steps": [
+   {
+    "new": "Restaurant",
+    "args": []
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T1",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T2",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T3",
+     6
+    ],
+    "expect": true
+   },
+   {
+    "call": "link_tables",
+    "args": [
+     2,
+     "T1",
+     "T2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     3,
+     "maya",
+     4,
+     1140
+    ],
+    "expect": "r1"
+   },
+   {
+    "call": "book",
+    "args": [
+     4,
+     "leo",
+     4,
+     1140
+    ],
+    "expect": "r2"
+   },
+   {
+    "call": "book",
+    "args": [
+     5,
+     "ana",
+     1,
+     1140
+    ],
+    "expect": ""
+   },
+   {
+    "call": "table_of",
+    "args": [
+     6,
+     "r1"
+    ],
+    "expect": "T3"
+   },
+   {
+    "call": "table_of",
+    "args": [
+     6,
+     "r2"
+    ],
+    "expect": "T1+T2"
+   },
+   {
+    "call": "party_at",
+    "args": [
+     7,
+     "T1",
+     1140
+    ],
+    "expect": "leo"
+   },
+   {
+    "call": "party_at",
+    "args": [
+     7,
+     "T2",
+     1140
+    ],
+    "expect": "leo"
+   },
+   {
+    "call": "free_tables",
+    "args": [
+     8,
+     1140
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "join_ties_by_lower_then_higher_id",
+  "steps": [
+   {
+    "new": "Restaurant",
+    "args": []
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T1",
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T2",
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T3",
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T4",
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "link_tables",
+    "args": [
+     2,
+     "T4",
+     "T3"
+    ],
+    "expect": true
+   },
+   {
+    "call": "link_tables",
+    "args": [
+     2,
+     "T4",
+     "T1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "link_tables",
+    "args": [
+     2,
+     "T3",
+     "T2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     3,
+     "maya",
+     5,
+     1140
+    ],
+    "expect": "r1"
+   },
+   {
+    "call": "book",
+    "args": [
+     4,
+     "leo",
+     6,
+     1140
+    ],
+    "expect": "r2"
+   },
+   {
+    "call": "book",
+    "args": [
+     5,
+     "ana",
+     6,
+     1140
+    ],
+    "expect": ""
+   },
+   {
+    "call": "table_of",
+    "args": [
+     6,
+     "r1"
+    ],
+    "expect": "T1+T4"
+   },
+   {
+    "call": "table_of",
+    "args": [
+     6,
+     "r2"
+    ],
+    "expect": "T2+T3"
+   }
+  ]
+ },
+ {
+  "name": "cancelled_join_goes_to_the_waitlist",
+  "steps": [
+   {
+    "new": "Restaurant",
+    "args": []
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T1",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T2",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T3",
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "link_tables",
+    "args": [
+     2,
+     "T1",
+     "T2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     3,
+     "maya",
+     4,
+     1140
+    ],
+    "expect": "r1"
+   },
+   {
+    "call": "book",
+    "args": [
+     4,
+     "big",
+     4,
+     1140
+    ],
+    "expect": "r2"
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     5,
+     "cara",
+     3,
+     1140
+    ],
+    "expect": true
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     6,
+     "dan",
+     2,
+     1140
+    ],
+    "expect": true
+   },
+   {
+    "call": "cancel",
+    "args": [
+     7,
+     "r2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "table_of",
+    "args": [
+     8,
+     "r2"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "table_of",
+    "args": [
+     8,
+     "r3"
+    ],
+    "expect": "T1+T2"
+   },
+   {
+    "call": "party_at",
+    "args": [
+     9,
+     "T2",
+     1140
+    ],
+    "expect": "cara"
+   },
+   {
+    "call": "waitlist",
+    "args": [
+     10,
+     1140
+    ],
+    "expect": [
+     "dan(2)"
+    ]
+   },
+   {
+    "call": "cancel",
+    "args": [
+     11,
+     "r1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "table_of",
+    "args": [
+     12,
+     "r4"
+    ],
+    "expect": "T3"
+   },
+   {
+    "call": "free_tables",
+    "args": [
+     13,
+     1140
+    ],
+    "expect": []
+   }
+  ]
+ }
+]

@@ -1,0 +1,553 @@
+[
+ {
+  "name": "rates_and_late_fees",
+  "steps": [
+   {
+    "new": "RentalDesk",
+    "args": []
+   },
+   {
+    "call": "add_car",
+    "args": [
+     1,
+     "c1",
+     "compact",
+     "downtown"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_car",
+    "args": [
+     1,
+     "c2",
+     "suv",
+     "downtown"
+    ],
+    "expect": true
+   },
+   {
+    "call": "rent",
+    "args": [
+     8,
+     "maya",
+     "downtown",
+     "compact",
+     2
+    ],
+    "expect": "c1"
+   },
+   {
+    "call": "rent",
+    "args": [
+     10,
+     "leo",
+     "downtown",
+     "suv",
+     1
+    ],
+    "expect": "c2"
+   },
+   {
+    "call": "overdue",
+    "args": [
+     34
+    ],
+    "expect": []
+   },
+   {
+    "call": "overdue",
+    "args": [
+     35
+    ],
+    "expect": [
+     "c2(leo)"
+    ]
+   },
+   {
+    "call": "return_car",
+    "args": [
+     40,
+     "c2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "charges",
+    "args": [
+     41,
+     "leo"
+    ],
+    "expect": 21000
+   },
+   {
+    "call": "return_car",
+    "args": [
+     56,
+     "c1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "charges",
+    "args": [
+     57,
+     "maya"
+    ],
+    "expect": 9000
+   }
+  ]
+ },
+ {
+  "name": "whole_days_started",
+  "steps": [
+   {
+    "new": "RentalDesk",
+    "args": []
+   },
+   {
+    "call": "add_car",
+    "args": [
+     1,
+     "c1",
+     "economy",
+     "downtown"
+    ],
+    "expect": true
+   },
+   {
+    "call": "rent",
+    "args": [
+     1,
+     "maya",
+     "downtown",
+     "economy",
+     1
+    ],
+    "expect": "c1"
+   },
+   {
+    "call": "return_car",
+    "args": [
+     1,
+     "c1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "charges",
+    "args": [
+     2,
+     "maya"
+    ],
+    "expect": 3000
+   },
+   {
+    "call": "rent",
+    "args": [
+     10,
+     "maya",
+     "downtown",
+     "economy",
+     3
+    ],
+    "expect": "c1"
+   },
+   {
+    "call": "return_car",
+    "args": [
+     34,
+     "c1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "charges",
+    "args": [
+     35,
+     "maya"
+    ],
+    "expect": 6000
+   },
+   {
+    "call": "rent",
+    "args": [
+     40,
+     "maya",
+     "downtown",
+     "economy",
+     3
+    ],
+    "expect": "c1"
+   },
+   {
+    "call": "return_car",
+    "args": [
+     65,
+     "c1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "charges",
+    "args": [
+     66,
+     "maya"
+    ],
+    "expect": 12000
+   }
+  ]
+ },
+ {
+  "name": "late_days_cost_double",
+  "steps": [
+   {
+    "new": "RentalDesk",
+    "args": []
+   },
+   {
+    "call": "add_car",
+    "args": [
+     1,
+     "c1",
+     "suv",
+     "airport"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_car",
+    "args": [
+     1,
+     "c2",
+     "suv",
+     "airport"
+    ],
+    "expect": true
+   },
+   {
+    "call": "rent",
+    "args": [
+     0,
+     "maya",
+     "airport",
+     "suv",
+     1
+    ],
+    "expect": "c1"
+   },
+   {
+    "call": "rent",
+    "args": [
+     0,
+     "leo",
+     "airport",
+     "suv",
+     2
+    ],
+    "expect": "c2"
+   },
+   {
+    "call": "return_car",
+    "args": [
+     48,
+     "c2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "charges",
+    "args": [
+     49,
+     "leo"
+    ],
+    "expect": 14000
+   },
+   {
+    "call": "return_car",
+    "args": [
+     73,
+     "c1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "charges",
+    "args": [
+     74,
+     "maya"
+    ],
+    "expect": 49000
+   }
+  ]
+ },
+ {
+  "name": "charges_accumulate",
+  "steps": [
+   {
+    "new": "RentalDesk",
+    "args": []
+   },
+   {
+    "call": "add_car",
+    "args": [
+     1,
+     "c1",
+     "economy",
+     "downtown"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_car",
+    "args": [
+     1,
+     "c2",
+     "compact",
+     "downtown"
+    ],
+    "expect": true
+   },
+   {
+    "call": "charges",
+    "args": [
+     2,
+     "maya"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "rent",
+    "args": [
+     2,
+     "maya",
+     "downtown",
+     "economy",
+     1
+    ],
+    "expect": "c1"
+   },
+   {
+    "call": "charges",
+    "args": [
+     3,
+     "maya"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "return_car",
+    "args": [
+     20,
+     "c1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "rent",
+    "args": [
+     21,
+     "maya",
+     "downtown",
+     "compact",
+     2
+    ],
+    "expect": "c2"
+   },
+   {
+    "call": "rent",
+    "args": [
+     22,
+     "leo",
+     "downtown",
+     "economy",
+     1
+    ],
+    "expect": "c1"
+   },
+   {
+    "call": "return_car",
+    "args": [
+     60,
+     "c2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "charges",
+    "args": [
+     61,
+     "maya"
+    ],
+    "expect": 12000
+   },
+   {
+    "call": "charges",
+    "args": [
+     61,
+     "leo"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "charges",
+    "args": [
+     61,
+     "nobody"
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "overdue_order",
+  "steps": [
+   {
+    "new": "RentalDesk",
+    "args": []
+   },
+   {
+    "call": "add_car",
+    "args": [
+     1,
+     "c1",
+     "economy",
+     "downtown"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_car",
+    "args": [
+     1,
+     "c2",
+     "economy",
+     "downtown"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_car",
+    "args": [
+     1,
+     "c3",
+     "suv",
+     "airport"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_car",
+    "args": [
+     1,
+     "c4",
+     "compact",
+     "airport"
+    ],
+    "expect": true
+   },
+   {
+    "call": "rent",
+    "args": [
+     2,
+     "maya",
+     "downtown",
+     "economy",
+     2
+    ],
+    "expect": "c1"
+   },
+   {
+    "call": "rent",
+    "args": [
+     2,
+     "leo",
+     "downtown",
+     "economy",
+     1
+    ],
+    "expect": "c2"
+   },
+   {
+    "call": "rent",
+    "args": [
+     2,
+     "ana",
+     "airport",
+     "suv",
+     1
+    ],
+    "expect": "c3"
+   },
+   {
+    "call": "rent",
+    "args": [
+     5,
+     "sam",
+     "airport",
+     "compact",
+     1
+    ],
+    "expect": "c4"
+   },
+   {
+    "call": "overdue",
+    "args": [
+     26
+    ],
+    "expect": []
+   },
+   {
+    "call": "overdue",
+    "args": [
+     27
+    ],
+    "expect": [
+     "c2(leo)",
+     "c3(ana)"
+    ]
+   },
+   {
+    "call": "overdue",
+    "args": [
+     30
+    ],
+    "expect": [
+     "c2(leo)",
+     "c3(ana)",
+     "c4(sam)"
+    ]
+   },
+   {
+    "call": "return_car",
+    "args": [
+     31,
+     "c2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "overdue",
+    "args": [
+     51
+    ],
+    "expect": [
+     "c3(ana)",
+     "c4(sam)",
+     "c1(maya)"
+    ]
+   },
+   {
+    "call": "overdue",
+    "args": [
+     60
+    ],
+    "expect": [
+     "c3(ana)",
+     "c4(sam)",
+     "c1(maya)"
+    ]
+   }
+  ]
+ }
+]

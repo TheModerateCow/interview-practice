@@ -1,0 +1,380 @@
+[
+ {
+  "name": "largest_and_folder_size",
+  "steps": [
+   {
+    "new": "Drive",
+    "args": []
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/docs/a.txt",
+     200
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/docs/b.txt",
+     500
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/docs/c.txt",
+     200
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/music/song.mp3",
+     900
+    ],
+    "expect": true
+   },
+   {
+    "call": "largest_files",
+    "args": [
+     "/docs/",
+     2
+    ],
+    "expect": [
+     "/docs/b.txt(500)",
+     "/docs/a.txt(200)"
+    ]
+   },
+   {
+    "call": "largest_files",
+    "args": [
+     "",
+     10
+    ],
+    "expect": [
+     "/music/song.mp3(900)",
+     "/docs/b.txt(500)",
+     "/docs/a.txt(200)",
+     "/docs/c.txt(200)"
+    ]
+   },
+   {
+    "call": "folder_size",
+    "args": [
+     "/docs/"
+    ],
+    "expect": 900
+   }
+  ]
+ },
+ {
+  "name": "prefix_is_plain_text",
+  "steps": [
+   {
+    "new": "Drive",
+    "args": []
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/docs/a.txt",
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/docs2/b.txt",
+     300
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/archive/docs/c.txt",
+     50
+    ],
+    "expect": true
+   },
+   {
+    "call": "largest_files",
+    "args": [
+     "/docs",
+     10
+    ],
+    "expect": [
+     "/docs2/b.txt(300)",
+     "/docs/a.txt(100)"
+    ]
+   },
+   {
+    "call": "largest_files",
+    "args": [
+     "/docs/",
+     10
+    ],
+    "expect": [
+     "/docs/a.txt(100)"
+    ]
+   },
+   {
+    "call": "folder_size",
+    "args": [
+     "/docs"
+    ],
+    "expect": 400
+   },
+   {
+    "call": "largest_files",
+    "args": [
+     "/docs/a.txt",
+     10
+    ],
+    "expect": [
+     "/docs/a.txt(100)"
+    ]
+   },
+   {
+    "call": "largest_files",
+    "args": [
+     "/photos/",
+     10
+    ],
+    "expect": []
+   },
+   {
+    "call": "folder_size",
+    "args": [
+     "/photos/"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "folder_size",
+    "args": [
+     ""
+    ],
+    "expect": 450
+   }
+  ]
+ },
+ {
+  "name": "ties_by_path",
+  "steps": [
+   {
+    "new": "Drive",
+    "args": []
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/b.txt",
+     50
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/c.txt",
+     70
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/a.txt",
+     50
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/d.txt",
+     50
+    ],
+    "expect": true
+   },
+   {
+    "call": "largest_files",
+    "args": [
+     "/",
+     3
+    ],
+    "expect": [
+     "/c.txt(70)",
+     "/a.txt(50)",
+     "/b.txt(50)"
+    ]
+   },
+   {
+    "call": "largest_files",
+    "args": [
+     "/",
+     0
+    ],
+    "expect": []
+   },
+   {
+    "call": "largest_files",
+    "args": [
+     "/",
+     9
+    ],
+    "expect": [
+     "/c.txt(70)",
+     "/a.txt(50)",
+     "/b.txt(50)",
+     "/d.txt(50)"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "listings_follow_changes",
+  "steps": [
+   {
+    "new": "Drive",
+    "args": []
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/docs/a.txt",
+     200
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/docs/b.txt",
+     500
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/docs/c.txt",
+     200
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/music/song.mp3",
+     900
+    ],
+    "expect": true
+   },
+   {
+    "call": "copy_file",
+    "args": [
+     "/music/song.mp3",
+     "/docs/song.mp3"
+    ],
+    "expect": true
+   },
+   {
+    "call": "delete_file",
+    "args": [
+     "/docs/b.txt"
+    ],
+    "expect": 500
+   },
+   {
+    "call": "largest_files",
+    "args": [
+     "/docs/",
+     5
+    ],
+    "expect": [
+     "/docs/song.mp3(900)",
+     "/docs/a.txt(200)",
+     "/docs/c.txt(200)"
+    ]
+   },
+   {
+    "call": "folder_size",
+    "args": [
+     "/docs/"
+    ],
+    "expect": 1300
+   },
+   {
+    "call": "folder_size",
+    "args": [
+     "/music/"
+    ],
+    "expect": 900
+   }
+  ]
+ },
+ {
+  "name": "empty_files_listed",
+  "steps": [
+   {
+    "new": "Drive",
+    "args": []
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/x/empty.txt",
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/x/one.txt",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "largest_files",
+    "args": [
+     "/x/",
+     5
+    ],
+    "expect": [
+     "/x/one.txt(1)",
+     "/x/empty.txt(0)"
+    ]
+   },
+   {
+    "call": "folder_size",
+    "args": [
+     "/x/"
+    ],
+    "expect": 1
+   },
+   {
+    "call": "delete_file",
+    "args": [
+     "/x/one.txt"
+    ],
+    "expect": 1
+   },
+   {
+    "call": "folder_size",
+    "args": [
+     "/x/"
+    ],
+    "expect": 0
+   }
+  ]
+ }
+]

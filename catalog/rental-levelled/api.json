@@ -1,0 +1,15 @@
+{
+ "module": "rental",
+ "classes": {"RentalDesk": {"init": [], "methods": {
+  "add_car": {"params": [["ts", "int"], ["car_id", "string"], ["car_class", "string"], ["branch", "string"]], "returns": "bool", "level": 1},
+  "rent": {"params": [["ts", "int"], ["customer", "string"], ["branch", "string"], ["car_class", "string"], ["days", "int"]], "returns": "string", "level": 1},
+  "return_car": {"params": [["ts", "int"], ["car_id", "string"]], "returns": "bool", "level": 1},
+  "status": {"params": [["ts", "int"], ["car_id", "string"]], "returns": "string", "level": 1},
+  "charges": {"params": [["ts", "int"], ["customer", "string"]], "returns": "int", "level": 2},
+  "overdue": {"params": [["ts", "int"]], "returns": "list<string>", "level": 2},
+  "drop_off": {"params": [["ts", "int"], ["car_id", "string"], ["branch", "string"]], "returns": "bool", "level": 3},
+  "available": {"params": [["ts", "int"], ["branch", "string"]], "returns": "list<string>", "level": 3},
+  "reserve": {"params": [["ts", "int"], ["customer", "string"], ["branch", "string"], ["car_class", "string"], ["start", "int"], ["days", "int"]], "returns": "string", "level": 4},
+  "pick_up": {"params": [["ts", "int"], ["reservation_id", "string"]], "returns": "string", "level": 4}}}},
+ "errors": []
+}

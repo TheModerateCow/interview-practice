@@ -1,0 +1,250 @@
+{
+ "module": "gym",
+ "java_class": "Gym",
+ "records": {},
+ "functions": {},
+ "classes": {
+  "Studio": {
+   "init": [],
+   "methods": {
+    "add_class": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "class_id",
+       "string"
+      ],
+      [
+       "start",
+       "int"
+      ],
+      [
+       "capacity",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "book": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "class_id",
+       "string"
+      ],
+      [
+       "member",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "cancel": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "class_id",
+       "string"
+      ],
+      [
+       "member",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "spots_left": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "class_id",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 1
+    },
+    "upcoming": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "member",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 1
+    },
+    "join_waitlist": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "class_id",
+       "string"
+      ],
+      [
+       "member",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 2
+    },
+    "waitlist": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "class_id",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "add_credits": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "member",
+       "string"
+      ],
+      [
+       "n",
+       "int"
+      ]
+     ],
+     "returns": "int",
+     "level": 3
+    },
+    "credits": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "member",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 3
+    },
+    "set_price": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "class_id",
+       "string"
+      ],
+      [
+       "price",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 3
+    },
+    "add_series": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "series_id",
+       "string"
+      ],
+      [
+       "first_start",
+       "int"
+      ],
+      [
+       "capacity",
+       "int"
+      ],
+      [
+       "weeks",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    },
+    "cancel_class": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "class_id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    },
+    "cancel_series": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "series_id",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 4
+    },
+    "history": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "member",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 4
+    }
+   }
+  }
+ },
+ "errors": []
+}
