@@ -1,0 +1,17 @@
+[
+ {"file":"RentalDesk.java","old":"cars.get(free.get(0)).out = new Rental(customer, ts, due);\n        return free.get(0);","new":"cars.get(free.get(free.size() - 1)).out = new Rental(customer, ts, due);\n        return free.get(free.size() - 1);","label":"rent hands out the highest car id","k":"test_l1_"},
+ {"file":"RentalDesk.java","old":"days <= 0 || hasCar(customer)","new":"days < 0 || hasCar(customer)","label":"a rental of 0 days is accepted","k":"test_l1_"},
+ {"file":"RentalDesk.java","old":"|| days <= 0 || hasCar(customer)) return \"\";","new":"|| days <= 0) return \"\";","label":"a customer with a car out can rent another","k":"test_l1_"},
+ {"file":"RentalDesk.java","old":"return (hours + DAY - 1) / DAY;","new":"return hours / DAY;","label":"whole days counted rounding down instead of started","k":"test_l2_"},
+ {"file":"RentalDesk.java","old":"Math.max(1, daysStarted(ts - out.start()))","new":"daysStarted(ts - out.start())","label":"a same-hour return is free","k":"test_l2_"},
+ {"file":"RentalDesk.java","old":"out.due() < ts","new":"out.due() <= ts","label":"a car is overdue at its due time","k":"test_l2_"},
+ {"file":"RentalDesk.java","old":" + daysStarted(Math.max(0, ts - out.due()))","new":"","label":"late days are not charged extra","k":"test_l2_"},
+ {"file":"RentalDesk.java","old":"(branch.equals(c.branch) ? 0 : DROP_FEE)","new":"DROP_FEE","label":"drop fee charged on every return","k":"test_l3_"},
+ {"file":"RentalDesk.java","old":"c.out == null || !branches.contains(branch)) return false;","new":"c.out == null) return false;","label":"drop-off at an unknown branch accepted","k":"test_l3_"},
+ {"file":"RentalDesk.java","old":"        c.branch = branch;\n","new":"","label":"a one-way car stays with its old branch","k":"test_l3_"},
+ {"file":"RentalDesk.java","old":"if (c.out == null && c.branch.equals(branch)) counts","new":"if (c.branch.equals(branch)) counts","label":"available counts rented cars","k":"test_l3_"},
+ {"file":"RentalDesk.java","old":"r.start < end && start < r.end","new":"r.start <= end && start <= r.end","label":"back-to-back periods treated as overlapping","k":"test_l4_"},
+ {"file":"RentalDesk.java","old":"if (free.size() <= pending(","new":"if (free.size() < pending(","label":"walk-in takes the last car a reservation needs","k":"test_l4_"},
+ {"file":"RentalDesk.java","old":"ts >= r.end","new":"ts > r.end","label":"pick-up allowed at the reservation's end","k":"test_l4_"},
+ {"file":"RentalDesk.java","old":"new Rental(r.customer, ts, r.end)","new":"new Rental(r.customer, r.start, r.end)","label":"picked-up rental charged from the reservation start","k":"test_l4_"}
+]

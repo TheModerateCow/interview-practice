@@ -1,0 +1,22 @@
+[
+ {"file": "OrderBook.java", "old": "if (orders.containsKey(orderId)) return null;", "new": "if (resting(orderId) != null) return null;", "label": "ids of orders that are gone can be used again", "k": "test_l1_"},
+ {"file": "OrderBook.java", "old": "return o != null && o.state.equals(\"open\") ? o : null;", "new": "return o;", "label": "cancelling an order that is gone succeeds again", "k": "test_l1_"},
+ {"file": "OrderBook.java", "old": "            lv.queue.put(o.id, o);\n            lv.shares += o.left;", "new": "            lv.queue.put(o.id, o);\n            lv.shares = o.left;", "label": "a new order at a price replaces that price's depth", "k": "test_l1_"},
+ {"file": "OrderBook.java", "old": "            if (lv.queue.isEmpty()) levels.remove(o.price);", "new": "            if (lv.queue.isEmpty() && false) levels.remove(o.price);", "label": "an emptied price level stays as the best ask", "k": "test_l1_"},
+ {"file": "OrderBook.java", "old": "if (qty > o.left) { // more shares: back of the queue", "new": "if (qty >= o.left) { // more shares: back of the queue", "label": "amending to the same size loses the order's place", "k": "test_l2_"},
+ {"file": "OrderBook.java", "old": "if (qty > o.left) { // more shares: back of the queue", "new": "if (qty < o.left) { // more shares: back of the queue", "label": "smaller orders go to the back instead of bigger ones", "k": "test_l2_"},
+ {"file": "OrderBook.java", "old": "            s.levels.get(o.price).shares -= o.left - qty;\n", "new": "", "label": "shrinking an order leaves the level's depth unchanged", "k": "test_l2_"},
+ {"file": "OrderBook.java", "old": "if (out.size() >= n) break;", "new": "if (out.size() > n) break;", "label": "top levels returns one level too many", "k": "test_l2_"},
+ {"file": "OrderBook.java", "old": "            if (qty == 0) return cost;\n        }\n        return null;", "new": "            if (qty == 0) return cost;\n        }\n        return cost;", "label": "a quote for more than the book prices what is there", "k": "test_l3_"},
+ {"file": "OrderBook.java", "old": "        return asks.take(qty, null)[1];", "new": "        return quoteBuy(qty) == null ? 0 : asks.take(qty, null)[1];", "label": "a buy bigger than the book fills nothing", "k": "test_l3_"},
+ {"file": "OrderBook.java", "old": "                        o.state = \"filled\";\n                        it.remove();\n                    }", "new": "                        o.state = \"filled\";\n                        it.remove();\n                    } else {\n                        it.remove();\n                        lv.queue.put(o.id, o);\n                        break;\n                    }", "label": "a part-filled order goes to the back of its queue", "k": "test_l3_"},
+ {"file": "OrderBook.java", "old": "                    cost += (long) t * p;", "new": "                    cost += (long) t * levels.lastKey();", "label": "every share is paid at the worst price level", "k": "test_l3_"},
+ {"file": "OrderBook.java", "old": "                    lv.shares -= t;\n", "new": "", "label": "sweeps don't reduce the level's depth", "k": "test_l3_"},
+ {"file": "OrderBook.java", "old": "                        o.state = \"filled\";\n                        it.remove();", "new": "                        it.remove();", "label": "filled orders can still be cancelled", "k": "test_l3_"},
+ {"file": "OrderBook.java", "old": "if (limit != null && (desc ? p < limit : p > limit)) break;", "new": "if (limit != null && (desc ? p <= limit : p >= limit)) break;", "label": "an order doesn't trade at exactly its own price", "k": "test_l4_"},
+ {"file": "OrderBook.java", "old": "levels = desc ? new TreeMap<>(Collections.reverseOrder()) : new TreeMap<>();", "new": "levels = new TreeMap<>();", "label": "bids are kept cheapest first", "k": "test_l4_"},
+ {"file": "OrderBook.java", "old": "        o.filled += got;\n", "new": "", "label": "shares traded on arrival don't count as filled", "k": "test_l4_"},
+ {"file": "OrderBook.java", "old": "        if (o.left == 0) o.state = \"filled\";\n        else sideOf(o).add(o);", "new": "        sideOf(o).add(o);", "label": "a fully traded order still rests with 0 shares", "k": "test_l4_"},
+ {"file": "OrderBook.java", "old": "(o.sell ? bids : asks).take(qty, price)", "new": "(o.sell ? asks : bids).take(qty, price)", "label": "orders match against their own side", "k": "test_l4_"},
+ {"file": "OrderBook.java", "old": "        o.state = \"cancelled\";\n", "new": "", "label": "a cancelled order still reports open", "k": "test_l4_"}
+]

@@ -1,0 +1,185 @@
+{
+ "module": "drive",
+ "classes": {
+  "Drive": {
+   "init": [],
+   "methods": {
+    "add_file": {
+     "params": [
+      [
+       "path",
+       "string"
+      ],
+      [
+       "size",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "get_file_size": {
+     "params": [
+      [
+       "path",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 1
+    },
+    "copy_file": {
+     "params": [
+      [
+       "source",
+       "string"
+      ],
+      [
+       "dest",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "delete_file": {
+     "params": [
+      [
+       "path",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 1
+    },
+    "largest_files": {
+     "params": [
+      [
+       "prefix",
+       "string"
+      ],
+      [
+       "n",
+       "int"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "folder_size": {
+     "params": [
+      [
+       "prefix",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 2
+    },
+    "add_user": {
+     "params": [
+      [
+       "user_id",
+       "string"
+      ],
+      [
+       "capacity",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 3
+    },
+    "add_file_by": {
+     "params": [
+      [
+       "user_id",
+       "string"
+      ],
+      [
+       "path",
+       "string"
+      ],
+      [
+       "size",
+       "int"
+      ]
+     ],
+     "returns": "int",
+     "level": 3
+    },
+    "copy_file_by": {
+     "params": [
+      [
+       "user_id",
+       "string"
+      ],
+      [
+       "source",
+       "string"
+      ],
+      [
+       "dest",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 3
+    },
+    "remaining": {
+     "params": [
+      [
+       "user_id",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 3
+    },
+    "overwrite_file": {
+     "params": [
+      [
+       "path",
+       "string"
+      ],
+      [
+       "size",
+       "int"
+      ]
+     ],
+     "returns": "int",
+     "level": 4
+    },
+    "restore_version": {
+     "params": [
+      [
+       "path",
+       "string"
+      ],
+      [
+       "version",
+       "int"
+      ]
+     ],
+     "returns": "int",
+     "level": 4
+    },
+    "restore_file": {
+     "params": [
+      [
+       "path",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    },
+    "empty_trash": {
+     "params": [],
+     "returns": "int",
+     "level": 4
+    }
+   }
+  }
+ }
+}

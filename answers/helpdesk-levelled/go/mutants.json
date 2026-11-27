@@ -1,0 +1,16 @@
+[
+ {"file":"helpdesk.go","old":"{\"in_progress\", \"resolved\"}: true, {\"resolved\", \"open\"}: true,","new":"{\"in_progress\", \"resolved\"}: true, {\"resolved\", \"open\"}: true, {\"open\", \"resolved\"}: true,","label":"an open ticket can jump straight to resolved","k":"test_l1_"},
+ {"file":"helpdesk.go","old":"if status == \"in_progress\" && t.agent == \"\" {","new":"if status == \"in_progress\" && t.agent == \"-\" {","label":"a ticket with no agent can start progress","k":"test_l1_"},
+ {"file":"helpdesk.go","old":" || t.status == \"resolved\" || t.agent == agent {","new":" || t.agent == agent {","label":"a resolved ticket can be reassigned","k":"test_l1_"},
+ {"file":"helpdesk.go","old":"return mine[i].num < mine[j].num","new":"return mine[i].id < mine[j].id","label":"queue orders ticket ids as text (t10 before t9)","k":"test_l2_"},
+ {"file":"helpdesk.go","old":"load < bestLoad || (load == bestLoad && a < best)","new":"load < bestLoad || (load == bestLoad && a > best)","label":"auto-assign ties broken by name descending","k":"test_l2_"},
+ {"file":"helpdesk.go","old":"if t == nil || t.agent != \"\" {\n\t\treturn \"\"","new":"if t == nil {\n\t\treturn \"\"","label":"auto-assign takes a ticket away from its agent","k":"test_l2_"},
+ {"file":"helpdesk.go","old":"&& ts > due(ts, t) {","new":"&& ts >= due(ts, t) {","label":"a ticket is overdue at its due minute","k":"test_l3_"},
+ {"file":"helpdesk.go","old":"paused := t.paused\n\tif t.status == \"waiting\" {\n\t\tpaused += ts - t.waitStart\n\t}\n","new":"paused := t.paused\n","label":"a wait still in progress doesn't move the due time","k":"test_l3_"},
+ {"file":"helpdesk.go","old":"if (t.status == \"open\" || t.status == \"in_progress\") && ts","new":"if t.status != \"resolved\" && ts","label":"waiting tickets listed as overdue","k":"test_l3_"},
+ {"file":"helpdesk.go","old":"if di, dj := due(ts, late[i]), due(ts, late[j]); di != dj {","new":"if di, dj := late[i].opened, late[j].opened; di != dj {","label":"overdue ordered by opening time, not due time","k":"test_l3_"},
+ {"file":"helpdesk.go","old":"if t == nil || !d.agents[agent] ||","new":"if _, ok := d.agents[agent]; t == nil || !ok ||","label":"assign accepts an off-shift agent","k":"test_l4_"},
+ {"file":"helpdesk.go","old":"for a, on := range d.agents {\n\t\tif !on {","new":"for a := range d.agents {\n\t\tif _, on := d.agents[a]; !on {","label":"off-shift agents still picked for tickets","k":"test_l4_"},
+ {"file":"helpdesk.go","old":"\t\td.put(ts, d.tickets[id], to)\n","new":"\t\td.tickets[id].agent = to\n","label":"shift hand-overs not recorded in history","k":"test_l4_"},
+ {"file":"helpdesk.go","old":"for a, on := range d.agents {\n\t\tif on && a != agent {","new":"for _, on := range d.agents {\n\t\tif on {","label":"the last agent on shift can leave","k":"test_l4_"}
+]

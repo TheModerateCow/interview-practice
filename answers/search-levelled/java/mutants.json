@@ -1,0 +1,21 @@
+[
+ {"file": "SearchBox.java", "old": "int n = count.getOrDefault(query, 0) + 1;", "new": "int n = 1;", "label": "repeated searches don't add to popularity", "k": "test_l1_"},
+ {"file": "SearchBox.java", "old": "Comparator.comparingInt((Entry e) -> -e.count())", "new": "Comparator.comparingInt((Entry e) -> e.count())", "label": "least popular query suggested first", "k": "test_l1_"},
+ {"file": "SearchBox.java", "old": ".thenComparing(Entry::query);", "new": ".thenComparing(Entry::query, Comparator.reverseOrder());", "label": "ties go to the alphabetically last query", "k": "test_l1_"},
+ {"file": "SearchBox.java", "old": "        for (Node nd : path(query)) {\n            if (old > 0)", "new": "        for (Node nd : path(query).subList(0, query.length())) {\n            if (old > 0)", "label": "a query isn't suggested for its own full text", "k": "test_l1_"},
+ {"file": "SearchBox.java", "old": "if (!count.containsKey(query)) return false;", "new": "if (!count.containsKey(query)) return true;", "label": "deleting an unlogged query reports success", "k": "test_l2_"},
+ {"file": "SearchBox.java", "old": "        else count.remove(query);", "new": "", "label": "deleted queries keep their popularity", "k": "test_l2_"},
+ {"file": "SearchBox.java", "old": "int n = count.getOrDefault(into, 0) + moved;", "new": "int n = moved;", "label": "merge overwrites the target's own searches", "k": "test_l2_"},
+ {"file": "SearchBox.java", "old": "if (!count.containsKey(from) || from.equals(into)) return null;", "new": "if (!count.containsKey(from)) return null;", "label": "merging a query into itself deletes it", "k": "test_l2_"},
+ {"file": "SearchBox.java", "old": "for (int i = 0; i < k && it.hasNext(); i++) {", "new": "for (int i = 0; i <= k && it.hasNext(); i++) {", "label": "top list returns one extra entry", "k": "test_l3_"},
+ {"file": "SearchBox.java", "old": "set(e.getKey(), count.getOrDefault(e.getKey(), 0) + e.getValue());", "new": "set(e.getKey(), e.getValue());", "label": "import overwrites earlier counts instead of adding", "k": "test_l3_"},
+ {"file": "SearchBox.java", "old": "for (String q : log) batch.merge(q, 1, Integer::sum);", "new": "for (String q : log) batch.put(q, 1);", "label": "import counts each query once", "k": "test_l3_"},
+ {"file": "SearchBox.java", "old": "        return count.size();", "new": "        return batch.size();", "label": "import returns the batch's distinct queries, not the whole log's", "k": "test_l3_"},
+ {"file": "SearchBox.java", "old": "Iterator<Entry> it = n.ranked.iterator();", "new": "Iterator<Entry> it = n.ranked.descendingIterator();", "label": "top list read from the wrong end", "k": "test_l3_"},
+ {"file": "SearchBox.java", "old": "Entry e = it.next();\n            out.add(e.query() + \":\" + e.count());", "new": "Entry e = it.next();\n            out.add(e.query() + \":\" + (e.count() - 1));", "label": "top list shows popularity off by one", "k": "test_l3_"},
+ {"file": "SearchBox.java", "old": "if (!s.isEmpty()) nexts.add(s.substring(0, s.length() - 1));", "new": "", "label": "no Backspace", "k": "test_l4_"},
+ {"file": "SearchBox.java", "old": "nexts.add(n.ranked.first().query()); // Tab", "new": "// Tab", "label": "no Tab", "k": "test_l4_"},
+ {"file": "SearchBox.java", "old": "if (n != null && !n.ranked.isEmpty()) {", "new": "if (n != null && !n.ranked.isEmpty() && !s.isEmpty()) {", "label": "Tab does nothing in an empty box", "k": "test_l4_"},
+ {"file": "SearchBox.java", "old": "if (s.length() < target.length() && target.startsWith(s)) nexts.add", "new": "if (s.length() < target.length() && target.startsWith(s) && n == null) nexts.add", "label": "can't type the target's next letter while the box is on a logged prefix", "k": "test_l4_"},
+ {"file": "SearchBox.java", "old": "String s = todo.poll();", "new": "String s = todo.pollLast();", "label": "box texts visited depth-first instead of breadth-first", "k": "test_l4_"}
+]

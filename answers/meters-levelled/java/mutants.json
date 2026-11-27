@@ -1,0 +1,21 @@
+[
+ {"file": "Fleet.java", "old": "if (b.stored >= b.capacity) return null;", "new": "if (b.stored > b.capacity) return null;", "label": "a full battery still charges", "k": "test_l1_"},
+ {"file": "Fleet.java", "old": "slot <= b.lastSlot)", "new": "slot < b.lastSlot)", "label": "two actions allowed in the same slot", "k": "test_l1_"},
+ {"file": "Fleet.java", "old": "gain = prices[slot] - b.wear;", "new": "gain = prices[slot];", "label": "discharging never pays wear", "k": "test_l1_"},
+ {"file": "Fleet.java", "old": "slot >= prices.length", "new": "slot > prices.length", "label": "the slot just past the tariff is accepted", "k": "test_l1_"},
+ {"file": "Fleet.java", "old": "if (tariffs.containsKey(day)) return false;", "new": "if (tariffs.containsKey(day) && false) return false;", "label": "republishing replaces the tariff", "k": "test_l1_"},
+ {"file": "Fleet.java", "old": "Integer.compare(profit.get(b), profit.get(a))", "new": "Integer.compare(profit.get(a), profit.get(b))", "label": "top earners ranked smallest first", "k": "test_l2_"},
+ {"file": "Fleet.java", "old": "d.profit += gain;", "new": "d.profit += Math.max(gain, 0);", "label": "charges don't count against the day", "k": "test_l2_"},
+ {"file": "Fleet.java", "old": "return d == null ? 0 : d.profit;", "new": "return d == null ? null : d.profit;", "label": "a quiet day reports none instead of 0", "k": "test_l2_"},
+ {"file": "Fleet.java", "old": "for (long[] row : best) Arrays.fill(row, unreached);", "new": "for (long[] row : best) Arrays.fill(row, 0);", "label": "the planner starts with free stored energy", "k": "test_l3_"},
+ {"file": "Fleet.java", "old": "best[0][0] = 0;", "new": "best[0][Math.min(b.stored, cap)] = 0;", "label": "the planner starts from the energy stored now", "k": "test_l3_"},
+ {"file": "Fleet.java", "old": "v + p - b.wear > nxt[u + 1][c - 1]) nxt[u + 1][c - 1] = v + p - b.wear;", "new": "v + p > nxt[u + 1][c - 1]) nxt[u + 1][c - 1] = v + p;", "label": "the planner forgets wear", "k": "test_l3_"},
+ {"file": "Fleet.java", "old": "for (long[] row : best) for (long v : row) out = Math.max(out, v);", "new": "for (long[] row : best) out = Math.max(out, row[0]);", "label": "the planner must end the day empty", "k": "test_l3_"},
+ {"file": "Fleet.java", "old": "nxt[u] = best[u].clone(); // idle", "new": "{ nxt[u] = new long[cap + 1]; Arrays.fill(nxt[u], unreached); }", "label": "the planner never idles", "k": "test_l3_"},
+ {"file": "Fleet.java", "old": "v - p > nxt[u][c + 1]) nxt[u][c + 1] = v - p;", "new": "v - p - b.wear > nxt[u][c + 1]) nxt[u][c + 1] = v - p - b.wear;", "label": "the planner charges wear on charging too", "k": "test_l3_"},
+ {"file": "Fleet.java", "old": "d.discharged >= b.limit", "new": "d.discharged > b.limit", "label": "the limit lets one extra kWh out", "k": "test_l4_"},
+ {"file": "Fleet.java", "old": "int lim = b.limit < 0 ? n : Math.min(b.limit, n);", "new": "int lim = n;", "label": "the planner ignores the limit", "k": "test_l4_"},
+ {"file": "Fleet.java", "old": "        b.limit = kwh;", "new": "        if (b.limit < 0 || kwh < b.limit) b.limit = kwh;", "label": "a new limit can only tighten the old one", "k": "test_l4_"},
+ {"file": "Fleet.java", "old": "            d.discharged++;", "new": "            if (b.limit >= 0) d.discharged++;", "label": "discharges before the limit was set don't count", "k": "test_l4_"},
+ {"file": "Fleet.java", "old": "            for (int u = 0; u <= lim; u++) {\n                for (int c", "new": "            for (int u = 0; u < lim; u++) {\n                for (int c", "label": "the planner stops once the limit is used, even for charging", "k": "test_l4_"}
+]

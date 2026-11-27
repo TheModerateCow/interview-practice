@@ -1,0 +1,638 @@
+[
+ {
+  "name": "dispatch_and_trips",
+  "steps": [
+   {
+    "new": "Dispatcher",
+    "args": []
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     1,
+     "d1",
+     10
+    ]
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     2,
+     "d2",
+     40
+    ]
+   },
+   {
+    "call": "add_rider",
+    "args": [
+     3,
+     "r1",
+     12
+    ]
+   },
+   {
+    "call": "add_rider",
+    "args": [
+     4,
+     "r2",
+     35
+    ]
+   },
+   {
+    "call": "dispatch",
+    "args": [
+     5,
+     "r1"
+    ],
+    "expect": "d1"
+   },
+   {
+    "call": "dispatch",
+    "args": [
+     6,
+     "r1"
+    ],
+    "expect": null
+   },
+   {
+    "call": "idle_between",
+    "args": [
+     7,
+     0,
+     100
+    ],
+    "expect": [
+     "d2:40"
+    ]
+   },
+   {
+    "call": "dispatch",
+    "args": [
+     8,
+     "r2"
+    ],
+    "expect": "d2"
+   },
+   {
+    "call": "add_rider",
+    "args": [
+     9,
+     "r3",
+     20
+    ],
+    "expect": true
+   },
+   {
+    "call": "dispatch",
+    "args": [
+     10,
+     "r3"
+    ],
+    "expect": null
+   },
+   {
+    "call": "complete_trip",
+    "args": [
+     11,
+     "d1",
+     50
+    ],
+    "expect": true
+   },
+   {
+    "call": "complete_trip",
+    "args": [
+     12,
+     "d1",
+     60
+    ],
+    "expect": false
+   },
+   {
+    "call": "idle_between",
+    "args": [
+     13,
+     0,
+     100
+    ],
+    "expect": [
+     "d1:50"
+    ]
+   },
+   {
+    "call": "dispatch",
+    "args": [
+     14,
+     "r3"
+    ],
+    "expect": "d1"
+   }
+  ]
+ },
+ {
+  "name": "busy_driver_is_locked",
+  "steps": [
+   {
+    "new": "Dispatcher",
+    "args": []
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     1,
+     "d1",
+     10
+    ]
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     2,
+     "d2",
+     90
+    ]
+   },
+   {
+    "call": "add_rider",
+    "args": [
+     3,
+     "r1",
+     11
+    ]
+   },
+   {
+    "call": "add_rider",
+    "args": [
+     4,
+     "r2",
+     20
+    ]
+   },
+   {
+    "call": "dispatch",
+    "args": [
+     5,
+     "r1"
+    ],
+    "expect": "d1"
+   },
+   {
+    "call": "move_driver",
+    "args": [
+     6,
+     "d1",
+     20
+    ],
+    "expect": false
+   },
+   {
+    "call": "remove_driver",
+    "args": [
+     7,
+     "d1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     8,
+     "d1",
+     5
+    ],
+    "expect": false
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     9,
+     "r2"
+    ],
+    "expect": "d2"
+   },
+   {
+    "call": "complete_trip",
+    "args": [
+     10,
+     "d1",
+     21
+    ],
+    "expect": true
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     11,
+     "r2"
+    ],
+    "expect": "d1"
+   },
+   {
+    "call": "remove_driver",
+    "args": [
+     12,
+     "d1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     13,
+     "r2"
+    ],
+    "expect": "d2"
+   }
+  ]
+ },
+ {
+  "name": "idle_between_order",
+  "steps": [
+   {
+    "new": "Dispatcher",
+    "args": []
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     1,
+     "b",
+     30
+    ]
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     2,
+     "a",
+     30
+    ]
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     3,
+     "c",
+     10
+    ]
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     4,
+     "Z",
+     30
+    ]
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     5,
+     "e",
+     31
+    ]
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     6,
+     "f",
+     9
+    ]
+   },
+   {
+    "call": "idle_between",
+    "args": [
+     7,
+     10,
+     30
+    ],
+    "expect": [
+     "c:10",
+     "Z:30",
+     "a:30",
+     "b:30"
+    ]
+   },
+   {
+    "call": "idle_between",
+    "args": [
+     8,
+     30,
+     30
+    ],
+    "expect": [
+     "Z:30",
+     "a:30",
+     "b:30"
+    ]
+   },
+   {
+    "call": "idle_between",
+    "args": [
+     9,
+     31,
+     10
+    ],
+    "expect": []
+   },
+   {
+    "call": "idle_between",
+    "args": [
+     10,
+     100,
+     200
+    ],
+    "expect": []
+   },
+   {
+    "call": "add_rider",
+    "args": [
+     11,
+     "r1",
+     31
+    ]
+   },
+   {
+    "call": "dispatch",
+    "args": [
+     12,
+     "r1"
+    ],
+    "expect": "e"
+   },
+   {
+    "call": "idle_between",
+    "args": [
+     13,
+     0,
+     1000
+    ],
+    "expect": [
+     "f:9",
+     "c:10",
+     "Z:30",
+     "a:30",
+     "b:30"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "failed_dispatch_changes_nothing",
+  "steps": [
+   {
+    "new": "Dispatcher",
+    "args": []
+   },
+   {
+    "call": "add_rider",
+    "args": [
+     1,
+     "r1",
+     7
+    ]
+   },
+   {
+    "call": "dispatch",
+    "args": [
+     2,
+     "r1"
+    ],
+    "expect": null
+   },
+   {
+    "call": "dispatch",
+    "args": [
+     3,
+     "nobody"
+    ],
+    "expect": null
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     4,
+     "d1",
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     5,
+     "r1"
+    ],
+    "expect": "d1"
+   },
+   {
+    "call": "dispatch",
+    "args": [
+     6,
+     "r1"
+    ],
+    "expect": "d1"
+   },
+   {
+    "call": "cancel_rider",
+    "args": [
+     7,
+     "r1"
+    ],
+    "expect": false
+   }
+  ]
+ },
+ {
+  "name": "complete_trip_rules",
+  "steps": [
+   {
+    "new": "Dispatcher",
+    "args": []
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     1,
+     "d1",
+     100
+    ]
+   },
+   {
+    "call": "add_rider",
+    "args": [
+     2,
+     "r1",
+     100
+    ]
+   },
+   {
+    "call": "add_rider",
+    "args": [
+     3,
+     "r2",
+     500
+    ]
+   },
+   {
+    "call": "complete_trip",
+    "args": [
+     4,
+     "d1",
+     400
+    ],
+    "expect": false
+   },
+   {
+    "call": "complete_trip",
+    "args": [
+     5,
+     "ghost",
+     1
+    ],
+    "expect": false
+   },
+   {
+    "call": "dispatch",
+    "args": [
+     6,
+     "r1"
+    ],
+    "expect": "d1"
+   },
+   {
+    "call": "complete_trip",
+    "args": [
+     7,
+     "d1",
+     480
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     8,
+     "d2",
+     600
+    ],
+    "expect": true
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     9,
+     "r2"
+    ],
+    "expect": "d1"
+   },
+   {
+    "call": "idle_between",
+    "args": [
+     10,
+     0,
+     1000
+    ],
+    "expect": [
+     "d1:480",
+     "d2:600"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "rider_id_reusable_after_pickup",
+  "steps": [
+   {
+    "new": "Dispatcher",
+    "args": []
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     1,
+     "d1",
+     10
+    ]
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     2,
+     "d2",
+     20
+    ]
+   },
+   {
+    "call": "add_driver",
+    "args": [
+     3,
+     "d3",
+     30
+    ]
+   },
+   {
+    "call": "add_rider",
+    "args": [
+     4,
+     "r1",
+     25
+    ]
+   },
+   {
+    "call": "dispatch",
+    "args": [
+     5,
+     "r1"
+    ],
+    "expect": "d2"
+   },
+   {
+    "call": "add_rider",
+    "args": [
+     6,
+     "r1",
+     25
+    ],
+    "expect": true
+   },
+   {
+    "call": "dispatch",
+    "args": [
+     7,
+     "r1"
+    ],
+    "expect": "d3"
+   },
+   {
+    "call": "add_rider",
+    "args": [
+     8,
+     "r1",
+     25
+    ],
+    "expect": true
+   },
+   {
+    "call": "nearest_driver",
+    "args": [
+     9,
+     "r1"
+    ],
+    "expect": "d1"
+   },
+   {
+    "call": "idle_between",
+    "args": [
+     10,
+     0,
+     100
+    ],
+    "expect": [
+     "d1:10"
+    ]
+   }
+  ]
+ }
+]

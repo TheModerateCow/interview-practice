@@ -1,0 +1,158 @@
+{
+ "module": "meters",
+ "java_class": "Fleet",
+ "records": {},
+ "functions": {},
+ "classes": {
+  "Fleet": {
+   "init": [],
+   "methods": {
+    "add_battery": {
+     "params": [
+      [
+       "id",
+       "string"
+      ],
+      [
+       "capacity",
+       "int"
+      ],
+      [
+       "wear",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "publish_tariff": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "prices",
+       "list<int>"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "charge": {
+     "params": [
+      [
+       "id",
+       "string"
+      ],
+      [
+       "day",
+       "int"
+      ],
+      [
+       "slot",
+       "int"
+      ]
+     ],
+     "returns": "optional<int>",
+     "level": 1
+    },
+    "discharge": {
+     "params": [
+      [
+       "id",
+       "string"
+      ],
+      [
+       "day",
+       "int"
+      ],
+      [
+       "slot",
+       "int"
+      ]
+     ],
+     "returns": "optional<int>",
+     "level": 1
+    },
+    "stored": {
+     "params": [
+      [
+       "id",
+       "string"
+      ]
+     ],
+     "returns": "optional<int>",
+     "level": 1
+    },
+    "cash": {
+     "params": [
+      [
+       "id",
+       "string"
+      ]
+     ],
+     "returns": "optional<int>",
+     "level": 1
+    },
+    "day_profit": {
+     "params": [
+      [
+       "id",
+       "string"
+      ],
+      [
+       "day",
+       "int"
+      ]
+     ],
+     "returns": "optional<int>",
+     "level": 2
+    },
+    "top_earners": {
+     "params": [
+      [
+       "day",
+       "int"
+      ],
+      [
+       "n",
+       "int"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "best_profit": {
+     "params": [
+      [
+       "id",
+       "string"
+      ],
+      [
+       "day",
+       "int"
+      ]
+     ],
+     "returns": "optional<int>",
+     "level": 3
+    },
+    "set_discharge_limit": {
+     "params": [
+      [
+       "id",
+       "string"
+      ],
+      [
+       "kwh",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    }
+   }
+  }
+ },
+ "errors": []
+}

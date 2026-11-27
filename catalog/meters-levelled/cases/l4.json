@@ -1,0 +1,864 @@
+[
+ {
+  "name": "warranty_limit",
+  "steps": [
+   {
+    "new": "Fleet",
+    "args": []
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "home-1",
+     2,
+     3
+    ]
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     1,
+     [
+      12,
+      9,
+      25,
+      14,
+      30,
+      8,
+      11,
+      27
+     ]
+    ]
+   },
+   {
+    "call": "set_discharge_limit",
+    "args": [
+     "home-1",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "best_profit",
+    "args": [
+     "home-1",
+     1
+    ],
+    "expect": 34
+   },
+   {
+    "call": "set_discharge_limit",
+    "args": [
+     "home-1",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "best_profit",
+    "args": [
+     "home-1",
+     1
+    ],
+    "expect": 18
+   },
+   {
+    "call": "charge",
+    "args": [
+     "home-1",
+     1,
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "home-1",
+     1,
+     2
+    ],
+    "expect": 0
+   },
+   {
+    "call": "charge",
+    "args": [
+     "home-1",
+     1,
+     3
+    ],
+    "expect": 1
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "home-1",
+     1,
+     4
+    ],
+    "expect": null
+   },
+   {
+    "call": "set_discharge_limit",
+    "args": [
+     "home-7",
+     1
+    ],
+    "expect": false
+   }
+  ]
+ },
+ {
+  "name": "limit_zero_only_charges",
+  "steps": [
+   {
+    "new": "Fleet",
+    "args": []
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "b",
+     2,
+     0
+    ]
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     1,
+     [
+      -4,
+      10,
+      -1,
+      30
+     ]
+    ]
+   },
+   {
+    "call": "set_discharge_limit",
+    "args": [
+     "b",
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "best_profit",
+    "args": [
+     "b",
+     1
+    ],
+    "expect": 5
+   },
+   {
+    "call": "charge",
+    "args": [
+     "b",
+     1,
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "b",
+     1,
+     1
+    ],
+    "expect": null
+   },
+   {
+    "call": "stored",
+    "args": [
+     "b"
+    ],
+    "expect": 1
+   }
+  ]
+ },
+ {
+  "name": "limit_counts_the_whole_day",
+  "steps": [
+   {
+    "new": "Fleet",
+    "args": []
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "b",
+     3,
+     0
+    ]
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     1,
+     [
+      1,
+      1,
+      1,
+      9,
+      9,
+      9
+     ]
+    ]
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     2,
+     [
+      9
+     ]
+    ]
+   },
+   {
+    "call": "charge",
+    "args": [
+     "b",
+     1,
+     0
+    ],
+    "expect": 1
+   },
+   {
+    "call": "charge",
+    "args": [
+     "b",
+     1,
+     1
+    ],
+    "expect": 2
+   },
+   {
+    "call": "charge",
+    "args": [
+     "b",
+     1,
+     2
+    ],
+    "expect": 3
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "b",
+     1,
+     3
+    ],
+    "expect": 2
+   },
+   {
+    "call": "set_discharge_limit",
+    "args": [
+     "b",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "b",
+     1,
+     4
+    ],
+    "expect": null
+   },
+   {
+    "call": "set_discharge_limit",
+    "args": [
+     "b",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "b",
+     1,
+     5
+    ],
+    "expect": 1
+   },
+   {
+    "call": "discharge",
+    "args": [
+     "b",
+     2,
+     0
+    ],
+    "expect": 0
+   },
+   {
+    "call": "stored",
+    "args": [
+     "b"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "day_profit",
+    "args": [
+     "b",
+     1
+    ],
+    "expect": 15
+   }
+  ]
+ },
+ {
+  "name": "limit_above_slots_changes_nothing",
+  "steps": [
+   {
+    "new": "Fleet",
+    "args": []
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "b",
+     2,
+     3
+    ]
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     1,
+     [
+      12,
+      9,
+      25,
+      14,
+      30,
+      8,
+      11,
+      27
+     ]
+    ]
+   },
+   {
+    "call": "set_discharge_limit",
+    "args": [
+     "b",
+     50
+    ],
+    "expect": true
+   },
+   {
+    "call": "best_profit",
+    "args": [
+     "b",
+     1
+    ],
+    "expect": 44
+   },
+   {
+    "call": "set_discharge_limit",
+    "args": [
+     "b",
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "best_profit",
+    "args": [
+     "b",
+     1
+    ],
+    "expect": 44
+   }
+  ]
+ },
+ {
+  "name": "one_discharge_picks_the_widest_spread",
+  "steps": [
+   {
+    "new": "Fleet",
+    "args": []
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "b",
+     2,
+     0
+    ]
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     1,
+     [
+      10,
+      20,
+      10,
+      20,
+      1,
+      15,
+      2,
+      14
+     ]
+    ]
+   },
+   {
+    "call": "best_profit",
+    "args": [
+     "b",
+     1
+    ],
+    "expect": 46
+   },
+   {
+    "call": "set_discharge_limit",
+    "args": [
+     "b",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "best_profit",
+    "args": [
+     "b",
+     1
+    ],
+    "expect": 14
+   },
+   {
+    "call": "set_discharge_limit",
+    "args": [
+     "b",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "best_profit",
+    "args": [
+     "b",
+     1
+    ],
+    "expect": 26
+   }
+  ]
+ },
+ {
+  "name": "limit_per_battery",
+  "steps": [
+   {
+    "new": "Fleet",
+    "args": []
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "a",
+     2,
+     0
+    ]
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "b",
+     2,
+     0
+    ]
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     1,
+     [
+      1,
+      2,
+      30,
+      40
+     ]
+    ]
+   },
+   {
+    "call": "set_discharge_limit",
+    "args": [
+     "a",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "best_profit",
+    "args": [
+     "a",
+     1
+    ],
+    "expect": 39
+   },
+   {
+    "call": "best_profit",
+    "args": [
+     "b",
+     1
+    ],
+    "expect": 67
+   },
+   {
+    "call": "best_profit",
+    "args": [
+     "a",
+     2
+    ],
+    "expect": null
+   }
+  ]
+ },
+ {
+  "name": "full_days_with_limits",
+  "steps": [
+   {
+    "new": "Fleet",
+    "args": []
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "home-0",
+     13,
+     2
+    ]
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "home-1",
+     48,
+     0
+    ]
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "home-2",
+     5,
+     9
+    ]
+   },
+   {
+    "call": "add_battery",
+    "args": [
+     "home-3",
+     20,
+     4
+    ]
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     1,
+     [
+      1,
+      -21,
+      10,
+      43,
+      -34,
+      -31,
+      28,
+      -28,
+      6,
+      34,
+      -33,
+      24,
+      -13,
+      -36,
+      11,
+      55,
+      53,
+      8,
+      30,
+      -29,
+      30,
+      14,
+      -33,
+      32,
+      -25,
+      -12,
+      40,
+      40,
+      34,
+      -33,
+      33,
+      34,
+      10,
+      -34,
+      78,
+      55,
+      121,
+      67,
+      87,
+      103,
+      68,
+      29,
+      -25,
+      33,
+      -1,
+      31,
+      47,
+      -17
+     ]
+    ]
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     2,
+     [
+      -27,
+      34,
+      33,
+      41,
+      -16,
+      7,
+      -28,
+      30,
+      51,
+      -32,
+      32,
+      -33,
+      39,
+      -14,
+      63,
+      87,
+      68,
+      54,
+      99,
+      0,
+      19,
+      34,
+      18,
+      6,
+      -2,
+      -9,
+      -17,
+      49,
+      59,
+      -9,
+      -30,
+      33,
+      -2,
+      27,
+      113,
+      93,
+      143,
+      107,
+      86,
+      127,
+      59,
+      -25,
+      25,
+      13,
+      -19,
+      56,
+      3,
+      -21
+     ]
+    ]
+   },
+   {
+    "call": "publish_tariff",
+    "args": [
+     3,
+     [
+      22,
+      13,
+      -35,
+      45,
+      -31,
+      57,
+      31,
+      33,
+      0,
+      3,
+      48,
+      4,
+      36,
+      23,
+      74,
+      58,
+      8,
+      11,
+      34,
+      20,
+      49,
+      45,
+      -32,
+      -33,
+      53,
+      49,
+      -1,
+      42,
+      33,
+      47,
+      17,
+      -4,
+      51,
+      9,
+      135,
+      94,
+      52,
+      109,
+      95,
+      71,
+      128,
+      -26,
+      23,
+      -33,
+      -13,
+      58,
+      -4,
+      -24
+     ]
+    ]
+   },
+   {
+    "call": "set_discharge_limit",
+    "args": [
+     "home-0",
+     6
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_discharge_limit",
+    "args": [
+     "home-1",
+     20
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_discharge_limit",
+    "args": [
+     "home-2",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_discharge_limit",
+    "args": [
+     "home-3",
+     11
+    ],
+    "expect": true
+   },
+   {
+    "call": "best_profit",
+    "args": [
+     "home-0",
+     1
+    ],
+    "expect": 917
+   },
+   {
+    "call": "best_profit",
+    "args": [
+     "home-0",
+     2
+    ],
+    "expect": 954
+   },
+   {
+    "call": "best_profit",
+    "args": [
+     "home-0",
+     3
+    ],
+    "expect": 859
+   },
+   {
+    "call": "best_profit",
+    "args": [
+     "home-1",
+     1
+    ],
+    "expect": 1458
+   },
+   {
+    "call": "best_profit",
+    "args": [
+     "home-1",
+     2
+    ],
+    "expect": 1657
+   },
+   {
+    "call": "best_profit",
+    "args": [
+     "home-1",
+     3
+    ],
+    "expect": 1416
+   },
+   {
+    "call": "best_profit",
+    "args": [
+     "home-2",
+     1
+    ],
+    "expect": 418
+   },
+   {
+    "call": "best_profit",
+    "args": [
+     "home-2",
+     2
+    ],
+    "expect": 448
+   },
+   {
+    "call": "best_profit",
+    "args": [
+     "home-2",
+     3
+    ],
+    "expect": 459
+   },
+   {
+    "call": "best_profit",
+    "args": [
+     "home-3",
+     1
+    ],
+    "expect": 1138
+   },
+   {
+    "call": "best_profit",
+    "args": [
+     "home-3",
+     2
+    ],
+    "expect": 1285
+   },
+   {
+    "call": "best_profit",
+    "args": [
+     "home-3",
+     3
+    ],
+    "expect": 1109
+   }
+  ],
+  "budget_ms": {
+   "go": 500,
+   "java": 1000,
+   "python": 3000
+  }
+ }
+]

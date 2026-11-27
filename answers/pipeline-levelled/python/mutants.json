@@ -1,0 +1,21 @@
+[
+ {"file": "pipeline.py", "old": " or consumer in self._done:", "new": ":", "label": "a finished job takes new inputs", "k": "test_l1_"},
+ {"file": "pipeline.py", "old": "            self._inputs[old].discard(job)", "new": "            pass", "label": "relinking leaves the job feeding its old consumer", "k": "test_l1_"},
+ {"file": "pipeline.py", "old": "all(i in self._done for i in self._inputs[job])", "new": "any(i in self._done for i in self._inputs[job])", "label": "one finished input is enough to be ready", "k": "test_l1_"},
+ {"file": "pipeline.py", "old": "if job not in self._minutes or not self._ready(job):", "new": "if job not in self._minutes or job in self._done:", "label": "finish skips the readiness check", "k": "test_l1_"},
+ {"file": "pipeline.py", "old": "                    heapq.heappush(heap, c)", "new": "                    heap.append(c)", "label": "newly ready jobs wait behind the ones already ready", "k": "test_l2_"},
+ {"file": "pipeline.py", "old": "out.extend(walk[walk.index(v):])", "new": "out.extend(walk)", "label": "jobs feeding a loop reported stuck", "k": "test_l2_"},
+ {"file": "pipeline.py", "old": "for j in self._minutes if j not in self._done}", "new": "for j in self._minutes}", "label": "finished jobs are listed again", "k": "test_l2_"},
+ {"file": "pipeline.py", "old": "min(live, key=lambda i: (-t[i], i))", "new": "max(live, key=lambda i: (t[i], i))", "label": "critical path ties go to the name that comes last", "k": "test_l3_"},
+ {"file": "pipeline.py", "old": "max((t[i] for i in self._inputs[v] if i not in self._done), default=0)", "new": "max((t.get(i, self._minutes[i]) for i in self._inputs[v]), default=0)", "label": "finished inputs still cost their minutes", "k": "test_l3_"},
+ {"file": "pipeline.py", "old": "max((t[i] for i in self._inputs[v] if i not in self._done), default=0)", "new": "sum(t[i] for i in self._inputs[v] if i not in self._done)", "label": "inputs run one after another", "k": "test_l3_"},
+ {"file": "pipeline.py", "old": "        if job in self._done:\n            return 0\n        t = self._times(job)", "new": "        if job in self._done:\n            return self._minutes[job]\n        t = self._times(job)", "label": "a finished job still reports its minutes", "k": "test_l3_"},
+ {"file": "pipeline.py", "old": "                return path[::-1]", "new": "                return path", "label": "critical path listed from the job back to the start", "k": "test_l3_"},
+ {"file": "pipeline.py", "old": "if i not in self._done), default=0)", "new": "if i not in self._done), default=self._minutes[v])", "label": "a job with no unfinished inputs counts its minutes twice", "k": "test_l3_"},
+ {"file": "pipeline.py", "old": "map(max, g[b::-1], fc[: b + 1])", "new": "map(lambda a, c: a + c, g[b::-1], fc[: b + 1])", "label": "warm planning runs inputs one after another", "k": "test_l4_"},
+ {"file": "pipeline.py", "old": "warm + g[b - 1]", "new": "warm + g[b]", "label": "warming a job doesn't use up a slot", "k": "test_l4_"},
+ {"file": "pipeline.py", "old": "k = min(k, len(order))", "new": "k = min(k, len(order) - 1)", "label": "can never warm every job", "k": "test_l4_"},
+ {"file": "pipeline.py", "old": "minutes > self._minutes[job]:", "new": "minutes >= self._minutes[job]:", "label": "a warm time equal to the normal time is refused", "k": "test_l4_"},
+ {"file": "pipeline.py", "old": "warm = self._warm.get(v, cold)", "new": "warm = self._warm.get(v, 0)", "label": "a job with no warm time warms to 0 minutes", "k": "test_l4_"},
+ {"file": "pipeline.py", "old": "        if job in self._done:\n            return 0\n        order = self._upstream(job)", "new": "        if job in self._done:\n            return self._minutes[job]\n        order = self._upstream(job)", "label": "a finished job is planned from scratch", "k": "test_l4_"}
+]

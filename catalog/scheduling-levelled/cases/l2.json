@@ -1,0 +1,700 @@
+[
+{
+ "name": "moves_and_agenda",
+ "steps": [
+  {
+   "new": "TeamCalendar",
+   "args": []
+  },
+  {
+   "call": "add_attendee",
+   "args": [
+    "ana",
+    0,
+    540,
+    1020
+   ],
+   "expect": true
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ana",
+    600,
+    660
+   ]
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ana",
+    480,
+    720
+   ]
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ana",
+    900,
+    960
+   ]
+  },
+  {
+   "call": "agenda",
+   "args": [
+    "ana",
+    600,
+    900
+   ],
+   "expect": [
+    "busy2:480-720",
+    "busy1:600-660"
+   ]
+  },
+  {
+   "call": "set_offset",
+   "args": [
+    "ana",
+    -300
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    600
+   ],
+   "expect": false
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    840
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    900
+   ],
+   "expect": false
+  },
+  {
+   "call": "set_hours",
+   "args": [
+    "ana",
+    1320,
+    360
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    179
+   ],
+   "expect": false
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    180
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    480
+   ],
+   "expect": false
+  },
+  {
+   "call": "set_offset",
+   "args": [
+    "bob",
+    0
+   ],
+   "expect": false
+  }
+ ]
+},
+{
+ "name": "agenda_overlap_edges",
+ "steps": [
+  {
+   "new": "TeamCalendar",
+   "args": []
+  },
+  {
+   "call": "add_attendee",
+   "args": [
+    "ana",
+    0,
+    540,
+    1020
+   ],
+   "expect": true
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ana",
+    500,
+    600
+   ]
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ana",
+    700,
+    800
+   ]
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ana",
+    0,
+    3000
+   ]
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ana",
+    650,
+    660
+   ]
+  },
+  {
+   "call": "agenda",
+   "args": [
+    "ana",
+    600,
+    700
+   ],
+   "expect": [
+    "busy3:0-3000",
+    "busy4:650-660"
+   ]
+  },
+  {
+   "call": "agenda",
+   "args": [
+    "ana",
+    599,
+    701
+   ],
+   "expect": [
+    "busy3:0-3000",
+    "busy1:500-600",
+    "busy4:650-660",
+    "busy2:700-800"
+   ]
+  },
+  {
+   "call": "agenda",
+   "args": [
+    "ana",
+    3000,
+    4000
+   ],
+   "expect": []
+  },
+  {
+   "call": "agenda",
+   "args": [
+    "ana",
+    2999,
+    3000
+   ],
+   "expect": [
+    "busy3:0-3000"
+   ]
+  },
+  {
+   "call": "agenda",
+   "args": [
+    "zed",
+    0,
+    100
+   ],
+   "expect": []
+  }
+ ]
+},
+{
+ "name": "agenda_order",
+ "steps": [
+  {
+   "new": "TeamCalendar",
+   "args": []
+  },
+  {
+   "call": "add_attendee",
+   "args": [
+    "ana",
+    0,
+    540,
+    1020
+   ],
+   "expect": true
+  },
+  {
+   "call": "add_attendee",
+   "args": [
+    "ben",
+    0,
+    540,
+    1020
+   ],
+   "expect": true
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ben",
+    0,
+    5
+   ]
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ben",
+    10,
+    15
+   ]
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ben",
+    20,
+    25
+   ]
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ben",
+    30,
+    35
+   ]
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ben",
+    40,
+    45
+   ]
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ben",
+    50,
+    55
+   ]
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ben",
+    60,
+    65
+   ]
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ben",
+    70,
+    75
+   ]
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ana",
+    600,
+    700
+   ]
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ana",
+    600,
+    700
+   ]
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ana",
+    600,
+    650
+   ]
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ana",
+    550,
+    900
+   ]
+  },
+  {
+   "call": "agenda",
+   "args": [
+    "ana",
+    0,
+    1440
+   ],
+   "expect": [
+    "busy12:550-900",
+    "busy11:600-650",
+    "busy9:600-700",
+    "busy10:600-700"
+   ]
+  },
+  {
+   "call": "remove_busy",
+   "args": [
+    "ana",
+    "busy9"
+   ],
+   "expect": true
+  },
+  {
+   "call": "agenda",
+   "args": [
+    "ana",
+    0,
+    1440
+   ],
+   "expect": [
+    "busy12:550-900",
+    "busy11:600-650",
+    "busy10:600-700"
+   ]
+  },
+  {
+   "call": "agenda",
+   "args": [
+    "ben",
+    20,
+    41
+   ],
+   "expect": [
+    "busy3:20-25",
+    "busy4:30-35",
+    "busy5:40-45"
+   ]
+  }
+ ]
+},
+{
+ "name": "set_hours_applies",
+ "steps": [
+  {
+   "new": "TeamCalendar",
+   "args": []
+  },
+  {
+   "call": "add_attendee",
+   "args": [
+    "ana",
+    0,
+    540,
+    1020
+   ],
+   "expect": true
+  },
+  {
+   "call": "set_hours",
+   "args": [
+    "ana",
+    0,
+    1440
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    0
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    1439
+   ],
+   "expect": true
+  },
+  {
+   "call": "set_hours",
+   "args": [
+    "ana",
+    600,
+    660
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    599
+   ],
+   "expect": false
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    659
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    660
+   ],
+   "expect": false
+  },
+  {
+   "call": "set_hours",
+   "args": [
+    "zed",
+    0,
+    1440
+   ],
+   "expect": false
+  },
+  {
+   "call": "add_attendee",
+   "args": [
+    "zed",
+    0,
+    1,
+    2
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "zed",
+    1
+   ],
+   "expect": true
+  }
+ ]
+},
+{
+ "name": "set_offset_keeps_local_hours",
+ "steps": [
+  {
+   "new": "TeamCalendar",
+   "args": []
+  },
+  {
+   "call": "add_attendee",
+   "args": [
+    "raj",
+    330,
+    540,
+    1080
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "raj",
+    210
+   ],
+   "expect": true
+  },
+  {
+   "call": "set_offset",
+   "args": [
+    "raj",
+    840
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "raj",
+    210
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "raj",
+    1140
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "raj",
+    1139
+   ],
+   "expect": false
+  },
+  {
+   "call": "set_offset",
+   "args": [
+    "raj",
+    -720
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "raj",
+    1259
+   ],
+   "expect": false
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "raj",
+    1260
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "raj",
+    1799
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "raj",
+    1800
+   ],
+   "expect": false
+  }
+ ]
+},
+{
+ "name": "busy_blocks_stay_in_utc",
+ "steps": [
+  {
+   "new": "TeamCalendar",
+   "args": []
+  },
+  {
+   "call": "add_attendee",
+   "args": [
+    "ana",
+    0,
+    0,
+    1440
+   ],
+   "expect": true
+  },
+  {
+   "call": "add_busy",
+   "args": [
+    "ana",
+    100,
+    200
+   ],
+   "expect": "busy1"
+  },
+  {
+   "call": "set_offset",
+   "args": [
+    "ana",
+    600
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    150
+   ],
+   "expect": false
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    200
+   ],
+   "expect": true
+  },
+  {
+   "call": "agenda",
+   "args": [
+    "ana",
+    0,
+    1440
+   ],
+   "expect": [
+    "busy1:100-200"
+   ]
+  },
+  {
+   "call": "set_hours",
+   "args": [
+    "ana",
+    0,
+    100
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    840
+   ],
+   "expect": true
+  },
+  {
+   "call": "is_free",
+   "args": [
+    "ana",
+    940
+   ],
+   "expect": false
+  }
+ ]
+}
+]

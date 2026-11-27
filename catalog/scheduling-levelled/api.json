@@ -1,0 +1,198 @@
+{
+ "module": "meetings",
+ "java_class": "TeamCalendar",
+ "records": {},
+ "functions": {},
+ "classes": {
+  "TeamCalendar": {
+   "init": [],
+   "methods": {
+    "add_attendee": {
+     "params": [
+      [
+       "id",
+       "string"
+      ],
+      [
+       "offset",
+       "int"
+      ],
+      [
+       "work_start",
+       "int"
+      ],
+      [
+       "work_end",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "add_busy": {
+     "params": [
+      [
+       "id",
+       "string"
+      ],
+      [
+       "start",
+       "int"
+      ],
+      [
+       "end",
+       "int"
+      ]
+     ],
+     "returns": "optional<string>",
+     "level": 1
+    },
+    "remove_busy": {
+     "params": [
+      [
+       "id",
+       "string"
+      ],
+      [
+       "busy_id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "is_free": {
+     "params": [
+      [
+       "id",
+       "string"
+      ],
+      [
+       "minute",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "set_offset": {
+     "params": [
+      [
+       "id",
+       "string"
+      ],
+      [
+       "offset",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 2
+    },
+    "set_hours": {
+     "params": [
+      [
+       "id",
+       "string"
+      ],
+      [
+       "work_start",
+       "int"
+      ],
+      [
+       "work_end",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 2
+    },
+    "agenda": {
+     "params": [
+      [
+       "id",
+       "string"
+      ],
+      [
+       "from",
+       "int"
+      ],
+      [
+       "to",
+       "int"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "earliest_meeting": {
+     "params": [
+      [
+       "ids",
+       "list<string>"
+      ],
+      [
+       "duration",
+       "int"
+      ],
+      [
+       "from",
+       "int"
+      ],
+      [
+       "to",
+       "int"
+      ]
+     ],
+     "returns": "int",
+     "level": 3
+    },
+    "earliest_quorum_meeting": {
+     "params": [
+      [
+       "ids",
+       "list<string>"
+      ],
+      [
+       "quorum",
+       "int"
+      ],
+      [
+       "duration",
+       "int"
+      ],
+      [
+       "from",
+       "int"
+      ],
+      [
+       "to",
+       "int"
+      ]
+     ],
+     "returns": "int",
+     "level": 4
+    },
+    "free_for": {
+     "params": [
+      [
+       "ids",
+       "list<string>"
+      ],
+      [
+       "start",
+       "int"
+      ],
+      [
+       "duration",
+       "int"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 4
+    }
+   }
+  }
+ },
+ "errors": []
+}

@@ -1,0 +1,760 @@
+[
+ {
+  "name": "closures",
+  "steps": [
+   {
+    "new": "Network",
+    "args": []
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     1,
+     "depot"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     2,
+     "a"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     3,
+     "b"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     4,
+     "c"
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     5,
+     "r1",
+     "depot",
+     "a",
+     10
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     6,
+     "r2",
+     "a",
+     "b",
+     5
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     7,
+     "r3",
+     "b",
+     "c",
+     3
+    ]
+   },
+   {
+    "call": "close_road",
+    "args": [
+     8,
+     "r2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "close_road",
+    "args": [
+     9,
+     "r2"
+    ],
+    "expect": false
+   },
+   {
+    "call": "reachable",
+    "args": [
+     10,
+     "depot",
+     "b"
+    ],
+    "expect": false
+   },
+   {
+    "call": "roads_at",
+    "args": [
+     11,
+     "a"
+    ],
+    "expect": [
+     "r1:depot:10"
+    ]
+   },
+   {
+    "call": "reachable_from",
+    "args": [
+     12,
+     "depot"
+    ],
+    "expect": [
+     "a",
+     "depot"
+    ]
+   },
+   {
+    "call": "reachable_from",
+    "args": [
+     13,
+     "c"
+    ],
+    "expect": [
+     "b",
+     "c"
+    ]
+   },
+   {
+    "call": "reopen_road",
+    "args": [
+     14,
+     "r2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "reopen_road",
+    "args": [
+     15,
+     "r2"
+    ],
+    "expect": false
+   },
+   {
+    "call": "reachable_from",
+    "args": [
+     16,
+     "a"
+    ],
+    "expect": [
+     "a",
+     "b",
+     "c",
+     "depot"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "close_reopen_rules",
+  "steps": [
+   {
+    "new": "Network",
+    "args": []
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     1,
+     "a"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     2,
+     "b"
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     3,
+     "ab",
+     "a",
+     "b",
+     1
+    ]
+   },
+   {
+    "call": "close_road",
+    "args": [
+     4,
+     "zz"
+    ],
+    "expect": false
+   },
+   {
+    "call": "reopen_road",
+    "args": [
+     5,
+     "zz"
+    ],
+    "expect": false
+   },
+   {
+    "call": "reopen_road",
+    "args": [
+     6,
+     "ab"
+    ],
+    "expect": false
+   },
+   {
+    "call": "close_road",
+    "args": [
+     7,
+     "ab"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_road",
+    "args": [
+     8,
+     "ab",
+     "a",
+     "b",
+     1
+    ],
+    "expect": false
+   },
+   {
+    "call": "reopen_road",
+    "args": [
+     9,
+     "ab"
+    ],
+    "expect": true
+   },
+   {
+    "call": "roads_at",
+    "args": [
+     10,
+     "b"
+    ],
+    "expect": [
+     "ab:a:1"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "parallel_roads_keep_link",
+  "steps": [
+   {
+    "new": "Network",
+    "args": []
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     1,
+     "a"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     2,
+     "b"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     3,
+     "c"
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     4,
+     "fast",
+     "a",
+     "b",
+     2
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     5,
+     "slow",
+     "b",
+     "a",
+     9
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     6,
+     "bc",
+     "b",
+     "c",
+     1
+    ]
+   },
+   {
+    "call": "close_road",
+    "args": [
+     7,
+     "fast"
+    ],
+    "expect": true
+   },
+   {
+    "call": "reachable",
+    "args": [
+     8,
+     "a",
+     "c"
+    ],
+    "expect": true
+   },
+   {
+    "call": "roads_at",
+    "args": [
+     9,
+     "a"
+    ],
+    "expect": [
+     "slow:b:9"
+    ]
+   },
+   {
+    "call": "close_road",
+    "args": [
+     10,
+     "slow"
+    ],
+    "expect": true
+   },
+   {
+    "call": "reachable",
+    "args": [
+     11,
+     "a",
+     "c"
+    ],
+    "expect": false
+   },
+   {
+    "call": "reachable",
+    "args": [
+     12,
+     "c",
+     "b"
+    ],
+    "expect": true
+   },
+   {
+    "call": "roads_at",
+    "args": [
+     13,
+     "a"
+    ],
+    "expect": []
+   },
+   {
+    "call": "reopen_road",
+    "args": [
+     14,
+     "fast"
+    ],
+    "expect": true
+   },
+   {
+    "call": "reachable",
+    "args": [
+     15,
+     "c",
+     "a"
+    ],
+    "expect": true
+   }
+  ]
+ },
+ {
+  "name": "reachable_from_lists",
+  "steps": [
+   {
+    "new": "Network",
+    "args": []
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     1,
+     "m"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     2,
+     "Z"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     3,
+     "a"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     4,
+     "k"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     5,
+     "lone"
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     6,
+     "1",
+     "m",
+     "Z",
+     1
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     7,
+     "2",
+     "Z",
+     "k",
+     1
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     8,
+     "3",
+     "a",
+     "m",
+     1
+    ]
+   },
+   {
+    "call": "reachable_from",
+    "args": [
+     9,
+     "k"
+    ],
+    "expect": [
+     "Z",
+     "a",
+     "k",
+     "m"
+    ]
+   },
+   {
+    "call": "reachable_from",
+    "args": [
+     10,
+     "lone"
+    ],
+    "expect": [
+     "lone"
+    ]
+   },
+   {
+    "call": "reachable_from",
+    "args": [
+     11,
+     "ghost"
+    ],
+    "expect": []
+   },
+   {
+    "call": "close_road",
+    "args": [
+     12,
+     "1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "reachable_from",
+    "args": [
+     13,
+     "a"
+    ],
+    "expect": [
+     "a",
+     "m"
+    ]
+   },
+   {
+    "call": "reachable_from",
+    "args": [
+     14,
+     "Z"
+    ],
+    "expect": [
+     "Z",
+     "k"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "closing_cuts_the_middle",
+  "steps": [
+   {
+    "new": "Network",
+    "args": []
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     1,
+     "p"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     2,
+     "q"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     3,
+     "r"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     4,
+     "s"
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     5,
+     "pq",
+     "p",
+     "q",
+     4
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     6,
+     "qr",
+     "q",
+     "r",
+     4
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     7,
+     "rs",
+     "r",
+     "s",
+     4
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     8,
+     "ps",
+     "p",
+     "s",
+     20
+    ]
+   },
+   {
+    "call": "close_road",
+    "args": [
+     9,
+     "qr"
+    ],
+    "expect": true
+   },
+   {
+    "call": "reachable_from",
+    "args": [
+     10,
+     "q"
+    ],
+    "expect": [
+     "p",
+     "q",
+     "r",
+     "s"
+    ]
+   },
+   {
+    "call": "close_road",
+    "args": [
+     11,
+     "ps"
+    ],
+    "expect": true
+   },
+   {
+    "call": "reachable_from",
+    "args": [
+     12,
+     "q"
+    ],
+    "expect": [
+     "p",
+     "q"
+    ]
+   },
+   {
+    "call": "reachable",
+    "args": [
+     13,
+     "p",
+     "s"
+    ],
+    "expect": false
+   },
+   {
+    "call": "reachable",
+    "args": [
+     14,
+     "r",
+     "s"
+    ],
+    "expect": true
+   }
+  ]
+ },
+ {
+  "name": "roads_added_while_closed",
+  "steps": [
+   {
+    "new": "Network",
+    "args": []
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     1,
+     "a"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     2,
+     "b"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     3,
+     "c"
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     4,
+     "ab",
+     "a",
+     "b",
+     3
+    ]
+   },
+   {
+    "call": "close_road",
+    "args": [
+     5,
+     "ab"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_road",
+    "args": [
+     6,
+     "bc",
+     "b",
+     "c",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "reachable_from",
+    "args": [
+     7,
+     "c"
+    ],
+    "expect": [
+     "b",
+     "c"
+    ]
+   },
+   {
+    "call": "roads_at",
+    "args": [
+     8,
+     "b"
+    ],
+    "expect": [
+     "bc:c:2"
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     9,
+     "ac",
+     "a",
+     "c",
+     8
+    ],
+    "expect": true
+   },
+   {
+    "call": "reachable_from",
+    "args": [
+     10,
+     "b"
+    ],
+    "expect": [
+     "a",
+     "b",
+     "c"
+    ]
+   }
+  ]
+ }
+]

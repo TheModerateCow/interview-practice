@@ -1,0 +1,100 @@
+[
+ {
+  "file": "Drive.java",
+  "old": "files.containsKey(path) || size < 0 ||",
+  "new": "files.containsKey(path) || size <= 0 ||",
+  "label": "an empty file is refused",
+  "k": "test_l1_"
+ },
+ {
+  "file": "Drive.java",
+  "old": "File f = files.remove(path);",
+  "new": "File f = files.get(path);",
+  "label": "delete leaves the file in place",
+  "k": "test_l1_"
+ },
+ {
+  "file": "Drive.java",
+  "old": "return f == null ? -1 : f.size();",
+  "new": "return f == null ? 0 : f.size();",
+  "label": "a missing file reports size 0",
+  "k": "test_l1_"
+ },
+ {
+  "file": "Drive.java",
+  "old": "return c != 0 ? c : a.compareTo(b);",
+  "new": "return c != 0 ? c : b.compareTo(a);",
+  "label": "largest files ties broken by path descending",
+  "k": "test_l2_"
+ },
+ {
+  "file": "Drive.java",
+  "old": "if (p.startsWith(prefix))",
+  "new": "if (p.contains(prefix))",
+  "label": "prefix matched anywhere in the path",
+  "k": "test_l2_"
+ },
+ {
+  "file": "Drive.java",
+  "old": "i < paths.size() && i < n;",
+  "new": "i < paths.size() && i <= n;",
+  "label": "largest files returns one too many",
+  "k": "test_l2_"
+ },
+ {
+  "file": "Drive.java",
+  "old": "u.used + size > u.capacity",
+  "new": "u.used + size >= u.capacity",
+  "label": "filling a quota exactly is refused",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Drive.java",
+  "old": "users.containsKey(userId) || capacity <= 0",
+  "new": "users.containsKey(userId) || capacity < 0",
+  "label": "a user with capacity 0 is accepted",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Drive.java",
+  "old": "return add(owner, dest, src.size());",
+  "new": "return add(src.owner, dest, src.size());",
+  "label": "a copy is charged to the source's owner, not the copier",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Drive.java",
+  "old": "src != null && copy(src.owner, source, dest)",
+  "new": "src != null && copy(null, source, dest)",
+  "label": "copyFile of an owned file makes a free copy",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Drive.java",
+  "old": "!charge(f.owner, size)",
+  "new": "!charge(f.owner, size - f.size())",
+  "label": "overwrite charges only the size difference",
+  "k": "test_l4_"
+ },
+ {
+  "file": "Drive.java",
+  "old": "f.versions.subList(version, f.versions.size())",
+  "new": "f.versions.subList(Math.min(version + 1, f.versions.size()), f.versions.size())",
+  "label": "restoreVersion keeps charging the first discarded version",
+  "k": "test_l4_"
+ },
+ {
+  "file": "Drive.java",
+  "old": "for (int i = trash.size() - 1; i >= 0; i--)",
+  "new": "for (int i = 0; i < trash.size(); i++)",
+  "label": "restoreFile brings back the oldest deleted file",
+  "k": "test_l4_"
+ },
+ {
+  "file": "Drive.java",
+  "old": "free(f.owner, f.total());",
+  "new": "free(f.owner, f.size());",
+  "label": "delete gives back only the current version's bytes",
+  "k": "test_l4_"
+ }
+]

@@ -1,0 +1,17 @@
+[
+ {"file": "rental.py", "old": "self.cars[free[0]][\"out\"] = {\"customer\": customer, \"start\": ts, \"due\": due}\n        return free[0]", "new": "self.cars[free[-1]][\"out\"] = {\"customer\": customer, \"start\": ts, \"due\": due}\n        return free[-1]", "label": "rent hands out the highest car id", "k": "test_l1_"},
+ {"file": "rental.py", "old": "days <= 0 or self._has_car(customer)", "new": "days < 0 or self._has_car(customer)", "label": "a rental of 0 days is accepted", "k": "test_l1_"},
+ {"file": "rental.py", "old": "if car_class not in RATES or days <= 0 or self._has_car(customer):", "new": "if car_class not in RATES or days <= 0:", "label": "a customer with a car out can rent another", "k": "test_l1_"},
+ {"file": "rental.py", "old": "return -(-hours // DAY)", "new": "return hours // DAY", "label": "whole days counted rounding down instead of started", "k": "test_l2_"},
+ {"file": "rental.py", "old": "days = max(1, _days(ts - out[\"start\"]))", "new": "days = _days(ts - out[\"start\"])", "label": "a same-hour return is free", "k": "test_l2_"},
+ {"file": "rental.py", "old": "v[\"out\"][\"due\"] < ts]", "new": "v[\"out\"][\"due\"] <= ts]", "label": "a car is overdue at its due time", "k": "test_l2_"},
+ {"file": "rental.py", "old": " + _days(max(0, ts - out[\"due\"]))", "new": "", "label": "late days are not charged extra", "k": "test_l2_"},
+ {"file": "rental.py", "old": "(DROP_FEE if branch != car[\"branch\"] else 0)", "new": "DROP_FEE", "label": "drop fee charged on every return", "k": "test_l3_"},
+ {"file": "rental.py", "old": "car[\"out\"] is None or branch not in self.branches:", "new": "car[\"out\"] is None:", "label": "drop-off at an unknown branch accepted", "k": "test_l3_"},
+ {"file": "rental.py", "old": "        car[\"branch\"] = branch\n", "new": "", "label": "a one-way car stays with its old branch", "k": "test_l3_"},
+ {"file": "rental.py", "old": "if v[\"out\"] is None and v[\"branch\"] == branch:", "new": "if v[\"branch\"] == branch:", "label": "available counts rented cars", "k": "test_l3_"},
+ {"file": "rental.py", "old": "r[\"start\"] < end and start < r[\"end\"]", "new": "r[\"start\"] <= end and start <= r[\"end\"]", "label": "back-to-back periods treated as overlapping", "k": "test_l4_"},
+ {"file": "rental.py", "old": "if len(free) <= self._pending(", "new": "if len(free) < self._pending(", "label": "walk-in takes the last car a reservation needs", "k": "test_l4_"},
+ {"file": "rental.py", "old": "r[\"start\"] <= ts < r[\"end\"]", "new": "r[\"start\"] <= ts <= r[\"end\"]", "label": "pick-up allowed at the reservation's end", "k": "test_l4_"},
+ {"file": "rental.py", "old": "{\"customer\": r[\"customer\"], \"start\": ts, \"due\": r[\"end\"]}", "new": "{\"customer\": r[\"customer\"], \"start\": r[\"start\"], \"due\": r[\"end\"]}", "label": "picked-up rental charged from the reservation start", "k": "test_l4_"}
+]

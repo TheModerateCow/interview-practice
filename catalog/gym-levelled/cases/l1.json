@@ -1,0 +1,549 @@
+[
+ {
+  "name": "book_and_cancel",
+  "steps": [
+   {
+    "new": "Studio",
+    "args": []
+   },
+   {
+    "call": "add_class",
+    "args": [
+     1,
+     "spin-am",
+     480,
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     2,
+     "spin-am",
+     "maya"
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     3,
+     "spin-am",
+     "maya"
+    ],
+    "expect": false
+   },
+   {
+    "call": "book",
+    "args": [
+     4,
+     "spin-am",
+     "leo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     5,
+     "spin-am",
+     "sam"
+    ],
+    "expect": false
+   },
+   {
+    "call": "cancel",
+    "args": [
+     6,
+     "spin-am",
+     "leo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "spots_left",
+    "args": [
+     7,
+     "spin-am"
+    ],
+    "expect": 1
+   },
+   {
+    "call": "upcoming",
+    "args": [
+     8,
+     "maya"
+    ],
+    "expect": [
+     "spin-am"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "add_class_rules",
+  "steps": [
+   {
+    "new": "Studio",
+    "args": []
+   },
+   {
+    "call": "add_class",
+    "args": [
+     10,
+     "a",
+     100,
+     5
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_class",
+    "args": [
+     11,
+     "a",
+     200,
+     5
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_class",
+    "args": [
+     12,
+     "b",
+     200,
+     0
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_class",
+    "args": [
+     13,
+     "b",
+     200,
+     -1
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_class",
+    "args": [
+     14,
+     "b",
+     14,
+     5
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_class",
+    "args": [
+     15,
+     "b",
+     9,
+     5
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_class",
+    "args": [
+     16,
+     "c",
+     17,
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "spots_left",
+    "args": [
+     17,
+     "a"
+    ],
+    "expect": 5
+   },
+   {
+    "call": "spots_left",
+    "args": [
+     18,
+     "b"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "spots_left",
+    "args": [
+     19,
+     "c"
+    ],
+    "expect": 1
+   }
+  ]
+ },
+ {
+  "name": "started_class_is_closed",
+  "steps": [
+   {
+    "new": "Studio",
+    "args": []
+   },
+   {
+    "call": "add_class",
+    "args": [
+     1,
+     "hiit",
+     50,
+     3
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     10,
+     "hiit",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     49,
+     "hiit",
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     50,
+     "hiit",
+     "cy"
+    ],
+    "expect": false
+   },
+   {
+    "call": "cancel",
+    "args": [
+     51,
+     "hiit",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "cancel",
+    "args": [
+     60,
+     "hiit",
+     "bo"
+    ],
+    "expect": false
+   },
+   {
+    "call": "spots_left",
+    "args": [
+     61,
+     "hiit"
+    ],
+    "expect": 1
+   },
+   {
+    "call": "book",
+    "args": [
+     62,
+     "nope",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "cancel",
+    "args": [
+     63,
+     "nope",
+     "ana"
+    ],
+    "expect": false
+   }
+  ]
+ },
+ {
+  "name": "cancel_and_rebook",
+  "steps": [
+   {
+    "new": "Studio",
+    "args": []
+   },
+   {
+    "call": "add_class",
+    "args": [
+     1,
+     "core",
+     500,
+     1
+    ]
+   },
+   {
+    "call": "add_class",
+    "args": [
+     2,
+     "row",
+     500,
+     1
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     3,
+     "core",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "cancel",
+    "args": [
+     4,
+     "core",
+     "bo"
+    ],
+    "expect": false
+   },
+   {
+    "call": "cancel",
+    "args": [
+     5,
+     "row",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "book",
+    "args": [
+     6,
+     "core",
+     "bo"
+    ],
+    "expect": false
+   },
+   {
+    "call": "cancel",
+    "args": [
+     7,
+     "core",
+     "ana"
+    ],
+    "expect": true
+   },
+   {
+    "call": "cancel",
+    "args": [
+     8,
+     "core",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "spots_left",
+    "args": [
+     9,
+     "core"
+    ],
+    "expect": 1
+   },
+   {
+    "call": "book",
+    "args": [
+     10,
+     "core",
+     "bo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     11,
+     "core",
+     "ana"
+    ],
+    "expect": false
+   },
+   {
+    "call": "upcoming",
+    "args": [
+     12,
+     "ana"
+    ],
+    "expect": []
+   },
+   {
+    "call": "upcoming",
+    "args": [
+     13,
+     "bo"
+    ],
+    "expect": [
+     "core"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "upcoming_order",
+  "steps": [
+   {
+    "new": "Studio",
+    "args": []
+   },
+   {
+    "call": "add_class",
+    "args": [
+     1,
+     "zumba",
+     300,
+     5
+    ]
+   },
+   {
+    "call": "add_class",
+    "args": [
+     2,
+     "boxing",
+     200,
+     5
+    ]
+   },
+   {
+    "call": "add_class",
+    "args": [
+     3,
+     "abs",
+     300,
+     5
+    ]
+   },
+   {
+    "call": "add_class",
+    "args": [
+     4,
+     "yoga",
+     100,
+     5
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     5,
+     "zumba",
+     "maya"
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     6,
+     "boxing",
+     "maya"
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     7,
+     "abs",
+     "maya"
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     8,
+     "yoga",
+     "maya"
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     9,
+     "abs",
+     "leo"
+    ]
+   },
+   {
+    "call": "upcoming",
+    "args": [
+     10,
+     "maya"
+    ],
+    "expect": [
+     "yoga",
+     "boxing",
+     "abs",
+     "zumba"
+    ]
+   },
+   {
+    "call": "upcoming",
+    "args": [
+     11,
+     "leo"
+    ],
+    "expect": [
+     "abs"
+    ]
+   },
+   {
+    "call": "upcoming",
+    "args": [
+     12,
+     "nobody"
+    ],
+    "expect": []
+   },
+   {
+    "call": "cancel",
+    "args": [
+     13,
+     "boxing",
+     "maya"
+    ],
+    "expect": true
+   },
+   {
+    "call": "upcoming",
+    "args": [
+     14,
+     "maya"
+    ],
+    "expect": [
+     "yoga",
+     "abs",
+     "zumba"
+    ]
+   },
+   {
+    "call": "upcoming",
+    "args": [
+     100,
+     "maya"
+    ],
+    "expect": [
+     "abs",
+     "zumba"
+    ]
+   }
+  ]
+ }
+]

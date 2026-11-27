@@ -1,0 +1,198 @@
+{
+ "module": "dispatch",
+ "java_class": "Dispatcher",
+ "records": {},
+ "functions": {},
+ "classes": {
+  "Dispatcher": {
+   "init": [],
+   "methods": {
+    "add_driver": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "id",
+       "string"
+      ],
+      [
+       "km",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "add_rider": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "id",
+       "string"
+      ],
+      [
+       "km",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "move_driver": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "id",
+       "string"
+      ],
+      [
+       "km",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "remove_driver": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "cancel_rider": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "nearest_driver": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "rider",
+       "string"
+      ]
+     ],
+     "returns": "optional<string>",
+     "level": 1
+    },
+    "dispatch": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "rider",
+       "string"
+      ]
+     ],
+     "returns": "optional<string>",
+     "level": 2
+    },
+    "complete_trip": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "driver",
+       "string"
+      ],
+      [
+       "km",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 2
+    },
+    "idle_between": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "lo",
+       "int"
+      ],
+      [
+       "hi",
+       "int"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "set_radius": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "radius",
+       "int"
+      ]
+     ],
+     "returns": null,
+     "level": 3
+    },
+    "max_served": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ]
+     ],
+     "returns": "int",
+     "level": 3
+    },
+    "min_radius": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "need",
+       "int"
+      ]
+     ],
+     "returns": "int",
+     "level": 4
+    }
+   }
+  }
+ },
+ "errors": []
+}

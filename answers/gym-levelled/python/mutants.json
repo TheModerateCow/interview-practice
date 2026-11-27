@@ -1,0 +1,14 @@
+[
+ {"file": "gym.py", "old": "c.cancelled or ts >= c.start", "new": "c.cancelled or ts > c.start", "label": "a class can still be booked or cancelled at its start time", "k": "test_l1_"},
+ {"file": "gym.py", "old": "capacity <= 0 or start <= ts:", "new": "capacity <= 0 or start < ts:", "label": "a class starting right now can be added", "k": "test_l1_"},
+ {"file": "gym.py", "old": "key=lambda i: (self._classes[i].start, i)", "new": "key=lambda i: self._classes[i].start", "label": "classes with the same start keep creation order instead of id order", "k": "test_l1_"},
+ {"file": "gym.py", "old": "m = c.waiting.pop(0)", "new": "m = c.waiting.pop()", "label": "the last member on the waitlist is promoted first", "k": "test_l2_"},
+ {"file": "gym.py", "old": "return len(c.waiting)\n", "new": "return len(c.waiting) - 1\n", "label": "waitlist positions count from 0", "k": "test_l2_"},
+ {"file": "gym.py", "old": "member in c.booked or member in c.waiting or", "new": "member in c.booked or", "label": "a member can join the same waitlist twice", "k": "test_l2_"},
+ {"file": "gym.py", "old": "c.start - ts >= REFUND_WINDOW", "new": "c.start - ts > REFUND_WINDOW", "label": "cancelling exactly 60 minutes before the start gets no refund", "k": "test_l3_"},
+ {"file": "gym.py", "old": "self._credits[member] = self._credits.get(member, 0) + paid", "new": "self._credits[member] = self._credits.get(member, 0) + c.price", "label": "a cancellation refunds today's price, not what was paid", "k": "test_l3_"},
+ {"file": "gym.py", "old": "if self._credits.get(m, 0) >= c.price:", "new": "if self._credits.get(m, 0) > c.price:", "label": "a waiting member with exactly the price in credits is skipped", "k": "test_l3_"},
+ {"file": "gym.py", "old": "_Class(first_start + k * WEEK, capacity)", "new": "_Class(first_start + (k + 1) * WEEK, capacity)", "label": "a series starts a week late", "k": "test_l4_"},
+ {"file": "gym.py", "old": "lambda c: c.start <= ts)", "new": "lambda c: c.start < ts)", "label": "history leaves out a class starting right now", "k": "test_l4_"},
+ {"file": "gym.py", "old": "self._credits[m] = self._credits.get(m, 0) + paid", "new": "self._credits[m] = self._credits.get(m, 0)", "label": "cancelling a class refunds nobody", "k": "test_l4_"}
+]

@@ -1,0 +1,537 @@
+[
+ {
+  "name": "rent_and_return",
+  "steps": [
+   {
+    "new": "RentalDesk",
+    "args": []
+   },
+   {
+    "call": "add_car",
+    "args": [
+     1,
+     "c2",
+     "economy",
+     "downtown"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_car",
+    "args": [
+     1,
+     "c1",
+     "economy",
+     "downtown"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_car",
+    "args": [
+     1,
+     "c3",
+     "suv",
+     "airport"
+    ],
+    "expect": true
+   },
+   {
+    "call": "rent",
+    "args": [
+     2,
+     "maya",
+     "downtown",
+     "economy",
+     3
+    ],
+    "expect": "c1"
+   },
+   {
+    "call": "rent",
+    "args": [
+     3,
+     "leo",
+     "downtown",
+     "economy",
+     1
+    ],
+    "expect": "c2"
+   },
+   {
+    "call": "rent",
+    "args": [
+     4,
+     "ana",
+     "downtown",
+     "economy",
+     1
+    ],
+    "expect": ""
+   },
+   {
+    "call": "status",
+    "args": [
+     5,
+     "c1"
+    ],
+    "expect": "rented:maya"
+   },
+   {
+    "call": "return_car",
+    "args": [
+     6,
+     "c1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "status",
+    "args": [
+     7,
+     "c1"
+    ],
+    "expect": "available:downtown"
+   },
+   {
+    "call": "rent",
+    "args": [
+     8,
+     "ana",
+     "downtown",
+     "economy",
+     2
+    ],
+    "expect": "c1"
+   }
+  ]
+ },
+ {
+  "name": "add_car_rules",
+  "steps": [
+   {
+    "new": "RentalDesk",
+    "args": []
+   },
+   {
+    "call": "add_car",
+    "args": [
+     1,
+     "c1",
+     "suv",
+     "airport"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_car",
+    "args": [
+     2,
+     "c1",
+     "economy",
+     "downtown"
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_car",
+    "args": [
+     3,
+     "c2",
+     "truck",
+     "airport"
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_car",
+    "args": [
+     4,
+     "c3",
+     "SUV",
+     "airport"
+    ],
+    "expect": false
+   },
+   {
+    "call": "status",
+    "args": [
+     5,
+     "c1"
+    ],
+    "expect": "available:airport"
+   },
+   {
+    "call": "status",
+    "args": [
+     5,
+     "c2"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "status",
+    "args": [
+     5,
+     "c9"
+    ],
+    "expect": ""
+   }
+  ]
+ },
+ {
+  "name": "rent_rejects",
+  "steps": [
+   {
+    "new": "RentalDesk",
+    "args": []
+   },
+   {
+    "call": "add_car",
+    "args": [
+     1,
+     "c1",
+     "compact",
+     "downtown"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_car",
+    "args": [
+     1,
+     "c2",
+     "compact",
+     "downtown"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_car",
+    "args": [
+     1,
+     "c3",
+     "suv",
+     "airport"
+    ],
+    "expect": true
+   },
+   {
+    "call": "rent",
+    "args": [
+     2,
+     "maya",
+     "downtown",
+     "van",
+     1
+    ],
+    "expect": ""
+   },
+   {
+    "call": "rent",
+    "args": [
+     2,
+     "maya",
+     "downtown",
+     "compact",
+     0
+    ],
+    "expect": ""
+   },
+   {
+    "call": "rent",
+    "args": [
+     2,
+     "maya",
+     "downtown",
+     "compact",
+     -2
+    ],
+    "expect": ""
+   },
+   {
+    "call": "rent",
+    "args": [
+     3,
+     "maya",
+     "downtown",
+     "suv",
+     1
+    ],
+    "expect": ""
+   },
+   {
+    "call": "rent",
+    "args": [
+     3,
+     "maya",
+     "airport",
+     "compact",
+     1
+    ],
+    "expect": ""
+   },
+   {
+    "call": "rent",
+    "args": [
+     4,
+     "maya",
+     "downtown",
+     "compact",
+     2
+    ],
+    "expect": "c1"
+   },
+   {
+    "call": "rent",
+    "args": [
+     5,
+     "maya",
+     "downtown",
+     "compact",
+     1
+    ],
+    "expect": ""
+   },
+   {
+    "call": "rent",
+    "args": [
+     5,
+     "maya",
+     "airport",
+     "suv",
+     1
+    ],
+    "expect": ""
+   },
+   {
+    "call": "status",
+    "args": [
+     6,
+     "c2"
+    ],
+    "expect": "available:downtown"
+   },
+   {
+    "call": "return_car",
+    "args": [
+     7,
+     "c1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "rent",
+    "args": [
+     8,
+     "maya",
+     "airport",
+     "suv",
+     1
+    ],
+    "expect": "c3"
+   }
+  ]
+ },
+ {
+  "name": "lowest_id_in_string_order",
+  "steps": [
+   {
+    "new": "RentalDesk",
+    "args": []
+   },
+   {
+    "call": "add_car",
+    "args": [
+     1,
+     "c9",
+     "economy",
+     "downtown"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_car",
+    "args": [
+     1,
+     "c10",
+     "economy",
+     "downtown"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_car",
+    "args": [
+     1,
+     "c2",
+     "economy",
+     "downtown"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_car",
+    "args": [
+     1,
+     "c1",
+     "economy",
+     "airport"
+    ],
+    "expect": true
+   },
+   {
+    "call": "rent",
+    "args": [
+     2,
+     "maya",
+     "downtown",
+     "economy",
+     1
+    ],
+    "expect": "c10"
+   },
+   {
+    "call": "rent",
+    "args": [
+     3,
+     "leo",
+     "downtown",
+     "economy",
+     1
+    ],
+    "expect": "c2"
+   },
+   {
+    "call": "rent",
+    "args": [
+     4,
+     "ana",
+     "downtown",
+     "economy",
+     1
+    ],
+    "expect": "c9"
+   },
+   {
+    "call": "rent",
+    "args": [
+     5,
+     "sam",
+     "downtown",
+     "economy",
+     1
+    ],
+    "expect": ""
+   },
+   {
+    "call": "return_car",
+    "args": [
+     6,
+     "c2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "rent",
+    "args": [
+     7,
+     "sam",
+     "downtown",
+     "economy",
+     1
+    ],
+    "expect": "c2"
+   }
+  ]
+ },
+ {
+  "name": "return_rules",
+  "steps": [
+   {
+    "new": "RentalDesk",
+    "args": []
+   },
+   {
+    "call": "add_car",
+    "args": [
+     1,
+     "c1",
+     "suv",
+     "airport"
+    ],
+    "expect": true
+   },
+   {
+    "call": "return_car",
+    "args": [
+     2,
+     "c1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "return_car",
+    "args": [
+     2,
+     "c7"
+    ],
+    "expect": false
+   },
+   {
+    "call": "rent",
+    "args": [
+     3,
+     "maya",
+     "airport",
+     "suv",
+     2
+    ],
+    "expect": "c1"
+   },
+   {
+    "call": "return_car",
+    "args": [
+     4,
+     "c1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "return_car",
+    "args": [
+     5,
+     "c1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "status",
+    "args": [
+     6,
+     "c1"
+    ],
+    "expect": "available:airport"
+   },
+   {
+    "call": "rent",
+    "args": [
+     7,
+     "leo",
+     "airport",
+     "suv",
+     1
+    ],
+    "expect": "c1"
+   },
+   {
+    "call": "status",
+    "args": [
+     8,
+     "c1"
+    ],
+    "expect": "rented:leo"
+   }
+  ]
+ }
+]

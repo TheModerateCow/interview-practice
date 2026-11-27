@@ -1,0 +1,21 @@
+[
+ {"file": "meters.py", "old": "            if b.stored >= b.capacity:", "new": "            if b.stored > b.capacity:", "label": "a full battery still charges", "k": "test_l1_"},
+ {"file": "meters.py", "old": "(day, slot) <= b.last", "new": "(day, slot) < b.last", "label": "two actions allowed in the same slot", "k": "test_l1_"},
+ {"file": "meters.py", "old": "            gain = prices[slot] - b.wear", "new": "            gain = prices[slot]", "label": "discharging never pays wear", "k": "test_l1_"},
+ {"file": "meters.py", "old": "not 0 <= slot < len(prices)", "new": "not 0 <= slot <= len(prices)", "label": "the slot just past the tariff is accepted", "k": "test_l1_"},
+ {"file": "meters.py", "old": "        if day in self._tariffs:\n            return False", "new": "        if day in self._tariffs and False:\n            return False", "label": "republishing replaces the tariff", "k": "test_l1_"},
+ {"file": "meters.py", "old": "key=lambda i: (-profit[i], i)", "new": "key=lambda i: (profit[i], i)", "label": "top earners ranked smallest first", "k": "test_l2_"},
+ {"file": "meters.py", "old": "        d.profit += gain", "new": "        d.profit += max(gain, 0)", "label": "charges don't count against the day", "k": "test_l2_"},
+ {"file": "meters.py", "old": "return d.profit if d else 0", "new": "return d.profit if d else None", "label": "a quiet day reports none instead of 0", "k": "test_l2_"},
+ {"file": "meters.py", "old": "[[None] * (cap + 1) for _ in range(lim + 1)]\n        best[0][0] = 0", "new": "[[0] * (cap + 1) for _ in range(lim + 1)]\n        best[0][0] = 0", "label": "the planner starts with free stored energy", "k": "test_l3_"},
+ {"file": "meters.py", "old": "best[0][0] = 0", "new": "best[0][min(b.stored, cap)] = 0", "label": "the planner starts from the energy stored now", "k": "test_l3_"},
+ {"file": "meters.py", "old": "v + p - b.wear > nxt[u + 1][c - 1]):\n                        nxt[u + 1][c - 1] = v + p - b.wear", "new": "v + p > nxt[u + 1][c - 1]):\n                        nxt[u + 1][c - 1] = v + p", "label": "the planner forgets wear", "k": "test_l3_"},
+ {"file": "meters.py", "old": "        return max(v for row in best for v in row if v is not None)", "new": "        return max(row[0] for row in best if row[0] is not None)", "label": "the planner must end the day empty", "k": "test_l3_"},
+ {"file": "meters.py", "old": "nxt: list[list[int | None]] = [row[:] for row in best]", "new": "nxt: list[list[int | None]] = [[None] * (cap + 1) for _ in range(lim + 1)]", "label": "the planner never idles", "k": "test_l3_"},
+ {"file": "meters.py", "old": "or v - p > nxt[u][c + 1]):\n                        nxt[u][c + 1] = v - p", "new": "or v - p - b.wear > nxt[u][c + 1]):\n                        nxt[u][c + 1] = v - p - b.wear", "label": "the planner charges wear on charging too", "k": "test_l3_"},
+ {"file": "meters.py", "old": "d.discharged >= b.limit", "new": "d.discharged > b.limit", "label": "the limit lets one extra kWh out", "k": "test_l4_"},
+ {"file": "meters.py", "old": "lim = n if b.limit is None else min(b.limit, n)", "new": "lim = n", "label": "the planner ignores the limit", "k": "test_l4_"},
+ {"file": "meters.py", "old": "        b.limit = kwh", "new": "        b.limit = kwh if b.limit is None else min(b.limit, kwh)", "label": "a new limit can only tighten the old one", "k": "test_l4_"},
+ {"file": "meters.py", "old": "            d.discharged += 1", "new": "            d.discharged += 1 if b.limit is not None else 0", "label": "discharges before the limit was set don't count", "k": "test_l4_"},
+ {"file": "meters.py", "old": "            for u in range(lim + 1):\n                for c", "new": "            for u in range(lim):\n                for c", "label": "the planner stops once the limit is used, even for charging", "k": "test_l4_"}
+]

@@ -1,0 +1,21 @@
+[
+ {"file": "meters.go", "old": "\t\tif b.stored >= b.capacity {", "new": "\t\tif b.stored > b.capacity {", "label": "a full battery still charges", "k": "test_l1_"},
+ {"file": "meters.go", "old": "slot <= b.lastSl)", "new": "slot < b.lastSl)", "label": "two actions allowed in the same slot", "k": "test_l1_"},
+ {"file": "meters.go", "old": "\t\tgain = prices[slot] - b.wear", "new": "\t\tgain = prices[slot]", "label": "discharging never pays wear", "k": "test_l1_"},
+ {"file": "meters.go", "old": "slot >= len(prices)", "new": "slot > len(prices)", "label": "the slot just past the tariff is accepted", "k": "test_l1_"},
+ {"file": "meters.go", "old": "\tif _, ok := f.tariffs[day]; ok {", "new": "\tif _, ok := f.tariffs[day]; ok && false {", "label": "republishing replaces the tariff", "k": "test_l1_"},
+ {"file": "meters.go", "old": "\t\t\treturn profit[ids[i]] > profit[ids[j]]", "new": "\t\t\treturn profit[ids[i]] < profit[ids[j]]", "label": "top earners ranked smallest first", "k": "test_l2_"},
+ {"file": "meters.go", "old": "\td.profit += gain", "new": "\td.profit += max(gain, 0)", "label": "charges don't count against the day", "k": "test_l2_"},
+ {"file": "meters.go", "old": "\treturn 0, true\n}\n\nfunc (f *Fleet) TopEarners", "new": "\treturn 0, false\n}\n\nfunc (f *Fleet) TopEarners", "label": "a quiet day reports none instead of 0", "k": "test_l2_"},
+ {"file": "meters.go", "old": "\tbest[0][0] = 0", "new": "\tfor u := range best {\n\t\tfor c := range best[u] {\n\t\t\tbest[u][c] = 0\n\t\t}\n\t}", "label": "the planner starts with free stored energy", "k": "test_l3_"},
+ {"file": "meters.go", "old": "\tbest[0][0] = 0", "new": "\tbest[0][min(b.stored, capacity)] = 0", "label": "the planner starts from the energy stored now", "k": "test_l3_"},
+ {"file": "meters.go", "old": "v+p-b.wear > nxt[u+1][c-1] {\n\t\t\t\t\tnxt[u+1][c-1] = v + p - b.wear", "new": "v+p > nxt[u+1][c-1] {\n\t\t\t\t\tnxt[u+1][c-1] = v + p", "label": "the planner forgets wear", "k": "test_l3_"},
+ {"file": "meters.go", "old": "\tfor _, row := range best {\n\t\tfor _, v := range row {\n\t\t\tout = max(out, v)\n\t\t}\n\t}", "new": "\tfor _, row := range best {\n\t\tout = max(out, row[0])\n\t}", "label": "the planner must end the day empty", "k": "test_l3_"},
+ {"file": "meters.go", "old": "\t\t\tcopy(nxt[u], best[u]) // idle", "new": "\t\t\t_ = u", "label": "the planner never idles", "k": "test_l3_"},
+ {"file": "meters.go", "old": "v-p > nxt[u][c+1] {\n\t\t\t\t\tnxt[u][c+1] = v - p", "new": "v-p-b.wear > nxt[u][c+1] {\n\t\t\t\t\tnxt[u][c+1] = v - p - b.wear", "label": "the planner charges wear on charging too", "k": "test_l3_"},
+ {"file": "meters.go", "old": "d.discharged >= b.limit", "new": "d.discharged > b.limit", "label": "the limit lets one extra kWh out", "k": "test_l4_"},
+ {"file": "meters.go", "old": "\t\tlim = min(b.limit, n)", "new": "\t\tlim = n", "label": "the planner ignores the limit", "k": "test_l4_"},
+ {"file": "meters.go", "old": "\tb.limit = kwh", "new": "\tif b.limit < 0 || kwh < b.limit {\n\t\tb.limit = kwh\n\t}", "label": "a new limit can only tighten the old one", "k": "test_l4_"},
+ {"file": "meters.go", "old": "\t\td.discharged++", "new": "\t\tif b.limit >= 0 {\n\t\t\td.discharged++\n\t\t}", "label": "discharges before the limit was set don't count", "k": "test_l4_"},
+ {"file": "meters.go", "old": "\t\tfor u := 0; u <= lim; u++ {\n\t\t\tfor c", "new": "\t\tfor u := 0; u < lim; u++ {\n\t\t\tfor c", "label": "the planner stops once the limit is used, even for charging", "k": "test_l4_"}
+]

@@ -1,0 +1,76 @@
+[
+ {"name": "resting_asks", "steps": [
+  {"new": "OrderBook", "args": []},
+  {"call": "add_order", "args": ["a1", 101, 5], "expect": true},
+  {"call": "add_order", "args": ["a2", 100, 3], "expect": true},
+  {"call": "add_order", "args": ["a3", 101, 2], "expect": true},
+  {"call": "add_order", "args": ["a1", 99, 1], "expect": false},
+  {"call": "best_ask", "args": [], "expect": 100},
+  {"call": "depth_at", "args": [101], "expect": 7},
+  {"call": "cancel_order", "args": ["a2"], "expect": true},
+  {"call": "cancel_order", "args": ["a2"], "expect": false},
+  {"call": "best_ask", "args": [], "expect": 101},
+  {"call": "depth_at", "args": [100], "expect": 0}
+ ]},
+ {"name": "empty_book", "steps": [
+  {"new": "OrderBook", "args": []},
+  {"call": "best_ask", "args": [], "expect": null},
+  {"call": "depth_at", "args": [100], "expect": 0},
+  {"call": "cancel_order", "args": ["a1"], "expect": false},
+  {"call": "add_order", "args": ["a1", 50, 1], "expect": true},
+  {"call": "cancel_order", "args": ["a1"], "expect": true},
+  {"call": "best_ask", "args": [], "expect": null},
+  {"call": "depth_at", "args": [50], "expect": 0}
+ ]},
+ {"name": "ids_are_never_reused", "steps": [
+  {"new": "OrderBook", "args": []},
+  {"call": "add_order", "args": ["a1", 10, 4], "expect": true},
+  {"call": "cancel_order", "args": ["a1"], "expect": true},
+  {"call": "add_order", "args": ["a1", 10, 4], "expect": false},
+  {"call": "depth_at", "args": [10], "expect": 0},
+  {"call": "add_order", "args": ["A1", 10, 4], "expect": true},
+  {"call": "depth_at", "args": [10], "expect": 4},
+  {"call": "cancel_order", "args": ["a1"], "expect": false},
+  {"call": "cancel_order", "args": ["A1"], "expect": true},
+  {"call": "best_ask", "args": [], "expect": null}
+ ]},
+ {"name": "best_ask_moves_up", "steps": [
+  {"new": "OrderBook", "args": []},
+  {"call": "add_order", "args": ["a1", 200, 1], "expect": true},
+  {"call": "add_order", "args": ["a2", 150, 2], "expect": true},
+  {"call": "add_order", "args": ["a3", 150, 3], "expect": true},
+  {"call": "add_order", "args": ["a4", 175, 4], "expect": true},
+  {"call": "best_ask", "args": [], "expect": 150},
+  {"call": "cancel_order", "args": ["a2"], "expect": true},
+  {"call": "best_ask", "args": [], "expect": 150},
+  {"call": "depth_at", "args": [150], "expect": 3},
+  {"call": "cancel_order", "args": ["a3"], "expect": true},
+  {"call": "best_ask", "args": [], "expect": 175},
+  {"call": "cancel_order", "args": ["a4"], "expect": true},
+  {"call": "best_ask", "args": [], "expect": 200},
+  {"call": "add_order", "args": ["a5", 199, 1], "expect": true},
+  {"call": "best_ask", "args": [], "expect": 199}
+ ]},
+ {"name": "same_price_adds_up", "steps": [
+  {"new": "OrderBook", "args": []},
+  {"call": "add_order", "args": ["a1", 7, 1], "expect": true},
+  {"call": "add_order", "args": ["a2", 7, 10], "expect": true},
+  {"call": "add_order", "args": ["a3", 8, 100], "expect": true},
+  {"call": "add_order", "args": ["a4", 7, 1000], "expect": true},
+  {"call": "depth_at", "args": [7], "expect": 1011},
+  {"call": "depth_at", "args": [8], "expect": 100},
+  {"call": "depth_at", "args": [9], "expect": 0},
+  {"call": "cancel_order", "args": ["a2"], "expect": true},
+  {"call": "depth_at", "args": [7], "expect": 1001}
+ ]},
+ {"name": "big_book_values", "steps": [
+  {"new": "OrderBook", "args": []},
+  {"call": "add_order", "args": ["a1", 999999999, 1000000000], "expect": true},
+  {"call": "add_order", "args": ["a2", 999999999, 1000000000], "expect": true},
+  {"call": "add_order", "args": ["a3", 1, 1], "expect": true},
+  {"call": "depth_at", "args": [999999999], "expect": 2000000000},
+  {"call": "best_ask", "args": [], "expect": 1},
+  {"call": "cancel_order", "args": ["a3"], "expect": true},
+  {"call": "best_ask", "args": [], "expect": 999999999}
+ ]}
+]

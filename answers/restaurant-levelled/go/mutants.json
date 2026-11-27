@@ -1,0 +1,93 @@
+[
+ {
+  "file": "restaurant.go",
+  "old": "!taken[t] && seats >= size",
+  "new": "!taken[t] && seats > size",
+  "label": "a party exactly the table's size doesn't fit it",
+  "k": "test_l1_"
+ },
+ {
+  "file": "restaurant.go",
+  "old": "seats == rt.tables[best] && t < best",
+  "new": "seats == rt.tables[best] && t > best",
+  "label": "ties between equal tables go to the largest id",
+  "k": "test_l1_"
+ },
+ {
+  "file": "restaurant.go",
+  "old": "ok || seats <= 0",
+  "new": "ok || seats < 0",
+  "label": "a table with 0 seats is accepted",
+  "k": "test_l1_"
+ },
+ {
+  "file": "restaurant.go",
+  "old": "if r == nil || r.status != \"booked\" || !live(ts, r) {\n\t\treturn false\n\t}\n\tr.status = \"cancelled\"",
+  "new": "if r == nil {\n\t\treturn false\n\t}\n\tr.status = \"cancelled\"",
+  "label": "cancelling twice succeeds",
+  "k": "test_l1_"
+ },
+ {
+  "file": "restaurant.go",
+  "old": "\t\t\tkeep = append(keep, p)\n",
+  "new": "\t\t\tkeep = append(keep, p)\n\t\t\tbreak\n",
+  "label": "a party that doesn't fit blocks everyone behind it, who are dropped",
+  "k": "test_l2_"
+ },
+ {
+  "file": "restaurant.go",
+  "old": "if tables := rt.fit(ts, size, slot); tables != nil {\n\t\trt.add(name, size, slot, tables)\n\t} else {\n\t\trt.waiting[slot] = append(rt.waiting[slot], party{name, size})\n\t}",
+  "new": "rt.waiting[slot] = append(rt.waiting[slot], party{name, size})",
+  "label": "a walk-in waits even when a table is free",
+  "k": "test_l2_"
+ },
+ {
+  "file": "restaurant.go",
+  "old": "\t\tif si != sj {\n\t\t\treturn si < sj\n\t\t}\n",
+  "new": "",
+  "label": "free tables sorted by id only, ignoring seats",
+  "k": "test_l2_"
+ },
+ {
+  "file": "restaurant.go",
+  "old": "!taken[p[0]] && !taken[p[1]] && s >= size",
+  "new": "!taken[p[0]] && !taken[p[1]] && s > size",
+  "label": "a join whose seats exactly match the party doesn't fit it",
+  "k": "test_l3_"
+ },
+ {
+  "file": "restaurant.go",
+  "old": "(p[0] < bp[0] || p[0] == bp[0] && p[1] < bp[1])",
+  "new": "p[1] < bp[1]",
+  "label": "joins with equal seats tie on the higher id",
+  "k": "test_l3_"
+ },
+ {
+  "file": "restaurant.go",
+  "old": "pair := [2]string{min(tableA, tableB), max(tableA, tableB)}",
+  "new": "pair := [2]string{tableA, tableB}",
+  "label": "a link keeps its argument order, so the same link can be added twice and TableOf prints it backwards",
+  "k": "test_l3_"
+ },
+ {
+  "file": "restaurant.go",
+  "old": "return !(r.status == \"booked\" && ts >= r.slot+grace)",
+  "new": "return !(r.status == \"booked\" && ts > r.slot+grace)",
+  "label": "the table is still held at exactly slot + 15",
+  "k": "test_l4_"
+ },
+ {
+  "file": "restaurant.go",
+  "old": "ts < maxOf(times)+ban",
+  "new": "ts <= maxOf(times)+ban",
+  "label": "the ban still applies exactly a day after the latest no-show",
+  "k": "test_l4_"
+ },
+ {
+  "file": "restaurant.go",
+  "old": "if size <= 0 || ts >= slot+grace {\n\t\treturn false",
+  "new": "if size <= 0 || ts >= slot+grace || len(rt.noShowTimes(ts, name)) > 0 {\n\t\treturn false",
+  "label": "guests with a no-show can't walk in either",
+  "k": "test_l4_"
+ }
+]
