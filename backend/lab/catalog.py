@@ -4,6 +4,7 @@ saved by every zip import). Picking a problem in a language starts an attempt: a
 A built-in problem is language-neutral (problem.json + <lang>/ variants, rendered by lab.variants); an imported problem
 is one interview-set/1 set in one language (manifest.json)."""
 import json, os, shutil
+from pathlib import Path
 
 from lab import variants
 from lab.errors import Invalid, NotFound
@@ -38,11 +39,11 @@ def _read(d, names):
     out = {}
     for f in names:
         p = os.path.join(d, f)
-        if os.path.isfile(p): out[f] = open(p, "rb").read()
+        if os.path.isfile(p): out[f] = Path(p).read_bytes()
         for root, _, fs in os.walk(p) if os.path.isdir(p) else ():
             for x in fs:
                 q = os.path.join(root, x)
-                out[os.path.relpath(q, d).replace(os.sep, "/")] = open(q, "rb").read()
+                out[os.path.relpath(q, d).replace(os.sep, "/")] = Path(q).read_bytes()
     return out
 
 

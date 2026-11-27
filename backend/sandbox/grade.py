@@ -6,6 +6,7 @@ EXPR: a test-name substring ("test_p1_") or "not <substring>". The test command 
 and leaves its report in the output tar; parsing happens here.
 """
 import json, os, re, shlex, sys, xml.etree.ElementTree as ET
+from pathlib import Path
 try: from sandbox import runner   # imported by the server
 except ImportError: import runner   # run as a script: python3 grade.py ...
 
@@ -154,7 +155,7 @@ def read_tree(d, skip=(".git", "node_modules", "__pycache__", ".pytest_cache")):
         for f in fs:
             p = os.path.join(root, f)
             if os.path.islink(p): continue
-            files[os.path.relpath(p, d).replace(os.sep, "/")] = open(p, "rb").read()
+            files[os.path.relpath(p, d).replace(os.sep, "/")] = Path(p).read_bytes()
     return files
 
 
@@ -165,7 +166,7 @@ if __name__ == "__main__":
     ext = os.path.splitext(tests)[1]; base = os.path.basename(tests)
     if ext not in LANG_BY_EXT:
         print(json.dumps({"status": "could not be graded", "last_line": f"no runner for {ext} files"})); sys.exit()
-    files = read_tree(code); files[base] = open(tests, "rb").read()
+    files = read_tree(code); files[base] = Path(tests).read_bytes()
     try:
         print(json.dumps(grade(files, [base], LANG_BY_EXT[ext], k, lim, "--names" in a)))
     except runner.DockerError as e:
