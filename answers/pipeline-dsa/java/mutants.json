@@ -1,6 +1,0 @@
-[
- {"file": "Pipeline.java", "old": "Math.max(g[b - i], fc[i])", "new": "g[b - i] + fc[i]", "label": "inputs run one after another, not in parallel", "k": "test_p1_"},
- {"file": "Pipeline.java", "old": "job.warm() + g[b - 1]", "new": "job.warm() + g[b]", "label": "warming a job doesn't use up a slot", "k": "test_p1_"},
- {"file": "Pipeline.java", "old": "if (order.size() != n) return -1;", "new": "if (order.size() > n) return -1;", "label": "cycles not rejected", "k": "test_p1_"},
- {"file": "Pipeline.java", "old": "k = Math.min(k, n);", "new": "k = Math.min(k, n - 1);", "label": "can never warm every job", "k": "test_p1_"}
-]

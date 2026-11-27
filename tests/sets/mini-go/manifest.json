@@ -2,7 +2,7 @@
  "format": "interview-set/1",
  "name": "mini-go",
  "title": "Merge intervals (Go)",
- "round": "dsa",
+ "round": "tdd",
  "language": "go",
  "difficulty": "medium",
  "minutes": 20,

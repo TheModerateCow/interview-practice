@@ -1,6 +1,0 @@
-[
- {"file":"dispatch.go","old":"if d[j] <= x+radius {","new":"if d[j] < x+radius {","label":"a driver exactly R away is treated as out of reach","k":"test_p1_"},
- {"file":"dispatch.go","old":"\t\t\tcount++\n\t\t\tj++","new":"\t\t\tcount++","label":"a driver is reused for several riders","k":"test_p1_"},
- {"file":"dispatch.go","old":"\t\t\thi = mid\n","new":"\t\t\thi = mid - 1\n","label":"binary search drops a feasible radius","k":"test_p1_"},
- {"file":"dispatch.go","old":"if need > len(riders) || need > len(drivers) {","new":"if need > len(riders) {","label":"too few drivers not reported as -1","k":"test_p1_"}
-]

@@ -321,18 +321,18 @@ test('Home: delete a finished and an unstarted set', async ({ page, request }) =
 
 test('Catalog: filter, then pick a problem to open an attempt', async ({ page, request }) => {
   const cat = await (await request.get(`${BASE}/api/catalog`, { headers: H })).json();
-  const dsa = cat.problems.filter(p => p.round === 'dsa');
-  const p = dsa[0];
+  const lev = cat.problems.filter(p => p.round === 'levelled');
+  const p = lev[0];
   await page.goto(BASE);
   await page.waitForLoadState('networkidle');
   await openIfAsked(page);
   if (await page.locator('#home-btn').isVisible()) await page.click('#home-btn');
   await expect(page.locator('#catalog h2')).toContainText('Problems');
   await page.click('#f-round');
-  await page.click('#f-round-list [data-value="dsa"]');
+  await page.click('#f-round-list [data-value="levelled"]');
   // other tests import sets in parallel (each joins the catalog), so check the filter by content, not an exact count
-  await expect.poll(async () => (await page.locator('#catalog .set-meta').allTextContents()).every(t => t.startsWith('DSA round'))).toBe(true);
-  expect(await page.locator('#catalog .set-row').count()).toBeGreaterThanOrEqual(dsa.length);
+  await expect.poll(async () => (await page.locator('#catalog .set-meta').allTextContents()).every(t => t.startsWith('Levelled round'))).toBe(true);
+  expect(await page.locator('#catalog .set-row').count()).toBeGreaterThanOrEqual(lev.length);
   await page.click(`#catalog [data-problem="${p.id}"]`);
   await expect(page.locator('#ready')).toBeVisible();
   await expect(page.locator('#ready h1')).toHaveText(p.title);

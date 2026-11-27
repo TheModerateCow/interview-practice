@@ -1,9 +1,0 @@
-{
- "module": "scheduler",
- "java_class": "Scheduler",
- "records": {"Attendee": [["offset", "int"], ["work_start", "int"], ["work_end", "int"], ["busy", "list<list<int>>"]]},
- "functions": {
-  "earliest_quorum_slot": {"params": [["attendees", "list<Attendee>"], ["days", "int"], ["duration", "int"], ["quorum", "int"]], "returns": "int"}
- },
- "errors": []
-}

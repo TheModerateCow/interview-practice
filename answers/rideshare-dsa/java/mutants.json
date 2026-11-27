@@ -1,6 +1,0 @@
-[
- {"file": "Dispatch.java", "old": "if (d[j] <= x + radius) {", "new": "if (d[j] < x + radius) {", "label": "a driver exactly R away is treated as out of reach", "k": "test_p1_"},
- {"file": "Dispatch.java", "old": "count++;\n                j++;", "new": "count++;", "label": "a driver is reused for several riders", "k": "test_p1_"},
- {"file": "Dispatch.java", "old": "hi = mid;", "new": "hi = mid - 1;", "label": "binary search drops a feasible radius", "k": "test_p1_"},
- {"file": "Dispatch.java", "old": "if (need > riders.length || need > drivers.length) return -1;", "new": "if (need > riders.length) return -1;", "label": "too few drivers not reported as -1", "k": "test_p1_"}
-]

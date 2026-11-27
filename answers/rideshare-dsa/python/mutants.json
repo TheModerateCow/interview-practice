@@ -1,6 +1,0 @@
-[
- {"file":"dispatch.py","old":"if d[j] <= x + radius:","new":"if d[j] < x + radius:","label":"a driver exactly R away is treated as out of reach","k":"test_p1_"},
- {"file":"dispatch.py","old":"            count += 1\n            j += 1","new":"            count += 1","label":"a driver is reused for several riders","k":"test_p1_"},
- {"file":"dispatch.py","old":"            hi = mid\n","new":"            hi = mid - 1\n","label":"binary search drops a feasible radius","k":"test_p1_"},
- {"file":"dispatch.py","old":"if need > len(riders) or need > len(drivers):","new":"if need > len(riders):","label":"too few drivers not reported as -1","k":"test_p1_"}
-]

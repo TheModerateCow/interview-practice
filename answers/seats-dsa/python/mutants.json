@@ -1,6 +1,0 @@
-[
- {"file":"upgrades.py","old":"            heapq.heappush(taken, -alight)\n            ends[alight] += 1\n            active += 1\n        while active > cap[k]:\n            alight = -heapq.heappop(taken)","new":"            heapq.heappush(taken, alight)\n            ends[alight] += 1\n            active += 1\n        while active > cap[k]:\n            alight = heapq.heappop(taken)","label":"drops the earliest-alighting passenger when a leg is over","k":"test_p1_"},
- {"file":"upgrades.py","old":"            ends[alight] += 1\n            active += 1\n        while active > cap[k]:\n            alight = -heapq.heappop(taken)\n            ends[alight] -= 1","new":"            ends[alight + 1] += 1\n            active += 1\n        while active > cap[k]:\n            alight = -heapq.heappop(taken)\n            ends[alight + 1] -= 1","label":"also takes a seat on the leg after the passenger alights","k":"test_p1_"},
- {"file":"upgrades.py","old":"            ends[alight] -= 1\n            active -= 1\n","new":"            ends[alight] -= 1\n","label":"a dropped passenger still holds their seat","k":"test_p1_"},
- {"file":"upgrades.py","old":"        while active > cap[k]:","new":"        while active > cap[k] + 1:","label":"allows one passenger over a leg's free seats","k":"test_p1_"}
-]
