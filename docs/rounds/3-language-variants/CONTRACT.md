@@ -23,7 +23,8 @@ answers/<problem>/<lang>/   reference/, mutants.json, bugs.json   (gate input; m
 `render(problem_dir, lang) -> {relpath: bytes}` is a normal interview-set/1 set: `manifest.json` (problem.json + per-language
 overrides + `name`, `language`, `hidden_tests: ".hidden/<file>"`), `problem.md` + `.hidden/<level>.md` with placeholders
 rendered, `starter/**`, and `.hidden/<tests file>` (generated from api.json + cases, or copied from `<lang>/hidden/`).
-`your_tests` default per language: go `*_test.go`, java `*Test.java`, python `test_*.py`.
+`your_tests` default per language: go `*_test.go`, java `*Test.java`, python `test_*.py`. A Levelled problem instead gets
+`examples: ".hidden/examples/<tests file>"`: the same generator over the first case of each level, which Run grades; its starter has only the stubs (no run program, no example test).
 
 ## Names
 

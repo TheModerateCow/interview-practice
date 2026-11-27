@@ -70,7 +70,7 @@ def clock(s):
     return (now - s["start"]) / 60, max(left, 0), left <= 0
 
 
-def closed(s): return bool(s.get("ended")) or clock(s)[2]    # failed names and the "ended" status only
+def closed(s): return bool(s.get("ended")) or clock(s)[2]    # the "ended" status only
 def left_s(s): return round(clock(s)[1] * 60, 1)             # the one rule for "left_s" in /state and /sets
 
 
@@ -119,15 +119,10 @@ def ready_info(n):
     return {k: m.get(k) for k in ("name", "title", "company", "role", "round", "language", "difficulty", "minutes", "rules")} | {"status": st}
 
 
-def public(res, show_names):
-    return {k: v for k, v in res.items() if k != "failed" or show_names}
-
-
 def state(n):
     mutate(n, time_reveals)
     d, m, s = sdir(n), manifest(n), session(n)
     used, left, expired = clock(s)
-    names = closed(s)
     results = jload(os.path.join(d, "results.json"), {})
     parts = []
     for f in s["revealed"]:
@@ -137,10 +132,10 @@ def state(n):
         "start": s["start"], "now": time.time(), "left_s": left_s(s), "expired": expired, "ended": bool(s.get("ended")),
         "problem": open(os.path.join(d, "problem.md")).read(), "parts": parts,
         "unlocked": s["unlocked"], "has_next": bool(locked(s, m)),
-        "has_submit": bool(m.get("hidden_tests")), "has_mytests": bool(m.get("your_tests")),
+        "has_submit": bool(m.get("hidden_tests")), "has_mytests": bool(m.get("your_tests")), "has_examples": bool(m.get("examples")),
         "run_entry": m.get("run_entry"), "testcases_count": len(m.get("testcases", [])),
         "files": sorted(work_files(n)),
-        "results": {t: public(r, names) for t, r in results.items() if t != "final"},
+        "results": {t: r for t, r in results.items() if t != "final"},
         "final": results.get("final"), "events": s["events"]}
 
 
