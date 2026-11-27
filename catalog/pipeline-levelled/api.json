@@ -1,0 +1,125 @@
+{
+ "module": "pipeline",
+ "java_class": "Pipeline",
+ "records": {},
+ "functions": {},
+ "classes": {
+  "Pipeline": {
+   "init": [],
+   "methods": {
+    "add_job": {
+     "params": [
+      [
+       "job",
+       "string"
+      ],
+      [
+       "minutes",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "set_consumer": {
+     "params": [
+      [
+       "job",
+       "string"
+      ],
+      [
+       "consumer",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "inputs": {
+     "params": [
+      [
+       "job",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 1
+    },
+    "ready": {
+     "params": [],
+     "returns": "list<string>",
+     "level": 1
+    },
+    "finish": {
+     "params": [
+      [
+       "job",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "stuck": {
+     "params": [],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "run_order": {
+     "params": [],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "finish_time": {
+     "params": [
+      [
+       "job",
+       "string"
+      ]
+     ],
+     "returns": "optional<int>",
+     "level": 3
+    },
+    "critical_path": {
+     "params": [
+      [
+       "job",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 3
+    },
+    "set_warm": {
+     "params": [
+      [
+       "job",
+       "string"
+      ],
+      [
+       "minutes",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    },
+    "fastest_finish": {
+     "params": [
+      [
+       "job",
+       "string"
+      ],
+      [
+       "k",
+       "int"
+      ]
+     ],
+     "returns": "optional<int>",
+     "level": 4
+    }
+   }
+  }
+ },
+ "errors": []
+}

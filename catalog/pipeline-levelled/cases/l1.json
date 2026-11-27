@@ -1,0 +1,681 @@
+[
+ {
+  "name": "define_and_run",
+  "steps": [
+   {
+    "new": "Pipeline",
+    "args": []
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "lint",
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "test",
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "release",
+     5
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "lint",
+     4
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "lint",
+     "release"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "test",
+     "release"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "test",
+     "deploy"
+    ],
+    "expect": false
+   },
+   {
+    "call": "inputs",
+    "args": [
+     "release"
+    ],
+    "expect": [
+     "lint",
+     "test"
+    ]
+   },
+   {
+    "call": "ready",
+    "args": [],
+    "expect": [
+     "lint",
+     "test"
+    ]
+   },
+   {
+    "call": "finish",
+    "args": [
+     "release"
+    ],
+    "expect": false
+   },
+   {
+    "call": "finish",
+    "args": [
+     "lint"
+    ],
+    "expect": true
+   },
+   {
+    "call": "finish",
+    "args": [
+     "test"
+    ],
+    "expect": true
+   },
+   {
+    "call": "ready",
+    "args": [],
+    "expect": [
+     "release"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "relink_moves_the_input",
+  "steps": [
+   {
+    "new": "Pipeline",
+    "args": []
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "a",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "b",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "c",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "a",
+     "b"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "a",
+     "c"
+    ],
+    "expect": true
+   },
+   {
+    "call": "inputs",
+    "args": [
+     "b"
+    ],
+    "expect": []
+   },
+   {
+    "call": "inputs",
+    "args": [
+     "c"
+    ],
+    "expect": [
+     "a"
+    ]
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "a",
+     "c"
+    ],
+    "expect": true
+   },
+   {
+    "call": "inputs",
+    "args": [
+     "c"
+    ],
+    "expect": [
+     "a"
+    ]
+   },
+   {
+    "call": "ready",
+    "args": [],
+    "expect": [
+     "a",
+     "b"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "unknown_jobs",
+  "steps": [
+   {
+    "new": "Pipeline",
+    "args": []
+   },
+   {
+    "call": "ready",
+    "args": [],
+    "expect": []
+   },
+   {
+    "call": "inputs",
+    "args": [
+     "x"
+    ],
+    "expect": []
+   },
+   {
+    "call": "finish",
+    "args": [
+     "x"
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "x",
+     0
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "x",
+     "y"
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "y",
+     "x"
+    ],
+    "expect": false
+   },
+   {
+    "call": "inputs",
+    "args": [
+     "x"
+    ],
+    "expect": []
+   },
+   {
+    "call": "ready",
+    "args": [],
+    "expect": [
+     "x"
+    ]
+   },
+   {
+    "call": "finish",
+    "args": [
+     "x"
+    ],
+    "expect": true
+   },
+   {
+    "call": "ready",
+    "args": [],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "finished_consumer_takes_no_inputs",
+  "steps": [
+   {
+    "new": "Pipeline",
+    "args": []
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "pkg",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "docs",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "site",
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "finish",
+    "args": [
+     "pkg"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "docs",
+     "pkg"
+    ],
+    "expect": false
+   },
+   {
+    "call": "inputs",
+    "args": [
+     "pkg"
+    ],
+    "expect": []
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "pkg",
+     "site"
+    ],
+    "expect": true
+   },
+   {
+    "call": "ready",
+    "args": [],
+    "expect": [
+     "docs",
+     "site"
+    ]
+   },
+   {
+    "call": "finish",
+    "args": [
+     "docs"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "docs",
+     "site"
+    ],
+    "expect": true
+   },
+   {
+    "call": "inputs",
+    "args": [
+     "site"
+    ],
+    "expect": [
+     "docs",
+     "pkg"
+    ]
+   },
+   {
+    "call": "ready",
+    "args": [],
+    "expect": [
+     "site"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "self_link_never_ready",
+  "steps": [
+   {
+    "new": "Pipeline",
+    "args": []
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "loop",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "next",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "loop",
+     "loop"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "next",
+     "loop"
+    ],
+    "expect": true
+   },
+   {
+    "call": "inputs",
+    "args": [
+     "loop"
+    ],
+    "expect": [
+     "loop",
+     "next"
+    ]
+   },
+   {
+    "call": "ready",
+    "args": [],
+    "expect": [
+     "next"
+    ]
+   },
+   {
+    "call": "finish",
+    "args": [
+     "next"
+    ],
+    "expect": true
+   },
+   {
+    "call": "finish",
+    "args": [
+     "loop"
+    ],
+    "expect": false
+   },
+   {
+    "call": "ready",
+    "args": [],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "names_sort_by_code_unit",
+  "steps": [
+   {
+    "new": "Pipeline",
+    "args": []
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "beta",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "Zeta",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "alpha",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "Beta",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "ship",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "beta",
+     "ship"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "Zeta",
+     "ship"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "alpha",
+     "ship"
+    ],
+    "expect": true
+   },
+   {
+    "call": "inputs",
+    "args": [
+     "ship"
+    ],
+    "expect": [
+     "Zeta",
+     "alpha",
+     "beta"
+    ]
+   },
+   {
+    "call": "ready",
+    "args": [],
+    "expect": [
+     "Beta",
+     "Zeta",
+     "alpha",
+     "beta"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "chain_unlocks_step_by_step",
+  "steps": [
+   {
+    "new": "Pipeline",
+    "args": []
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "s1",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "s2",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "s3",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_job",
+    "args": [
+     "s4",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "s1",
+     "s2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "s2",
+     "s3"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_consumer",
+    "args": [
+     "s3",
+     "s4"
+    ],
+    "expect": true
+   },
+   {
+    "call": "finish",
+    "args": [
+     "s2"
+    ],
+    "expect": false
+   },
+   {
+    "call": "finish",
+    "args": [
+     "s1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "ready",
+    "args": [],
+    "expect": [
+     "s2"
+    ]
+   },
+   {
+    "call": "finish",
+    "args": [
+     "s2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "finish",
+    "args": [
+     "s3"
+    ],
+    "expect": true
+   },
+   {
+    "call": "ready",
+    "args": [],
+    "expect": [
+     "s4"
+    ]
+   },
+   {
+    "call": "finish",
+    "args": [
+     "s4"
+    ],
+    "expect": true
+   },
+   {
+    "call": "ready",
+    "args": [],
+    "expect": []
+   },
+   {
+    "call": "finish",
+    "args": [
+     "s4"
+    ],
+    "expect": false
+   }
+  ]
+ }
+]

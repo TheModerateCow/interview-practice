@@ -1,0 +1,128 @@
+[
+ {
+  "file": "autocomplete.py",
+  "old": "        n = self._count.get(query, 0) + 1\n        self._set(query, n)",
+  "new": "        n = 1\n        self._set(query, n)",
+  "label": "repeated searches don't add to popularity",
+  "k": "test_l1_"
+ },
+ {
+  "file": "autocomplete.py",
+  "old": "                insort(r, (-new, query))",
+  "new": "                insort(r, (new, query))",
+  "label": "least popular query suggested first",
+  "k": "test_l1_"
+ },
+ {
+  "file": "autocomplete.py",
+  "old": "        return node.ranked[0][1]",
+  "new": "        return max(q for c, q in node.ranked if c == node.ranked[0][0])",
+  "label": "ties go to the alphabetically last query",
+  "k": "test_l1_"
+ },
+ {
+  "file": "autocomplete.py",
+  "old": "        for node in self._path(query):\n            r = node.ranked",
+  "new": "        for node in self._path(query)[:-1]:\n            r = node.ranked",
+  "label": "a query isn't suggested for its own full text",
+  "k": "test_l1_"
+ },
+ {
+  "file": "autocomplete.py",
+  "old": "        if query not in self._count:\n            return False",
+  "new": "        if query not in self._count:\n            return True",
+  "label": "deleting an unlogged query reports success",
+  "k": "test_l2_"
+ },
+ {
+  "file": "autocomplete.py",
+  "old": "        if new:\n            self._count[query] = new\n        else:\n            self._count.pop(query, None)",
+  "new": "        if new:\n            self._count[query] = new",
+  "label": "deleted queries keep their popularity",
+  "k": "test_l2_"
+ },
+ {
+  "file": "autocomplete.py",
+  "old": "        n = self._count.get(into, 0) + moved",
+  "new": "        n = moved",
+  "label": "merge overwrites the target's own searches",
+  "k": "test_l2_"
+ },
+ {
+  "file": "autocomplete.py",
+  "old": "if from_ not in self._count or from_ == into:",
+  "new": "if from_ not in self._count:",
+  "label": "merging a query into itself deletes it",
+  "k": "test_l2_"
+ },
+ {
+  "file": "autocomplete.py",
+  "old": "        return [\"%s:%d\" % (q, -c) for c, q in node.ranked[:k]]",
+  "new": "        return [\"%s:%d\" % (q, -c) for c, q in node.ranked[:k + 1]]",
+  "label": "top list returns one extra entry",
+  "k": "test_l3_"
+ },
+ {
+  "file": "autocomplete.py",
+  "old": "            n = self._count.get(query, 0) + c\n            self._count[query] = n",
+  "new": "            n = c\n            self._count[query] = n",
+  "label": "import overwrites earlier counts instead of adding",
+  "k": "test_l3_"
+ },
+ {
+  "file": "autocomplete.py",
+  "old": "batch = Counter(log)",
+  "new": "batch = Counter(set(log))",
+  "label": "import counts each query once",
+  "k": "test_l3_"
+ },
+ {
+  "file": "autocomplete.py",
+  "old": "        for node in touched.values():\n            node.ranked.sort()",
+  "new": "        for node in touched.values():\n            pass",
+  "label": "imported entries left unsorted in the rankings",
+  "k": "test_l3_"
+ },
+ {
+  "file": "autocomplete.py",
+  "old": "        return len(self._count)",
+  "new": "        return len(batch)",
+  "label": "import returns the batch's distinct queries, not the whole log's",
+  "k": "test_l3_"
+ },
+ {
+  "file": "autocomplete.py",
+  "old": "            nexts = [s[:-1]] if s else []",
+  "new": "            nexts = []",
+  "label": "no Backspace",
+  "k": "test_l4_"
+ },
+ {
+  "file": "autocomplete.py",
+  "old": "                nexts.append(node.ranked[0][1])  # Tab",
+  "new": "                pass  # Tab",
+  "label": "no Tab",
+  "k": "test_l4_"
+ },
+ {
+  "file": "autocomplete.py",
+  "old": "            if node is not None and node.ranked:\n                nexts.append",
+  "new": "            if node is not None and node.ranked and s:\n                nexts.append",
+  "label": "Tab does nothing in an empty box",
+  "k": "test_l4_"
+ },
+ {
+  "file": "autocomplete.py",
+  "old": "            if len(s) < len(target) and target.startswith(s):",
+  "new": "            if len(s) < len(target) and target.startswith(s) and node is None:",
+  "label": "can't type the target's next letter while the box is on a logged prefix",
+  "k": "test_l4_"
+ },
+ {
+  "file": "autocomplete.py",
+  "old": "                    dist[n] = d + 1",
+  "new": "                    dist[n] = d + (n != s[:-1])",
+  "label": "Backspace counted as free",
+  "k": "test_l4_"
+ }
+]

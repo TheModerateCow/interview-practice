@@ -1,0 +1,691 @@
+[
+ {
+  "name": "build_and_reach",
+  "steps": [
+   {
+    "new": "Network",
+    "args": []
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     1,
+     "depot"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     2,
+     "a"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     3,
+     "b"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     4,
+     "c"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     5,
+     "depot"
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_road",
+    "args": [
+     6,
+     "r1",
+     "depot",
+     "a",
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_road",
+    "args": [
+     7,
+     "r2",
+     "a",
+     "b",
+     5
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_road",
+    "args": [
+     8,
+     "r1",
+     "b",
+     "c",
+     3
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_road",
+    "args": [
+     9,
+     "r3",
+     "depot",
+     "zz",
+     4
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_road",
+    "args": [
+     10,
+     "r4",
+     "b",
+     "b",
+     2
+    ],
+    "expect": false
+   },
+   {
+    "call": "roads_at",
+    "args": [
+     11,
+     "a"
+    ],
+    "expect": [
+     "r1:depot:10",
+     "r2:b:5"
+    ]
+   },
+   {
+    "call": "reachable",
+    "args": [
+     12,
+     "depot",
+     "b"
+    ],
+    "expect": true
+   },
+   {
+    "call": "reachable",
+    "args": [
+     13,
+     "depot",
+     "c"
+    ],
+    "expect": false
+   },
+   {
+    "call": "reachable",
+    "args": [
+     14,
+     "c",
+     "c"
+    ],
+    "expect": true
+   }
+  ]
+ },
+ {
+  "name": "roads_at_order",
+  "steps": [
+   {
+    "new": "Network",
+    "args": []
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     1,
+     "x"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     2,
+     "y"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     3,
+     "z"
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     4,
+     "r2",
+     "x",
+     "y",
+     7
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_road",
+    "args": [
+     5,
+     "r10",
+     "x",
+     "z",
+     1
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_road",
+    "args": [
+     6,
+     "r1",
+     "y",
+     "x",
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_road",
+    "args": [
+     7,
+     "R5",
+     "z",
+     "x",
+     9
+    ],
+    "expect": true
+   },
+   {
+    "call": "roads_at",
+    "args": [
+     8,
+     "x"
+    ],
+    "expect": [
+     "R5:z:9",
+     "r1:y:4",
+     "r10:z:1",
+     "r2:y:7"
+    ]
+   },
+   {
+    "call": "roads_at",
+    "args": [
+     9,
+     "y"
+    ],
+    "expect": [
+     "r1:x:4",
+     "r2:x:7"
+    ]
+   },
+   {
+    "call": "roads_at",
+    "args": [
+     10,
+     "z"
+    ],
+    "expect": [
+     "R5:x:9",
+     "r10:x:1"
+    ]
+   },
+   {
+    "call": "roads_at",
+    "args": [
+     11,
+     "w"
+    ],
+    "expect": []
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     12,
+     "w"
+    ]
+   },
+   {
+    "call": "roads_at",
+    "args": [
+     13,
+     "w"
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "roads_go_both_ways",
+  "steps": [
+   {
+    "new": "Network",
+    "args": []
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     1,
+     "a"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     2,
+     "b"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     3,
+     "c"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     4,
+     "d"
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     5,
+     "ab",
+     "a",
+     "b",
+     1
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     6,
+     "cb",
+     "c",
+     "b",
+     1
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     7,
+     "dc",
+     "d",
+     "c",
+     1
+    ]
+   },
+   {
+    "call": "reachable",
+    "args": [
+     8,
+     "a",
+     "d"
+    ],
+    "expect": true
+   },
+   {
+    "call": "reachable",
+    "args": [
+     9,
+     "d",
+     "a"
+    ],
+    "expect": true
+   },
+   {
+    "call": "reachable",
+    "args": [
+     10,
+     "b",
+     "a"
+    ],
+    "expect": true
+   }
+  ]
+ },
+ {
+  "name": "unknown_junctions",
+  "steps": [
+   {
+    "new": "Network",
+    "args": []
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     1,
+     "a"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     2,
+     "b"
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     3,
+     "ab",
+     "a",
+     "b",
+     2
+    ]
+   },
+   {
+    "call": "reachable",
+    "args": [
+     4,
+     "a",
+     "q"
+    ],
+    "expect": false
+   },
+   {
+    "call": "reachable",
+    "args": [
+     5,
+     "q",
+     "a"
+    ],
+    "expect": false
+   },
+   {
+    "call": "reachable",
+    "args": [
+     6,
+     "q",
+     "q"
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_road",
+    "args": [
+     7,
+     "aq",
+     "a",
+     "q",
+     1
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_road",
+    "args": [
+     8,
+     "qa",
+     "q",
+     "a",
+     1
+    ],
+    "expect": false
+   },
+   {
+    "call": "roads_at",
+    "args": [
+     9,
+     "a"
+    ],
+    "expect": [
+     "ab:b:2"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "failed_road_takes_no_id",
+  "steps": [
+   {
+    "new": "Network",
+    "args": []
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     1,
+     "a"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     2,
+     "b"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     3,
+     "c"
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     4,
+     "r9",
+     "a",
+     "nope",
+     1
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_road",
+    "args": [
+     5,
+     "r9",
+     "c",
+     "c",
+     1
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_road",
+    "args": [
+     6,
+     "r9",
+     "a",
+     "b",
+     6
+    ],
+    "expect": true
+   },
+   {
+    "call": "roads_at",
+    "args": [
+     7,
+     "b"
+    ],
+    "expect": [
+     "r9:a:6"
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     8,
+     "r9",
+     "b",
+     "c",
+     6
+    ],
+    "expect": false
+   },
+   {
+    "call": "reachable",
+    "args": [
+     9,
+     "a",
+     "c"
+    ],
+    "expect": false
+   }
+  ]
+ },
+ {
+  "name": "ids_and_long_chains",
+  "steps": [
+   {
+    "new": "Network",
+    "args": []
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     1,
+     "Hub"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     2,
+     "hub"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     3,
+     "s1"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     4,
+     "s2"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     5,
+     "s3"
+    ]
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     6,
+     "s4"
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     7,
+     "hub",
+     "hub",
+     "s1",
+     3
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_road",
+    "args": [
+     8,
+     "s12",
+     "s1",
+     "s2",
+     3
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     9,
+     "s23",
+     "s2",
+     "s3",
+     3
+    ]
+   },
+   {
+    "call": "add_road",
+    "args": [
+     10,
+     "s34",
+     "s3",
+     "s4",
+     3
+    ]
+   },
+   {
+    "call": "reachable",
+    "args": [
+     11,
+     "hub",
+     "s4"
+    ],
+    "expect": true
+   },
+   {
+    "call": "reachable",
+    "args": [
+     12,
+     "Hub",
+     "s4"
+    ],
+    "expect": false
+   },
+   {
+    "call": "roads_at",
+    "args": [
+     13,
+     "hub"
+    ],
+    "expect": [
+     "hub:s1:3"
+    ]
+   },
+   {
+    "call": "roads_at",
+    "args": [
+     14,
+     "Hub"
+    ],
+    "expect": []
+   },
+   {
+    "call": "add_junction",
+    "args": [
+     15,
+     "HUB"
+    ],
+    "expect": true
+   }
+  ]
+ }
+]

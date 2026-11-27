@@ -1,0 +1,226 @@
+{
+ "module": "routing",
+ "java_class": "Network",
+ "records": {},
+ "functions": {},
+ "classes": {
+  "Network": {
+   "init": [],
+   "methods": {
+    "add_junction": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "id",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "add_road": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "road",
+       "string"
+      ],
+      [
+       "a",
+       "string"
+      ],
+      [
+       "b",
+       "string"
+      ],
+      [
+       "minutes",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "roads_at": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "junction",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 1
+    },
+    "reachable": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "origin",
+       "string"
+      ],
+      [
+       "dest",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 1
+    },
+    "close_road": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "road",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 2
+    },
+    "reopen_road": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "road",
+       "string"
+      ]
+     ],
+     "returns": "bool",
+     "level": 2
+    },
+    "reachable_from": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "junction",
+       "string"
+      ]
+     ],
+     "returns": "list<string>",
+     "level": 2
+    },
+    "set_minutes": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "road",
+       "string"
+      ],
+      [
+       "minutes",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 3
+    },
+    "fastest_route": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "origin",
+       "string"
+      ],
+      [
+       "dest",
+       "string"
+      ]
+     ],
+     "returns": "int",
+     "level": 3
+    },
+    "add_charger": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "junction",
+       "string"
+      ],
+      [
+       "rate",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    },
+    "set_energy": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "road",
+       "string"
+      ],
+      [
+       "units",
+       "int"
+      ]
+     ],
+     "returns": "bool",
+     "level": 4
+    },
+    "fastest_delivery": {
+     "params": [
+      [
+       "ts",
+       "int"
+      ],
+      [
+       "origin",
+       "string"
+      ],
+      [
+       "dest",
+       "string"
+      ],
+      [
+       "capacity",
+       "int"
+      ],
+      [
+       "charge",
+       "int"
+      ]
+     ],
+     "returns": "int",
+     "level": 4
+    }
+   }
+  }
+ },
+ "errors": []
+}
