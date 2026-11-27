@@ -309,8 +309,9 @@ class Session:
     def kill(self):
         self.stopping.set()
         if self.cid:
+            # force-remove, not kill: a container whose attach or start failed never ran, so AutoRemove never fires
             try:
-                runner.api("POST", f"/containers/{self.cid}/kill")
+                runner.api("DELETE", f"/containers/{self.cid}?force=1")
             except runner.DockerError:
                 pass  # already gone (AutoRemove)
         try:
