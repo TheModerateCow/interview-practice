@@ -5,7 +5,7 @@ from pathlib import Path
 from sandbox import grade, lsp, runner
 from lab.errors import Conflict, Invalid, NotFound
 from lab.store import (DATA, EXPORTS, deadline, jload, jsave, late, lock, locked, log, manifest,
-                       minute, mutate, ready_info, require_started, reveal, run_lock, sdir, session, state, work_files, work_path)
+                       minute, mutate, ready_info, require_started, reveal, run_lock, SESSION_V, sdir, session, state, work_files, work_path)
 
 from sandbox.toolchains import BY_EXT
 EXT_LANG = {e: t.name for e, t in BY_EXT.items()}   # what Run can run, by file extension
@@ -18,7 +18,7 @@ def start(n):
         s = jload(p)
         if not s or not s.get("start"):
             unlocks = {r.get("unlocks") for r in m.get("reveal", [])}
-            s = {"start": time.time(), "minutes": m["minutes"], "hints": [], "events": [], "ended": None,
+            s = {"v": SESSION_V, "start": time.time(), "minutes": m["minutes"], "events": [], "ended": None,
                  "unlocked": [t for t in m.get("tags", ["test_"]) if t not in unlocks], "revealed": []}
             log(s, "start")
             jsave(p, s)
@@ -188,7 +188,7 @@ def export(n):
         for f in ("session.json", "results.json", "manifest.json"):
             p = os.path.join(d, f)
             z.writestr(f, Path(p).read_bytes() if os.path.isfile(p) else b"{}")
-        fd = os.path.join(d, "final")   # the code at the close; absent for rounds closed before this existed
+        fd = os.path.join(d, "final")   # the code at the close; older rounds have none
         for rel, data in sorted(grade.read_tree(fd).items() if os.path.isdir(fd) else []): z.writestr("final/" + rel, data)
     data = b.getvalue()
     os.makedirs(EXPORTS, exist_ok=True)

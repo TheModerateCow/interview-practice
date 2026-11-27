@@ -8,7 +8,8 @@ from pathlib import Path
 
 from lab import variants
 from lab.errors import Invalid, NotFound
-from lab.store import DATA, NAME_RE, ROOT, SETS, jload, jsave, left_s, lock, manifest, ready_info, session, set_names
+from lab.store import (DATA, NAME_RE, ROOT, SETS, jload, jsave, left_s, lock, manifest, ready_info, session, set_names,
+                       upgrade_manifest)
 
 BUILTIN = os.environ.get("ILAB_CATALOG", os.path.join(ROOT, "catalog"))
 CUSTOM = os.path.join(DATA, "catalog")
@@ -63,14 +64,14 @@ def problems():
 
 
 def problem_of(m):
-    return m.get("problem") or m.get("preset")   # "preset": attempts made by the earlier Library
+    return m.get("problem")   # the catalog id an attempt came from
 
 
 def attempts():
     """problem id -> [(attempt name, language, status, start)], oldest name first."""
     out = {}
     for n in set_names():
-        m = jload(os.path.join(SETS, n, "manifest.json"))
+        m = upgrade_manifest(jload(os.path.join(SETS, n, "manifest.json")))
         if isinstance(m, dict) and problem_of(m):
             s = session(n) or {}
             out.setdefault(problem_of(m), []).append((n, m.get("language"), ready_info(n)["status"], s.get("start") or 0))

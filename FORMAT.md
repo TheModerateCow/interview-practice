@@ -57,10 +57,10 @@ used outside level tests, and keep gofmt layout (a Go test ends at `}` in column
 
 ## Data written by the app (`data/sets/<name>/`)
 - `work/`: the candidate's code (autosaved).
-- `session.json`: `{"start": epoch_s|null, "minutes", "hints": [], "events": [[minute, "text"], …], "ended": epoch_s|null,
-  "unlocked": [tags], "revealed": [files]}`. `ended` is the close (End or time up) and is never later than the deadline `start + minutes*60`; a close requested after the deadline logs "time up" at the last minute, otherwise "end". "(after time)" on an event means it started after the close. This is clock.py's shape, so time left = `minutes - (now - start)/60`.
-- `final/`: copy of `work/` taken once at the close (End or time up); never rewritten. Absent for sets closed before this existed.
+- `session.json`: `{"v": 1, "start": epoch_s|null, "minutes", "events": [[minute, "text"], …], "ended": epoch_s|null,
+  "unlocked": [tags], "revealed": [files]}`. `ended` is the close (End or time up) and is never later than the deadline `start + minutes*60`; a close requested after the deadline logs "time up" at the last minute, otherwise "end". "(after time)" on an event means it started after the close. This is clock.py's shape, so time left = `minutes - (now - start)/60`. Older files (no `v`) are upgraded when read: `store.upgrade_session`.
+- `final/`: copy of `work/` taken once at the close (End or time up); never rewritten. Older rounds have none.
 - `results.json`: `{"<tag>": {grade.py JSON, failing test names in "failed", + "at": minute, "after_time": bool}}` (latest Submit per tag; `at`/`after_time` are taken when the action started), and `"final"` after the close (graded once; `at` = close minute, `after_time` = code edited after the deadline + 5 s).
-- Every attempt's `manifest.json` carries `"problem": "<catalog id>"` and its `language`; a built-in attempt is named `<id>-<lang>-<k>`, an imported one `<id>-<k>`. Attempts from the earlier Library carry `"preset"` instead.
+- Every attempt's `manifest.json` carries `"problem": "<catalog id>"` and its `language`; a built-in attempt is named `<id>-<lang>-<k>`, an imported one `<id>-<k>`. Older attempts with `"preset"` are read as `"problem"` (`store.upgrade_manifest`).
 - `data/catalog/<id>/` (your own problems, one per imported set): `manifest.json`, `problem.md`, `starter/`, `.hidden/`. Built-in problems (`catalog/<id>/`) are language-neutral and rendered into this format per attempt: `docs/rounds/3-language-variants/CONTRACT.md`.
 - Export → `export.zip` = `submission/` (work/ now), `final/` (the code at the close, when present), `session.json`, `results.json`, `manifest.json`.

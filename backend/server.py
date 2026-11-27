@@ -57,7 +57,7 @@ def _refused(e): return err(next(c for k, c in STATUS.items() if isinstance(e, k
 
 
 @app.errorhandler(HTTPException)
-def _http_errors(e):   # unknown route or wrong method: 404 as before; 413 etc. keep their code
+def _http_errors(e):   # unknown route or wrong method: 404; 413 etc. keep their code
     return err(404, "not found") if e.code in (404, 405) else err(e.code, e.description)
 
 

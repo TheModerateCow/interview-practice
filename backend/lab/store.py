@@ -38,8 +38,28 @@ def jsave(p, obj):
     os.replace(t, p)
 
 
-def manifest(n): return jload(os.path.join(sdir(n), "manifest.json"))
-def session(n): return jload(os.path.join(sdir(n), "session.json"))
+def manifest(n): return upgrade_manifest(jload(os.path.join(sdir(n), "manifest.json")))
+def session(n): return upgrade_session(jload(os.path.join(sdir(n), "session.json")))
+
+
+# The only place older on-disk shapes are known. Upgrades happen in memory on load; the next write saves the new shape.
+SESSION_V = 1
+
+
+def upgrade_session(s):
+    """session.json v0 -> v1: drop the never-read "hints"; an End pressed after the deadline stored the press time as
+    "ended", which is now the deadline (the close never comes after it)."""
+    if isinstance(s, dict) and s.get("v", 0) < 1:
+        s.pop("hints", None)
+        if s.get("start") and s.get("ended"): s["ended"] = min(s["ended"], deadline(s))
+        s["v"] = 1
+    return s
+
+
+def upgrade_manifest(m):
+    """Attempts made by the old Preset Library name their problem "preset"; today it's "problem"."""
+    if isinstance(m, dict) and "preset" in m: m.setdefault("problem", m.pop("preset"))
+    return m
 
 
 def work_path(n, rel):
@@ -56,7 +76,7 @@ def work_files(n):
 
 
 def deadline(s): return s["start"] + s["minutes"] * 60
-def cutoff(s): return s.get("ended") or deadline(s)          # ended <= deadline from this round on
+def cutoff(s): return s.get("ended") or deadline(s)          # ended is never after the deadline
 def late(s, t): return t > cutoff(s)                          # did an action that started at t come after the close?
 def minute(s, t): return round((t - s["start"]) / 60, 1)
 
