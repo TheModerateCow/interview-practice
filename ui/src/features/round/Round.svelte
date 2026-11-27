@@ -57,8 +57,8 @@
       <!-- svelte-ignore a11y_no_noninteractive_tabindex (a focusable separator is the ARIA window splitter) -->
       <div id="split-bottom" class="splitter splitter-h" role="separator" aria-orientation="horizontal" aria-label="Resize stdin and results" tabindex="0"
         aria-valuenow={bottomPx} aria-valuemin={lim('bottom')[0]} aria-valuemax={lim('bottom')[1]} use:splitter={pane('bottom', 'y', -1)}></div>
-      <div id="bottom">
-        <div class="stdin-wrap"><label for="stdin" class="label">stdin</label><textarea id="stdin" bind:value={round.stdin} spellcheck="false" placeholder="Input for Run"></textarea></div>
+      <div id="bottom" class:solo={round.st?.has_examples}>
+        {#if !round.st?.has_examples}<div class="stdin-wrap"><label for="stdin" class="label">stdin</label><textarea id="stdin" bind:value={round.stdin} spellcheck="false" placeholder="Input for Run"></textarea></div>{/if}
         <Results />
       </div>
     </section>

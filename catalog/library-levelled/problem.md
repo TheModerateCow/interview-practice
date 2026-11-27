@@ -40,6 +40,5 @@ A member who returned a title can borrow it again later, getting whatever copy `
 
 ## Checking your work
 
-- **Run** runs `{{run_entry}}`, a small program that reads commands from stdin (`member`, `copy`, `checkout`, `return`, `borrower`; see the top of the file). Extend it as you go.
-- **My tests** runs your own test files (`{{your_tests}}`). The starter includes an example test to copy.
-- **Submit** runs the hidden tests for every level you've unlocked.
+- **Run** checks your code against one example test per unlocked level and shows which fail and why.
+- **Submit** runs the full hidden tests for every level you've unlocked. Passing them all opens the next level.
