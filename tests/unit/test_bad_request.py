@@ -28,7 +28,8 @@ write(f"{d}/broken/manifest.json", {"name": "broken"})   # no "minutes": Start h
 
 for path, data, want in [("/api/catalog/x/attempt", b"not json", "not valid JSON"),
                          ("/api/catalog/x/attempt", b"[1]", "JSON object"),
-                         ("/api/sets/ok/run", b"{\"file\": 5}", "must be strings")]:
+                         ("/api/sets/ok/run", b"{\"file\": 5}", "must be strings"),
+                         ("/api/sets/ok/assist", b"not json", "not valid JSON")]:
     s, j = post(path, data)
     assert s == 400 and want in j["error"], (path, data, s, j)
 print("PASS bad bodies -> 400 naming the problem")

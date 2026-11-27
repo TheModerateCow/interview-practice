@@ -682,8 +682,9 @@ test('Settings: code help Full, Words only, Off', async ({ page, request }) => {
   const row = t => page.locator(`.suggest-widget .monaco-list-row[aria-label="${t}"]`);
   const level = async v => { await page.click('#settings-btn'); await page.click(`#assist-pick [data-assist="${v}"]`); await expect(page.locator(`#assist-pick [data-assist="${v}"]`)).toHaveAttribute('aria-pressed', 'true'); await page.keyboard.press('Escape'); };
   const typeNew = async txt => {
-    await page.evaluate(() => { const e = window.monaco.editor.getEditors()[0], m = e.getModel(), n = m.getLineCount();
-      e.executeEdits('t', [{ range: new window.monaco.Range(n, 1, n, 1), text: '\n' }]); e.setPosition({ lineNumber: n + 1, column: 1 }); e.focus(); });
+    // a new line after the last one: break at the END of the last line, or the text lands in front of what's there
+    await page.evaluate(() => { const e = window.monaco.editor.getEditors()[0], m = e.getModel(), n = m.getLineCount(), c = m.getLineMaxColumn(n);
+      e.executeEdits('t', [{ range: new window.monaco.Range(n, c, n, c), text: '\n' }]); e.setPosition({ lineNumber: n + 1, column: 1 }); e.focus(); });
     await page.keyboard.type(txt);
   };
   await page.click('#editor .view-lines');
