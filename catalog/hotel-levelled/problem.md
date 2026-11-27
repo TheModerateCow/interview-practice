@@ -33,6 +33,5 @@ book(7, "ana", "101", 11, 12)        -> "b3"
 
 ## Checking your work
 
-- **Run** runs the small program in the starter, which reads commands from stdin (`room`, `book`, `cancel`, `cost`; see the top of the file). Extend it as you go.
-- **My tests** runs your own tests. The starter has an example to copy.
-- **Submit** runs the hidden tests for every level you've unlocked.
+- **Run** checks your code against one example test per unlocked level and shows which fail and why.
+- **Submit** runs the full hidden tests for every level you've unlocked. Passing them all opens the next level.

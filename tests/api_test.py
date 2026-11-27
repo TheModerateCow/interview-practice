@@ -256,7 +256,7 @@ def grading(label, setdir):
     res = sub.get("results", {})
     t0 = res.get(tags[0], {})
     check(f"{label}: starter passes 0 of N", s == 200 and t0.get("passed") == 0 and t0.get("total", 0) > 0, t0)
-    check(f"{label}: submit never leaks failed names", '"failed"' not in json.dumps(sub), "")
+    check(f"{label}: submit names the failing tests", t0.get("failed") and all(f.lower().startswith(tags[0].lower()) for f in t0["failed"]), t0)
     if rev: check(f"{label}: {rev['unlocks']} locked", rev["unlocks"] not in sub["state"]["unlocked"], sub["state"]["unlocked"])
     put_dir(n, os.path.join(setdir, "reference"))
     s, sub = jreq("POST", f"/api/sets/{n}/submit")
@@ -575,7 +575,8 @@ def _():
         d = os.path.dirname(d); pid = os.path.basename(d)
         for lang in variants.languages(d):
             t = f"/tmp/_cat/{pid}/{lang}"; shutil.rmtree(t, ignore_errors=True); variants.write(variants.render(d, lang), t)
-            for f in os.listdir(os.path.join(t, ".hidden")): shutil.copy(os.path.join(t, ".hidden", f), os.path.join(t, f))
+            for f in os.listdir(os.path.join(t, ".hidden")):
+                if os.path.isfile(os.path.join(t, ".hidden", f)): shutil.copy(os.path.join(t, ".hidden", f), os.path.join(t, f))
             r = subprocess.run([sys.executable, os.path.join(ROOT, "tools", "pack.py"), t, "/tmp/_cat.zip"], capture_output=True, text=True)
             check(f"sanity: catalog/{pid} renders a valid {lang} set", r.returncode == 0 and "packed" in r.stdout, r.stdout + r.stderr)
             check(f"sanity: answers/{pid}/{lang} has the reference", os.path.isdir(os.path.join(ROOT, "answers", pid, lang, "reference")))
@@ -626,6 +627,30 @@ def _():
     check("retaking your own problem: a fresh <id>-1", s == 200 and d.get("name") == n + "-1", d)
     check("unknown problem: 404", jreq("POST", "/api/catalog/no-such-problem/attempt")[0] == 404)
     check("catalog needs X-ILab", req("GET", "/api/catalog", hdr=False)[0] == 403)
+
+@sec("levelled: Run grades one example per unlocked level")
+def _():
+    for lang in ("python", "go", "java"):
+        s, a = jreq("POST", "/api/catalog/cart-levelled/attempt", {"language": lang}); n = a.get("name")
+        check(f"{lang}: attempt", s == 200, a)
+        if s != 200: continue
+        st = jreq("POST", f"/api/sets/{n}/start")[1]
+        check(f"{lang}: Run checks examples; no My tests, no stdin program", st.get("has_examples") and not st.get("has_mytests") and not st.get("run_entry"), st)
+        s, r = jreq("POST", f"/api/sets/{n}/run", {})
+        ex = r.get("examples", {})
+        check(f"{lang}: starter fails the L1 example, by name", s == 200 and list(ex) == ["test_l1_"] and ex["test_l1_"].get("passed") == 0
+              and ex["test_l1_"].get("total") == 1 and ex["test_l1_"].get("failed"), r)
+        put_dir(n, os.path.join(ROOT, "answers", "cart-levelled", lang, "reference"))
+        ex = jreq("POST", f"/api/sets/{n}/run", {})[1].get("examples", {})
+        check(f"{lang}: the reference passes the L1 example", ex.get("test_l1_", {}).get("passed") == 1, ex)
+        st = jreq("GET", f"/api/sets/{n}/state")[1]
+        check(f"{lang}: Run unlocks nothing and isn't a Submit", st["unlocked"] == ["test_l1_"] and not st["results"] and any(e[1].startswith("run examples: test_l1_ 1/1") for e in st["events"]), st["unlocked"])
+        sub = jreq("POST", f"/api/sets/{n}/submit")[1].get("results", {}).get("test_l1_", {})
+        check(f"{lang}: Submit still runs the full L1 tests", sub.get("total", 0) > 1 and sub.get("passed") == sub.get("total"), sub)
+        ex = jreq("POST", f"/api/sets/{n}/run", {})[1].get("examples", {})
+        check(f"{lang}: after L2 opens, Run checks L1 and L2", list(ex) == ["test_l1_", "test_l2_"] and all(g.get("passed") == 1 for g in ex.values()), ex)
+        jreq("POST", f"/api/sets/{n}/end")
+
 
 @sec("run: stdout with an empty stdin box")
 def _():

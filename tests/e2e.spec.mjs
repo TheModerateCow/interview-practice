@@ -382,6 +382,36 @@ test('Catalog: the language you choose is the one that opens', async ({ page, re
   expect((await page.locator('#lang-pick').boundingBox()).height).toBeLessThan(40);
 });
 
+test('Levelled: Run checks the examples, no stdin box, no My tests', async ({ page, request }) => {
+  const shot = n => page.screenshot({ path: `${OUT}/e2e-${n}.png` });
+  const at = await (await request.post(`${BASE}/api/catalog/parking-levelled/attempt`, { headers: H, data: { language: 'python' } })).json();
+  await page.goto(BASE);
+  await page.waitForLoadState('networkidle');
+  await openIfAsked(page);
+  await pickSet(page, at.name);
+  await page.click('#start-btn');
+  await expect(page.locator('#round')).toBeVisible();
+  await expect(page.locator('#editor .monaco-editor')).toBeVisible({ timeout: 60000 });
+  await expect(page.locator('#stdin')).toHaveCount(0);
+  await expect(page.locator('#mytests-btn')).toBeHidden();
+  await page.click('#run-btn');
+  await expect(page.locator('#results')).toContainText('Examples', { timeout: 120000 });
+  await expect(page.locator('#results .grade')).toHaveCount(1);
+  await expect(page.locator('#results .count')).toHaveText('0/1');
+  await expect(page.locator('#results .names')).toContainText('test_l1_');
+  await shot('levelled-run-starter');
+  const REF_L = '/work/answers/parking-levelled/python/reference';
+  for (const f of walk(REF_L)) await request.put(`${BASE}/api/sets/${at.name}/files/${f}`, { headers: H, data: fs.readFileSync(path.join(REF_L, f), 'utf8') });
+  await page.click('#run-btn');   // the editor is unedited, so its save before Run doesn't overwrite the PUT
+  await expect(page.locator('#results .count')).toHaveText('1/1', { timeout: 120000 });
+  await page.click('#submit-btn');
+  await expect(page.locator('#results')).toContainText('Hidden tests', { timeout: 180000 });
+  await page.click('#run-btn');
+  await expect(page.locator('#results .grade')).toHaveCount(2, { timeout: 120000 });
+  await shot('levelled-run-l2');
+  await request.post(`${BASE}/api/sets/${at.name}/end`, { headers: H });
+});
+
 test('panes resize and remember', async ({ page, request }) => {
   const api = async p => (await request.get(BASE + p, { headers: H })).json();
   await page.goto(BASE);

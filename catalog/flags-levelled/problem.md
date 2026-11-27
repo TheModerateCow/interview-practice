@@ -33,8 +33,7 @@ Targets belong to one flag in one environment: targeting `ana` on `"dark-mode"` 
 
 ## Checking your work
 
-- **Run** runs `{{run_entry}}`, a small program that reads commands from stdin (`create`, `set`, `target`, `untarget`, `check`; see the top of the file). Extend it as you go.
-- **My tests** runs your own tests (`{{your_tests}}`). The example test in the starter is an example to copy.
-- **Submit** runs the hidden tests for every level you've unlocked.
+- **Run** checks your code against one example test per unlocked level and shows which fail and why.
+- **Submit** runs the full hidden tests for every level you've unlocked. Passing them all opens the next level.
 
 Standard library only.

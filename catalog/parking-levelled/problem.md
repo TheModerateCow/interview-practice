@@ -34,6 +34,5 @@ A plate that has left can park again later, in whatever spot `{{park}}` picks th
 
 ## Checking your work
 
-- **Run** runs the small program in your starter, which reads commands from stdin (`add`, `park`, `leave`, `spot`; see the top of the file). Extend it as you go.
-- **My tests** runs your own test files. The starter includes an example test to copy.
-- **Submit** runs the hidden tests for every level you've unlocked.
+- **Run** checks your code against one example test per unlocked level and shows which fail and why.
+- **Submit** runs the full hidden tests for every level you've unlocked. Passing them all opens the next level.

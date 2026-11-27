@@ -16,7 +16,7 @@ from lab import variants  # noqa: E402
 def stage(problem_dir, answers_dir, lang, dest):
     files = variants.render(problem_dir, lang)
     variants.write(files, dest)
-    hidden = [k for k in files if k.startswith(".hidden/") and not k.endswith(".md")]
+    hidden = [k for k in files if k.startswith(".hidden/") and not k.endswith(".md") and not k.startswith(".hidden/examples/")]
     for k in hidden: shutil.copy(os.path.join(dest, k), os.path.join(dest, os.path.basename(k)))   # gate.py reads it at the set root
     a = os.path.join(answers_dir, lang)
     shutil.copytree(os.path.join(a, "reference"), os.path.join(dest, "reference"))
