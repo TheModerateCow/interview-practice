@@ -8,12 +8,25 @@ import json, re, struct, sys, threading, time
 from lab import store
 from sandbox import runner
 
+JDTLS_CMD = ("java -Xms64m -Xmx256m -XX:+UseSerialGC -XX:TieredStopAtLevel=1 -Declipse.application=org.eclipse.jdt.ls.core.id1 "
+             "-Dosgi.bundles.defaultStartLevel=4 -Declipse.product=org.eclipse.jdt.ls.core.product -Dlog.level=ERROR "
+             "-jar $(ls /opt/jdtls/plugins/org.eclipse.equinox.launcher_*.jar) -configuration /tmp/cfg -data /tmp/jws "
+             "--add-modules=ALL-SYSTEM --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED")
 SERVERS = {   # language -> command, source extension, files for the server's workspace only, answers to workspace/configuration
     # Debug (Codebase) rounds plant bugs the type checker would underline, so type checking is off there: completion, hover and
     # signatures stay, syntax errors and undefined names still show. /opt/site holds pytest, as in the runner image.
     "python": dict(cmd="pyright-langserver --stdio", ext=".py", settings={},
                    extra=lambda rnd: {"pyrightconfig.json": json.dumps({"pythonVersion": "3.15", "extraPaths": ["/opt/site"],
                                                                         "typeCheckingMode": "off" if rnd == "codebase" else "basic"}).encode()}),
+    # The runner's Go env, offline, with a private cache in /tmp (no shared volume). gopls reports 0 diagnostics on every untouched
+    # starter (tests/api_test.py checks all of them), so Codebase rounds need no switch here; a file that doesn't compile is underlined.
+    "go": dict(cmd="gopls", ext=".go", settings={"gopls": {"linksInHover": False}},
+               env=["GOTOOLCHAIN=local", "GOFLAGS=-mod=mod", "GOCACHE=/tmp/gocache", "GOPATH=/tmp/gopath", "CGO_ENABLED=0", "GOPROXY=off"], extra=lambda rnd: {}),
+    # jdtls: Gradle/Maven import off (a build file the candidate writes is never read), signature help on, and only errors underline (no
+    # unused/raw-type lint). It writes its config and workspace, so both go to /tmp. Expect.java is the harness helper tests call.
+    "java": dict(cmd="sh -c 'cp -r /opt/jdtls/config_linux /tmp/cfg && exec " + JDTLS_CMD + "'", ext=".java", errors_only=True,
+                 settings={"java": {"signatureHelp": {"enabled": True}, "import": {"gradle": {"enabled": False}, "maven": {"enabled": False}}}},
+                 extra=lambda rnd: {"Expect.java": runner.JAVA_EXPECT.lstrip().encode()}),
 }
 OPS = {"complete": "textDocument/completion", "resolve": "completionItem/resolve",
        "hover": "textDocument/hover", "signature": "textDocument/signatureHelp"}
@@ -60,7 +73,7 @@ class Session:
             files = store.work_files(self.n) | self.cfg["extra"](store.manifest(self.n).get("round"))
             payload = runner._tar(files)
             body = {"Image": runner.LSP_IMAGES[self.lang], "Entrypoint": ["sh", "-c", BOOT + self.cfg["cmd"]], "Cmd": [],
-                    "Env": runner.BASE_ENV + [f"ILAB_N={len(payload)}"], "WorkingDir": "/tmp",
+                    "Env": runner.BASE_ENV + [f"ILAB_N={len(payload)}"] + self.cfg.get("env", []), "WorkingDir": "/tmp",
                     "OpenStdin": True, "StdinOnce": True, "AttachStdin": True, "AttachStdout": True, "AttachStderr": True,
                     "Tty": False, "Labels": {"ilab.lsp": runner.INSTANCE}, "HostConfig": dict(runner.LOCKED)}
             try: self.cid = runner.api("POST", "/containers/create", body)["Id"]
@@ -73,7 +86,8 @@ class Session:
             runner.api("POST", f"/containers/{self.cid}/start")
             self.sock.sendall(payload)
             ok = self.request("initialize", {"processId": None, "rootUri": "file://" + W, "capabilities": CAPS,
-                                             "workspaceFolders": [{"uri": "file://" + W, "name": "w"}]}, 30, raw=True)
+                                             "workspaceFolders": [{"uri": "file://" + W, "name": "w"}],
+                                             "initializationOptions": {"settings": self.cfg["settings"]}}, 30, raw=True)
             if ok is None: raise runner.DockerError("The language server did not start.")
             self._send({"jsonrpc": "2.0", "method": "initialized", "params": {}})
             self.state = "ready"
@@ -192,7 +206,8 @@ def call(n, lang, op, rel, text=None, line=0, col=0, item=None):
             if rel not in s.docs: return {"state": "ready", "diagnostics": []}
             d = s.diagnostics(rel)
             if d is None: return {"state": s.state}   # nothing published for this text yet: say nothing, never a false "no errors"
-            return {"state": "ready", "diagnostics": clean(d)}
+            if s.cfg.get("errors_only"): d = [x for x in d if x.get("severity", 1) == 1]
+            return {"state": "ready", "diagnostics": clean([{k: v for k, v in x.items() if k != "codeDescription"} for x in d])}   # codeDescription is a pkg.go.dev link: dropped
         res = s.request(OPS[op], item if op == "resolve" else pos)
     except OSError: return {"state": "unavailable", "reason": "The language server stopped."}
     return {"state": "ready", "result": clean(res)}

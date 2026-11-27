@@ -5,8 +5,10 @@ import { api } from './api.js';
 import { LS } from './util.js';
 const full = () => (LS.get('ilab-assist') || 'full') === 'full';   // words and off: no language-server request at all
 
-const LANGS = ['python'];   // languages with a server; one line per language as PRs add them
-const ASSIST_LINE = { python: 'Code help: suggestions from your code and Python\'s standard library, parameter hints and error underlines.' };
+const LANGS = ['python', 'go', 'java'];   // languages with a server; one line per language as PRs add them
+const ASSIST_LINE = { python: 'Code help: suggestions from your code and Python\'s standard library, parameter hints and error underlines.',
+  go: 'Code help: suggestions from your code and Go\'s standard library, parameter hints and error underlines.',
+  java: 'Code help: suggestions from your code and Java\'s standard library, parameter hints and error underlines.' };
 const LEVEL_LINE = { words: 'Code help: Words only. Suggestions from words already in your files, no hints or underlines.',
   off: 'Code help: Off. No suggestions, hints or underlines, like a shared doc.' };
 export function assistLine(lang, level = 'full') {
@@ -58,7 +60,7 @@ function suggestion(model, pos, it) {
 export function register(m) {
   if (monaco) return;
   monaco = m;
-  const lang = 'python';
+  for (const lang of LANGS) {
   m.languages.registerCompletionItemProvider(lang, {
     triggerCharacters: ['.'],
     async provideCompletionItems(model, pos) {
@@ -97,6 +99,7 @@ export function register(m) {
       return { value: { signatures: sigs, activeSignature: h.activeSignature || 0, activeParameter: h.activeParameter ?? 0 }, dispose() {} };
     },
   });
+  }
 }
 
 // Round entered. onState({state, reason}) feeds the toolbar line.

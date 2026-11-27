@@ -256,7 +256,7 @@ def grading(label, setdir):
     res = sub.get("results", {})
     t0 = res.get(tags[0], {})
     check(f"{label}: starter passes 0 of N", s == 200 and t0.get("passed") == 0 and t0.get("total", 0) > 0, t0)
-    check(f"{label}: submit never leaks failed names", '"failed"' not in json.dumps(sub), "")
+    check(f"{label}: submit names the failing tests", t0.get("failed") and all(f.lower().startswith(tags[0].lower()) for f in t0["failed"]), t0)
     if rev: check(f"{label}: {rev['unlocks']} locked", rev["unlocks"] not in sub["state"]["unlocked"], sub["state"]["unlocked"])
     put_dir(n, os.path.join(setdir, "reference"))
     s, sub = jreq("POST", f"/api/sets/{n}/submit")
@@ -575,7 +575,8 @@ def _():
         d = os.path.dirname(d); pid = os.path.basename(d)
         for lang in variants.languages(d):
             t = f"/tmp/_cat/{pid}/{lang}"; shutil.rmtree(t, ignore_errors=True); variants.write(variants.render(d, lang), t)
-            for f in os.listdir(os.path.join(t, ".hidden")): shutil.copy(os.path.join(t, ".hidden", f), os.path.join(t, f))
+            for f in os.listdir(os.path.join(t, ".hidden")):
+                if os.path.isfile(os.path.join(t, ".hidden", f)): shutil.copy(os.path.join(t, ".hidden", f), os.path.join(t, f))
             r = subprocess.run([sys.executable, os.path.join(ROOT, "tools", "pack.py"), t, "/tmp/_cat.zip"], capture_output=True, text=True)
             check(f"sanity: catalog/{pid} renders a valid {lang} set", r.returncode == 0 and "packed" in r.stdout, r.stdout + r.stderr)
             check(f"sanity: answers/{pid}/{lang} has the reference", os.path.isdir(os.path.join(ROOT, "answers", pid, lang, "reference")))
@@ -626,6 +627,30 @@ def _():
     check("retaking your own problem: a fresh <id>-1", s == 200 and d.get("name") == n + "-1", d)
     check("unknown problem: 404", jreq("POST", "/api/catalog/no-such-problem/attempt")[0] == 404)
     check("catalog needs X-ILab", req("GET", "/api/catalog", hdr=False)[0] == 403)
+
+@sec("levelled: Run grades one example per unlocked level")
+def _():
+    for lang in ("python", "go", "java"):
+        s, a = jreq("POST", "/api/catalog/cart-levelled/attempt", {"language": lang}); n = a.get("name")
+        check(f"{lang}: attempt", s == 200, a)
+        if s != 200: continue
+        st = jreq("POST", f"/api/sets/{n}/start")[1]
+        check(f"{lang}: Run checks examples; no My tests, no stdin program", st.get("has_examples") and not st.get("has_mytests") and not st.get("run_entry"), st)
+        s, r = jreq("POST", f"/api/sets/{n}/run", {})
+        ex = r.get("examples", {})
+        check(f"{lang}: starter fails the L1 example, by name", s == 200 and list(ex) == ["test_l1_"] and ex["test_l1_"].get("passed") == 0
+              and ex["test_l1_"].get("total") == 1 and ex["test_l1_"].get("failed"), r)
+        put_dir(n, os.path.join(ROOT, "answers", "cart-levelled", lang, "reference"))
+        ex = jreq("POST", f"/api/sets/{n}/run", {})[1].get("examples", {})
+        check(f"{lang}: the reference passes the L1 example", ex.get("test_l1_", {}).get("passed") == 1, ex)
+        st = jreq("GET", f"/api/sets/{n}/state")[1]
+        check(f"{lang}: Run unlocks nothing and isn't a Submit", st["unlocked"] == ["test_l1_"] and not st["results"] and any(e[1].startswith("run examples: test_l1_ 1/1") for e in st["events"]), st["unlocked"])
+        sub = jreq("POST", f"/api/sets/{n}/submit")[1].get("results", {}).get("test_l1_", {})
+        check(f"{lang}: Submit still runs the full L1 tests", sub.get("total", 0) > 1 and sub.get("passed") == sub.get("total"), sub)
+        ex = jreq("POST", f"/api/sets/{n}/run", {})[1].get("examples", {})
+        check(f"{lang}: after L2 opens, Run checks L1 and L2", list(ex) == ["test_l1_", "test_l2_"] and all(g.get("passed") == 1 for g in ex.values()), ex)
+        jreq("POST", f"/api/sets/{n}/end")
+
 
 @sec("run: stdout with an empty stdin box")
 def _():
@@ -751,6 +776,206 @@ def _():
     check("and offers big.py's last function", "big_last_fn" in labels(j), labels(j)[:5])
     jreq("POST", f"/api/sets/{B}/end"); assist(B, "stop"); gone()
 
+
+@sec("code help: Go (gopls)")
+def _():
+    def assist(n, op, file="cmd/run/main.go", text=None, line=0, col=0, **k):
+        return jreq("POST", f"/api/sets/{n}/assist", {"op": op, "file": file, "text": text, "line": line, "col": col, **k})
+    def ready(n, secs=30):
+        for _ in range(int(secs * 2)):
+            if assist(n, "complete", text="")[1].get("state") == "ready": return True
+            time.sleep(0.5)
+        return False
+    def containers(): return subprocess.run(["docker", "ps", "-q", "--filter", "label=ilab.lsp=test"], capture_output=True, text=True).stdout.split()
+    def gone(secs=5):
+        for _ in range(secs * 2):
+            if not containers(): return True
+            time.sleep(0.5)
+        return False
+    seen = []   # every response body, for the leak scan
+    def at(n, op, text, line, col, **k):
+        for _ in range(20):   # a check with no fresh answer yet carries no "diagnostics": ask again (up to ~10 s), so [] always means a real "no errors"
+            s, j = assist(n, op, text=text, line=line, col=col, **k); seen.append(j)
+            if op != "check" or "diagnostics" in j or j.get("state") != "ready": return j
+            time.sleep(0.5)
+        return j
+    def labels(j): r = j.get("result") or {}; return [i["label"] for i in (r.get("items") if isinstance(r, dict) else r) or []]
+    def start(prob):
+        a = jreq("POST", f"/api/catalog/{prob}/attempt", {"language": "go"})[1]["name"]; jreq("POST", f"/api/sets/{a}/start"); return a
+    A = start("ledger-codebase")
+    main = req("GET", f"/api/sets/{A}/files/cmd/run/main.go")[1].decode()
+    check("Go code help reaches ready within 30 s", ready(A))
+    L = main.split("\n"); ln = next(i for i, x in enumerate(L) if x.strip().startswith("switch {"))   # inside the command loop
+    def with_line(extra): M = list(L); M.insert(ln, extra); return "\n".join(M)
+    j = at(A, "complete", with_line("\t\tl.Bal"), ln, 7)
+    check("own type: l.Bal lists Balance and BalanceAt (ledger.go never opened)", {"Balance", "BalanceAt"} <= set(labels(j)), labels(j)[:10])
+    j = at(A, "complete", with_line("\t\tstrings.Has"), ln, 13)
+    check("stdlib: strings.Has lists HasPrefix and HasSuffix", {"HasPrefix", "HasSuffix"} <= set(labels(j)), labels(j)[:10])
+    t = with_line("\t\tvar b strings.Builder\n\t\tb.Wri"); j = at(A, "complete", t, ln + 1, 7)
+    check("b.Wri lists Write, WriteByte, WriteRune, WriteString", {"Write", "WriteByte", "WriteRune", "WriteString"} <= set(labels(j)), labels(j)[:10])
+    j = at(A, "signature", with_line("\t\t_ = l.Balance("), ln, 16)
+    check("signature help for l.Balance(", any("account" in x.get("label", "") for x in (j.get("result") or {}).get("signatures", [])), j)
+    k = next(i for i, x in enumerate(L) if "ledger.New()" in x); j = at(A, "hover", main, k, L[k].index("New") + 1)
+    hv = json.dumps(j.get("result"))
+    check("hover on New: signature and doc, no link", "New() *ledger.Ledger" in hv and "returns an empty ledger" in hv and "pkg.go.dev" not in hv, hv[:300])
+    t0 = time.time(); j = at(A, "check", with_line("\t\t_ = l.Balance(\"a\")"), 0, 0)
+    d = [x for x in j.get("diagnostics", []) if x["range"]["start"]["line"] == ln]
+    check("a call with too few arguments is underlined within 2 s, saying what is wanted",
+          len(d) == 1 and "not enough arguments" in d[0]["message"] and "want (string, string)" in d[0]["message"] and time.time() - t0 < 2.5, (j, time.time() - t0))
+    check("main.go as shipped has no diagnostics", at(A, "check", main, 0, 0).get("diagnostics") == [], None)
+    check("ledger_example_test.go as shipped has no diagnostics",
+          at(A, "check", req("GET", f"/api/sets/{A}/files/ledger_example_test.go")[1].decode(), 0, 0, file="ledger_example_test.go").get("diagnostics") == [], None)
+    req("PUT", f"/api/sets/{A}/files/extra.go", "package ledger\n\nfunc ZzProbe() int { return 1 }\n")
+    j = at(A, "complete", with_line("\t\tledger.Zz"), ln, 11)
+    check("a new file in package ledger: ledger.ZzProbe is offered from main.go (main.go not resent)", "ZzProbe" in labels(j), labels(j)[:10])
+    # leak: the hidden tests define Test_p1_... in .hidden/hidden_test.go
+    j1 = at(A, "complete", "package ledger\nfunc Test_p1", 1, 12, file="probe.go"); j2 = at(A, "complete", "package ledger\nfunc TestP1", 1, 11, file="probe.go")
+    bad = [x for x in labels(j1) + labels(j2) if "p1" in x.lower()]
+    check("hidden test names are never offered", not bad, bad)
+    blob = json.dumps(seen)
+    check("no container path, .hidden, link or pkg.go.dev in any result", "/tmp/w" not in blob and ".hidden" not in blob and "](" not in blob and "pkg.go.dev" not in blob,
+          [m for m in ("/tmp/w", ".hidden", "](", "pkg.go.dev") if m in blob])
+    ids = containers()
+    check("exactly one language-server container", len(ids) == 1, ids)
+    if len(ids) == 1:
+        o = json.loads(subprocess.run(["docker", "inspect", ids[0]], capture_output=True, text=True).stdout)[0]
+        hc = o["HostConfig"]
+        print("  docker inspect:", {k: hc[k] for k in ("NetworkMode", "ReadonlyRootfs", "Memory", "MemorySwap", "NanoCpus", "PidsLimit", "CapDrop", "SecurityOpt", "PortBindings")}, "mounts", o["Mounts"], flush=True)
+        check("container is locked down", hc["NetworkMode"] == "none" and hc["ReadonlyRootfs"] is True and hc["Memory"] == 536870912
+              and hc["MemorySwap"] == 536870912 and hc["NanoCpus"] == 2000000000 and hc["PidsLimit"] == 256 and hc["CapDrop"] == ["ALL"]
+              and "no-new-privileges" in " ".join(hc["SecurityOpt"]) and not hc["PortBindings"] and not o["Mounts"] and not o["NetworkSettings"]["Ports"], hc)
+    check("stop: the container is gone within 5 s", assist(A, "stop")[0] == 200 and gone())
+    check("a request after stop starts a new session", ready(A))
+    jreq("POST", f"/api/sets/{A}/end")
+    check("delete a set with a live session: the container is gone within 5 s", jreq("DELETE", f"/api/sets/{A}")[0] == 200 and gone())
+    # every untouched Go starter: 0 diagnostics at all (errors, warnings, hints) in the editor, in every round type
+    total = {}
+    for prob in sorted(os.path.basename(d) for d in glob.glob(os.path.join(ROOT, "catalog/*-*"))):
+        a = start(prob); ready(a)
+        gos = [f for f in jreq("GET", f"/api/sets/{a}/state")[1]["files"] if f.endswith(".go")]
+        bad = {}
+        for f in gos:
+            d = at(a, "check", req("GET", f"/api/sets/{a}/files/{f}")[1].decode(), 0, 0, file=f).get("diagnostics")
+            if d is None or d: bad[f] = "no answer" if d is None else [(x.get("severity"), x["message"]) for x in d]
+        total[prob] = (len(gos), len(bad))
+        check(f"{prob}: {len(gos)} untouched Go files, 0 diagnostics", bad == {}, bad)
+        jreq("POST", f"/api/sets/{a}/end")
+    print("  Go starters checked:", sum(v[0] for v in total.values()), "files in", len(total), "problems;", sum(v[1] for v in total.values()), "files with diagnostics", flush=True)
+    # stdin handover: a 100 KB file saved before the server starts
+    B = start("ledger-codebase")
+    big = "package ledger\n\n" + "".join(f"func BigFn{i:04d}(x int) int {{ return x + {i} }}\n\n" for i in range(3000)) + "func BigLastFn(x int) int { return x }\n"
+    req("PUT", f"/api/sets/{B}/files/big.go", big)
+    check("big.go is over 100 KB", len(big) > 100_000, len(big))
+    check("a 100 KB file before start: the server still reaches ready", ready(B))
+    j = at(B, "complete", with_line("\t\tledger.BigLast"), ln, 16)
+    check("and offers big.go's last function", "BigLastFn" in labels(j), labels(j)[:5])
+    jreq("POST", f"/api/sets/{B}/end"); assist(B, "stop"); gone()
+
+
+@sec("code help: Java (jdtls)")
+def _():
+    def attempt(prob="ledger-codebase"):
+        a = jreq("POST", f"/api/catalog/{prob}/attempt", {"language": "java"})[1]["name"]; jreq("POST", f"/api/sets/{a}/start"); return a
+    def assist(n, op, file="Main.java", text=None, line=0, col=0, **k):
+        return jreq("POST", f"/api/sets/{n}/assist", {"op": op, "file": file, "text": text, "line": line, "col": col, **k})
+    def ready(n, secs=30):
+        for _ in range(int(secs * 2)):
+            if assist(n, "complete", text="")[1].get("state") == "ready": return True
+            time.sleep(0.5)
+        return False
+    def containers(): return subprocess.run(["docker", "ps", "-q", "--filter", "label=ilab.lsp=test"], capture_output=True, text=True).stdout.split()
+    def gone(secs=5):
+        for _ in range(secs * 2):
+            if not containers(): return True
+            time.sleep(0.5)
+        return False
+    seen = []
+    def at(n, op, text, line, col, **k):
+        s, j = assist(n, op, text=text, line=line, col=col, **k); seen.append(j); return j
+    def labels(j): r = j.get("result") or {}; return [i["label"] for i in (r.get("items") if isinstance(r, dict) else r) or []]
+    A = attempt()
+    check("Java: code help reaches ready within 30 s", ready(A))
+    main = req("GET", f"/api/sets/{A}/files/Main.java")[1].decode()
+    ln = main.split("\n").index("        int n = f.length - 1;") + 1   # the line after it, inside handle()
+    def with_line(extra): L = main.split("\n"); L.insert(ln, extra); return "\n".join(L)
+    def prime(): at(A, "check", main, 0, 0)   # open Main.java in the server, then let the project finish importing
+    def diags(text, file="Main.java", wait=20):   # a real answer for this text (jdtls publishes without a version), or None
+        end = time.time() + wait
+        while time.time() < end:
+            d = at(A, "check", text, 0, 0, file=file).get("diagnostics")
+            if d is not None: return d
+            time.sleep(0.5)
+    prime(); time.sleep(1)
+    j = at(A, "complete", with_line("        l.bal"), ln, 8 + len("l.bal"))
+    check("Java own type: l.bal lists balanceAt (Ledger.java never opened)", any(x.startswith("balanceAt(") for x in labels(j)), labels(j)[:6])
+    j = at(A, "complete", "import java.util.*; " + with_line("        Collections.unmod"), ln, 8 + len("Collections.unmod"))
+    check("Java stdlib: Collections.unmod lists unmodifiableList", any(x.startswith("unmodifiableList(") for x in labels(j)), labels(j)[:6])
+    t = with_line("        Map<String, Long> m = new HashMap<>();\n        m.computeIf"); j = at(A, "complete", t, ln + 1, 8 + len("m.computeIf"))
+    check("Java stdlib member: m.computeIf lists computeIfAbsent", any(x.startswith("computeIfAbsent(") for x in labels(j)), labels(j)[:6])
+    j = at(A, "signature", with_line("        Math.max("), ln, 8 + len("Math.max("))
+    check("Java signature help for Math.max(", any("max" in x.get("label", "") for x in (j.get("result") or {}).get("signatures", [])), j)
+    t0 = time.time(); j = diags(with_line('        l.balance("a");'))
+    d = [x for x in j or [] if x["range"]["start"]["line"] == ln]
+    print(f"       Java: first underline after {time.time() - t0:.1f} s")
+    check("Java: l.balance(\"a\") is underlined within 20 s, naming the method", len(d) == 1 and "balance" in d[0]["message"], (j, time.time() - t0))
+    j = diags(main)
+    check("Java: Main.java as shipped has no diagnostics (a real answer, not a timeout)", j == [], j)
+    ex = req("GET", f"/api/sets/{A}/files/ExampleTest.java")[1].decode()
+    check("Java: the untouched ExampleTest.java has no diagnostics (Expect resolves)", diags(ex, "ExampleTest.java") == [], None)
+    L = main.split("\n"); hl = next(i for i, x in enumerate(L) if "Ledger l = new Ledger();" in x)
+    for _ in range(20):
+        hv = json.dumps(at(A, "hover", main, hl, L[hl].index("new Ledger") + 6).get("result"))
+        if "Ledger" in hv: break
+        time.sleep(0.5)
+    check("Java hover names Ledger", "Ledger" in hv, hv[:200])
+    led = req("GET", f"/api/sets/{A}/files/Ledger.java")[1].decode()
+    req("PUT", f"/api/sets/{A}/files/Ledger.java", led.rstrip()[:-1] + "\n    public int zzProbe() { return 1; }\n}\n")
+    time.sleep(1)
+    j = at(A, "complete", with_line("        l.zzPr"), ln, 8 + len("l.zzPr"))
+    check("Java: a method saved in Ledger.java shows in Main.java's suggestions (Main.java not resent)", any(x.startswith("zzProbe(") for x in labels(j)), labels(j)[:6])
+    pr = "public class Probe {\n    HiddenT\n    void f() { test_p1_ }\n}\n"
+    j1 = at(A, "complete", pr, 1, 11, file="Probe.java"); j2 = at(A, "complete", pr, 2, 21, file="Probe.java")
+    bad = [x for x in labels(j1) + labels(j2) if x.startswith(("HiddenTest", "test_p1_"))]
+    check("Java: hidden test names are never offered", not bad, bad)
+    blob = json.dumps(seen)
+    check("Java: no container path, .hidden, file:// or link in any result", not any(m in blob for m in ("/tmp/w", ".hidden", "file://", "](")), [m for m in ("/tmp/w", ".hidden", "file://", "](") if m in blob])
+    req("PUT", f"/api/sets/{A}/files/build.gradle", "plugins { id 'java' }\nthis is not gradle {{{\n")
+    j = at(A, "check", main, 0, 0)
+    check("Java: a build.gradle the candidate creates is ignored (no new underline, no Gradle start)", j.get("diagnostics") == [] and "gradle" not in subprocess.run(["docker", "ps", "--format", "{{.Image}}"], capture_output=True, text=True).stdout, j)
+    ids = containers()
+    check("Java: exactly one language-server container", len(ids) == 1, ids)
+    if len(ids) == 1:
+        o = json.loads(subprocess.run(["docker", "inspect", ids[0]], capture_output=True, text=True).stdout)[0]
+        hc = o["HostConfig"]
+        check("Java: container is locked down", hc["NetworkMode"] == "none" and hc["ReadonlyRootfs"] is True and hc["Memory"] == 536870912
+              and hc["MemorySwap"] == 536870912 and hc["NanoCpus"] == 2000000000 and hc["PidsLimit"] == 256 and hc["CapDrop"] == ["ALL"]
+              and "no-new-privileges" in " ".join(hc["SecurityOpt"]) and not hc["PortBindings"] and not o["Mounts"] and not o["NetworkSettings"]["Ports"], hc)
+        peak = subprocess.run(["docker", "exec", ids[0], "cat", "/sys/fs/cgroup/memory.peak"], capture_output=True, text=True).stdout.strip()
+        mb = int(peak) / 2**20 if peak.isdigit() else None
+        print(f"       jdtls peak memory in {A}: {mb and round(mb)} MB (limit 512)")
+        check("Java: peak memory under 512 MB and no OOM kill", mb is not None and mb < 500 and json.loads(subprocess.run(["docker", "inspect", ids[0]], capture_output=True, text=True).stdout)[0]["State"]["OOMKilled"] is False, mb)
+    check("Java: stop: the container is gone within 5 s", assist(A, "stop")[0] == 200 and gone())
+    jreq("POST", f"/api/sets/{A}/end"); jreq("DELETE", f"/api/sets/{A}"); gone()
+    # every Java starter in the catalog: 0 errors on untouched files (a planted bug must never get an underline; no false positives)
+    probs = [p for p in jreq("GET", "/api/catalog")[1]["problems"] if "java" in p["languages"] and p.get("source") != "custom"]
+    total = {}
+    for pr_ in probs:
+        a = attempt(pr_["id"])
+        if not ready(a, 40): check(f"Java {pr_['id']}: code help ready", False); continue
+        files = [f for f in jreq("GET", f"/api/sets/{a}/state")[1]["files"] if f.endswith(".java")]
+        bad = {}
+        for f in files:
+            txt = req("GET", f"/api/sets/{a}/files/{f}")[1].decode(); d = None
+            for _ in range(8):
+                d = at(a, "check", txt, 0, 0, file=f).get("diagnostics")
+                if d is not None: break
+                time.sleep(1)
+            if d is None or d: bad[f] = [x["message"] for x in d] if d else "no answer"
+        total[pr_["id"]] = (len(files), len(bad))
+        check(f"Java {pr_['id']} ({pr_['round']}): {len(files)} untouched starter files, 0 diagnostics", not bad, bad)
+        jreq("POST", f"/api/sets/{a}/end"); assist(a, "stop")
+    print(f"       Java starters checked: {len(total)} problems, {sum(v[0] for v in total.values())} files, {sum(v[1] for v in total.values())} with diagnostics")
+    gone()
 
 print(f"\n{'ALL PASSED' if not fails else f'{fails} FAILED'}")
 sys.exit(1 if fails else 0)
