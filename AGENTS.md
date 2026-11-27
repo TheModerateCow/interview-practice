@@ -1,5 +1,21 @@
 # Interview Lab: notes for agents (any tool)
 
+## Issue → branch → PR (every change, in order)
+
+1. **Issue first.** Find the open issue for the change or create one (`gh issue create --title … --body …`) before writing code. Its number is `<n>`.
+2. **Branch** from fresh `origin/main`, named `<type>/<n>-<kebab-summary>`, with `<type>` one of `feat`, `fix`, `refactor`, `chore`, `docs`, `test`, `ci`. Example: `fix/81-runner-container-leak`. A tool-made name (`worktree-…`) gets renamed before the first push: `git branch -m <name>`.
+3. **PR as draft** (`gh pr create --draft`), imperative title, body opening with `Closes #<n>`. Any PR that changes code gets the `full-suite` label (command below) so the API and e2e tests run; docs-only PRs skip it.
+4. **Green, then ready.** `gh pr checks <pr> --watch` must end with every check passing, none failing or pending, all run on the PR's last commit. On red, fix the cause and push. `full.yml` fires only on the `labeled` event, so after any push remove `full-suite` (`gh api -X DELETE repos/TheModerateCow/interview-practice/issues/<pr>/labels/full-suite`) and add it again to re-run it on the new commit. Re-run a job only when it failed on infrastructure (runner, network), and say so in the PR. Workflows are path-filtered, so a docs-only PR may report no checks; that counts as green.
+5. **Ready means actually ready.** Mark a PR ready (`gh pr ready <pr>`) only when all of these hold: the change is finished with no further commits planned, step 4 is green, the body carries the snapshot evidence (section below), and `gh pr view <pr> --json mergeable` reports `MERGEABLE`. The moment any stops holding (a new push, a red check, a merge conflict, a review asking for changes), put it back to draft with `gh pr ready <pr> --undo` and return to step 4.
+
+## Frontend follows the design system
+
+Any `ui/` change that adds or restyles a screen, component or on-screen text is built to the design system in [`design/system/project/`](design/system/project/).
+- Read its [`README.md`](design/system/project/README.md) (copy, color, type, layout, states, motion) before building, and build to every rule in it.
+- Reuse a component from [`components/`](design/system/project/components/) whenever one fits; each folder's `preview.html` shows it and its `README.md` gives usage.
+- Style only with the role tokens in `ui/src/styles/tokens.css`: colors, the `s-*` 4px spacing grid, `r-*` radii, `dur`/`dur-slow`, `--font-sans`/`--font-mono`.
+- A pattern the system doesn't cover yet joins the system in the same PR: a rule in its README and a component folder. After changing `ui/src/styles/tokens.css` or `style.css`, run `tools/design-bundle.sh`.
+
 ## Testing a change
 
 - Push the branch and open the PR as soon as the change is ready. GitHub CI runs the tests; a quick local check first is optional.
