@@ -1,6 +1,7 @@
 """Go backend for shared-case problems (contract: docs/rounds/3-language-variants/CONTRACT.md). Pure stdlib.
 The generic reflection-based harness lives in go_harness.go.tmpl."""
 import json, os, re
+from pathlib import Path
 
 TESTS_FILE = "hidden_test.go"
 INIT = ("id", "url", "ttl", "api", "http", "json", "ip", "uuid", "sku")
@@ -196,7 +197,7 @@ def tests_file(api, cases_by_tag, data):
     for tag, cs in cases_by_tag.items():
         pre = "Test_" + tag[len("test_"):]
         tests += [f'func {pre}{c["name"]}(t *testing.T) {{ hiddenRun(t, {_q(c["name"])}) }}' for c in cs]
-    src = open(_TMPL).read()
+    src = Path(_TMPL).read_text()
     for k, v in (("PKG", api["module"]), ("INIT", ", ".join(f'"{i}": true' for i in INIT)), ("REGISTRIES", reg),
                  ("EMBED", emb), ("TESTS", "\n\n".join(tests))):
         src = src.replace(f"@@{k}@@", v)
