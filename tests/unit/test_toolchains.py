@@ -28,3 +28,9 @@ for n, t in TOOLCHAINS.items():
     assert t.run_cmd("main" + t.exts[0], {"main" + t.exts[0]: b"class Main {}"})
     if t.grades: assert t.grade_sh({"t": b""}, ["t"], None, None, False)[0]
 print(f"PASS {len(TOOLCHAINS)} toolchains: each has an image, extensions, a Run command and (if it grades) a test command")
+
+from sandbox import lsp  # noqa: E402
+for lang, cfg in lsp.SERVERS.items():
+    for rnd in ("codebase", "dsa"): cfg["extra"](rnd)   # the code-help workspace files build (they reach into the toolchains)
+assert b"class Expect" in lsp.SERVERS["java"]["extra"]("dsa")["Expect.java"]
+print("PASS code help builds its workspace files for every language (Java gets the same Expect.java)")

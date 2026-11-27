@@ -7,6 +7,7 @@ import json, re, struct, sys, threading, time
 
 from lab import store
 from sandbox import runner
+from sandbox.toolchains import TOOLCHAINS
 
 JDTLS_CMD = ("java -Xms64m -Xmx256m -XX:+UseSerialGC -XX:TieredStopAtLevel=1 -Declipse.application=org.eclipse.jdt.ls.core.id1 "
              "-Dosgi.bundles.defaultStartLevel=4 -Declipse.product=org.eclipse.jdt.ls.core.product -Dlog.level=ERROR "
@@ -26,7 +27,7 @@ SERVERS = {   # language -> command, source extension, files for the server's wo
     # unused/raw-type lint). It writes its config and workspace, so both go to /tmp. Expect.java is the harness helper tests call.
     "java": dict(cmd="sh -c 'cp -r /opt/jdtls/config_linux /tmp/cfg && exec " + JDTLS_CMD + "'", ext=".java", errors_only=True,
                  settings={"java": {"signatureHelp": {"enabled": True}, "import": {"gradle": {"enabled": False}, "maven": {"enabled": False}}}},
-                 extra=lambda rnd: {"Expect.java": runner.JAVA_EXPECT.lstrip().encode()}),
+                 extra=lambda rnd: {"Expect.java": TOOLCHAINS["java"].EXPECT.lstrip().encode()}),
 }
 OPS = {"complete": "textDocument/completion", "resolve": "completionItem/resolve",
        "hover": "textDocument/hover", "signature": "textDocument/signatureHelp"}
