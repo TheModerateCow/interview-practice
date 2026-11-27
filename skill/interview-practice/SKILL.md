@@ -1,6 +1,6 @@
 ---
 name: "interview-practice"
-description: "Generic interview practice tailored to the company you name — pick Codebase (debug/implement/optimise), Levelled practical, AI-assisted, TDD, or Project deep dive, in Python, Go, Java or TypeScript/JavaScript; Medium or Hard; timed, interview-style with guiding hints, checked by hidden tests; coding rounds are delivered through the Interview Lab app."
+description: "Generic interview practice tailored to the company you name — pick Codebase (debug/implement/optimise), Levelled practical, AI-assisted, TDD, or Project deep dive, in Python, Go or Java; Medium or Hard; timed, interview-style with guiding hints, checked by hidden tests; coding rounds are delivered through the Interview Lab app."
 ---
 
 # Interview practice
@@ -42,11 +42,11 @@ There is **one style: a real interview**, a two-way conversation. The user asks 
 2. **Ask everything up front in one AskUserQuestion call** (four questions, single-select), skipping any the user already answered. This is the only question round before building. No "(Recommended)" marks: the brief doesn't exist yet.
    - **Company** — question: "Which company and role are you preparing for, or which industry? Type it in Other (paste the job posting or recruiter email there if you have one)." Options: "No preference (you pick a domain)" · "I'll paste the job posting in my next message". Never offer example companies or industries as options.
    - **Round:** Codebase · Levelled · TDD. Put "or type: Project deep dive, Mock, Quiz" in the question text.
-   - **Language:** Python · Java · Go · TypeScript/JavaScript. Other languages via "Other" (see Languages below).
+   - **Language:** Python · Java · Go. Other languages via "Other" (see Languages below).
    - **Difficulty & AI:** Medium · Hard · Medium + AI-assisted · Hard + AI-assisted. Say in the question text that AI-assisted means bringing their own tool, and that for TDD the feedback then covers how they used AI.
    If they chose "I'll paste the job posting", wait for it; that is the only case where you wait. If they chose "No preference", follow **No specific company** in the brief section.
 3. Build the **company & domain brief** (section below) from the answers, then go straight into building the round. If the round, AI setting or language they picked doesn't match what this company runs or allows, say so in one line, but keep their picks.
-   Check the chosen toolchain: Python `python3 -c "import pytest"` (else `pip install pytest --break-system-packages -q`) · Go `go version` · Java `javac -version` · TypeScript/JavaScript `node --version` (22 or later). If it's missing and can't be installed, say so and ask which supported language to use instead.
+   Check the chosen toolchain: Python `python3 -c "import pytest"` (else `pip install pytest --break-system-packages -q`) · Go `go version` · Java `javac -version`. If it's missing and can't be installed, say so and ask which supported language to use instead.
 4. If a question is skipped, use these defaults (language = Python, difficulty = Medium): Codebase 60 min · Levelled 90 min (4 levels) · AI-assisted 60 min · TDD 45 min · Project deep dive 30 min · mock 5 Qs · quiz 10 Qs. Hard adds 15 minutes to Codebase, AI-assisted and TDD.
 
 ## Session engine
@@ -73,7 +73,7 @@ Usage: `python3 $W/clock.py start 60` · `status` · `event "opened phase 2"` ·
 ```python
 import glob,json,os,re,shutil,subprocess,sys,tempfile,xml.etree.ElementTree as ET
 # usage: python3 grade.py <code_dir> <tests_file> [-k EXPR] [--names] [--timeout SEC]
-# language from the tests file: .py pytest · .go go test · .java mini-runner · .ts/.js node --test
+# language from the tests file: .py pytest · .go go test · .java mini-runner
 # EXPR: a test-name substring ("test_p1_") or "not <substring>"
 a=sys.argv[1:]; code,tests=a[0],a[1]
 k=a[a.index("-k")+1] if "-k" in a else None
@@ -117,16 +117,6 @@ if ext==".py":
     for c in ET.parse(x).getroot().iter("testcase"):
         f=c.find("failure") if c.find("failure") is not None else c.find("error")
         res[c.get("name")]=None if f is None else (f.get("message") or "failed")[:300]
-elif ext in (".ts",".js"):
-    cmd=["node"]+(["--experimental-strip-types"] if ext==".ts" else [])+["--test","--test-reporter=junit","--test-reporter-destination=_r.xml"]
-    if pat: cmd+=["--test-skip-pattern" if neg else "--test-name-pattern",re.escape(pat)]
-    r=run(cmd+[base]); x=os.path.join(t,"_r.xml")
-    if not os.path.exists(x): done({"status":"could not be graded","last_line":lastline(r)})
-    for c in ET.parse(x).getroot().iter("testcase"):
-        if c.find("skipped") is not None: continue
-        f=c.find("failure")
-        res[c.get("name")]=None if f is None else (f.get("message") or "failed")[:300]
-    if not res and r.returncode!=0: done({"status":"could not be graded","last_line":lastline(r)})
 elif ext==".go":
     flt=(["-skip" if neg else "-run","(?i)"+re.escape(pat)] if pat else [])
     lst=run(["go","test","-list",".*","."])
@@ -169,8 +159,8 @@ import json,os,shutil,subprocess,sys,tempfile
 #        python3 gate.py <set_dir> --build-starter      write starter/ = reference/ + every bugs.json edit
 #        python3 gate.py <set_dir> --tdd <their_tests>  score candidate tests against reference + mutants
 d=os.path.abspath(sys.argv[1]); ref=os.path.join(d,"reference")
-H=next((os.path.join(d,n) for n in ("tests_hidden.py","hidden_test.go","HiddenTest.java","hidden.test.ts","hidden.test.js") if os.path.exists(os.path.join(d,n))),None)
-assert H, "no hidden tests file: tests_hidden.py / hidden_test.go / HiddenTest.java / hidden.test.ts / hidden.test.js"
+H=next((os.path.join(d,n) for n in ("tests_hidden.py","hidden_test.go","HiddenTest.java") if os.path.exists(os.path.join(d,n))),None)
+assert H, "no hidden tests file: tests_hidden.py / hidden_test.go / HiddenTest.java"
 G=os.path.join(os.path.dirname(os.path.abspath(__file__)),"grade.py")
 def load(n):
     p=os.path.join(d,n); return json.load(open(p)) if os.path.exists(p) else []
@@ -223,7 +213,7 @@ Packs manifest.json, problem.md, starter/** and every `.hidden/X` the manifest n
 """
 import json, os, re, sys, zipfile
 
-LANGS = {"python": ".py", "go": ".go", "java": ".java", "typescript": ".ts", "javascript": ".js", "c": None, "cpp": None}
+LANGS = {"python": ".py", "go": ".go", "java": ".java", "c": None, "cpp": None}
 ROUNDS = {"codebase", "levelled", "ai-assisted", "tdd"}
 REFUSED = ("reference/", "mutants.json", "bugs.json")
 
@@ -339,9 +329,8 @@ Everything (reference, starter, hidden tests, the candidate's code and tests) is
 | Python | `tests_hidden.py` (pytest) | `def test_p1_…()` | Plain `assert`, `pytest.raises` |
 | Go | `hidden_test.go`, same package | `func Test_p1_…(t *testing.T)` | `reference/` includes a `go.mod`; standard library only |
 | Java | `HiddenTest.java`, class `HiddenTest` | `static void test_p1_…()` | No JUnit (it can't be downloaded here): `grade.py` adds a mini runner and an `Expect` class (`Expect.eq`, `Expect.isTrue`, `Expect.raises`). The candidate's TDD tests use the same style; tell them up front |
-| TypeScript / JavaScript | `hidden.test.ts` / `hidden.test.js` | `test('test_p1_…', …)` from `node:test` | `node:assert/strict`; import local files with their extension (`./orders.ts`); no npm packages |
 
-**Write code that runs on the app's runner images** (claude.ai's sandbox can't run Docker, so the gate still uses local toolchains there): Python 3 + pytest · Go 1.x standard library only, with `go 1.22` in go.mod · Java 21 without JUnit · Node 24 `node:test` (TypeScript runs through type stripping: no enums, namespaces or parameter properties; import with extensions). Avoid newer language features. (Pinned images: Python 3.15 + pytest 9.2, Go 1.27, Temurin 21.0.13, Node 24.22, gcc 14.4.) In Levelled and Codebase Go and Java sets, keep test helpers to the first level's or phase's API and keep every import used outside the level or phase tests (e.g. `var _ = time.Second`): the app compiles only the tests of the tag being graded, so a candidate at L1 or phase 1 isn't blocked by later code, and an import used only in pruned tests fails the compile. In Go, prefix every hidden-test helper, type and variable with `hidden` (`hiddenEq`): the candidate's own `*_test.go` files compile in the same package, so a shared name breaks Submit.
+**Write code that runs on the app's runner images** (claude.ai's sandbox can't run Docker, so the gate still uses local toolchains there): Python 3 + pytest · Go 1.x standard library only, with `go 1.22` in go.mod · Java 21 without JUnit. Avoid newer language features. (Pinned images: Python 3.15 + pytest 9.2, Go 1.27, Temurin 21.0.13, gcc 14.4.) In Levelled and Codebase Go and Java sets, keep test helpers to the first level's or phase's API and keep every import used outside the level or phase tests (e.g. `var _ = time.Second`): the app compiles only the tests of the tag being graded, so a candidate at L1 or phase 1 isn't blocked by later code, and an import used only in pruned tests fails the compile. In Go, prefix every hidden-test helper, type and variable with `hidden` (`hiddenEq`): the candidate's own `*_test.go` files compile in the same package, so a shared name breaks Submit.
 
 When Claude runs on the user's machine with Interview Lab installed, gate in the runner images instead: `cd ~/interview-lab && docker compose run --rm -T -v $W/set:/set:ro backend python3 gate.py /set` (same output; `backend/grade.py` there has grade.py's CLI and runs in the runner containers).
 
@@ -376,7 +365,7 @@ Every coding round (Codebase, Levelled, AI-assisted, TDD) is delivered through t
 | `title` | Shown on the ready screen |
 | `company`, `role` | Optional, ready screen |
 | `round` | `codebase` · `levelled` · `ai-assisted` · `tdd` |
-| `language` | `python` · `go` · `java` · `typescript` · `javascript` |
+| `language` | `python` · `go` · `java` |
 | `difficulty` | `medium` · `hard` |
 | `minutes` | Round length (use the defaults above); the clock starts when the user presses Start |
 | `rules` | Optional short markdown for the ready screen |
@@ -384,7 +373,7 @@ Every coding round (Codebase, Levelled, AI-assisted, TDD) is delivered through t
 | `hidden_tests` | `.hidden/<hidden tests file>`; Submit runs it once per unlocked tag |
 | `reveal` | `[{"file","after_tag","or_minutes_left","unlocks"}]`, in order. `file` (`.hidden/<part>.md`) is shown and tag `unlocks` is graded once every test in `after_tag` passes, or when `or_minutes_left` minutes are left (null = never), or when the user presses *Next part* ("asked to move on", logged by the app) |
 | `examples` | `.hidden/examples/<hidden tests file name>`: a few visible-by-name tests (e.g. one per level) in the same harness; Run grades them for every unlocked tag (Levelled) |
-| `your_tests` | Glob over their code for their own tests, e.g. `test_*.py`, `*_test.go`, `*Test.java`, `*.test.ts` (TDD) |
+| `your_tests` | Glob over their code for their own tests, e.g. `test_*.py`, `*_test.go`, `*Test.java` (TDD) |
 | `run_entry` | File in `starter/` that `testcases` run against |
 | `testcases` | `[{"stdin","expected"}]`, shown as pass/fail per case for `run_entry` |
 | `grade_timeout_s` | Per grading call, default 45 |
@@ -505,7 +494,7 @@ Leaning on AI without showing your own understanding is the main way to fail thi
 **Feedback:**
 1. **Test quality:** `python3 $W/gate.py $W/set --tdd <their_tests_file>`. If their tests fail on the reference, they have a wrong test: say which assertion line fails, and the mutant count means nothing until it's fixed. Otherwise report "killed K/M mutants".
 2. **Implementation:** `grade.py` with the hidden tests.
-3. **Style** (debrief only), judged by that language's norms: e.g. fixtures and `parametrize` in pytest, table-driven tests with `t.Run` in Go, `describe`/`test` structure in node:test, plus everywhere: testing behaviour rather than internals, error paths covered, clear test names.
+3. **Style** (debrief only), judged by that language's norms: e.g. fixtures and `parametrize` in pytest, table-driven tests with `t.Run` in Go, plus everywhere: testing behaviour rather than internals, error paths covered, clear test names.
 
 In the debrief, name each surviving mutant as a missing test case, and say if the tests were written after the code.
 

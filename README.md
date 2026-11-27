@@ -123,7 +123,7 @@ code at the close, `submission/` the latest code, older exports have only `submi
 | Command | What it runs |
 |---|---|
 | `tests/unit/run.sh` | Backend unit tests, no Docker, a few seconds (needs `pip install -r backend/requirements.txt`). One plain script per area in `tests/unit/test_*.py`: grading verdicts, test pruning, the clock, set validation, zip import |
-| `tests/run_all.sh [--clean]` | Gates every set in `tests/sets/`, then `tests/api_test.py` (all 7 languages, TLE/MLE/fork bomb/no network/read-only/truncation, leak check, grading flows, import validation, security), then `tests/e2e.sh` (Playwright: a real drop event → ready → Start → Run → Submit → reveal → End → Export) |
+| `tests/run_all.sh [--clean]` | Gates every set in `tests/sets/`, then `tests/api_test.py` (all 5 languages, TLE/MLE/fork bomb/no network/read-only/truncation, leak check, grading flows, import validation, security), then `tests/e2e.sh` (Playwright: a real drop event → ready → Start → Run → Submit → reveal → End → Export) |
 
 Tests never touch the stack you use or `data/`. `run_all.sh` builds a separate stack from the checkout it runs in
 (compose project `ilab-test` on 127.0.0.1:8766, an empty data folder in `tests/out/stack-data`, its own images, runners

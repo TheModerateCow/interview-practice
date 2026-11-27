@@ -7,7 +7,7 @@ export const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '
 export const md = s => (window.marked ? window.marked.parse(String(s || '')) : '<pre>' + esc(s) + '</pre>');
 
 export const ROUND = { codebase: 'Codebase round', levelled: 'Levelled round', 'ai-assisted': 'AI-assisted round', tdd: 'TDD round' };
-export const LANGNAME = { python: 'Python', go: 'Go', java: 'Java', typescript: 'TypeScript', javascript: 'JavaScript', c: 'C', cpp: 'C++' };
+export const LANGNAME = { python: 'Python', go: 'Go', java: 'Java', c: 'C', cpp: 'C++' };
 export const cap = s => s ? s[0].toUpperCase() + s.slice(1) : '';
 // "test_p2_" -> "Part 2", "test_l3_" -> "Level 3", anything else -> "Tests"
 export function partName(tag) { const m = /_(p|l)(\d+)_?$/i.exec(tag); return m ? (m[1].toLowerCase() === 'l' ? 'Level ' : 'Part ') + m[2] : 'Tests'; }

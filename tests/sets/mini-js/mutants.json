@@ -1,4 +1,0 @@
-[
- {"file":"balanced.js","old":"return st.length === 0;","new":"return true;","label":"ignores unclosed openers","k":"test_p1_"},
- {"file":"balanced.js","old":"st.pop() !== PAIRS[c]","new":"st.length === 0","label":"closer type not checked","k":"test_p1_"}
-]

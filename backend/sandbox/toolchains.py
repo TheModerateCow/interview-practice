@@ -77,30 +77,6 @@ class Python(Toolchain):
         return junit(out["_r.xml"]), None
 
 
-class Node(Toolchain):
-    def grade_sh(self, files, tests, k, pat, neg):
-        tq = " ".join(q(t) for t in tests)
-        flt = f" {'--test-skip-pattern' if neg else '--test-name-pattern'} {q(re.escape(pat))}" if pat else ""
-        return ("node --disable-warning=ExperimentalWarning --test --test-reporter=junit "
-                f"--test-reporter-destination=/tmp/out/_r.xml{flt} {tq}" + REPORT), files
-
-    def parse(self, out, k, pat, neg):
-        if "_r.xml" not in out: return None, ungradable(lastline(log_of(out) or _s(out.get("_harness.log"))))
-        res = junit(out["_r.xml"], skip_skipped=True)
-        if not res and rc_of(out) != 0: return None, ungradable(lastline(log_of(out)))
-        return res, None
-
-
-class JavaScript(Node):
-    name, exts = "javascript", (".js", ".mjs")
-    def run_cmd(self, entry, files): return f"node {q(entry)}"
-
-
-class TypeScript(Node):
-    name, exts = "typescript", (".ts",)
-    def run_cmd(self, entry, files): return f"node --disable-warning=ExperimentalWarning {q(entry)}"
-
-
 class Go(Toolchain):
     name, exts = "go", (".go",)
 
@@ -223,7 +199,7 @@ class C(Gcc): name, exts, CC = "c", (".c",), "gcc -O2 -std=c17"
 class Cpp(Gcc): name, exts, CC = "cpp", (".cpp", ".cc"), "g++ -O2 -std=c++17"
 
 
-TOOLCHAINS = {t.name: t for t in (Python(), Go(), Java(), C(), Cpp(), JavaScript(), TypeScript())}
+TOOLCHAINS = {t.name: t for t in (Python(), Go(), Java(), C(), Cpp())}
 BY_EXT = {e: t for t in TOOLCHAINS.values() for e in t.exts}
 
 
