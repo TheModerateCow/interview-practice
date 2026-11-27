@@ -688,7 +688,7 @@ test('Settings: code help Full, Words only, Off', async ({ page, request }) => {
   await page.keyboard.press('Control+Home'); await page.keyboard.type('import heapq\n'); await page.keyboard.press('Escape');
   await typeNew('heapq.heap');
   // Full: the server may take a moment to start, and the editor doesn't ask again by itself: ask as the next keystroke would
-  await expect.poll(async () => { if (await row('heappush').count()) return 1; await page.keyboard.press('Control+Space'); await page.waitForTimeout(1000); return row('heappush').count(); },
+  await expect.poll(async () => { if (await row('heappush').count()) return 1; await page.keyboard.press('Escape'); await page.keyboard.press('Backspace'); await page.keyboard.type('p'); await page.waitForTimeout(1500); return row('heappush').count(); },
     { timeout: 45000 }).toBeGreaterThan(0);
   await page.keyboard.press('Escape');
   const t1 = await page.locator('#timer').textContent();
@@ -721,7 +721,7 @@ test('Settings: code help Full, Words only, Off', async ({ page, request }) => {
   await level('full');
   await page.click('#editor .view-lines');
   await typeNew('heapq.heap');
-  await expect.poll(async () => { await page.keyboard.press('Control+Space'); await page.waitForTimeout(800); return row('heappush').count(); },
+  await expect.poll(async () => { if (await row('heappush').count()) return 1; await page.keyboard.press('Escape'); await page.keyboard.press('Backspace'); await page.keyboard.type('p'); await page.waitForTimeout(1500); return row('heappush').count(); },
     { timeout: 60000 }).toBeGreaterThan(0);
 });
 });

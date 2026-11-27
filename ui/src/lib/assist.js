@@ -66,7 +66,7 @@ export function register(m) {
     async provideCompletionItems(model, pos) {
       const r = await ask(model, 'complete', pos);
       const res = r && r.result;
-      if (!res) return { suggestions: [] };
+      if (!res) return { suggestions: [], incomplete: true };   // no answer yet (starting, or slow): not final, so the editor asks again
       return { suggestions: (res.items || res).map(i => suggestion(model, pos, i)), incomplete: !!res.isIncomplete };
     },
     async resolveCompletionItem(item) {
