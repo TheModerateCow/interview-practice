@@ -1,0 +1,14 @@
+[
+ {"file":"studio.go","old":"c.cancelled || ts >= c.start","new":"c.cancelled || ts > c.start","label":"a class can still be booked or cancelled at its start time","k":"test_l1_"},
+ {"file":"studio.go","old":"capacity <= 0 || start <= ts","new":"capacity <= 0 || start < ts","label":"a class starting right now can be added","k":"test_l1_"},
+ {"file":"studio.go","old":"\t\treturn ids[i] < ids[j]","new":"\t\treturn ids[i] > ids[j]","label":"classes with the same start ordered by id descending","k":"test_l1_"},
+ {"file":"studio.go","old":"m := c.waiting[0]\n\t\tc.waiting = c.waiting[1:]","new":"m := c.waiting[len(c.waiting)-1]\n\t\tc.waiting = c.waiting[:len(c.waiting)-1]","label":"the last member on the waitlist is promoted first","k":"test_l2_"},
+ {"file":"studio.go","old":"\treturn len(c.waiting)\n","new":"\treturn len(c.waiting) - 1\n","label":"waitlist positions count from 0","k":"test_l2_"},
+ {"file":"studio.go","old":"ok || indexOf(c.waiting, member) >= 0","new":"ok","label":"a member can join the same waitlist twice","k":"test_l2_"},
+ {"file":"studio.go","old":"c.start-ts >= refundWindow","new":"c.start-ts > refundWindow","label":"cancelling exactly 60 minutes before the start gets no refund","k":"test_l3_"},
+ {"file":"studio.go","old":"\t\ts.credits[member] += paid","new":"\t\ts.credits[member] += c.price","label":"a cancellation refunds today's price, not what was paid","k":"test_l3_"},
+ {"file":"studio.go","old":"if s.credits[m] >= c.price {","new":"if s.credits[m] > c.price {","label":"a waiting member with exactly the price in credits is skipped","k":"test_l3_"},
+ {"file":"studio.go","old":"newClass(firstStart+k*week, capacity)","new":"newClass(firstStart+(k+1)*week, capacity)","label":"a series starts a week late","k":"test_l4_"},
+ {"file":"studio.go","old":"return c.start <= ts })","new":"return c.start < ts })","label":"history leaves out a class starting right now","k":"test_l4_"},
+ {"file":"studio.go","old":"\t\ts.credits[m] += paid","new":"\t\ts.credits[m] += 0","label":"cancelling a class refunds nobody","k":"test_l4_"}
+]

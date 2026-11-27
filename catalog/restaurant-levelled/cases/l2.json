@@ -1,0 +1,640 @@
+[
+ {
+  "name": "waitlist_skips_parties_that_dont_fit",
+  "steps": [
+   {
+    "new": "Restaurant",
+    "args": []
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T1",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T2",
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     2,
+     "maya",
+     4,
+     1140
+    ],
+    "expect": "r1"
+   },
+   {
+    "call": "book",
+    "args": [
+     3,
+     "leo",
+     2,
+     1140
+    ],
+    "expect": "r2"
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     4,
+     "ana",
+     4,
+     1140
+    ],
+    "expect": true
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     5,
+     "bo",
+     2,
+     1140
+    ],
+    "expect": true
+   },
+   {
+    "call": "waitlist",
+    "args": [
+     6,
+     1140
+    ],
+    "expect": [
+     "ana(4)",
+     "bo(2)"
+    ]
+   },
+   {
+    "call": "cancel",
+    "args": [
+     7,
+     "r2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "table_of",
+    "args": [
+     8,
+     "r3"
+    ],
+    "expect": "T1"
+   },
+   {
+    "call": "party_at",
+    "args": [
+     8,
+     "T1",
+     1140
+    ],
+    "expect": "bo"
+   },
+   {
+    "call": "waitlist",
+    "args": [
+     9,
+     1140
+    ],
+    "expect": [
+     "ana(4)"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "join_seats_at_once_when_a_table_fits",
+  "steps": [
+   {
+    "new": "Restaurant",
+    "args": []
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T5",
+     6
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T2",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T4",
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T1",
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "free_tables",
+    "args": [
+     2,
+     1140
+    ],
+    "expect": [
+     "T2",
+     "T1",
+     "T4",
+     "T5"
+    ]
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     3,
+     "maya",
+     3,
+     1140
+    ],
+    "expect": true
+   },
+   {
+    "call": "table_of",
+    "args": [
+     4,
+     "r1"
+    ],
+    "expect": "T1"
+   },
+   {
+    "call": "waitlist",
+    "args": [
+     5,
+     1140
+    ],
+    "expect": []
+   },
+   {
+    "call": "free_tables",
+    "args": [
+     6,
+     1140
+    ],
+    "expect": [
+     "T2",
+     "T4",
+     "T5"
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     7,
+     "leo",
+     6,
+     1140
+    ],
+    "expect": "r2"
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     8,
+     "ana",
+     5,
+     1140
+    ],
+    "expect": true
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     9,
+     "ana",
+     2,
+     1140
+    ],
+    "expect": false
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     10,
+     "bo",
+     0,
+     1140
+    ],
+    "expect": false
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     11,
+     "ana",
+     5,
+     1260
+    ],
+    "expect": true
+   },
+   {
+    "call": "waitlist",
+    "args": [
+     12,
+     1140
+    ],
+    "expect": [
+     "ana(5)"
+    ]
+   },
+   {
+    "call": "waitlist",
+    "args": [
+     12,
+     1260
+    ],
+    "expect": []
+   },
+   {
+    "call": "table_of",
+    "args": [
+     13,
+     "r3"
+    ],
+    "expect": "T5"
+   }
+  ]
+ },
+ {
+  "name": "one_cancel_can_seat_several",
+  "steps": [
+   {
+    "new": "Restaurant",
+    "args": []
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T1",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     2,
+     "maya",
+     2,
+     1140
+    ],
+    "expect": "r1"
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     3,
+     "ana",
+     2,
+     1140
+    ],
+    "expect": true
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     4,
+     "bo",
+     2,
+     1140
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     5,
+     "T2",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "waitlist",
+    "args": [
+     6,
+     1140
+    ],
+    "expect": [
+     "ana(2)",
+     "bo(2)"
+    ]
+   },
+   {
+    "call": "free_tables",
+    "args": [
+     6,
+     1140
+    ],
+    "expect": [
+     "T2"
+    ]
+   },
+   {
+    "call": "cancel",
+    "args": [
+     7,
+     "r1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "table_of",
+    "args": [
+     8,
+     "r2"
+    ],
+    "expect": "T1"
+   },
+   {
+    "call": "table_of",
+    "args": [
+     8,
+     "r3"
+    ],
+    "expect": "T2"
+   },
+   {
+    "call": "party_at",
+    "args": [
+     9,
+     "T2",
+     1140
+    ],
+    "expect": "bo"
+   },
+   {
+    "call": "waitlist",
+    "args": [
+     10,
+     1140
+    ],
+    "expect": []
+   },
+   {
+    "call": "free_tables",
+    "args": [
+     10,
+     1140
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "waitlists_are_per_slot",
+  "steps": [
+   {
+    "new": "Restaurant",
+    "args": []
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T1",
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     2,
+     "maya",
+     4,
+     1140
+    ],
+    "expect": "r1"
+   },
+   {
+    "call": "book",
+    "args": [
+     3,
+     "leo",
+     4,
+     1260
+    ],
+    "expect": "r2"
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     4,
+     "ana",
+     2,
+     1140
+    ],
+    "expect": true
+   },
+   {
+    "call": "join_waitlist",
+    "args": [
+     5,
+     "bo",
+     3,
+     1260
+    ],
+    "expect": true
+   },
+   {
+    "call": "cancel",
+    "args": [
+     6,
+     "r2"
+    ],
+    "expect": true
+   },
+   {
+    "call": "waitlist",
+    "args": [
+     7,
+     1140
+    ],
+    "expect": [
+     "ana(2)"
+    ]
+   },
+   {
+    "call": "waitlist",
+    "args": [
+     7,
+     1260
+    ],
+    "expect": []
+   },
+   {
+    "call": "party_at",
+    "args": [
+     8,
+     "T1",
+     1260
+    ],
+    "expect": "bo"
+   },
+   {
+    "call": "party_at",
+    "args": [
+     8,
+     "T1",
+     1140
+    ],
+    "expect": "maya"
+   },
+   {
+    "call": "waitlist",
+    "args": [
+     9,
+     1200
+    ],
+    "expect": []
+   }
+  ]
+ },
+ {
+  "name": "free_tables_follow_bookings",
+  "steps": [
+   {
+    "new": "Restaurant",
+    "args": []
+   },
+   {
+    "call": "free_tables",
+    "args": [
+     1,
+     1140
+    ],
+    "expect": []
+   },
+   {
+    "call": "add_table",
+    "args": [
+     2,
+     "B",
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     2,
+     "A",
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     2,
+     "C",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     3,
+     "maya",
+     2,
+     1140
+    ],
+    "expect": "r1"
+   },
+   {
+    "call": "free_tables",
+    "args": [
+     4,
+     1140
+    ],
+    "expect": [
+     "A",
+     "B"
+    ]
+   },
+   {
+    "call": "book",
+    "args": [
+     5,
+     "leo",
+     3,
+     1140
+    ],
+    "expect": "r2"
+   },
+   {
+    "call": "free_tables",
+    "args": [
+     6,
+     1140
+    ],
+    "expect": [
+     "B"
+    ]
+   },
+   {
+    "call": "free_tables",
+    "args": [
+     6,
+     1260
+    ],
+    "expect": [
+     "C",
+     "A",
+     "B"
+    ]
+   },
+   {
+    "call": "cancel",
+    "args": [
+     7,
+     "r1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "free_tables",
+    "args": [
+     8,
+     1140
+    ],
+    "expect": [
+     "C",
+     "B"
+    ]
+   }
+  ]
+ }
+]

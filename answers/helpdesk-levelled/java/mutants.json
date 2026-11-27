@@ -1,0 +1,16 @@
+[
+ {"file":"Desk.java","old":"\"in_progress>resolved\", \"resolved>open\",","new":"\"in_progress>resolved\", \"resolved>open\", \"open>resolved\",","label":"an open ticket can jump straight to resolved","k":"test_l1_"},
+ {"file":"Desk.java","old":"if (status.equals(\"in_progress\") && t.agent.isEmpty()) return false;","new":"if (status.equals(\"in_progress\") && t.agent == null) return false;","label":"a ticket with no agent can start progress","k":"test_l1_"},
+ {"file":"Desk.java","old":" || t.status.equals(\"resolved\") || t.agent.equals(agent)) return false;","new":" || t.agent.equals(agent)) return false;","label":"a resolved ticket can be reassigned","k":"test_l1_"},
+ {"file":"Desk.java","old":".thenComparingInt(t -> t.num));\n        List<String> ids = new ArrayList<>();\n        for (Ticket t : mine)","new":".thenComparing(t -> t.id));\n        List<String> ids = new ArrayList<>();\n        for (Ticket t : mine)","label":"queue orders ticket ids as text (t10 before t9)","k":"test_l2_"},
+ {"file":"Desk.java","old":"(load == bestLoad && a.compareTo(best) < 0)","new":"(load == bestLoad && a.compareTo(best) > 0)","label":"auto-assign ties broken by name descending","k":"test_l2_"},
+ {"file":"Desk.java","old":"if (t == null || !t.agent.isEmpty()) return \"\";","new":"if (t == null) return \"\";","label":"auto-assign takes a ticket away from its agent","k":"test_l2_"},
+ {"file":"Desk.java","old":"&& ts > due(ts, t)) late.add(t);","new":"&& ts >= due(ts, t)) late.add(t);","label":"a ticket is overdue at its due minute","k":"test_l3_"},
+ {"file":"Desk.java","old":"        if (t.status.equals(\"waiting\")) paused += ts - t.waitStart;\n","new":"","label":"a wait still in progress doesn't move the due time","k":"test_l3_"},
+ {"file":"Desk.java","old":"if ((t.status.equals(\"open\") || t.status.equals(\"in_progress\")) && ts","new":"if (!t.status.equals(\"resolved\") && ts","label":"waiting tickets listed as overdue","k":"test_l3_"},
+ {"file":"Desk.java","old":"late.sort(Comparator.<Ticket>comparingInt(t -> due(ts, t)).thenComparingInt(t -> t.num));","new":"late.sort(Comparator.<Ticket>comparingInt(t -> t.opened).thenComparingInt(t -> t.num));","label":"overdue ordered by opening time, not due time","k":"test_l3_"},
+ {"file":"Desk.java","old":"if (t == null || !agents.getOrDefault(agent, false) ||","new":"if (t == null || !agents.containsKey(agent) ||","label":"assign accepts an off-shift agent","k":"test_l4_"},
+ {"file":"Desk.java","old":"            if (!e.getValue()) continue;\n","new":"","label":"off-shift agents still picked for tickets","k":"test_l4_"},
+ {"file":"Desk.java","old":"            put(ts, tickets.get(id), to);\n","new":"            tickets.get(id).agent = to;\n","label":"shift hand-overs not recorded in history","k":"test_l4_"},
+ {"file":"Desk.java","old":"if (e.getValue() && !e.getKey().equals(agent)) other = true;","new":"if (e.getValue()) other = true;","label":"the last agent on shift can leave","k":"test_l4_"}
+]

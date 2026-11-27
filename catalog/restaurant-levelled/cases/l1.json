@@ -1,0 +1,587 @@
+[
+ {
+  "name": "smallest_table_that_fits",
+  "steps": [
+   {
+    "new": "Restaurant",
+    "args": []
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T1",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T2",
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T3",
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     2,
+     "maya",
+     3,
+     1140
+    ],
+    "expect": "r1"
+   },
+   {
+    "call": "book",
+    "args": [
+     3,
+     "leo",
+     2,
+     1140
+    ],
+    "expect": "r2"
+   },
+   {
+    "call": "book",
+    "args": [
+     4,
+     "ana",
+     2,
+     1140
+    ],
+    "expect": "r3"
+   },
+   {
+    "call": "book",
+    "args": [
+     5,
+     "sam",
+     4,
+     1140
+    ],
+    "expect": ""
+   },
+   {
+    "call": "book",
+    "args": [
+     6,
+     "sam",
+     4,
+     1260
+    ],
+    "expect": "r4"
+   },
+   {
+    "call": "table_of",
+    "args": [
+     7,
+     "r3"
+    ],
+    "expect": "T3"
+   },
+   {
+    "call": "cancel",
+    "args": [
+     8,
+     "r1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     9,
+     "sam",
+     4,
+     1140
+    ],
+    "expect": "r5"
+   },
+   {
+    "call": "party_at",
+    "args": [
+     10,
+     "T2",
+     1140
+    ],
+    "expect": "sam"
+   }
+  ]
+ },
+ {
+  "name": "add_table_and_book_rules",
+  "steps": [
+   {
+    "new": "Restaurant",
+    "args": []
+   },
+   {
+    "call": "book",
+    "args": [
+     1,
+     "maya",
+     2,
+     1140
+    ],
+    "expect": ""
+   },
+   {
+    "call": "add_table",
+    "args": [
+     2,
+     "T1",
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     3,
+     "T1",
+     6
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_table",
+    "args": [
+     4,
+     "T2",
+     0
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_table",
+    "args": [
+     5,
+     "T3",
+     -2
+    ],
+    "expect": false
+   },
+   {
+    "call": "book",
+    "args": [
+     6,
+     "maya",
+     0,
+     1140
+    ],
+    "expect": ""
+   },
+   {
+    "call": "book",
+    "args": [
+     7,
+     "maya",
+     -1,
+     1140
+    ],
+    "expect": ""
+   },
+   {
+    "call": "book",
+    "args": [
+     8,
+     "maya",
+     5,
+     1140
+    ],
+    "expect": ""
+   },
+   {
+    "call": "book",
+    "args": [
+     9,
+     "maya",
+     4,
+     1140
+    ],
+    "expect": "r1"
+   },
+   {
+    "call": "table_of",
+    "args": [
+     10,
+     "r1"
+    ],
+    "expect": "T1"
+   },
+   {
+    "call": "table_of",
+    "args": [
+     11,
+     "r2"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "party_at",
+    "args": [
+     12,
+     "T2",
+     1140
+    ],
+    "expect": ""
+   }
+  ]
+ },
+ {
+  "name": "exact_fit_and_id_ties",
+  "steps": [
+   {
+    "new": "Restaurant",
+    "args": []
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T9",
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T3",
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T1",
+     6
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T2",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     2,
+     "maya",
+     4,
+     1140
+    ],
+    "expect": "r1"
+   },
+   {
+    "call": "book",
+    "args": [
+     3,
+     "leo",
+     4,
+     1140
+    ],
+    "expect": "r2"
+   },
+   {
+    "call": "book",
+    "args": [
+     4,
+     "ana",
+     4,
+     1140
+    ],
+    "expect": "r3"
+   },
+   {
+    "call": "book",
+    "args": [
+     5,
+     "bo",
+     1,
+     1140
+    ],
+    "expect": "r4"
+   },
+   {
+    "call": "book",
+    "args": [
+     6,
+     "cy",
+     1,
+     1140
+    ],
+    "expect": ""
+   },
+   {
+    "call": "table_of",
+    "args": [
+     7,
+     "r1"
+    ],
+    "expect": "T3"
+   },
+   {
+    "call": "table_of",
+    "args": [
+     7,
+     "r2"
+    ],
+    "expect": "T9"
+   },
+   {
+    "call": "table_of",
+    "args": [
+     7,
+     "r3"
+    ],
+    "expect": "T1"
+   },
+   {
+    "call": "table_of",
+    "args": [
+     7,
+     "r4"
+    ],
+    "expect": "T2"
+   }
+  ]
+ },
+ {
+  "name": "slots_are_separate_seatings",
+  "steps": [
+   {
+    "new": "Restaurant",
+    "args": []
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T1",
+     2
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T2",
+     6
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     2,
+     "maya",
+     2,
+     1140
+    ],
+    "expect": "r1"
+   },
+   {
+    "call": "book",
+    "args": [
+     3,
+     "leo",
+     2,
+     1260
+    ],
+    "expect": "r2"
+   },
+   {
+    "call": "book",
+    "args": [
+     4,
+     "ana",
+     2,
+     1140
+    ],
+    "expect": "r3"
+   },
+   {
+    "call": "party_at",
+    "args": [
+     5,
+     "T1",
+     1140
+    ],
+    "expect": "maya"
+   },
+   {
+    "call": "party_at",
+    "args": [
+     5,
+     "T1",
+     1260
+    ],
+    "expect": "leo"
+   },
+   {
+    "call": "party_at",
+    "args": [
+     5,
+     "T2",
+     1140
+    ],
+    "expect": "ana"
+   },
+   {
+    "call": "party_at",
+    "args": [
+     5,
+     "T2",
+     1260
+    ],
+    "expect": ""
+   },
+   {
+    "call": "party_at",
+    "args": [
+     5,
+     "T7",
+     1140
+    ],
+    "expect": ""
+   },
+   {
+    "call": "party_at",
+    "args": [
+     5,
+     "T1",
+     1200
+    ],
+    "expect": ""
+   }
+  ]
+ },
+ {
+  "name": "cancel_frees_the_table",
+  "steps": [
+   {
+    "new": "Restaurant",
+    "args": []
+   },
+   {
+    "call": "add_table",
+    "args": [
+     1,
+     "T1",
+     4
+    ],
+    "expect": true
+   },
+   {
+    "call": "book",
+    "args": [
+     2,
+     "maya",
+     4,
+     1140
+    ],
+    "expect": "r1"
+   },
+   {
+    "call": "book",
+    "args": [
+     3,
+     "leo",
+     2,
+     1140
+    ],
+    "expect": ""
+   },
+   {
+    "call": "cancel",
+    "args": [
+     4,
+     "r1"
+    ],
+    "expect": true
+   },
+   {
+    "call": "cancel",
+    "args": [
+     5,
+     "r1"
+    ],
+    "expect": false
+   },
+   {
+    "call": "cancel",
+    "args": [
+     6,
+     "r9"
+    ],
+    "expect": false
+   },
+   {
+    "call": "table_of",
+    "args": [
+     7,
+     "r1"
+    ],
+    "expect": ""
+   },
+   {
+    "call": "party_at",
+    "args": [
+     8,
+     "T1",
+     1140
+    ],
+    "expect": ""
+   },
+   {
+    "call": "book",
+    "args": [
+     9,
+     "leo",
+     2,
+     1140
+    ],
+    "expect": "r2"
+   },
+   {
+    "call": "table_of",
+    "args": [
+     10,
+     "r2"
+    ],
+    "expect": "T1"
+   },
+   {
+    "call": "party_at",
+    "args": [
+     11,
+     "T1",
+     1140
+    ],
+    "expect": "leo"
+   }
+  ]
+ }
+]

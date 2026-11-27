@@ -1,0 +1,93 @@
+[
+ {
+  "file": "Restaurant.java",
+  "old": "!taken.contains(t) && seats >= size",
+  "new": "!taken.contains(t) && seats > size",
+  "label": "a party exactly the table's size doesn't fit it",
+  "k": "test_l1_"
+ },
+ {
+  "file": "Restaurant.java",
+  "old": "t.compareTo(best) < 0) best = t;",
+  "new": "t.compareTo(best) > 0) best = t;",
+  "label": "ties between equal tables go to the largest id",
+  "k": "test_l1_"
+ },
+ {
+  "file": "Restaurant.java",
+  "old": "containsKey(tableId) || seats <= 0",
+  "new": "containsKey(tableId) || seats < 0",
+  "label": "a table with 0 seats is accepted",
+  "k": "test_l1_"
+ },
+ {
+  "file": "Restaurant.java",
+  "old": "if (r == null || !r.status.equals(\"booked\") || !live(ts, r)) return false;\n        r.status = \"cancelled\";",
+  "new": "if (r == null) return false;\n        r.status = \"cancelled\";",
+  "label": "cancelling twice succeeds",
+  "k": "test_l1_"
+ },
+ {
+  "file": "Restaurant.java",
+  "old": "else keep.add(p);",
+  "new": "else { keep.add(p); break; }",
+  "label": "a party that doesn't fit blocks everyone behind it, who are dropped",
+  "k": "test_l2_"
+ },
+ {
+  "file": "Restaurant.java",
+  "old": "if (t != null) add(name, size, slot, t);\n        else queue.add(new Party(name, size));",
+  "new": "queue.add(new Party(name, size));",
+  "label": "a walk-in waits even when a table is free",
+  "k": "test_l2_"
+ },
+ {
+  "file": "Restaurant.java",
+  "old": "return c != 0 ? c : a.compareTo(b);",
+  "new": "return a.compareTo(b);",
+  "label": "free tables sorted by id only, ignoring seats",
+  "k": "test_l2_"
+ },
+ {
+  "file": "Restaurant.java",
+  "old": "!taken.contains(p.get(1)) && s >= size",
+  "new": "!taken.contains(p.get(1)) && s > size",
+  "label": "a join whose seats exactly match the party doesn't fit it",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Restaurant.java",
+  "old": "(p.get(0).compareTo(bp.get(0)) < 0 || p.get(0).equals(bp.get(0)) && p.get(1).compareTo(bp.get(1)) < 0)",
+  "new": "p.get(1).compareTo(bp.get(1)) < 0",
+  "label": "joins with equal seats tie on the higher id",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Restaurant.java",
+  "old": "tableA.compareTo(tableB) < 0 ? List.of(tableA, tableB) : List.of(tableB, tableA)",
+  "new": "List.of(tableA, tableB)",
+  "label": "a link keeps its argument order, so the same link can be added twice and tableOf prints it backwards",
+  "k": "test_l3_"
+ },
+ {
+  "file": "Restaurant.java",
+  "old": "return !(r.status.equals(\"booked\") && ts >= r.slot + GRACE);",
+  "new": "return !(r.status.equals(\"booked\") && ts > r.slot + GRACE);",
+  "label": "the table is still held at exactly slot + 15",
+  "k": "test_l4_"
+ },
+ {
+  "file": "Restaurant.java",
+  "old": "ts < java.util.Collections.max(times) + BAN",
+  "new": "ts < java.util.Collections.min(times) + BAN",
+  "label": "ban counted from the first no-show, not the latest",
+  "k": "test_l4_"
+ },
+ {
+  "file": "Restaurant.java",
+  "old": "if (size <= 0 || ts >= slot + GRACE || queue.stream()",
+  "new": "if (size <= 0 || ts >= slot + GRACE || !noShowTimes(ts, name).isEmpty() || queue.stream()",
+  "label": "guests with a no-show can't walk in either",
+  "k": "test_l4_"
+ }
+]

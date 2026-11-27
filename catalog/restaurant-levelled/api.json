@@ -1,0 +1,21 @@
+{
+ "module": "restaurant",
+ "classes": {
+  "Restaurant": {
+   "init": [],
+   "methods": {
+    "add_table": {"params": [["ts", "int"], ["table_id", "string"], ["seats", "int"]], "returns": "bool", "level": 1},
+    "book": {"params": [["ts", "int"], ["name", "string"], ["size", "int"], ["slot", "int"]], "returns": "string", "level": 1},
+    "cancel": {"params": [["ts", "int"], ["reservation_id", "string"]], "returns": "bool", "level": 1},
+    "table_of": {"params": [["ts", "int"], ["reservation_id", "string"]], "returns": "string", "level": 1},
+    "party_at": {"params": [["ts", "int"], ["table_id", "string"], ["slot", "int"]], "returns": "string", "level": 1},
+    "join_waitlist": {"params": [["ts", "int"], ["name", "string"], ["size", "int"], ["slot", "int"]], "returns": "bool", "level": 2},
+    "waitlist": {"params": [["ts", "int"], ["slot", "int"]], "returns": "list<string>", "level": 2},
+    "free_tables": {"params": [["ts", "int"], ["slot", "int"]], "returns": "list<string>", "level": 2},
+    "link_tables": {"params": [["ts", "int"], ["table_a", "string"], ["table_b", "string"]], "returns": "bool", "level": 3},
+    "seat": {"params": [["ts", "int"], ["reservation_id", "string"]], "returns": "bool", "level": 4},
+    "no_shows": {"params": [["ts", "int"], ["name", "string"]], "returns": "int", "level": 4}
+   }
+  }
+ }
+}

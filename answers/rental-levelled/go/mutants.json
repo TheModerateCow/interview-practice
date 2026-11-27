@@ -1,0 +1,17 @@
+[
+ {"file":"rental.go","old":"d.cars[free[0]].out = &rental{customer: customer, start: ts, due: due}\n\treturn free[0]","new":"d.cars[free[len(free)-1]].out = &rental{customer: customer, start: ts, due: due}\n\treturn free[len(free)-1]","label":"rent hands out the highest car id","k":"test_l1_"},
+ {"file":"rental.go","old":"!ok || days <= 0 || d.hasCar(customer)","new":"!ok || days < 0 || d.hasCar(customer)","label":"a rental of 0 days is accepted","k":"test_l1_"},
+ {"file":"rental.go","old":"!ok || days <= 0 || d.hasCar(customer) {","new":"!ok || days <= 0 {","label":"a customer with a car out can rent another","k":"test_l1_"},
+ {"file":"rental.go","old":"return (hours + day - 1) / day","new":"return hours / day","label":"whole days counted rounding down instead of started","k":"test_l2_"},
+ {"file":"rental.go","old":"max(1, days(ts-out.start))","new":"days(ts-out.start)","label":"a same-hour return is free","k":"test_l2_"},
+ {"file":"rental.go","old":"c.out.due < ts","new":"c.out.due <= ts","label":"a car is overdue at its due time","k":"test_l2_"},
+ {"file":"rental.go","old":" + days(max(0, ts-out.due))","new":"","label":"late days are not charged extra","k":"test_l2_"},
+ {"file":"rental.go","old":"if branch != c.branch {\n\t\tfee += dropFee","new":"if true {\n\t\tfee += dropFee","label":"drop fee charged on every return","k":"test_l3_"},
+ {"file":"rental.go","old":"c.out == nil || !d.branches[branch] {","new":"c.out == nil {","label":"drop-off at an unknown branch accepted","k":"test_l3_"},
+ {"file":"rental.go","old":"\tc.branch = branch\n","new":"","label":"a one-way car stays with its old branch","k":"test_l3_"},
+ {"file":"rental.go","old":"if c.out == nil && c.branch == branch {","new":"if c.branch == branch {","label":"available counts rented cars","k":"test_l3_"},
+ {"file":"rental.go","old":"r.start < end && start < r.end","new":"r.start <= end && start <= r.end","label":"back-to-back periods treated as overlapping","k":"test_l4_"},
+ {"file":"rental.go","old":"if len(free) <= d.pending(","new":"if len(free) < d.pending(","label":"walk-in takes the last car a reservation needs","k":"test_l4_"},
+ {"file":"rental.go","old":"ts >= r.end","new":"ts > r.end","label":"pick-up allowed at the reservation's end","k":"test_l4_"},
+ {"file":"rental.go","old":"&rental{customer: r.customer, start: ts, due: r.end}","new":"&rental{customer: r.customer, start: r.start, due: r.end}","label":"picked-up rental charged from the reservation start","k":"test_l4_"}
+]

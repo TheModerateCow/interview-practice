@@ -1,0 +1,492 @@
+[
+ {
+  "name": "quotas",
+  "steps": [
+   {
+    "new": "Drive",
+    "args": []
+   },
+   {
+    "call": "add_user",
+    "args": [
+     "ana",
+     1000
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file_by",
+    "args": [
+     "ana",
+     "/ana/photo.jpg",
+     600
+    ],
+    "expect": 400
+   },
+   {
+    "call": "add_file_by",
+    "args": [
+     "ana",
+     "/ana/video.mp4",
+     500
+    ],
+    "expect": -1
+   },
+   {
+    "call": "add_file_by",
+    "args": [
+     "ana",
+     "/ana/notes.txt",
+     400
+    ],
+    "expect": 0
+   },
+   {
+    "call": "add_user",
+    "args": [
+     "ben",
+     800
+    ],
+    "expect": true
+   },
+   {
+    "call": "copy_file_by",
+    "args": [
+     "ben",
+     "/ana/photo.jpg",
+     "/ben/photo.jpg"
+    ],
+    "expect": 200
+   },
+   {
+    "call": "remaining",
+    "args": [
+     "ana"
+    ],
+    "expect": 0
+   },
+   {
+    "call": "delete_file",
+    "args": [
+     "/ana/photo.jpg"
+    ],
+    "expect": 600
+   },
+   {
+    "call": "remaining",
+    "args": [
+     "ana"
+    ],
+    "expect": 600
+   }
+  ]
+ },
+ {
+  "name": "user_rules",
+  "steps": [
+   {
+    "new": "Drive",
+    "args": []
+   },
+   {
+    "call": "add_user",
+    "args": [
+     "ana",
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_user",
+    "args": [
+     "ana",
+     500
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_user",
+    "args": [
+     "ben",
+     0
+    ],
+    "expect": false
+   },
+   {
+    "call": "add_user",
+    "args": [
+     "cy",
+     -5
+    ],
+    "expect": false
+   },
+   {
+    "call": "remaining",
+    "args": [
+     "ana"
+    ],
+    "expect": 100
+   },
+   {
+    "call": "remaining",
+    "args": [
+     "ben"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "add_file_by",
+    "args": [
+     "ben",
+     "/ben/a.txt",
+     10
+    ],
+    "expect": -1
+   },
+   {
+    "call": "get_file_size",
+    "args": [
+     "/ben/a.txt"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/shared.txt",
+     10
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file_by",
+    "args": [
+     "ana",
+     "/shared.txt",
+     10
+    ],
+    "expect": -1
+   },
+   {
+    "call": "add_file_by",
+    "args": [
+     "ana",
+     "/ana/bad.txt",
+     -1
+    ],
+    "expect": -1
+   },
+   {
+    "call": "remaining",
+    "args": [
+     "ana"
+    ],
+    "expect": 100
+   }
+  ]
+ },
+ {
+  "name": "quota_boundary",
+  "steps": [
+   {
+    "new": "Drive",
+    "args": []
+   },
+   {
+    "call": "add_user",
+    "args": [
+     "ana",
+     100
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file_by",
+    "args": [
+     "ana",
+     "/a.txt",
+     60
+    ],
+    "expect": 40
+   },
+   {
+    "call": "add_file_by",
+    "args": [
+     "ana",
+     "/b.txt",
+     41
+    ],
+    "expect": -1
+   },
+   {
+    "call": "get_file_size",
+    "args": [
+     "/b.txt"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "add_file_by",
+    "args": [
+     "ana",
+     "/b.txt",
+     40
+    ],
+    "expect": 0
+   },
+   {
+    "call": "add_file_by",
+    "args": [
+     "ana",
+     "/c.txt",
+     0
+    ],
+    "expect": 0
+   },
+   {
+    "call": "add_file_by",
+    "args": [
+     "ana",
+     "/d.txt",
+     1
+    ],
+    "expect": -1
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/big.bin",
+     5000
+    ],
+    "expect": true
+   },
+   {
+    "call": "remaining",
+    "args": [
+     "ana"
+    ],
+    "expect": 0
+   }
+  ]
+ },
+ {
+  "name": "copy_charges_the_copier",
+  "steps": [
+   {
+    "new": "Drive",
+    "args": []
+   },
+   {
+    "call": "add_user",
+    "args": [
+     "ana",
+     500
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_user",
+    "args": [
+     "ben",
+     300
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file",
+    "args": [
+     "/public/map.png",
+     200
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file_by",
+    "args": [
+     "ana",
+     "/ana/report.pdf",
+     250
+    ],
+    "expect": 250
+   },
+   {
+    "call": "copy_file_by",
+    "args": [
+     "ben",
+     "/public/map.png",
+     "/ben/map.png"
+    ],
+    "expect": 100
+   },
+   {
+    "call": "copy_file_by",
+    "args": [
+     "ben",
+     "/ana/report.pdf",
+     "/ben/report.pdf"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "get_file_size",
+    "args": [
+     "/ben/report.pdf"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "copy_file_by",
+    "args": [
+     "ben",
+     "/missing.txt",
+     "/ben/x.txt"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "copy_file_by",
+    "args": [
+     "ben",
+     "/ben/map.png",
+     "/ana/report.pdf"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "copy_file_by",
+    "args": [
+     "zoe",
+     "/public/map.png",
+     "/zoe/map.png"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "copy_file_by",
+    "args": [
+     "ana",
+     "/ben/map.png",
+     "/ana/map.png"
+    ],
+    "expect": 50
+   },
+   {
+    "call": "remaining",
+    "args": [
+     "ben"
+    ],
+    "expect": 100
+   },
+   {
+    "call": "remaining",
+    "args": [
+     "ana"
+    ],
+    "expect": 50
+   }
+  ]
+ },
+ {
+  "name": "level_one_methods_keep_quotas",
+  "steps": [
+   {
+    "new": "Drive",
+    "args": []
+   },
+   {
+    "call": "add_user",
+    "args": [
+     "ana",
+     500
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_file_by",
+    "args": [
+     "ana",
+     "/ana/a.bin",
+     200
+    ],
+    "expect": 300
+   },
+   {
+    "call": "copy_file",
+    "args": [
+     "/ana/a.bin",
+     "/ana/b.bin"
+    ],
+    "expect": true
+   },
+   {
+    "call": "remaining",
+    "args": [
+     "ana"
+    ],
+    "expect": 100
+   },
+   {
+    "call": "copy_file",
+    "args": [
+     "/ana/a.bin",
+     "/ana/c.bin"
+    ],
+    "expect": false
+   },
+   {
+    "call": "get_file_size",
+    "args": [
+     "/ana/c.bin"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "delete_file",
+    "args": [
+     "/ana/a.bin"
+    ],
+    "expect": 200
+   },
+   {
+    "call": "remaining",
+    "args": [
+     "ana"
+    ],
+    "expect": 300
+   },
+   {
+    "call": "copy_file",
+    "args": [
+     "/ana/b.bin",
+     "/ana/c.bin"
+    ],
+    "expect": true
+   },
+   {
+    "call": "remaining",
+    "args": [
+     "ana"
+    ],
+    "expect": 100
+   },
+   {
+    "call": "largest_files",
+    "args": [
+     "/ana/",
+     5
+    ],
+    "expect": [
+     "/ana/b.bin(200)",
+     "/ana/c.bin(200)"
+    ]
+   },
+   {
+    "call": "folder_size",
+    "args": [
+     "/ana/"
+    ],
+    "expect": 400
+   }
+  ]
+ }
+]

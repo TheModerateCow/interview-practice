@@ -1,0 +1,687 @@
+[
+ {
+  "name": "example_sla_pause",
+  "steps": [
+   {
+    "new": "Desk",
+    "args": []
+   },
+   {
+    "call": "add_agent",
+    "args": [
+     0,
+     "maya"
+    ],
+    "expect": true
+   },
+   {
+    "call": "open_ticket",
+    "args": [
+     0,
+     "acme",
+     "high"
+    ],
+    "expect": "t1"
+   },
+   {
+    "call": "open_ticket",
+    "args": [
+     10,
+     "globex",
+     "normal"
+    ],
+    "expect": "t2"
+   },
+   {
+    "call": "assign",
+    "args": [
+     20,
+     "t1",
+     "maya"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_status",
+    "args": [
+     20,
+     "t1",
+     "in_progress"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_status",
+    "args": [
+     30,
+     "t1",
+     "waiting"
+    ],
+    "expect": true
+   },
+   {
+    "call": "due_at",
+    "args": [
+     50,
+     "t1"
+    ],
+    "expect": 80
+   },
+   {
+    "call": "set_status",
+    "args": [
+     70,
+     "t1",
+     "in_progress"
+    ],
+    "expect": true
+   },
+   {
+    "call": "due_at",
+    "args": [
+     75,
+     "t1"
+    ],
+    "expect": 100
+   },
+   {
+    "call": "overdue",
+    "args": [
+     100
+    ],
+    "expect": []
+   },
+   {
+    "call": "overdue",
+    "args": [
+     101
+    ],
+    "expect": [
+     "t1"
+    ]
+   },
+   {
+    "call": "overdue",
+    "args": [
+     300
+    ],
+    "expect": [
+     "t1",
+     "t2"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "sla_targets_and_boundary",
+  "steps": [
+   {
+    "new": "Desk",
+    "args": []
+   },
+   {
+    "call": "open_ticket",
+    "args": [
+     5,
+     "a",
+     "high"
+    ],
+    "expect": "t1"
+   },
+   {
+    "call": "open_ticket",
+    "args": [
+     5,
+     "b",
+     "normal"
+    ],
+    "expect": "t2"
+   },
+   {
+    "call": "open_ticket",
+    "args": [
+     5,
+     "c",
+     "low"
+    ],
+    "expect": "t3"
+   },
+   {
+    "call": "due_at",
+    "args": [
+     6,
+     "t1"
+    ],
+    "expect": 65
+   },
+   {
+    "call": "due_at",
+    "args": [
+     6,
+     "t2"
+    ],
+    "expect": 245
+   },
+   {
+    "call": "due_at",
+    "args": [
+     6,
+     "t3"
+    ],
+    "expect": 1445
+   },
+   {
+    "call": "due_at",
+    "args": [
+     6,
+     "t4"
+    ],
+    "expect": -1
+   },
+   {
+    "call": "overdue",
+    "args": [
+     65
+    ],
+    "expect": []
+   },
+   {
+    "call": "overdue",
+    "args": [
+     66
+    ],
+    "expect": [
+     "t1"
+    ]
+   },
+   {
+    "call": "overdue",
+    "args": [
+     245
+    ],
+    "expect": [
+     "t1"
+    ]
+   },
+   {
+    "call": "overdue",
+    "args": [
+     246
+    ],
+    "expect": [
+     "t1",
+     "t2"
+    ]
+   },
+   {
+    "call": "overdue",
+    "args": [
+     1446
+    ],
+    "expect": [
+     "t1",
+     "t2",
+     "t3"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "waiting_transitions",
+  "steps": [
+   {
+    "new": "Desk",
+    "args": []
+   },
+   {
+    "call": "add_agent",
+    "args": [
+     1,
+     "maya"
+    ],
+    "expect": true
+   },
+   {
+    "call": "add_agent",
+    "args": [
+     1,
+     "leo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "open_ticket",
+    "args": [
+     2,
+     "acme",
+     "normal"
+    ],
+    "expect": "t1"
+   },
+   {
+    "call": "set_status",
+    "args": [
+     3,
+     "t1",
+     "waiting"
+    ],
+    "expect": false
+   },
+   {
+    "call": "assign",
+    "args": [
+     4,
+     "t1",
+     "maya"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_status",
+    "args": [
+     5,
+     "t1",
+     "in_progress"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_status",
+    "args": [
+     6,
+     "t1",
+     "waiting"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_status",
+    "args": [
+     7,
+     "t1",
+     "waiting"
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_status",
+    "args": [
+     8,
+     "t1",
+     "resolved"
+    ],
+    "expect": false
+   },
+   {
+    "call": "set_status",
+    "args": [
+     9,
+     "t1",
+     "open"
+    ],
+    "expect": false
+   },
+   {
+    "call": "get_ticket",
+    "args": [
+     10,
+     "t1"
+    ],
+    "expect": "acme:normal:waiting:maya"
+   },
+   {
+    "call": "assign",
+    "args": [
+     11,
+     "t1",
+     "leo"
+    ],
+    "expect": true
+   },
+   {
+    "call": "queue",
+    "args": [
+     12,
+     "leo"
+    ],
+    "expect": [
+     "t1"
+    ]
+   },
+   {
+    "call": "open_ticket",
+    "args": [
+     13,
+     "globex",
+     "normal"
+    ],
+    "expect": "t2"
+   },
+   {
+    "call": "auto_assign",
+    "args": [
+     14,
+     "t2"
+    ],
+    "expect": "maya"
+   },
+   {
+    "call": "set_status",
+    "args": [
+     15,
+     "t1",
+     "in_progress"
+    ],
+    "expect": true
+   },
+   {
+    "call": "get_ticket",
+    "args": [
+     16,
+     "t1"
+    ],
+    "expect": "acme:normal:in_progress:leo"
+   }
+  ]
+ },
+ {
+  "name": "pauses_add_up",
+  "steps": [
+   {
+    "new": "Desk",
+    "args": []
+   },
+   {
+    "call": "add_agent",
+    "args": [
+     0,
+     "maya"
+    ],
+    "expect": true
+   },
+   {
+    "call": "open_ticket",
+    "args": [
+     0,
+     "acme",
+     "high"
+    ],
+    "expect": "t1"
+   },
+   {
+    "call": "assign",
+    "args": [
+     0,
+     "t1",
+     "maya"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_status",
+    "args": [
+     10,
+     "t1",
+     "in_progress"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_status",
+    "args": [
+     20,
+     "t1",
+     "waiting"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_status",
+    "args": [
+     50,
+     "t1",
+     "in_progress"
+    ],
+    "expect": true
+   },
+   {
+    "call": "due_at",
+    "args": [
+     55,
+     "t1"
+    ],
+    "expect": 90
+   },
+   {
+    "call": "set_status",
+    "args": [
+     100,
+     "t1",
+     "waiting"
+    ],
+    "expect": true
+   },
+   {
+    "call": "due_at",
+    "args": [
+     100,
+     "t1"
+    ],
+    "expect": 90
+   },
+   {
+    "call": "due_at",
+    "args": [
+     130,
+     "t1"
+    ],
+    "expect": 120
+   },
+   {
+    "call": "overdue",
+    "args": [
+     130
+    ],
+    "expect": []
+   },
+   {
+    "call": "set_status",
+    "args": [
+     130,
+     "t1",
+     "in_progress"
+    ],
+    "expect": true
+   },
+   {
+    "call": "overdue",
+    "args": [
+     130
+    ],
+    "expect": [
+     "t1"
+    ]
+   },
+   {
+    "call": "overdue",
+    "args": [
+     131
+    ],
+    "expect": [
+     "t1"
+    ]
+   },
+   {
+    "call": "set_status",
+    "args": [
+     140,
+     "t1",
+     "resolved"
+    ],
+    "expect": true
+   },
+   {
+    "call": "overdue",
+    "args": [
+     500
+    ],
+    "expect": []
+   },
+   {
+    "call": "due_at",
+    "args": [
+     500,
+     "t1"
+    ],
+    "expect": 120
+   },
+   {
+    "call": "set_status",
+    "args": [
+     600,
+     "t1",
+     "open"
+    ],
+    "expect": true
+   },
+   {
+    "call": "overdue",
+    "args": [
+     600
+    ],
+    "expect": [
+     "t1"
+    ]
+   }
+  ]
+ },
+ {
+  "name": "overdue_order_and_waiting",
+  "steps": [
+   {
+    "new": "Desk",
+    "args": []
+   },
+   {
+    "call": "add_agent",
+    "args": [
+     0,
+     "maya"
+    ],
+    "expect": true
+   },
+   {
+    "call": "open_ticket",
+    "args": [
+     0,
+     "acme",
+     "normal"
+    ],
+    "expect": "t1"
+   },
+   {
+    "call": "open_ticket",
+    "args": [
+     100,
+     "globex",
+     "high"
+    ],
+    "expect": "t2"
+   },
+   {
+    "call": "open_ticket",
+    "args": [
+     180,
+     "initech",
+     "high"
+    ],
+    "expect": "t3"
+   },
+   {
+    "call": "open_ticket",
+    "args": [
+     190,
+     "hooli",
+     "low"
+    ],
+    "expect": "t4"
+   },
+   {
+    "call": "assign",
+    "args": [
+     190,
+     "t2",
+     "maya"
+    ],
+    "expect": true
+   },
+   {
+    "call": "set_status",
+    "args": [
+     190,
+     "t2",
+     "in_progress"
+    ],
+    "expect": true
+   },
+   {
+    "call": "overdue",
+    "args": [
+     300
+    ],
+    "expect": [
+     "t2",
+     "t1",
+     "t3"
+    ]
+   },
+   {
+    "call": "set_status",
+    "args": [
+     300,
+     "t2",
+     "waiting"
+    ],
+    "expect": true
+   },
+   {
+    "call": "overdue",
+    "args": [
+     400
+    ],
+    "expect": [
+     "t1",
+     "t3"
+    ]
+   },
+   {
+    "call": "due_at",
+    "args": [
+     400,
+     "t2"
+    ],
+    "expect": 260
+   },
+   {
+    "call": "set_status",
+    "args": [
+     400,
+     "t2",
+     "in_progress"
+    ],
+    "expect": true
+   },
+   {
+    "call": "overdue",
+    "args": [
+     400
+    ],
+    "expect": [
+     "t1",
+     "t3",
+     "t2"
+    ]
+   }
+  ]
+ }
+]
